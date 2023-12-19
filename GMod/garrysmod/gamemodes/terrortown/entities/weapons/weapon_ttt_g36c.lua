@@ -110,17 +110,17 @@ SWEP.HoldType			= "ar2"
 
 
 SWEP.DrawCrosshair			= false	
-SWEP.Primary.Delay       = 0.08
+SWEP.Primary.Delay       = 0.09
 SWEP.Primary.Recoil      = 1.9
 SWEP.Primary.Automatic   = true
-SWEP.Primary.Damage      = 25
+SWEP.Primary.Damage      = 15
 SWEP.Primary.Cone        = 0
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.ClipSize    = 30
 SWEP.Primary.ClipMax     = 90
 SWEP.Primary.DefaultClip = 30
 SWEP.Primary.Sound 		= Sound("weapon_aug.single")
-
+SWEP.HeadshotMultiplier  = 2
 
 --nopls
 SWEP.IronSightsPos = Vector(-2.605, -3.268, 2.63)
@@ -184,6 +184,8 @@ function SWEP:PreDrop()
 end
 
 function SWEP:Holster()
-   self.Owner:SetJumpPower(160)
-   return true
+   if IsValid(self.Owner) and self.Owner:IsPlayer() then
+      self.Owner:SetJumpPower(160)
+      return true
+   end
 end

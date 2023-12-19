@@ -26,9 +26,9 @@ SWEP.Primary.Delay         = 0.56
 SWEP.Primary.Cone          = 0.02
 SWEP.Primary.ClipSize      = 20
 SWEP.Primary.Automatic     = true
-SWEP.Primary.DefaultClip   = 20
+SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.ClipMax       = 60
-SWEP.Primary.Ammo          = "Pistol"
+SWEP.Primary.Ammo          = "AlyxGun"
 SWEP.Tracer = "GaussTracer"
 SWEP.Kind                  = WEAPON_EQUIP
 SWEP.CanBuy                = {ROLE_TRAITOR} -- only traitors can buy
@@ -59,8 +59,8 @@ function CanBackstab(self, hitEnt)
    
    local targetFacing = hitEnt:GetAimVector()
    targetFacing.Z = 0
-   
-   return toTarget:Dot(targetFacing) > BACKSTABK_DOT_THRESHOLD
+
+   return toTarget:Dot(targetFacing) > 0.5
 end
 
 function SWEP:PrimaryAttack()
@@ -91,21 +91,6 @@ function SWEP:PrimaryAttack()
       end
 
       local hitEnt = tr.Entity
-
-      -- effects
-      if IsValid(hitEnt) then
-         self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
-
-         local edata = EffectData()
-         edata:SetStart(spos)
-         edata:SetOrigin(tr.HitPos)
-         edata:SetNormal(tr.Normal)
-         edata:SetEntity(hitEnt)
-      end
-         
-      if SERVER then
-         self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
-      end
 
 
       if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
@@ -143,7 +128,7 @@ function SWEP:SilentKill(tr, spos, sdest)
    local target = tr.Entity
 
    local dmg = DamageInfo()
-   dmg:SetDamage(100)
+   dmg:SetDamage(999)
    dmg:SetAttacker(self:GetOwner())
    dmg:SetInflictor(self.Weapon or self)
    dmg:SetDamageForce(self:GetOwner():GetAimVector())
@@ -163,52 +148,8 @@ function SWEP:SilentKill(tr, spos, sdest)
       retr = util.TraceLine({start=spos, endpos=center, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
    end
 
-
-   -- create knife effect creation fn
-   local bone = retr.PhysicsBone
-   local pos = retr.HitPos
-   local norm = tr.Normal
-   local ang = Angle(-28,0,0) + norm:Angle()
-   ang:RotateAroundAxis(ang:Right(), -90)
-   pos = pos - (ang:Forward() * 10)
-
-   local prints = self.fingerprints
-   local ignore = self:GetOwner()
-
-   target.effect_fn = function(rag)
-                         -- we might find a better location
-                         local rtr = util.TraceLine({start=pos, endpos=pos + norm * 40, filter=ignore, mask=MASK_SHOT_HULL})
-
-                         if IsValid(rtr.Entity) and rtr.Entity == rag then
-                            bone = rtr.PhysicsBone
-                            pos = rtr.HitPos
-                            ang = Angle(-28,0,0) + rtr.Normal:Angle()
-                            ang:RotateAroundAxis(ang:Right(), -90)
-                            pos = pos - (ang:Forward() * 5)
-                         end
-
-                         local knife = ents.Create("prop_physics")
-                         knife:SetModel("models/weapons/w_vanilla_ish_ttt_knife_backstab.mdl")
-                         knife:SetPos(pos)
-                         knife:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
-                         knife:SetAngles(ang)
-                         knife.CanPickup = false
-
-                         knife:Spawn()
-
-                         local phys = knife:GetPhysicsObject()
-                         if IsValid(phys) then
-                            phys:EnableCollisions(false)
-                         end
-
-                         constraint.Weld(rag, knife, bone, 0, 0, true)
-
-                         -- need to close over knife in order to keep a valid ref to it
-                         rag:CallOnRemove("ttt_knife_cleanup", function() SafeRemoveEntity(knife) end)
-                      end
-
-
    -- seems the spos and sdest are purely for effects/forces?
+   
    target:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
    -- target appears to die right there, so we could theoretically get to
    -- the ragdoll in here...

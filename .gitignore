@@ -4,4 +4,6 @@ updatecsgo.bat
 updatetf2.bat
 updatecsgo.txt
 updatetf2.txt
-\GMod\garrysmod\cfg\mount.cfg
+GMod/garrysmod/cfg/mount.cfg
+GMod/logs
+GMod/userdata

@@ -1,0 +1,17 @@
+"UserLocalConfigStore"
+{
+	"Depots"
+	{
+		"4000"
+		{
+			"CDN"
+			{
+				"edge.steam-dns.top.comcast.net"
+				{
+					"token"		""
+					"Expires"		"1683526547"
+				}
+			}
+		}
+	}
+}

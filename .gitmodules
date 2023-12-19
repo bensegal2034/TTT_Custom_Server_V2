@@ -1,0 +1,6 @@
+[submodule "GMod/garrysmod/addons/ulib"]
+	path = GMod/garrysmod/addons/ulib
+	url = https://github.com/TeamUlysses/ulib.git
+[submodule "GMod/garrysmod/addons/ulx"]
+	path = GMod/garrysmod/addons/ulx
+	url = https://github.com/TeamUlysses/ulx.git

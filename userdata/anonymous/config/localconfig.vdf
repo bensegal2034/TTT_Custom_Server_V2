@@ -1,0 +1,106 @@
+"UserLocalConfigStore"
+{
+	"AppInfoChangeNumber"		"21577423"
+	"Software"
+	{
+		"valve"
+		{
+			"steam"
+			{
+				"apps"
+				{
+					"740"
+					{
+						"LastPlayed"		"1693719836"
+					}
+					"4020"
+					{
+						"LastPlayed"		"1669706328"
+					}
+				}
+			}
+		}
+	}
+	"depots"
+	{
+		"731"
+		{
+			"CDN"
+			{
+				"edge.steam-dns.top.comcast.net"
+				{
+					"token"		""
+					"Expires"		"1668980149"
+				}
+				"level3.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1653956070"
+				}
+				"google2.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1669359279"
+				}
+			}
+		}
+		"740"
+		{
+			"CDN"
+			{
+				"edge.steam-dns.top.comcast.net"
+				{
+					"token"		""
+					"Expires"		"1668980149"
+				}
+				"level3.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1653956076"
+				}
+				"google2.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1669359298"
+				}
+			}
+		}
+		"1004"
+		{
+			"CDN"
+			{
+				"edge.steam-dns.top.comcast.net"
+				{
+					"token"		""
+					"Expires"		"1683534004"
+				}
+			}
+		}
+		"4021"
+		{
+			"CDN"
+			{
+				"edge.steam-dns.top.comcast.net"
+				{
+					"token"		""
+					"Expires"		"1683534114"
+				}
+			}
+		}
+		"4022"
+		{
+			"CDN"
+			{
+				"edge.steam-dns.top.comcast.net"
+				{
+					"token"		""
+					"Expires"		"1683534006"
+				}
+			}
+		}
+	}
+	"Licenses"
+	{
+		"17906"		"01000000d189a24150d00b96db87019637757ae70395b6f22c7ebab2b4a9d87444a9010927f6ec52ca3f030e5a327eb0cff0d7e28b500faf76c600e5de1b1728718cec7771fabdfd60aab3d2a7a714254aad190125e65d6fc010bc0ed24986341c9e74d2518a28c7fd46accf28cd2b65e61d0e62a984e60e6c1b5954c9810f6e73e834acf6bff1a297f3e4018ac29e4220f656edf44e3598c5c440d1514feeb946209bbe8a9b1254e508282c6c64c325de9547ef7a6e46fe2bbe978498fc3cde466620d2c7c04445bffdc94353bff7eb4d32fcd49d795735a46f50ee63a92b5bae6d8922fc18f824ec7d29ca7a2404ddf277d8a36ff10c0e384b63768848af2e17ac7937b33b092723c004eb02e989aea53e9e06f81bfd440e4f00db50781e0cd9ec6db84cf9f29e6af2cec31c33561980227635086c9c5a884963c29aa27af8177291bc834c08ddff08080544c213"
+	}
+}

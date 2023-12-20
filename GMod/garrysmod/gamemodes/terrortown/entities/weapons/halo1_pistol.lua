@@ -63,7 +63,7 @@ SWEP.AutoSwitchFrom = false
 SWEP.CanBuy = {}
 SWEP.AllowDrop = true
 SWEP.UseHands = false
-SWEP.HeadshotMultiplier = 2
+SWEP.HeadshotMultiplier = 1
 SWEP.HoldType = "Revolver"
 
 SWEP.Tracer = "Tracer"
@@ -74,9 +74,9 @@ SWEP.DrawCrosshair = false
 
 SWEP.DrawAmmo = true
 
-SWEP.Base = "weapon_base"
+SWEP.Base = "weapon_tttbase"
 
-SWEP.Primary.Damage = 17
+SWEP.Primary.Damage = 36
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 12
 SWEP.Primary.DefaultClip = 24
@@ -172,14 +172,7 @@ self:NetworkVar( "Float", 1, "NextChangeFOVH1" )
 end
 
 function SWEP:Initialize()
-	hook.Add("PlayerTraceAttack", "EnableHeadshots", function(ply, dmginfo, dir, trace)
-		local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-		if weapon:GetClass() == "halo1_pistol" then
-			if trace.HitGroup == HITGROUP_HEAD then
-				dmginfo:ScaleDamage(2)
-			end
-		end
-	end)
+	
 	self:SetHoldType( self.HoldType )
 	self:SetNextIdle(0)
 	self:SetNextChangeFOVH1(0)

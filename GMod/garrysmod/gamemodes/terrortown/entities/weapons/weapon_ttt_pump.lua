@@ -64,8 +64,8 @@ SWEP.reloadtimer = 0
 SWEP.Primary.Cone = 0.02
 SWEP.HeadshotMultiplier = 1
 SWEP.data 				= {}				--The starting firemode
-
-SWEP.Primary.NumShots	= 8		-- How many bullets to shoot per trigger pull, AKA pellets
+SWEP.Primary.Recoil = 1
+SWEP.Primary.NumShots	= 10		-- How many bullets to shoot per trigger pull, AKA pellets
 SWEP.Primary.Damage		= 5	-- Base damage per bullet
 
 -- Enter iron sight info and bone mod info below

@@ -117,7 +117,7 @@ function SWEP:PrimaryAttack()
 	end
  
 	local spos = self:GetOwner():GetShootPos()
-	local sdest = spos + (self:GetOwner():GetAimVector() * 120)
+	local sdest = spos + (self:GetOwner():GetAimVector() * 90)
  
 	local tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
 	local hitEnt = tr_main.Entity
@@ -153,7 +153,13 @@ function SWEP:PrimaryAttack()
 			 -- do a bullet just to make blood decals work sanely
 			 -- need to disable lagcomp because firebullets does its own
 			 self:GetOwner():LagCompensation(false)
-			if self.Owner:GetVelocity():Length() > 250 then
+
+			x = self.Owner:GetVelocity().x
+			y = self.Owner:GetVelocity().y
+			z = self.Owner:GetVelocity().z
+			z = math.min(0,z)
+			velocity = math.sqrt(math.pow(x,2) + math.pow(y,2) + math.pow(z,2))
+			if velocity > 250 then
 				self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=200})
 			else
 				self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=70})

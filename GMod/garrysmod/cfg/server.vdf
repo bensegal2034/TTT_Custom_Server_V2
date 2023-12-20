@@ -81,6 +81,6 @@
 	"deathrun_drown_time"		"20"
 	"deathrun_disable_default_deathspeed"		"0"
 	"discord_muter_dart_time"		"15"
-	"frest_Cooldowng"		"10"
+	"frest_Cooldowng"		"1"
 	"frest_range"		"2000"
 }

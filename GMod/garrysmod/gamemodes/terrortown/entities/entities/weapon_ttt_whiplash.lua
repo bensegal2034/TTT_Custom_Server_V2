@@ -14,44 +14,36 @@ if ( SERVER ) then
 	resource.AddFile( "sound/loops.wav" )
 	resource.AddFile( "sound/grabgraple.wav" )
 end
-SWEP.Author		= "Engineer_ZY"
-SWEP.Instructions	= ""
-SWEP.Category		= "ULTRAKILL"
-SWEP.Base = "weapon_tttbase"
-SWEP.Spawnable = true
-SWEP.AdminOnly = false
+ENT.Author		= "Engineer_ZY"
+ENT.Instructions	= ""
+ENT.Category		= "ULTRAKILL"
+ENT.Base = "weapon_tttbase"
+ENT.Spawnable = true
+ENT.AdminOnly = false
 
-SWEP.Primary.ClipSize = -1
-SWEP.Primary.DefaultClip = -1
-SWEP.Primary.Automatic = false
-SWEP.Primary.Ammo = "none"
-SWEP.Kind = WEAPON_EQUIP2
-SWEP.Secondary.ClipSize	= -1
-SWEP.Secondary.DefaultClip = -1
-SWEP.Secondary.Automatic = false
-SWEP.Secondary.Ammo	= "none"
+ENT.Kind = WEAPON_EQUIP2
 if CLIENT then
-	SWEP.PrintName          = "Whiplash"
-	SWEP.Slot               = 8
-	SWEP.Icon = "vgui/ttt/icon_whiplash"
+	ENT.PrintName          = "Whiplash"
+	ENT.Slot               = 8
+	ENT.Icon = "vgui/ttt/icon_whiplash"
 end
 	-- Text shown in the equip menu
-SWEP.EquipMenuData = {
+ENT.EquipMenuData = {
 	type = "Weapon",
 	desc = "MANKIND IS DEAD. \nBLOOD IS FUEL. \nHELL IS FULL.\n\nPress F to activate grappling hook"
 };
 
-SWEP.CanBuy = { ROLE_TRAITOR, ROLE_DETECTIVE }
-SWEP.DrawAmmo			= false
-SWEP.DrawCrosshair		= true
+ENT.CanBuy = { ROLE_TRAITOR, ROLE_DETECTIVE }
+ENT.DrawAmmo			= false
+ENT.DrawCrosshair		= true
 
-SWEP.ViewModelFOV		= 54
-SWEP.ViewModel = ""
-SWEP.WorldModel = ""
-SWEP.UseHands   		= true 
+ENT.ViewModelFOV		= 54
+ENT.ViewModel = ""
+ENT.WorldModel = ""
+ENT.UseHands   		= true 
 
-SWEP.HitDistance = 40
-SWEP.Damage = 0
+ENT.HitDistance = 40
+ENT.Damage = 0
 
 if SERVER then
 util.AddNetworkString( "grap" )
@@ -59,16 +51,16 @@ end
 
 
 
-function SWEP:Think()
+function ENT:Think()
 local owner = self:GetOwner()
 end
 
-function SWEP:Initialize()
+function ENT:Initialize()
 self:SetHoldType( "normal" )
 self.gra = nil
 end 
 
-function SWEP:PrimaryAttack()
+function ENT:PrimaryAttack()
  if SERVER then
   
  end
@@ -76,22 +68,22 @@ function SWEP:PrimaryAttack()
 
 end
 
-function SWEP:Holster( wep )
+function ENT:Holster( wep )
 return true
 end
 
-function SWEP:SecondaryAttack()
+function ENT:SecondaryAttack()
 
 end
 
-function SWEP:Reload()
+function ENT:Reload()
 
 end
 
-function SWEP:OnRemove()	
+function ENT:OnRemove()	
 self.Owner = self:GetOwner()
 end
 	
-function SWEP:OnDrop()
+function ENT:OnDrop()
 	self:Remove() -- You can't drop fists-
 end

@@ -115,6 +115,9 @@ function mutePlayer(target_ply, duration)
           playerMessage("MUTED_FOR_DURATION", target_ply, duration);
 
           timer.Simple(duration, function()
+            if (not target_ply:Alive() and commonRoundState() == 1) then
+              return nil;
+            end
             unmutePlayer(target_ply);
           end);
         else
@@ -304,6 +307,10 @@ end);
 
 hook.Add("UnmutePlayer", "discord_UnmutePlayer", function(target_ply)
   print("UnmutePlayer hook called (discord_UnmutePlayer)");
+  -- If the player is dead and the round is still going on, do NOT unmute them
+  if (not target_ply:Alive() and commonRoundState() == 1) then
+    return nil;
+  end
   unmutePlayer(target_ply);
 end);
 

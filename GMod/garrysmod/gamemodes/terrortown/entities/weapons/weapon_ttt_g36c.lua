@@ -84,20 +84,16 @@ if CLIENT then
 
 end
 
-function SWEP:Initialize()
+hook.Add("TTTPrepareRound", "ResetInterventionGravity", function()
    if SERVER then
-      hook.Add("TTTPrepareRound", "ResetNoJump", function()
-         local rf = RecipientFilter()
-         rf:AddAllPlayers()
-         players = rf:GetPlayers()
-         for i = 1, #players do
-            timer.Simple(0.1, function()
-               players[i]:SetJumpPower(160)
-            end)
-         end
-      end)
+      local rf = RecipientFilter()
+      rf:AddAllPlayers()
+      players = rf:GetPlayers()
+      for i = 1, #players do
+         players[i]:SetGravity(1)
+      end
    end
-end
+end)
 
 -- Always derive from weapon_tttbase.
 SWEP.Base				= "weapon_tttbase"

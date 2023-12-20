@@ -107,15 +107,6 @@ end
 -- end stolen code
 
 function SWEP:Initialize()
-   if SERVER then
-      local rf = RecipientFilter()
-      rf:AddAllPlayers()
-      players = rf:GetPlayers()
-      for i = 1, #players do
-         players[i]:SetGravity(1)
-      end
-   end
-
    hook.Add("ScalePlayerDamage", "EnableBodyshots", function(target, hitgroup, dmginfo)
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
@@ -237,6 +228,17 @@ function SWEP:Holster()
     self:SetZoom(false)
     return true
 end
+
+hook.Add("TTTPrepareRound", "ResetInterventionGravity", function()
+   if SERVER then
+      local rf = RecipientFilter()
+      rf:AddAllPlayers()
+      players = rf:GetPlayers()
+      for i = 1, #players do
+         players[i]:SetGravity(1)
+      end
+   end
+end)
 
 if CLIENT then
    local scope = surface.GetTextureID("sprites/scope")

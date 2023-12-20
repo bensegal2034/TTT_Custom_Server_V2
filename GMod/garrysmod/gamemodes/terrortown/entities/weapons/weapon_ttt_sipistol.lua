@@ -44,9 +44,6 @@ SWEP.WorldModel            = "models/weapons/w_pist_usp_silencer.mdl"
 SWEP.IronSightsPos         = Vector( -5.91, -4, 2.84 )
 SWEP.IronSightsAng         = Vector(-0.5, 0, 0)
 
-SWEP.PrimaryAnim           = ACT_VM_PRIMARYATTACK_SILENCED
-SWEP.ReloadAnim            = ACT_VM_RELOAD_SILENCED
-
 function SWEP:Deploy()
    self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
    return self.BaseClass.Deploy(self)
@@ -95,11 +92,7 @@ function SWEP:PrimaryAttack()
 
       if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
          if hitEnt:IsPlayer() then
-            -- knife damage is never karma'd, so don't need to take that into
-            -- account we do want to avoid rounding error strangeness caused by
-            -- other damage scaling, causing a death when we don't expect one, so
-            -- when the target's health is close to kill-point we just kill
-            if hitEnt:Health() < (self.Primary.Damage + 10) or CanBackstab(self, hitEnt) then
+            if CanBackstab(self, hitEnt) then
                self:SilentKill(tr, spos, sdest)
             else
                local dmg = DamageInfo()
@@ -108,7 +101,7 @@ function SWEP:PrimaryAttack()
                dmg:SetInflictor(self.Weapon or self)
                dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
                dmg:SetDamagePosition(self:GetOwner():GetPos())
-               dmg:SetDamageType(DMG_SLASH)
+               dmg:SetDamageType(DMG_BULLET)
 
                hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
                self:ShootBullet(0, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
@@ -133,7 +126,7 @@ function SWEP:SilentKill(tr, spos, sdest)
    dmg:SetInflictor(self.Weapon or self)
    dmg:SetDamageForce(self:GetOwner():GetAimVector())
    dmg:SetDamagePosition(self:GetOwner():GetPos())
-   dmg:SetDamageType(DMG_SLASH)
+   dmg:SetDamageType(DMG_BULLET)
 
    -- now that we use a hull trace, our hitpos is guaranteed to be
    -- terrible, so try to make something of it with a separate trace and
@@ -163,9 +156,9 @@ if CLIENT then
 
       if tr.HitNonWorld and IsValid(tr.Entity) and tr.Entity:IsPlayer() then
          local distance = tr.Entity:GetPos():Distance(self:GetPos())
-         if tr.Entity:Health() < (self.Primary.Damage + 10) or CanBackstab(self, tr.Entity) and distance <= 280 then
+         if CanBackstab(self, tr.Entity) and distance <= 280 then
 
-	    local x = ScrW() / 2.0
+	         local x = ScrW() / 2.0
             local y = ScrH() / 2.0
 
             surface.SetDrawColor(255, 0, 0, 255)

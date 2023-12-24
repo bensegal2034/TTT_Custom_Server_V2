@@ -258,12 +258,21 @@ if CLIENT then
          surface.SetTextPos(textPosRapidHit.w + xOffsetRapidHit, textPosRapidHit.h)
          surface.DrawText("Rapid Hit x" .. ClientVars.RapidHitStacks)
 
-         surface.SetTextColor(0, 0, 0, 255)
-         surface.SetTextPos(dropShadowPosRapidHit.w + numXOffsetRapidHit, dropShadowPosRapidHit.h + numYOffsetRapidHit)
-         surface.DrawText("0:0" .. RapidHitTimer)
-         surface.SetTextColor(255, 255, 255, 255)
-         surface.SetTextPos(textPosRapidHit.w + numXOffsetRapidHit, textPosRapidHit.h + numYOffsetRapidHit)
-         surface.DrawText("0:0" .. RapidHitTimer)
+         if tonumber(RapidHitTimer) < 10 then
+            surface.SetTextColor(0, 0, 0, 255)
+            surface.SetTextPos(dropShadowPosRapidHit.w + numXOffsetRapidHit, dropShadowPosRapidHit.h + numYOffsetRapidHit)
+            surface.DrawText("0:0" .. RapidHitTimer)
+            surface.SetTextColor(255, 255, 255, 255)
+            surface.SetTextPos(textPosRapidHit.w + numXOffsetRapidHit, textPosRapidHit.h + numYOffsetRapidHit)
+            surface.DrawText("0:0" .. RapidHitTimer)
+         else
+            surface.SetTextColor(0, 0, 0, 255)
+            surface.SetTextPos(dropShadowPosRapidHit.w + numXOffsetRapidHit, dropShadowPosRapidHit.h + numYOffsetRapidHit)
+            surface.DrawText("0:" .. RapidHitTimer)
+            surface.SetTextColor(255, 255, 255, 255)
+            surface.SetTextPos(textPosRapidHit.w + numXOffsetRapidHit, textPosRapidHit.h + numYOffsetRapidHit)
+            surface.DrawText("0:" .. RapidHitTimer)
+         end
       end
    end
 end

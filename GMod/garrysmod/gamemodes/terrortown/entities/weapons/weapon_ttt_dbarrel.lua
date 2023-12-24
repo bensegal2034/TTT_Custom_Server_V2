@@ -62,16 +62,18 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.reloadtimer = 0
 
-function SWEP:Initialize()
-   hook.Add("PlayerHurt", "Knockback", function(victim, attacker, healthRemaining, damageTaken)
-      if (attacker == self:GetOwner()) and attacker:IsPlayer() and IsValid(attacker) and IsValid(self:GetOwner()) then
-         local weapon = attacker:GetActiveWeapon()
-         local angles = self.Owner:GetAngles()
-         local forward = self.Owner:GetForward()
-         self.PushForce = damageTaken * 50
-         if weapon:GetClass() == "weapon_ttt_dbarrel" then
-            victim:SetVelocity(Vector(forward.r * (self.PushForce),forward.y * (self.PushForce),0))
-         end
+if SERVER then
+   hook.Add("ScalePlayerDamage", "Knockback", function(ply, hitgroup, dmginfo)
+      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+         return
+      end
+      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+
+      if weapon:GetClass() == "weapon_ttt_dbarrel" then
+         local angles = dmginfo:GetAttacker():GetAngles()
+         local forward = dmginfo:GetAttacker():GetForward()
+         weapon.PushForce = dmginfo:GetDamage() * 50
+         ply:SetVelocity(Vector(forward.r * (self.PushForce),forward.y * (self.PushForce),0))
       end
    end)
 end

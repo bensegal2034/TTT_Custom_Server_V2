@@ -591,7 +591,9 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
    -- Drop all weapons
    for k, wep in ipairs(ply:GetWeapons()) do
       WEPS.DropNotifiedWeapon(ply, wep, true) -- with ammo in them
-      pcall(wep:DampenDrop())
+      if IsValid(wep:DampenDrop()) then
+         wep:DampenDrop()
+      end
    end
 
    if IsValid(ply.hat) then

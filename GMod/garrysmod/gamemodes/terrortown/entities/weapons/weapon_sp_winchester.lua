@@ -57,6 +57,23 @@ end
 
 if SERVER then
    util.AddNetworkString("CranialSpikeCounter")
+
+   hook.Add("ScalePlayerDamage", "CranialSpike", function(target, hitgroup, dmginfo)
+      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+         return
+      end
+
+      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+      
+      if weapon:GetClass() == "weapon_sp_winchester" then
+         if hitgroup == HITGROUP_HEAD then
+            weapon.CranialSpikeCounter = weapon.CranialSpikeCounter + 1
+            net.Start("CranialSpikeCounter")
+               net.WriteInt(math.floor(weapon.CranialSpikeCounter), 32)
+            net.Broadcast()
+         end
+      end
+   end)
 end
 
 function SWEP:Initialize()
@@ -77,18 +94,6 @@ function SWEP:Initialize()
    if self.SetHoldType then
       self:SetHoldType(self.HoldType or "pistol")
    end
-   hook.Add("PlayerHurt", "CranialSpike", function(victim, attacker, healthRemaining, damageTaken)
-      if (attacker == self:GetOwner()) and attacker:IsPlayer() then
-         if (damageTaken > 79) then
-            if self:GetOwner():GetActiveWeapon():GetClass() == self:GetClass() then
-               self.CranialSpikeCounter = self.CranialSpikeCounter + 1
-               net.Start("CranialSpikeCounter")
-                  net.WriteInt(math.floor(self.CranialSpikeCounter), 32)
-               net.Broadcast()
-            end
-         end
-      end
-   end)
 end
 
 function SWEP:SetZoom(state)
@@ -106,6 +111,7 @@ end
 function SWEP:PreDrop()
    self:SetZoom(false)
    self:SetIronsights(false)
+   print("dropped!")
    return self.BaseClass.PreDrop(self)
 end
 

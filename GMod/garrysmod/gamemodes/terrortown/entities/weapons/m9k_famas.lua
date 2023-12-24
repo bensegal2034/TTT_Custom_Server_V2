@@ -64,7 +64,7 @@ SWEP.KillClipDelayTimer = 0
 SWEP.RapidHitActive = false
 SWEP.RapidHitReady = false
 SWEP.RapidHitStacks = 0
-SWEP.RapidHitStacksDelay = 5
+SWEP.RapidHitStacksDelay = 20
 SWEP.RapidHitStacksDelayTimer = 0
 SWEP.RapidHitStackInfo = {
    [1] = {
@@ -126,11 +126,10 @@ if SERVER then
    util.AddNetworkString("RapidHitStacksDelayTimer")
 
    hook.Add("DoPlayerDeath", "KillClipReady", function(victim, attacker, dmginfo)
-      if IsValid(dmginfo:GetAttacker()) and IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
-         local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-      else
+      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
          return nil
       end
+      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
       if weapon:GetClass() == "m9k_famas" then
          weapon.KillClipReady = true
@@ -142,11 +141,10 @@ if SERVER then
    end)
 
    hook.Add("ScalePlayerDamage", "RapidHit", function(target, hitgroup, dmginfo)
-      if IsValid(dmginfo:GetAttacker()) and IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
-         local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-      else
-         return nil
+      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+         return
       end
+      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
       if weapon:GetClass() == "m9k_famas" then
          if hitgroup == HITGROUP_HEAD then

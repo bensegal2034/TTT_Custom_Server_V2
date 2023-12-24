@@ -43,11 +43,17 @@ end
 
 if SERVER then
    hook.Add("DoPlayerDeath", "PlayerDeathVandal", function(victim, attacker, dmginfo)
-      if IsValid(dmginfo:GetAttacker()) and IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
-         local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-      else
-         return nil
+      if not dmginfo:GetAttacker() then
+         return
       end
+      if not IsValid(dmginfo:GetAttacker()) then
+         return
+      end
+      if not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+         return
+      end
+
+      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
       if weapon:GetClass() == "weapon_ttt_vandal" then
          weapon.KillCount = weapon.KillCount + 1

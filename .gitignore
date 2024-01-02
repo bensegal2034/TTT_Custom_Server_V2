@@ -4,6 +4,8 @@ TF2/
 GMod/logs/
 GMod/userdata/
 GMod/garrysmod/data/ulx_logs
+GMod/depotcache/
+GMod/steam_cache/
 updatecsgo.bat
 updatetf2.bat
 updatecsgo.txt

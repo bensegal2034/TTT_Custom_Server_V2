@@ -271,3 +271,10 @@ function SWEP:CanPrimaryAttack()
    end
    return true
 end
+
+function SWEP:OwnerChanged()
+   if self.KillEffectBuffer then
+      self.KillEffectBuffer = false
+      self.KillCount = 0
+   end
+end

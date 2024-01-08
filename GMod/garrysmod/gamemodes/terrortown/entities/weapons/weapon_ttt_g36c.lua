@@ -114,7 +114,7 @@ SWEP.Primary.Cone        = 0
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.ClipSize    = 30
 SWEP.Primary.ClipMax     = 90
-SWEP.Primary.DefaultClip = 30
+SWEP.Primary.DefaultClip = 60
 SWEP.Primary.Sound 		= Sound("weapon_aug.single")
 SWEP.HeadshotMultiplier  = 2
 
@@ -166,6 +166,19 @@ Right = 6.5,
 Forward = 0,
 }
 }
+
+function SWEP:Initialize()
+   if SERVER then
+      hook.Add("TTTPrepareRound", "ResetSpeed", function()
+         local rf = RecipientFilter()
+         rf:AddAllPlayers()
+         players = rf:GetPlayers()
+         for i = 1, #players do
+            players[i]:SetJumpPower(160)
+         end
+      end)
+   end
+end
 
 function SWEP:Deploy()
    self.Owner:SetJumpPower(0)

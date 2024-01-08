@@ -24,8 +24,8 @@ SWEP.Primary.Delay         = 0.38
 SWEP.Primary.Cone          = 0.01
 SWEP.Primary.ClipSize      = 2
 SWEP.Primary.Automatic     = true
-SWEP.Primary.DefaultClip   = 2
-SWEP.Primary.ClipMax       = 60
+SWEP.Primary.DefaultClip   = 8
+SWEP.Primary.ClipMax       = 16
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_FiveSeven.Single" )
 

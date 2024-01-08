@@ -75,7 +75,7 @@ SWEP.AmmoEnt = "item_ammo_revolver_ttt"
 SWEP.AllowDrop = true
 SWEP.IsSilent = false
 SWEP.NoSights = true
-SWEP.Primary.ClipMax = 8
+SWEP.Primary.ClipMax = 24
 SWEP.ViewModelFOV = 75
 -- end of my edits
 
@@ -180,7 +180,7 @@ SWEP.CrosshairDistance = 24
 
 SWEP.Primary.Sound = Sound( "Weapon_Revolver_CSGO.Single" )
 SWEP.Primary.ClipSize = 8
-SWEP.Primary.DefaultClip = 8
+SWEP.Primary.DefaultClip = 16
 SWEP.Primary.Automatic = false
 SWEP.Primary.Damage = 50
 SWEP.Primary.TakeAmmo = 1

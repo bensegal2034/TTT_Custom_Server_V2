@@ -26,7 +26,7 @@ SWEP.Primary.Damage        = 35
 SWEP.Primary.Cone          = 0.008
 SWEP.Primary.ClipSize      = 20
 SWEP.Primary.ClipMax       = 60
-SWEP.Primary.DefaultClip   = 20
+SWEP.Primary.DefaultClip   = 40
 SWEP.Primary.Sound         = Sound( "Weapon_M4A1.Single" )
 
 SWEP.HeadshotMultiplier    = 2

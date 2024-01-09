@@ -48,7 +48,7 @@ SWEP.Primary.Damage      = 1
 SWEP.Primary.Delay       = 0.60
 SWEP.Primary.Cone        = 0.40
 SWEP.Primary.ClipSize    = 2
-SWEP.Primary.ClipMax     = 60
+SWEP.Primary.ClipMax     = 90
 SWEP.Primary.DefaultClip = 60
 SWEP.Primary.Automatic   = true
 SWEP.Primary.Ammo        = "smg1"
@@ -59,6 +59,12 @@ SWEP.Primary.ConeMod     = 0
 SWEP.Primary.DelayMod    = 0
 SWEP.Primary.ClipSizeMod = 0
 SWEP.Primary.RecoilMod   = 0
+SWEP.Primary.NumShots      = 1
+
+SWEP.Primary.NumBullets  = 0
+SWEP.BulletRoll          = 0
+SWEP.TargetStat          = 0
+SWEP.TargetStatRoll      = 0
 
 SWEP.Tokens              = 60
 SWEP.SwitchVal           = 0
@@ -84,6 +90,7 @@ function SWEP:SetupDataTables()
    self:NetworkVar( "Float", 2, "WeaponCone" )
    self:NetworkVar( "Int", 3, "WeaponClipSize" )
    self:NetworkVar( "Float", 4, "WeaponRecoil" )
+   self:NetworkVar( "Int", 5, "NumBullets")
 end
 
 
@@ -115,10 +122,30 @@ function SWEP:Initialize()
 	   self:SetHoldType(self.HoldType or "pistol")
 	end
    if SERVER then
+      self.BulletRoll = math.random(1,10)
+
+      if (self.BulletRoll < 8) then
+         self.Primary.NumBullets = 1
+      end
+      if (self.BulletRoll > 8) then
+         self.Primary.NumBullets = 2
+      end
+      if (self.BulletRoll == 10) then
+         self.Primary.NumBullets = 3
+      end
+
+      self.TargetStat = math.random(1,5)
+
       while (self.Tokens > 0) do
          self.SwitchVal = math.random(1,5)
+         self.TargetStatRoll = math.random(1,3)
+         
+         if self.TargetStatRoll == 1 then
+            self.SwitchVal = self.TargetStat
+         end
+
          if (self.SwitchVal == 1) then
-            if self.Primary.DamageMod < 39 then
+            if self.Primary.DamageMod < 49 then
                self.Primary.DamageMod = self.Primary.DamageMod + 1.5
                self.Tokens = self.Tokens - 1
             else
@@ -127,7 +154,7 @@ function SWEP:Initialize()
          end
          if (self.SwitchVal == 2) then
             if self.Primary.DelayMod < .56 then
-               self.Primary.DelayMod = self.Primary.DelayMod + 0.03
+               self.Primary.DelayMod = self.Primary.DelayMod + 0.02
                self.Tokens = self.Tokens - 1
             else
 
@@ -150,8 +177,8 @@ function SWEP:Initialize()
             end
          end
          if (self.SwitchVal == 5) then
-            if (self.Primary.RecoilMod < 4.8) then
-               self.Primary.RecoilMod = self.Primary.RecoilMod + 0.2
+            if (self.Primary.RecoilMod < 6.7) then
+               self.Primary.RecoilMod = self.Primary.RecoilMod + 0.3
                self.Tokens = self.Tokens - 1
             else
             
@@ -166,12 +193,15 @@ function SWEP:Initialize()
       self:SetWeaponCone(self.Primary.ConeMod)
       self:SetWeaponClipSize(self.Primary.ClipSizeMod)
       self:SetWeaponRecoil(self.Primary.RecoilMod)
+      self:SetNumBullets(self.Primary.NumBullets)
    end
    self.Primary.Damage = self.Primary.Damage + self:GetWeaponDamage()
    self.Primary.Delay = self.Primary.Delay - self:GetWeaponDelay()
    self.Primary.Cone = self.Primary.Cone - self:GetWeaponCone()
    self.Primary.ClipSize = self.Primary.ClipSize + self:GetWeaponClipSize()
    self.Primary.Recoil = self.Primary.Recoil - self:GetWeaponRecoil()
+   self.Primary.NumShots = self:GetNumBullets()
+   self.Primary.DefaultClip = (self.Primary.ClipSize * 2)
 end
 
 function SWEP:Reload()

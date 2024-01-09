@@ -77,11 +77,13 @@ SWEP.IsSilent = false
 SWEP.NoSights = false
 
 hook.Add("TTTPrepareRound", "ResetP90Speed", function()
-   local rf = RecipientFilter()
-   rf:AddAllPlayers()
-   players = rf:GetPlayers()
-   for i = 1, #players do
-      players[i]:SetWalkSpeed(220)
+   if SERVER then
+      local rf = RecipientFilter()
+      rf:AddAllPlayers()
+      players = rf:GetPlayers()
+      for i = 1, #players do
+         players[i]:SetWalkSpeed(220)
+      end
    end
 end)
 

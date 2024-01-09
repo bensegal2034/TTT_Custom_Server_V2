@@ -72,7 +72,7 @@ if SERVER then
       if weapon:GetClass() == "weapon_ttt_dbarrel" then
          local angles = dmginfo:GetAttacker():GetAngles()
          local forward = dmginfo:GetAttacker():GetForward()
-         weapon.PushForce = dmginfo:GetDamage() * 50
+         weapon.PushForce = dmginfo:GetDamage() * 50000
          ply:SetVelocity(Vector(forward.r * (self.PushForce),forward.y * (self.PushForce),0))
       end
    end)

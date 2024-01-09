@@ -11,3 +11,10 @@ updatetf2.bat
 updatecsgo.txt
 updatetf2.txt
 GMod/garrysmod/cfg/mount.cfg
+GMod/config/config.vdf
+GMod/garrysmod/clientside_errors.txt
+GMod/garrysmod/data/ulib/users.txt
+GMod/garrysmod/map.pack
+GMod/garrysmod/modelsounds.cache
+GMod/garrysmod/sv.db
+GMod/steam_cache/appworkshop_4000.acf

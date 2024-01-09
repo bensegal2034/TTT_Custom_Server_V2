@@ -84,13 +84,13 @@ if CLIENT then
 
 end
 
-hook.Add("TTTPrepareRound", "ResetInterventionGravity", function()
+hook.Add("TTTPrepareRound", "ResetG36CJump", function()
    if SERVER then
       local rf = RecipientFilter()
       rf:AddAllPlayers()
       players = rf:GetPlayers()
       for i = 1, #players do
-         players[i]:SetGravity(1)
+         players[i]:SetJumpPower(160)
       end
    end
 end)
@@ -166,19 +166,6 @@ Right = 6.5,
 Forward = 0,
 }
 }
-
-function SWEP:Initialize()
-   if SERVER then
-      hook.Add("TTTPrepareRound", "ResetSpeed", function()
-         local rf = RecipientFilter()
-         rf:AddAllPlayers()
-         players = rf:GetPlayers()
-         for i = 1, #players do
-            players[i]:SetJumpPower(160)
-         end
-      end)
-   end
-end
 
 function SWEP:Deploy()
    self.Owner:SetJumpPower(0)

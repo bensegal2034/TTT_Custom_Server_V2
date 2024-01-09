@@ -76,18 +76,14 @@ SWEP.IsSilent = false
 -- If NoSights is true, the weapon won't have ironsights
 SWEP.NoSights = false
 
-function SWEP:Initialize()
-   if SERVER then
-      hook.Add("TTTPrepareRound", "ResetSpeed", function()
-         local rf = RecipientFilter()
-         rf:AddAllPlayers()
-         players = rf:GetPlayers()
-         for i = 1, #players do
-            players[i]:SetWalkSpeed(220)
-         end
-      end)
+hook.Add("TTTPrepareRound", "ResetP90Speed", function()
+   local rf = RecipientFilter()
+   rf:AddAllPlayers()
+   players = rf:GetPlayers()
+   for i = 1, #players do
+      players[i]:SetWalkSpeed(220)
    end
-end
+end)
 
 function SWEP:PreDrop()
    return self.BaseClass.PreDrop( self )

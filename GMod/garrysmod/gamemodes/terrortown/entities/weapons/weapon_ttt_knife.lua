@@ -38,7 +38,7 @@ SWEP.Secondary.Automatic    = true
 SWEP.Secondary.Ammo         = "none"
 SWEP.Secondary.Delay        = 1.4
 
-SWEP.Kind                   = WEAPON_NONE
+SWEP.Kind                   = WEAPON_KNIFE
 SWEP.CanBuy                 = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.LimitedStock           = true -- only buyable once
 SWEP.WeaponID               = AMMO_KNIFE

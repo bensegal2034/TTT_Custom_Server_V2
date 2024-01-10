@@ -20,7 +20,7 @@ end
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_EQUIP
+SWEP.Kind                  = WEAPON_STUNGUN
 SWEP.WeaponID              = AMMO_STUN
 SWEP.CanBuy                = {ROLE_DETECTIVE}
 SWEP.LimitedStock          = false

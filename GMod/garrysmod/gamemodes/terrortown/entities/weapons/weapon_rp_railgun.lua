@@ -60,7 +60,7 @@ SWEP.EquipMenuData = {
 SWEP.Base               = "weapon_tttbase"
 SWEP.Spawnable = false 
 
-SWEP.Kind = WEAPON_HEAVY
+SWEP.Kind = WEAPON_RAILGUN
 
 SWEP.Primary.Delay          = 2.5
 SWEP.Primary.Recoil         = 0

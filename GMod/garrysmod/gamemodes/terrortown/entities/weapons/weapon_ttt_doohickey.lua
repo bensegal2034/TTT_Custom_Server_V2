@@ -69,7 +69,7 @@ SWEP.AutoSwitchTo = false
 SWEP.AutoSwitchFrom = false
 
 SWEP.Slot     = 7
-SWEP.Kind                  = WEAPON_EQUIP1
+SWEP.Kind                  = WEAPON_DOOHICKEY
  
 SWEP.AutoSpawnable         = false
 SWEP.Spawnable             = true

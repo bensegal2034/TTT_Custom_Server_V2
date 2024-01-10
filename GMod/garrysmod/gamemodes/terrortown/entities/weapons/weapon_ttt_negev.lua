@@ -151,6 +151,7 @@ function SWEP:Think()
 		self.ModulationRecoil = 1
 		self.ModulationCone = 1
       self.ModulationSpeed = 220
+      self.ModulationDMG = 1
 	end
 end
 

@@ -87,7 +87,6 @@ SWEP.CanBuy = { ROLE_TRAITOR , ROLE_DETECTIVE}
 SWEP.Primary.Sound = "weapons/aw50/railcannonfire.wav"
 SWEP.Primary.Special1 = "weapons/aw50/bfg_firebegin.wav"
 SWEP.Primary.Special2 = Sound("Buttons.snd3")
-SWEP.Kind = WEAPON_EQUIP1
 SWEP.Secondary.Sound = Sound("Default.Zoom")
 SWEP.AllowDrop = false
 

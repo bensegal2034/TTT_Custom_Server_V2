@@ -46,7 +46,7 @@ SWEP.Kind = WEAPON_PISTOL
 
 SWEP.Primary.Ammo       = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil			= 4
-SWEP.Primary.Damage = 25
+SWEP.Primary.Damage = 34
 SWEP.Primary.Delay = 0.4
 SWEP.Primary.Cone = 0.02
 SWEP.Primary.ClipSize = 6

@@ -182,7 +182,7 @@ SWEP.Primary.Sound = Sound( "Weapon_Revolver_CSGO.Single" )
 SWEP.Primary.ClipSize = 8
 SWEP.Primary.DefaultClip = 16
 SWEP.Primary.Automatic = false
-SWEP.Primary.Damage = 50
+SWEP.Primary.Damage = 40
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.Spread = 0.002
 SWEP.Primary.SpreadMin = 0.002
@@ -196,6 +196,7 @@ SWEP.Primary.SpreadTime = 0.9
 SWEP.Primary.NumberofShots = 1
 SWEP.Primary.Delay = 0.5
 SWEP.Primary.Force = 3
+SWEP.Primary.HeadshotMultiplier = 3
 
 SWEP.Secondary.ClipSize = 0
 SWEP.Secondary.DefaultClip = 0

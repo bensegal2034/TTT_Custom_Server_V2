@@ -19,10 +19,10 @@ SWEP.Spawnable = true
 SWEP.Kind = WEAPON_HEAVY
 
 SWEP.Primary.Ammo = "357"
-SWEP.Primary.Damage = 40
-SWEP.BaseDamage = 40
-SWEP.Primary.Cone = 0.01
-SWEP.Primary.Delay = 0.6
+SWEP.Primary.Damage = 30
+SWEP.BaseDamage = 30
+SWEP.Primary.Cone = 0
+SWEP.Primary.Delay = 1.05
 SWEP.Primary.ClipSize = 8
 SWEP.Primary.ClipMax = 24
 SWEP.Primary.DefaultClip = 16
@@ -30,9 +30,6 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.NumShots = 1
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_357_ttt"
-SWEP.CranialSpikeCounter = 0
-SWEP.CranialSpikeMultiplier = 5
-
 
 SWEP.HeadshotMultiplier = 2
 
@@ -49,37 +46,10 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.reloadtimer = 0
 
-if CLIENT then
-   net.Receive("CranialSpikeCounter", function()
-      ClientVars.CranialSpikeCounter = net.ReadInt(32)
-   end)
-end
 
-if SERVER then
-   util.AddNetworkString("CranialSpikeCounter")
 
-   hook.Add("ScalePlayerDamage", "CranialSpike", function(target, hitgroup, dmginfo)
-      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
-         return
-      end
-
-      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-      
-      if weapon:GetClass() == "weapon_sp_winchester" then
-         if hitgroup == HITGROUP_HEAD then
-            weapon.CranialSpikeCounter = weapon.CranialSpikeCounter + 1
-            net.Start("CranialSpikeCounter")
-               net.WriteInt(math.floor(weapon.CranialSpikeCounter), 32)
-            net.Broadcast()
-         end
-      end
-   end)
-end
 
 function SWEP:Initialize()
-   if CLIENT then
-      ClientVars.CranialSpikeCounter = 0
-   end
    if CLIENT and self:Clip1() == -1 then
       self:SetClip1(self.Primary.DefaultClip)
    elseif SERVER then
@@ -101,17 +71,14 @@ function SWEP:SetZoom(state)
    if not (IsValid(self.Owner) and self.Owner:IsPlayer()) then return end
    if state then
       self.Owner:SetFOV(80, 0.5)
-      self.Primary.Delay = 1
    else
       self.Owner:SetFOV(0, 0.2)
-      self.Primary.Delay = 0.75
    end
 end
 
 function SWEP:PreDrop()
    self:SetZoom(false)
    self:SetIronsights(false)
-   print("dropped!")
    return self.BaseClass.PreDrop(self)
 end
 
@@ -215,14 +182,11 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:PrimaryAttack( worldsnd )
-   self.Primary.Damage = self.BaseDamage + (self.CranialSpikeCounter * self.CranialSpikeMultiplier)
    self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
 end
 
 function SWEP:Think()
-   if self.CranialSpikeCounter > 5 then
-      self.CranialSpikeCounter = 5
-   end
+
    if self.dt.reloading and IsFirstTimePredicted() then
       if self.Owner:KeyDown(IN_ATTACK) then
          self:FinishReload()
@@ -266,25 +230,24 @@ function SWEP:SecondaryAttack()
    self:SetNextSecondaryFire( CurTime() + 0.3 )
 end
 
-if CLIENT then
-   function SWEP:DrawHUD()
-      self.BaseClass.DrawHUD(self)
 
-      local scrW = ScrW()
-      local scrH = ScrH()
-
-      local dropShadowPosCranialSpike = {w = scrW * 0.009, h = scrH * 0.8452}
-      local textPosCranialSpike = {w = scrW * 0.0083, h = scrH * 0.843}
-      local xOffsetCranialSpike = 3
-      local numXOffsetCranialSpike = 105
-      local numYOffsetCranialSpike = 1.15
-
-      draw.RoundedBox(10, scrW * 0.005, scrH * 0.839, 209, 35, Color(73, 75, 77, 150))
-      surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(dropShadowPosCranialSpike.w + xOffsetCranialSpike, dropShadowPosCranialSpike.h)
-      surface.DrawText("Cranial Spike x" .. ClientVars.CranialSpikeCounter)
-      surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(textPosCranialSpike.w + xOffsetCranialSpike, textPosCranialSpike.h)
-      surface.DrawText("Cranial Spike x" .. ClientVars.CranialSpikeCounter)
+hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
+   if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+      return
    end
-end
+   local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+   
+   if weapon:GetClass() == "weapon_sp_winchester" then
+      
+      local att = dmginfo:GetAttacker()
+      if not IsValid(att) then return 3 end
+   
+      local dist = target:GetPos():Distance(att:GetPos())
+      local d = math.max(0, dist - 140)
+      -- Decay from 2 to 1 slowly as distance increases. Note that this used to be
+      -- 3+, but at that time shotgun bullets were treated like in HL2 where half
+      -- of them were hull traces that could not headshot.
+      print(math.max(.5, (0.5 + 0.002 * (d ^ 1.02))))
+      dmginfo:ScaleDamage(math.max(.5, (0.5 + 0.002 * (d ^ 1.02))))
+   end
+end)

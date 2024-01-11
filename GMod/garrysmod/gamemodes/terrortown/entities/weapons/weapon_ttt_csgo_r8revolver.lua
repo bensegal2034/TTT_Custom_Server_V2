@@ -95,7 +95,6 @@ SWEP.SlotPos = 0
 SWEP.UseHands = true
 SWEP.HoldType = "revolver"
 SWEP.FiresUnderwater = true
-SWEP.DrawCrosshair = true
 SWEP.DrawAmmo = true
 SWEP.CSMuzzleFlashes = 1
 
@@ -175,8 +174,6 @@ sound.Add({
 })
 -------------------------------------------------------------------------------
 
---SWEP.Speed = 176
-SWEP.CrosshairDistance = 24
 
 SWEP.Primary.Sound = Sound( "Weapon_Revolver_CSGO.Single" )
 SWEP.Primary.ClipSize = 8
@@ -190,7 +187,7 @@ SWEP.Primary.SpreadMax = 0.065
 SWEP.Primary.SpreadKick = 0.05
 SWEP.Primary.SpreadMove = 0.065
 SWEP.Primary.SpreadAir = 0.065
-SWEP.Primary.SpreadAlt = 0.08
+SWEP.Primary.SpreadAlt = 0.2
 SWEP.Primary.SpreadTimer = CurTime()
 SWEP.Primary.SpreadTime = 0.9
 SWEP.Primary.NumberofShots = 1

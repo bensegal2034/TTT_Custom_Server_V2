@@ -16,7 +16,7 @@ SWEP.Primary.Ammo = "pistol"
 SWEP.Primary.Delay = 0.095
 SWEP.Primary.Recoil = 1.7
 SWEP.Primary.Cone = 0.02
-SWEP.Primary.Damage = 25
+SWEP.Primary.Damage = 28
 SWEP.Primary.Automatic = true
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.ClipMax = 90
@@ -24,11 +24,11 @@ SWEP.Primary.DefaultClip = 60
 SWEP.Primary.Sound = Sound( "Weapon_AK47.Single" )
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.HeadshotMultiplier    = 5.2
+SWEP.HeadshotMultiplier    = 3.58
 SWEP.AccuracyTimer = 0
 SWEP.AccuracyDelay = 0.2
 SWEP.MovementInaccuracy = false
-
+SWEP.FirstShotAccuracyBullets = 0
 
 SWEP.FirstShotAccuracy = true
 SWEP.FirstShotDelay = 0.5
@@ -108,10 +108,11 @@ function SWEP:Think()
    if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
       self.Primary.Cone = 0.02
    elseif self.MovementInaccuracy != true then
-      self.Primary.Cone = 0.1
+      self.Primary.Cone = 0 + (math.min(0.08, self.FirstShotAccuracyBullets / 90))
    end
    if CurTime() > self.FSAccuracyTimer then
       self.FirstShotAccuracy = true
+      self.FirstShotAccuracyBullets = 0
    end
 
 end
@@ -121,6 +122,7 @@ function SWEP:PrimaryAttack()
    if self:Clip1() > 0 then
       self.FirstShotAccuracy = false
       self.FSAccuracyTimer = CurTime() + self.FirstShotDelay
+      self.FirstShotAccuracyBullets = self.FirstShotAccuracyBullets + 1
    end
    self:SetNextSecondaryFire( CurTime() + 0.1 )
 end

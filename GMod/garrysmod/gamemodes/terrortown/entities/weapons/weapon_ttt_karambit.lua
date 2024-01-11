@@ -131,7 +131,7 @@ function SWEP:PrimarySlash()
 		if self.Owner:Alive() then if self.Owner:GetActiveWeapon():GetClass() == self.Gun then
 			local slash = {}
 			slash.start = pos
-			slash.endpos = pos + (ang * 40)
+			slash.endpos = pos + (ang * 60)
 			slash.filter = self.Owner
 
 			local slashtrace = util.TraceHull(slash)

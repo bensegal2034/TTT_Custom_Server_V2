@@ -32,7 +32,7 @@ if CLIENT then
     SWEP.ViewModelFlip = false
 	SWEP.Slot = 2
 	SWEP.SlotPos = 2
-	SWEP.DrawCrosshair = true
+
 	
 	SWEP.WepSelectIcon		= surface.GetTextureID( "weapons/pan" )
 	
@@ -112,9 +112,7 @@ function SWEP:PrimaryAttack()
 	self.Owner:SetAnimation( PLAYER_ATTACK1 )
 	if not IsValid(self:GetOwner()) then return end
  
-	if self:GetOwner().LagCompensation then -- for some reason not always true
-	   self:GetOwner():LagCompensation(true)
-	end
+
  
 	local spos = self:GetOwner():GetShootPos()
 	local sdest = spos + (self:GetOwner():GetAimVector() * 90)
@@ -133,7 +131,7 @@ function SWEP:PrimaryAttack()
 		"weapons/pan/melee_frying_pan_04.wav",
 		}
 		local random = math.random(1, #randomsounds)
-		self.Weapon:EmitSound(randomsounds[random], 100, 100, 0.25)
+		self.Weapon:EmitSound(randomsounds[random], 100, 100, 0.25, CHAN_WEAPON)
 	   if not (CLIENT and (not IsFirstTimePredicted())) then
 		  local edata = EffectData()
 		  edata:SetStart(spos)

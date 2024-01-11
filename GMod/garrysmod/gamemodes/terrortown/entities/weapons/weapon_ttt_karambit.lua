@@ -134,7 +134,6 @@ function SWEP:PrimarySlash()
 			slash.endpos = pos + (ang * 40)
 			slash.filter = self.Owner
 
-			print(slash)
 			local slashtrace = util.TraceHull(slash)
 			if slashtrace.Hit then
 				if slashtrace.Entity == nil then return end

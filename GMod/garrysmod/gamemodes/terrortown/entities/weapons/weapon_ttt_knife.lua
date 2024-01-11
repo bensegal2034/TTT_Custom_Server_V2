@@ -5,7 +5,7 @@ SWEP.HoldType               = "knife"
 if CLIENT then
    SWEP.PrintName           = "knife_name"
    SWEP.Slot                = 6
-
+   SWEP.SlotPos             = 1
    SWEP.ViewModelFlip       = false
    SWEP.ViewModelFOV        = 54
    SWEP.DrawCrosshair       = false
@@ -38,7 +38,7 @@ SWEP.Secondary.Automatic    = true
 SWEP.Secondary.Ammo         = "none"
 SWEP.Secondary.Delay        = 1.4
 
-SWEP.Kind                   = WEAPON_EQUIP
+SWEP.Kind                   = WEAPON_KNIFE
 SWEP.CanBuy                 = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.LimitedStock           = true -- only buyable once
 SWEP.WeaponID               = AMMO_KNIFE

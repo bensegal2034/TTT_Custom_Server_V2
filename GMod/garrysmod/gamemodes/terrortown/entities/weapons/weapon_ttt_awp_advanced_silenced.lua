@@ -40,7 +40,7 @@ SWEP.ViewModel = "models/weapons/v_vanilla_ish_ttt_awp_advanced_silenced.mdl"
 SWEP.WorldModel = "models/weapons/w_vanilla_ish_ttt_awp_advanced_silenced.mdl"
 
 --- TTT config values
-SWEP.Kind = WEAPON_EQUIP1
+SWEP.Kind = WEAPON_SAWP
 SWEP.AutoSpawnable = false
 SWEP.AmmoEnt = "none"
 SWEP.CanBuy = { ROLE_TRAITOR }

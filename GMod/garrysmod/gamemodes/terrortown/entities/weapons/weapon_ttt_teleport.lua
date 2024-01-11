@@ -37,7 +37,7 @@ SWEP.Secondary.Automatic   = false
 SWEP.Secondary.Ammo        = "none"
 SWEP.Secondary.Delay       = 1.0
 
-SWEP.Kind                  = WEAPON_EQUIP2
+SWEP.Kind                  = WEAPON_TPORT
 SWEP.CanBuy                = {ROLE_TRAITOR, ROLE_DETECTIVE}
 SWEP.WeaponID              = AMMO_TELEPORT
 

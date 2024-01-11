@@ -54,7 +54,7 @@ SWEP.ViewModelFlip			= false
 SWEP.ViewModel				= "models/weapons/v_knife_2.mdl"	-- Weapon view model
 SWEP.WorldModel				= "models/weapons/w_knife.mdl"	-- Weapon world model
 SWEP.ShowWorldModel			= true
-SWEP.Base				= "clout_gun_base"
+SWEP.Base				= "weapon_tttbase"
 SWEP.Spawnable				= true
 SWEP.UseHands = true
 SWEP.AdminSpawnable			= true
@@ -288,8 +288,8 @@ function SWEP:CanHop( ent )
 	if ( LocalPlayer():WaterLevel() >= 2 ) then return false end
 	return true
 end
-
-function SWEP:DrawHUD()
+DEFINE_BASECLASS( SWEP.Base )
+function SWEP:DrawHUD(...)
 	local weapon = LocalPlayer():GetActiveWeapon()
 	if not IsValid( weapon ) then return end
 	if weapon:GetClass() == "weapon_ttt_karambit" then
@@ -300,6 +300,7 @@ function SWEP:DrawHUD()
 		draw.RoundedBox( 0, x-1, y-1, w+2, h+2, Color( 20, 20, 20, 150 ) )
 		draw.SimpleText(velocity, "Trebuchet24", ScrW() / 2, y + 3, velocity >= 1000 and Color(220, 65, 65, 220) or color_white, TEXT_ALIGN_CENTER )
 	end
+	return BaseClass.DrawHUD(self, ...)
 end
 
 local function hop( ent )

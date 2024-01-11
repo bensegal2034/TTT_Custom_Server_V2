@@ -25,7 +25,7 @@ end
 
 SWEP.Base                   = "weapon_tttbase"
 
-SWEP.Kind                   = WEAPON_EQUIP
+SWEP.Kind                   = WEAPON_C4
 SWEP.CanBuy                 = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.WeaponID               = AMMO_C4
 

@@ -65,7 +65,7 @@ SWEP.Spawnable= true
 SWEP.AutoSpawnable = false
 SWEP.AdminSpawnable= true
 SWEP.AdminOnly = false
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_NEEDLER
 SWEP.Icon = "vgui/ttt/icon_needler.mdl"
 SWEP.ViewModelFOV = 60
 SWEP.ViewModel = "models/halo3/v_needler.mdl" 
@@ -80,7 +80,7 @@ SWEP.EquipMenuData = {
 	desc = "Hit multiple shots to trigger a large explosion"
 };
 SWEP.AllowDrop = true
-SWEP.Slot = 1
+SWEP.Slot = 6
 SWEP.SlotPos = 1
  
 SWEP.UseHands = false

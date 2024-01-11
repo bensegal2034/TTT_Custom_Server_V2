@@ -5,6 +5,7 @@ SWEP.HoldType              = "pistol"
 if CLIENT then
    SWEP.PrintName          = "sipistol_name"
    SWEP.Slot               = 6
+   SWEP.SlotPos            = 0
 
    SWEP.ViewModelFlip      = false
    SWEP.ViewModelFOV       = 54
@@ -30,7 +31,7 @@ SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.ClipMax       = 60
 SWEP.Primary.Ammo          = "AlyxGun"
 SWEP.Tracer = "GaussTracer"
-SWEP.Kind                  = WEAPON_EQUIP
+SWEP.Kind                  = WEAPON_SIPISTOL
 SWEP.CanBuy                = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.WeaponID              = AMMO_SIPISTOL
 SWEP.Primary.Sound         = Sound( "Weapon_USP.SilencedShot" )

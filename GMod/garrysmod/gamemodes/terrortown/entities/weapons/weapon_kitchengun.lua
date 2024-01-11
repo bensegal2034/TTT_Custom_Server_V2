@@ -31,7 +31,7 @@ SWEP.ReloadAnim = ACT_VM_RELOAD
 SWEP.Slot = 2
 
 SWEP.Spawnable = true
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_KGUN
 SWEP.CanBuy = {ROLE_DETECTIVE}
 SWEP.WeaponID = AMMO_KITCHEN
 

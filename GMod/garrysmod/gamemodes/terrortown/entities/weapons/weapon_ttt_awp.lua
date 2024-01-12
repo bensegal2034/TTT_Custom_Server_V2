@@ -76,7 +76,6 @@ if SERVER then
       end
       print(target:GetActiveWeapon():GetClass())
       if target:GetActiveWeapon():GetClass() == "weapon_ttt_awp" then
-         print("Attempting to set damage")
          dmginfo:SetDamage(999)
       end
    end)

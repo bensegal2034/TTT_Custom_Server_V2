@@ -1,0 +1,12 @@
+"LightmappedGeneric"
+{
+	"$vertexcolor" "1"
+	"$vertexalpha" "0.5"
+	"$decal" 1
+	"$basetexture" "effect_texture/beampact"
+	"$decalscale" 0.05
+	"$translucent" 1
+
+}
+
+

@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+ "$basetexture" "icon_nxt_genkidama"
+ "$vertexcolor" 1
+ "$vertexalpha" 1
+ "$translucent" 1
+}

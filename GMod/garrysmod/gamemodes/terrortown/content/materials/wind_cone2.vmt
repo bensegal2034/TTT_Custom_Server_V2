@@ -1,0 +1,17 @@
+"UnlitTwoTexture"
+{
+"$basetexture" "wind_cone_m"
+"$texture2" "wind_cone"
+"$model" "1"
+"$nocull" "1"
+"$additive" "1"
+"Proxies"
+{
+"TextureScroll"
+{
+"texturescrollvar" "$texture2transform"
+"texturescrollrate" "4"
+"texturescrollangle" "90.8"
+}
+}
+}

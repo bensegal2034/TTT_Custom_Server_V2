@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "vgui/ttt/ttt_mindchip"
+	"$translucent" 1
+	"$vertexalpha" 1
+	"$vertexcolor" 1
+}

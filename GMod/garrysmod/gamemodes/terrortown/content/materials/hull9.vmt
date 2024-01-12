@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+    $basetexture hull9
+    $model 1
+    $translucent 1
+}

@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+    $basetexture genkidama_green
+    $basetexturetransform "center .5 .5 scale 2.4 1.2 rotate 0 translate 0 0"
+    $model 1
+}

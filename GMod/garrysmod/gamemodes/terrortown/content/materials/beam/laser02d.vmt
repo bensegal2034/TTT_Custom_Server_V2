@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "beam/laser02d"
+	"$translucent" 1
+}

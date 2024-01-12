@@ -1,4 +1,6 @@
-
+if SERVER then
+	resource.AddWorkshop("1431089905")
+end
 // Variables that are used on both client and server
 
 SWEP.Author			= "Unknownn"

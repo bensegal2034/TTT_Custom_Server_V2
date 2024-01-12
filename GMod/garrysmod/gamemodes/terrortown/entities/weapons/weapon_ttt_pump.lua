@@ -61,12 +61,12 @@ SWEP.Primary.Ammo			= "buckshot"	-- pistol, 357, smg1, ar2, buckshot, slam, Snip
 SWEP.ViewModelFOV		= 65
 SWEP.Primary.ClipMax = 24
 SWEP.reloadtimer = 0
-SWEP.Primary.Cone = 0.15
-SWEP.HeadshotMultiplier = 1.5
+SWEP.Primary.Cone = 0.07
+SWEP.HeadshotMultiplier = 1.75
 SWEP.data 				= {}				--The starting firemode
 SWEP.Primary.Recoil = 1
 SWEP.Primary.NumShots	= 5		-- How many bullets to shoot per trigger pull, AKA pellets
-SWEP.Primary.Damage		= 20	-- Base damage per bullet
+SWEP.Primary.Damage		= 12	-- Base damage per bullet
 
 -- Enter iron sight info and bone mod info below
 

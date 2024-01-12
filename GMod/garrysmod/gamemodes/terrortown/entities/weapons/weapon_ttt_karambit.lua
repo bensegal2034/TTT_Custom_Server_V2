@@ -55,7 +55,7 @@ SWEP.HoldType 				= "knife"
 SWEP.ViewModelFOV			= 70
 SWEP.ViewModelFlip			= false
 SWEP.ViewModel				= "models/weapons/v_knife_2.mdl"	-- Weapon view model
-SWEP.WorldModel				= "models/weapons/w_knife.mdl"	-- Weapon world model
+SWEP.WorldModel				= "models/weapons/w_knife_t.mdl"	-- Weapon world model
 SWEP.ShowWorldModel			= true
 SWEP.Base				= "weapon_tttbase"
 SWEP.Spawnable				= true
@@ -153,8 +153,12 @@ function SWEP:PrimarySlash()
 					if SERVER then targ:TakeDamageInfo(paininfo) end
 				else
 					self.Weapon:EmitSound(self.KnifeShink)
-					look = self.Owner:GetEyeTrace()
-					util.Decal("ManhackCut", look.HitPos + look.HitNormal, look.HitPos - look.HitNormal )
+					paininfo = DamageInfo()
+					paininfo:SetDamage(pain)
+					paininfo:SetDamageType(DMG_SLASH)
+					paininfo:SetAttacker(self.Owner)
+					paininfo:SetInflictor(self.Weapon)
+					if SERVER then targ:TakeDamageInfo(paininfo) end
 				end
 			end
 		end end

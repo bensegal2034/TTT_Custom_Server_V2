@@ -1,4 +1,6 @@
-
+if SERVER then
+	resource.AddWorkshop("409155327")
+end
 
 TYPE_BLUE = 1
 TYPE_ORANGE = 2

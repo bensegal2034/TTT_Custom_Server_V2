@@ -52,7 +52,7 @@ SWEP.ViewModel				= "models/weapons/v_notmic_icarus.mdl"	-- Weapon view model
 SWEP.WorldModel				= "models/weapons/w_notmic_icarus.mdl"	-- Weapon world model
 SWEP.Base 				= "weapon_tttbase"
 SWEP.Primary.Sound			= Sound("weapons/37/fire.wav")		-- script that calls the primary fire sound
-SWEP.Primary.Delay = .5
+SWEP.Primary.Delay = .65
 SWEP.Primary.ClipSize			= 6			-- Size of a clip
 SWEP.Primary.DefaultClip			= 24	-- Default number of bullets in a clip
 SWEP.Primary.Automatic			= false		-- Automatic/Semi Auto
@@ -61,12 +61,12 @@ SWEP.Primary.Ammo			= "buckshot"	-- pistol, 357, smg1, ar2, buckshot, slam, Snip
 SWEP.ViewModelFOV		= 65
 SWEP.Primary.ClipMax = 24
 SWEP.reloadtimer = 0
-SWEP.Primary.Cone = 0.02
-SWEP.HeadshotMultiplier = 1
+SWEP.Primary.Cone = 0.07
+SWEP.HeadshotMultiplier = 1.75
 SWEP.data 				= {}				--The starting firemode
 SWEP.Primary.Recoil = 1
-SWEP.Primary.NumShots	= 10		-- How many bullets to shoot per trigger pull, AKA pellets
-SWEP.Primary.Damage		= 5	-- Base damage per bullet
+SWEP.Primary.NumShots	= 5		-- How many bullets to shoot per trigger pull, AKA pellets
+SWEP.Primary.Damage		= 12	-- Base damage per bullet
 
 -- Enter iron sight info and bone mod info below
 
@@ -157,6 +157,30 @@ sound.Add({
 	volume = 		1.0,
 	sound = 			"weapons/37/deploy.wav"
 })
+
+function SWEP:ShootBullet( damage, recoil, numbul, cone, bforce, btracer )
+
+	numbul 	= numbul 	or 1
+	cone 	= cone 		or 0.01
+
+	local bullet = {}
+	bullet.Num 		= numbul
+	bullet.Src 		= self.Owner:GetShootPos()
+	bullet.Dir 		= self.Owner:GetAimVector()
+	bullet.Spread 	= Vector( cone, 0, 0 )
+	bullet.Tracer	= 0
+	bullet.Force	= bforce
+	bullet.Damage	= damage
+	
+	self.Owner:FireBullets( bullet )
+	
+	if ( self.Owner:IsNPC() ) then return end
+	
+		self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
+		self.Owner:MuzzleFlash()
+		self.Owner:SetAnimation( PLAYER_ATTACK1 )
+
+end
 
 function SWEP:SecondaryAttack()
 

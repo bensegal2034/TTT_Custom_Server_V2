@@ -1,7 +1,9 @@
 AddCSLuaFile()
 
 ENT.Type = "anim"
-
+if SERVER then
+	resource.AddWorkshop("1995076329")
+end
 ENT.NextUse = 0
 function ENT:Initialize()
 	self:SetModel("models/props_c17/suitcase_passenger_physics.mdl")

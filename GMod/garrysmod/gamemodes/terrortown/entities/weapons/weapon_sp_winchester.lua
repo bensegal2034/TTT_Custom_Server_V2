@@ -31,7 +31,7 @@ SWEP.Primary.NumShots = 1
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_357_ttt"
 
-SWEP.HeadshotMultiplier = 2
+SWEP.HeadshotMultiplier = 1.75
 
 SWEP.UseHands			= false
 SWEP.ViewModelFlip		= true
@@ -248,6 +248,6 @@ hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
       -- 3+, but at that time shotgun bullets were treated like in HL2 where half
       -- of them were hull traces that could not headshot.
       print(math.max(.5, (0.5 + 0.002 * (d ^ 1.02))))
-      dmginfo:ScaleDamage(math.max(.5, (0.5 + 0.002 * (d ^ 1.02))))
+      dmginfo:ScaleDamage(math.max(.5, (0.5 + 0.0015 * (d ^ 1.02))))
    end
 end)

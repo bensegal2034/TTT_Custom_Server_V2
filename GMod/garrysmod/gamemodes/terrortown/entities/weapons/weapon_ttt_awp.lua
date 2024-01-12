@@ -69,6 +69,18 @@ SWEP.IsSilent = false
 -- If NoSights is true, the weapon won't have ironsights
 SWEP.NoSights = false
 
+if SERVER then
+   hook.Add("ScalePlayerDamage", "DieInstantlyAWP", function(target, hitgroup, dmginfo)
+      if not IsValid(target) and not IsValid(target:GetActiveWeapon()) then
+         return nil
+      end
+      print(target:GetActiveWeapon():GetClass())
+      if target:GetActiveWeapon():GetClass() == "weapon_ttt_awp" then
+         dmginfo:SetDamage(999)
+      end
+   end)
+end
+
 function SWEP:SetZoom( state )
    if CLIENT then
       return

@@ -420,22 +420,6 @@
 					{
 						"LastPingTimestamp"		"0"
 					}
-					"ext1-sea1.steamserver.net:27020"
-					{
-						"LastPingTimestamp"		"0"
-					}
-					"ext1-sea1.steamserver.net:27032"
-					{
-						"LastPingTimestamp"		"0"
-					}
-					"ext1-sea1.steamserver.net:27021"
-					{
-						"LastPingTimestamp"		"0"
-					}
-					"ext2-sea1.steamserver.net:27020"
-					{
-						"LastPingTimestamp"		"0"
-					}
 				}
 				"RecentWebSocket443Failures"		""
 				"RecentWebSocketNon443Failures"		""

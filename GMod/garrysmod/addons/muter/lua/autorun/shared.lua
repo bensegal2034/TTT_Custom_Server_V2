@@ -331,7 +331,7 @@ end);
 
 hook.Add("OnEndRound", "discord_OnEndRound", function()
   print("OnEndRound hook called (discord_OnEndRound)");
-  timer.Simple(0.1, function()
+  timer.Simple(0.5, function()
     unmutePlayer();
   end);
 end);

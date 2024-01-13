@@ -50,7 +50,7 @@ SWEP.Secondary.Ammo     = "none"
 SWEP.Secondary.Delay = 0
 
 SWEP.Kind = WEAPON_TURRET
-SWEP.CanBuy = {ROLE_TRAITOR}
+SWEP.CanBuy = {}
 SWEP.LimitedStock = true
 SWEP.WeaponID = AMMO_TURRET
 SWEP.AllowDrop = false

@@ -26,7 +26,7 @@ SWEP.WorldModel             = "models/weapons/w_pist_usp.mdl"
  
 SWEP.NoSights = true
 SWEP.Kind = WEAPON_HEADCRAB
-SWEP.CanBuy = {ROLE_TRAITOR}
+SWEP.CanBuy = {}
 SWEP.LimitedStock = true
 --SWEP.WeaponID = RPG
 

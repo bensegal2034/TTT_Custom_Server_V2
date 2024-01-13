@@ -30,7 +30,7 @@ if CLIENT then
     end
 end
 
-SWEP.CanBuy = { ROLE_DETECTIVE }
+SWEP.CanBuy = {}
 
 SWEP.LimitedStock = false
 

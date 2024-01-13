@@ -38,7 +38,7 @@ SWEP.Secondary.Ammo         = "none"
 SWEP.Secondary.Delay        = 1.0
 
 SWEP.Kind                   = WEAPON_RADIO
-SWEP.CanBuy                 = {ROLE_TRAITOR} -- only traitors can buy
+SWEP.CanBuy                 = {} -- only traitors can buy
 SWEP.LimitedStock           = true -- only buyable once
 SWEP.WeaponID               = AMMO_RADIO
 

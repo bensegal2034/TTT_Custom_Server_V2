@@ -11,7 +11,7 @@ SWEP.WeaponID = AMMO_MOLOTOV
 
 SWEP.HoldType			= "grenade"
 
-SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.CanBuy = {}
 SWEP.InLoadoutFor = nil
 SWEP.LimitedStock = true
 SWEP.AllowDrop = true

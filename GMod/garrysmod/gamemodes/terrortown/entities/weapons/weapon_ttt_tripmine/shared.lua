@@ -42,7 +42,7 @@ SWEP.Base = "weapon_tttbase"
      
     SWEP.AllowDrop = false
     SWEP.Kind = WEAPON_TRIPMINE
-    SWEP.CanBuy = {ROLE_TRAITOR}
+    SWEP.CanBuy = {}
 	
 function SWEP:Deploy()
 self:SendWeaponAnim( ACT_SLAM_TRIPMINE_DRAW )

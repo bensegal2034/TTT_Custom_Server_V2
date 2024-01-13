@@ -32,7 +32,7 @@ SWEP.Slot = 2
 
 SWEP.Spawnable = true
 SWEP.Kind = WEAPON_KGUN
-SWEP.CanBuy = {ROLE_DETECTIVE}
+SWEP.CanBuy = {}
 SWEP.WeaponID = AMMO_KITCHEN
 
 SWEP.Primary.Ammo = "357"

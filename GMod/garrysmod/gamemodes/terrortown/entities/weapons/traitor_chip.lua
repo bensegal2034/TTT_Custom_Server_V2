@@ -26,7 +26,7 @@ end
 	SWEP.Charges = 8
 	
 	SWEP.Kind = WEAPON_TCHIP
-	SWEP.CanBuy = { ROLE_TRAITOR }
+	SWEP.CanBuy = { }
 	SWEP.EquipMenuData =	{
 	
 		[ "type" ] = "Weapon",

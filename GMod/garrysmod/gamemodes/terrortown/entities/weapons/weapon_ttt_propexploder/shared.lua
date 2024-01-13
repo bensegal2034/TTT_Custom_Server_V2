@@ -6,7 +6,7 @@ SWEP.HoldType = "pistol"
 SWEP.AdminSpawnable = true
 SWEP.AutoSwitchTo = false
 SWEP.AutoSwitchFrom = false
-SWEP.Kind = WEAPON_PROPEXPLODER
+SWEP.Kind = WEAPON_EQUIP2
 
 
 //Serverside\\

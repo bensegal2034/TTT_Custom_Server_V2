@@ -1,2 +1,2 @@
-py steam.py
+py run.py
 pause

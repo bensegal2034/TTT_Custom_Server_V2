@@ -1,0 +1,16 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models\ferris4227\stattrack\stat_digit003"
+	"$surfaceprop" "Default"
+	"$selfillum" 1
+	"$model" 1
+	"Proxies" 
+		{ 
+		"AnimatedTexture" 
+			{ 
+			"animatedTextureVar" "$basetexture" 
+			"animatedTextureFrameNumVar" "$frame" 
+			"animatedTextureFrameRate" "1" 
+			}
+		} 
+}

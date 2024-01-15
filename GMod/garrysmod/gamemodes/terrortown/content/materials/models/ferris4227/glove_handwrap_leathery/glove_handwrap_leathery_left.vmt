@@ -1,0 +1,22 @@
+VertexLitGeneric
+{
+	"$basetexture"	"models\ferris4227\glove_handwrap_leathery\glove_handwrap_leathery_left_color"
+	"$bumpmap"              "models\ferris4227\glove_handwrap_leathery\glove_handwrap_leathery_left_normal"
+	"$color2" "[1 1 1]"
+	$blendtintbybasealpha "1"
+	$blendTintColorOverBase  "0"
+
+	"$phongexponenttexture" "models\ferris4227\glove_handwrap_leathery\glove_handwrap_leathery_left_exponent"
+
+	"$phong" "1"
+	"$phongexponent" "10"
+	"$phongboost" "10"
+	"$phongalbedoboost" "10"
+	"$phongfresnelranges" "[0.1 0.1 0.1]"
+
+	"$basemapluminancephongmask" "1"
+	"$shadersrgbread360" "1"
+
+	"$phongalbedotint" "1"
+	"$phongdisablehalflambert" "5"
+}

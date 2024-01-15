@@ -1,0 +1,21 @@
+VertexLitGeneric
+{
+	"$baseTexture" "models\ferris4227\pist_deagle\weapon_deagle-aa_flames-diffuse"
+	"$color2" "[1 1 1]"
+	$blendtintbybasealpha "1"
+	$blendTintColorOverBase  "0"
+
+	"$phongexponenttexture" "models\ferris4227\pist_deagle\weapon_deagle-aa_flames-exponent"
+
+	"$phong" "1"
+	"$phongboost" "30"
+	"$phongalbedoboost" "30"
+	"$phongfresnelranges" "[1 1 1]"
+
+	"$basemapalphaphongmask" "1"
+	"$basemapluminancephongmask" "1"
+	"$shadersrgbread360" "1"
+
+	"$phongalbedotint" "1"
+	"$phongdisablehalflambert" "5"
+}

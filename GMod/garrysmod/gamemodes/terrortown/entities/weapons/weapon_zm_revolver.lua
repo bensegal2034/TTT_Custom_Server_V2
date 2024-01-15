@@ -1,5 +1,39 @@
-AddCSLuaFile()
-
+if SERVER then
+   AddCSLuaFile()
+   resource.AddFile("models/weapons/v_pist_deagleb.mdl")
+   resource.AddFile("models/weapons/w_pist_deagleb.mdl")
+   resource.AddFile("models/weapons/cstrike/c_pist_deagleb.mdl")
+   resource.AddFile("sound/weapons/deagle/de_clipin.wav")
+   resource.AddFile("sound/weapons/deagle/de_slideback.wav")
+   resource.AddFile("sound/weapons/deagle/de_clipout.wav")
+   resource.AddFile("sound/weapons/deagle/de_deploy.wav")
+   resource.AddFile("sound/weapons/deagle/deagle-1.wav")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/bare_arm_133.vmt")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_left.vmt")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_left_color.vtf")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_left_exponent.vtf")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_left_normal.vtf")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_right.vmt")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_right_color.vtf")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_right_exponent.vtf")
+   resource.AddFile("materials/models/ferris4227/glove_handwrap_leathery/glove_handwrap_leathery_right_normal.vtf")
+   resource.AddFile("materials/models/ferris4227/pist_deagle/pist_deagle.vmt")
+   resource.AddFile("materials/models/ferris4227/weapon_deagle-aa_flames-diffuse.vtf")
+   resource.AddFile("materials/models/ferris4227/weapon_deagle-aa_flames-exponent.vtf")
+   resource.AddFile("materials/models/ferris4227/professional/sleeve_professional.vmt")
+   resource.AddFile("materials/models/ferris4227/professional/sleeve_professional_exp.vtf")
+   resource.AddFile("materials/models/ferris4227/professional/sleeve_professional_normal.vtf")
+   resource.AddFile("materials/models/ferris4227/stattrack/stat_digit.vtf")
+   resource.AddFile("materials/models/ferris4227/stattrack/stat_digit000.vmt")
+   resource.AddFile("materials/models/ferris4227/stattrack/stat_digit001.vmt")
+   resource.AddFile("materials/models/ferris4227/stattrack/stat_digit002.vmt")
+   resource.AddFile("materials/models/ferris4227/stattrack/stat_digit003.vmt")
+   resource.AddFile("materials/models/ferris4227/stattrack/stat_digit004.vmt")
+   resource.AddFile("materials/models/ferris4227/stattrack/stat_digit005.vmt")
+   resource.AddFile("materials/models/ferris4227/stattrack/stattrak_module.vmt")
+   resource.AddFile("materials/models/ferris4227/stattrack/stattrak_module_exponent.vtf")
+   resource.AddWorkshop("3130013131")
+end
 SWEP.HoldType              = "pistol"
 
 if CLIENT then
@@ -36,8 +70,8 @@ SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_pist_deagle.mdl"
-SWEP.WorldModel            = "models/weapons/w_pist_deagle.mdl"
+SWEP.ViewModel             = "models/weapons/cstrike/c_pist_deagleb.mdl"
+SWEP.WorldModel            = "models/weapons/w_pist_deagleb.mdl"
 
 SWEP.IronSightsPos         = Vector(-6.361, -3.701, 2.15)
 SWEP.IronSightsAng         = Vector(0, 0, 0)
@@ -115,7 +149,7 @@ if CLIENT then
    function SWEP:DrawHUD()
       if self:GetIronsights() then
          draw.NoTexture()
-         surface.SetDrawColor(245, 66, 233, 50)
+         surface.SetDrawColor(255, 32, 0, 50)
          drawCircle(ScrW() / 2, ScrH() / 2, 500, 999)
          surface.SetDrawColor(0, 0, 0, 255)
          drawCircle(ScrW() / 2, ScrH() / 2, 20, math.sin( CurTime() ) * 20 + 25)

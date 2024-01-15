@@ -97,7 +97,7 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
 
 	if (tr.HitSky) then return end
 	
-	self.MaxRicochet = 3
+	self.MaxRicochet = 1
 	
 	if (bouncenum > self.MaxRicochet) then return end
 	
@@ -116,7 +116,7 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
 		ricochetbullet.Dir 		= ((2 * tr.HitNormal * DotProduct) + tr.Normal) + (VectorRand() * 0.05)
 		ricochetbullet.Spread 	= Vector(0, 0, 0)
 		ricochetbullet.Tracer	= 1
-		ricochetbullet.TracerName 	= "Impact"
+		ricochetbullet.TracerName 	= self.Tracer or "Tracer"
 		ricochetbullet.Force		= dmginfo:GetDamageForce() * 0.8
 		ricochetbullet.Damage	= dmginfo:GetDamage() * 0.8
 		ricochetbullet.Callback  	= function(a, b, c)  

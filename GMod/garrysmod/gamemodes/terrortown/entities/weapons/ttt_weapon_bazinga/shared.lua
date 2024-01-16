@@ -1,5 +1,6 @@
 if SERVER then
 	resource.AddWorkshop("1431089905")
+	resource.AddFile("/garrysmod/materials/VGUI/ttt/icon_bazinga.vmt")
 end
 // Variables that are used on both client and server
 

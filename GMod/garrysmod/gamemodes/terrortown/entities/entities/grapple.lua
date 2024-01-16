@@ -110,6 +110,10 @@ if !IsValid(ply:GetNWEntity("lina")) and ply:GetNWFloat("linat",CurTime()) <= Cu
 			end 
 		end
 
+hook.Add("PlayerSwitchFlashlight", "BlockFlashlightGrapple", function(ply, enabled)
+	return !ply:HasWeapon("fres_grapple")
+end)
+
 elseif IsValid(ply:GetNWEntity("lina")) then
 	ply:GetNWEntity("lina"):Remove()
 end

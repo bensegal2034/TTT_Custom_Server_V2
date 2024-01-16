@@ -91,6 +91,29 @@ local function drawCircle( x, y, radius, seg )
 	surface.DrawPoly( cir )
 end
 
+local function ScorchUnderRagdoll(ent)
+   if SERVER then
+      local postbl = {}
+      -- small scorches under limbs
+      for i=0, ent:GetPhysicsObjectCount()-1 do
+         local subphys = ent:GetPhysicsObjectNum(i)
+         if IsValid(subphys) then
+            local pos = subphys:GetPos()
+            util.PaintDown(pos, "FadingScorch", ent)
+
+            table.insert(postbl, pos)
+         end
+      end
+
+      SendScorches(ent, postbl)
+   end
+
+   -- big scorch at center
+   local mid = ent:LocalToWorld(ent:OBBCenter())
+   mid.z = mid.z + 25
+   util.PaintDown(mid, "Scorch", ent)
+end
+
 function SWEP:SetZoom(state)
    if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
       if state then

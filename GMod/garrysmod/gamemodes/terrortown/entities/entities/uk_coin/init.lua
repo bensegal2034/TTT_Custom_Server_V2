@@ -172,7 +172,6 @@ function ENT:Think()
     self:GetPhysicsObject():AddVelocity(dragVelocity * dragAmount)
 
     if self:GetTable().takeDamage then
-        print("bwehhh!!!!!")
         self:OnTakeDamage(1)
         local tbl = self:GetTable()
         tbl.takeDamage = false

@@ -42,7 +42,7 @@ self.Owner = self:GetOwner()
 self.toc = false
 self.f = false
 	if SERVER then
-	self:SetModel( "models/kerosenn/ultrakill/npc/boss/v2/prop/whiplash_hook.mdl" )
+	self:SetModel("models/grapple/whiplash_hook.mdl")
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )

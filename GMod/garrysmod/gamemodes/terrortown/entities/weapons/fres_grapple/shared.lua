@@ -47,7 +47,7 @@ SWEP.HitDistance = 40
 SWEP.Damage = 0
 
 if SERVER then
-util.AddNetworkString( "grap" )
+	util.AddNetworkString( "grap" )
 end
 
 
@@ -59,22 +59,18 @@ end
 function SWEP:Initialize()
 self:SetHoldType( "normal" )
 self.gra = nil
-end 
+end
 
 function SWEP:PrimaryAttack()
- if SERVER then
-  
- end
-
 
 end
 
 function SWEP:Holster( wep )
-return true
+	return true
 end
 
 function SWEP:SecondaryAttack()
-
+	
 end
 
 function SWEP:Reload()

@@ -18,6 +18,8 @@ if CLIENT then
     local minDist = math.pow( GetConVar( "sv_st_glint_mindist" ):GetFloat(), 2 )
 
     hook.Add( "PostPlayerDraw", "DrawSniperGlint", function( ply )
+        if not IsValid(ply) then return end
+        if not IsValid(ply:GetActiveWeapon()) then return end
         local wep = ply:GetActiveWeapon()
         if wep:GetClass() == "weapon_ttt_awp" and wep:GetIronsights() then
             local tr = util.TraceLine( {

@@ -37,3 +37,6 @@ GMod/garrysmod/cache/srcds/144575800.gma
 GMod/garrysmod/cache/srcds/110656185.gma
 GMod/garrysmod/clientside_errors.txt
 GMod/garrysmod/data/ulib/users.txt
+*.ain
+*.ztmp
+*.lst

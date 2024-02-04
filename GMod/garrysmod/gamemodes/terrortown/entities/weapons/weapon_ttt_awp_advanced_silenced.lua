@@ -23,8 +23,8 @@ SWEP.HoldType = "ar2"
 SWEP.Primary.Ammo = "none"
 SWEP.Primary.Delay = 2
 SWEP.Primary.Recoil = 3
-SWEP.Primary.Cone = 0.999
-SWEP.Primary.Damage = 999999999
+SWEP.Primary.Cone = 0.001
+SWEP.Primary.Damage = 50
 SWEP.Primary.Automatic = false
 SWEP.Primary.ClipSize = 5
 SWEP.Primary.ClipMax = 5
@@ -61,6 +61,18 @@ SWEP.ZoomSensitivities = {
    0.20,
    0.06
 };
+
+if SERVER then
+   hook.Add("ScalePlayerDamage", "SilencedAWPDamageHandler", function(target, hitgroup, dmginfo)
+      if not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) and not IsValid(dmginfo:GetAttacker()) then return end
+      
+      if dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_ttt_awp_advanced_silenced" then
+         if not (hitgroup == HITGROUP_HEAD or hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_STOMACH) then
+            dmginfo:ScaleDamage(0.4)
+         end
+      end
+   end)
+end
 
 function SWEP:SetupDataTables()
    self:DTVar("Int", 1, "zoom")

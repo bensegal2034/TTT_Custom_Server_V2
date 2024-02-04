@@ -186,24 +186,26 @@ if CLIENT then
       surface.DrawLine( x + length, y, x + gap, y )
       surface.DrawLine( x, y - length, x, y - gap )
       surface.DrawLine( x, y + length, x, y + gap )
+      print(x)
+      print(y)
       if self.DamageType == "Puncture" then
          surface.SetMaterial(punctureshad)
          surface.SetDrawColor(0, 0, 0, 255)
-         surface.DrawTexturedRect(x * 0.02, y * 1.892, 28, 34)
+         surface.DrawTexturedRect(ScrW() * 0.008, ScrH() * 0.96, 28, 34)
 
          surface.SetMaterial(puncture)
          surface.SetDrawColor(255, 255, 255, 255)
-         surface.DrawTexturedRect(x * 0.02, y * 1.89, 28, 34)
+         surface.DrawTexturedRect(ScrW() * 0.008, ScrH() * 0.96, 28, 34)
       end
       if self.DamageType == "Impact" then
          surface.SetMaterial(impact)
          surface.SetDrawColor(255, 255, 255, 255)
-         surface.DrawTexturedRect(x * 0.022, y * 1.895, 20, 28)
+         surface.DrawTexturedRect(ScrW() * 0.008, ScrH() * 0.96, 20, 28)
       end
       if self.DamageType == "Elemental" then
          surface.SetMaterial(elemental)
          surface.SetDrawColor(255, 255, 255, 255)
-         surface.DrawTexturedRect(x * 0.02, y * 1.9, 24, 24)
+         surface.DrawTexturedRect(ScrW() * 0.008, ScrH() * 0.962, 24, 24)
       end
    end
 

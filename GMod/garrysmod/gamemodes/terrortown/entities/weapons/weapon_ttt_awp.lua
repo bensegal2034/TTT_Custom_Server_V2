@@ -16,7 +16,7 @@ SWEP.HoldType = "ar2"
 SWEP.Primary.Ammo = "357"
 SWEP.Primary.Delay = 2
 SWEP.Primary.Recoil = 10
-SWEP.Primary.Cone = 0.2
+SWEP.Primary.Cone = 0.15
 SWEP.Primary.Damage = 200
 SWEP.Primary.Automatic = false
 SWEP.Primary.ClipSize = 5
@@ -24,7 +24,7 @@ SWEP.Primary.ClipMax = 15
 SWEP.Primary.DefaultClip = 10
 SWEP.Primary.Sound = Sound( "weapons/awp/awp1.wav" )
 SWEP.Secondary.Sound = Sound( "Default.Zoom" )
-SWEP.IsAiming = false
+SWEP.DamageType = "Puncture"
 
 --- Model properties
 SWEP.UseHands = true
@@ -82,7 +82,6 @@ if SERVER then
       if dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_ttt_awp" then
          if not (hitgroup == HITGROUP_HEAD or hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_STOMACH) then
             dmginfo:ScaleDamage(0.4)
-            print(dmginfo:GetDamage())
          end
       end
    end)
@@ -97,7 +96,7 @@ function SWEP:SetZoom( state )
          self.Primary.Cone = 0.001
       else
          self.Owner:SetFOV( 0, 0.2 )
-         self.Primary.Cone = 0.2
+         self.Primary.Cone = 0.15
       end
    end
 end

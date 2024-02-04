@@ -21,10 +21,11 @@ SWEP.Base = "weapon_tttbase"
 SWEP.HoldType = "ar2"
 
 SWEP.Primary.Ammo = "none"
-SWEP.Primary.Delay = 2
+SWEP.Primary.Delay = 1.5
 SWEP.Primary.Recoil = 3
-SWEP.Primary.Cone = 0.001
+SWEP.Primary.Cone = 0.15
 SWEP.Primary.Damage = 50
+SWEP.DamageType = "Impact"
 SWEP.Primary.Automatic = false
 SWEP.Primary.ClipSize = 5
 SWEP.Primary.ClipMax = 5
@@ -62,18 +63,6 @@ SWEP.ZoomSensitivities = {
    0.06
 };
 
-if SERVER then
-   hook.Add("ScalePlayerDamage", "SilencedAWPDamageHandler", function(target, hitgroup, dmginfo)
-      if not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) and not IsValid(dmginfo:GetAttacker()) then return end
-      
-      if dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_ttt_awp_advanced_silenced" then
-         if not (hitgroup == HITGROUP_HEAD or hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_STOMACH) then
-            dmginfo:ScaleDamage(0.4)
-         end
-      end
-   end)
-end
-
 function SWEP:SetupDataTables()
    self:DTVar("Int", 1, "zoom")
 
@@ -93,8 +82,12 @@ function SWEP:SetZoom(level)
       
       if level > 1 then
         self:GetOwner():DrawViewModel(false)
+        self:SetIronsights(true)
+        self.Primary.Cone = 0.001
       else
         self:GetOwner():DrawViewModel(true)
+        self:SetIronsights(false)
+        self.Primary.Cone = 0.15
       end
       
    end
@@ -111,16 +104,19 @@ end
 
 function SWEP:PreDrop()
     self:SetZoom(1)
+    self:SetIronsights(false)
     return self.BaseClass.PreDrop(self)
 end
 
 function SWEP:Holster()
     self:SetZoom(1)
+    self:SetIronsights(false)
     return true
 end
 
 function SWEP:Equip()
     self:SetZoom(1)
+    self:SetIronsights(false)
     return self.BaseClass.Equip(self)
 end
 
@@ -146,17 +142,18 @@ if CLIENT then
    local scope = surface.GetTextureID( "sprites/scope" )
    function SWEP:DrawHUD()
       if self.dt.zoom > 1 then
+         -- Scope
          surface.SetDrawColor( 0, 0, 0, 255 )
-
-         local x = ScrW() / 2.0
-         local y = ScrH() / 2.0
-         local scope_size = ScrH()
-
-         -- Crosshair
-         local tr = self:GetOwner():GetEyeTrace(MASK_SHOT)
-         local trPlayer = tr.HitNonWorld and IsValid(tr.Entity) and tr.Entity:IsPlayer() 
          
-         local gap = 0
+         local scrW = ScrW()
+         local scrH = ScrH()
+
+         local x = scrW / 2.0
+         local y = scrH / 2.0
+         local scope_size = scrH
+
+         -- crosshair
+         local gap = 80
          local length = scope_size
          surface.DrawLine( x - length, y, x - gap, y )
          surface.DrawLine( x + length, y, x + gap, y )
@@ -170,19 +167,28 @@ if CLIENT then
          surface.DrawLine( x, y - length, x, y - gap )
          surface.DrawLine( x, y + length, x, y + gap )
 
-         -- Cover edges
-         surface.SetDrawColor( 0, 0, 0, 255 )
-         
+
+         -- cover edges
          local sh = scope_size / 2
-         local w = ( x - sh ) + 2
-         surface.DrawRect( 0, 0, w, scope_size )
-         surface.DrawRect( x + sh - 2, 0, w, scope_size )
+         local w = (x - sh) + 2
+         surface.DrawRect(0, 0, w, scope_size)
+         surface.DrawRect(x + sh - 2, 0, w, scope_size)
+         
+         -- cover gaps on top and bottom of screen
+         surface.DrawLine( 0, 0, scrW, 0 )
+         surface.DrawLine( 0, scrH - 1, scrW, scrH - 1 )
 
-         -- Scope
-         surface.SetTexture( scope )
-         surface.SetDrawColor( 255, 255, 255, 255 )
+         surface.SetDrawColor(255, 0, 0, 255)
+         surface.DrawLine(x, y, x + 1, y + 1)
 
-         surface.DrawTexturedRectRotated( x, y, scope_size, scope_size, 0 )
+         -- scope
+         surface.SetTexture(scope)
+         surface.SetDrawColor(255, 255, 255, 255)
+
+         surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
+         -- Crosshair
+         local tr = self:GetOwner():GetEyeTrace(MASK_SHOT)
+         local trPlayer = tr.HitNonWorld and IsValid(tr.Entity) and tr.Entity:IsPlayer() 
          
          -- Range marker - 1 Hammer Unit == 0.75" or 19.05mm
          local distance = tr.HitPos:Distance(self:GetPos())

@@ -23,6 +23,7 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Primary.Recoil        = 4
 SWEP.Primary.Damage        = 25
+SWEP.DamageType            = "Puncture"
 SWEP.Primary.Delay         = 0.56
 SWEP.Primary.Cone          = 0.02
 SWEP.Primary.ClipSize      = 20

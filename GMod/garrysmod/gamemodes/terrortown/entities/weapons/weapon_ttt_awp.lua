@@ -71,12 +71,19 @@ SWEP.IsSilent = false
 SWEP.NoSights = false
 
 if SERVER then
-   hook.Add("ScalePlayerDamage", "DieInstantlyAWP", function(target, hitgroup, dmginfo)
-      if not IsValid(target) and not IsValid(target:GetActiveWeapon()) then
-         return nil
-      end
+   hook.Add("ScalePlayerDamage", "AWPDamageHandler", function(target, hitgroup, dmginfo)
+      if not IsValid(target) and not IsValid(target:GetActiveWeapon()) and not IsValid(dmginfo:GetAttacker()) then return end
+
       if target:GetActiveWeapon():GetClass() == "weapon_ttt_awp" then
          dmginfo:SetDamage(999)
+         return
+      end
+      
+      if dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_ttt_awp" then
+         if not (hitgroup == HITGROUP_HEAD or hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_STOMACH) then
+            dmginfo:ScaleDamage(0.4)
+            print(dmginfo:GetDamage())
+         end
       end
    end)
 end
@@ -91,7 +98,6 @@ function SWEP:SetZoom( state )
       else
          self.Owner:SetFOV( 0, 0.2 )
          self.Primary.Cone = 0.2
-
       end
    end
 end

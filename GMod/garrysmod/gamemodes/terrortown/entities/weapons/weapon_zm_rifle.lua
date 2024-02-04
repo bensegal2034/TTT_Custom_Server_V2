@@ -30,7 +30,7 @@ SWEP.Primary.DefaultClip   = 6
 SWEP.Primary.Sound         = Sound("Weapon_Scout.Single")
 SWEP.SetClipQueued         = false
 SWEP.Secondary.Sound       = Sound("Default.Zoom")
-
+SWEP.DamageType            = "True"
 SWEP.HeadshotMultiplier    = 999
 SWEP.IsScoped              = false
 SWEP.AutoSpawnable         = true

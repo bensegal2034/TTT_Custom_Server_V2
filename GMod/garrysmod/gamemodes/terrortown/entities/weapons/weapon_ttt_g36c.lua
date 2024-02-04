@@ -117,7 +117,7 @@ SWEP.Primary.ClipMax     = 90
 SWEP.Primary.DefaultClip = 60
 SWEP.Primary.Sound 		= Sound("weapon_aug.single")
 SWEP.HeadshotMultiplier  = 1.6
-
+SWEP.DamageType            = "Puncture"
 --nopls
 SWEP.IronSightsPos = Vector(-2.605, -3.268, 2.63)
 SWEP.IronSightsAng = Vector(0, 0, 0)

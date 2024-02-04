@@ -39,7 +39,7 @@ SWEP.Primary.ClipSize = 12
 SWEP.Primary.ClipMax = 36
 SWEP.Primary.DefaultClip = 24
 SWEP.AmmoEnt = "item_ammo_pistol_ttt"
-
+SWEP.DamageType            = "Impact"
 //Verschiedenes\\
 SWEP.InLoadoutFor = nil
 SWEP.AllowDrop = true

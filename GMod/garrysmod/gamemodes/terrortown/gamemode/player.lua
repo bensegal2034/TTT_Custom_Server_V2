@@ -763,7 +763,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
    if dmginfo:IsBulletDamage() and ply:HasEquipmentItem(EQUIP_ARMOR) then
       -- Body armor nets you a damage reduction.
       local wep = util.WeaponFromDamage(dmginfo)
-      if wep.DamageType != "Puncture" then
+      if wep.DamageType != "Puncture" or "True" then
          dmginfo:ScaleDamage(0.7)
       end
    end

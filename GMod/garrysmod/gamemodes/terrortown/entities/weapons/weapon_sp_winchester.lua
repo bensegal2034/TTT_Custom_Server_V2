@@ -30,7 +30,7 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.NumShots = 1
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_357_ttt"
-
+SWEP.DamageType            = "Puncture"
 SWEP.CloseDamage = 20
 SWEP.MediumDamage = 40
 SWEP.FarDamage = 75

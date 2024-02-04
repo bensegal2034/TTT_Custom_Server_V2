@@ -51,7 +51,7 @@ SWEP.Weight				= 30
 SWEP.AutoSwitchTo			= true		
 SWEP.AutoSwitchFrom			= true		
 SWEP.HoldType 				= "knife"	
-
+SWEP.DamageType            = "True"
 SWEP.ViewModelFOV			= 70
 SWEP.ViewModelFlip			= false
 SWEP.ViewModel				= "models/weapons/v_knife_2.mdl"	-- Weapon view model

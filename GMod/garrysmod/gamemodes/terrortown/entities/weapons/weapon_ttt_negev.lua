@@ -43,6 +43,7 @@ SWEP.AmmoEnt = "item_ammo_smg1_ttt"
 SWEP.IsFiring = false
 SWEP.FiringTimer = 0
 SWEP.FiringDelay = 0.2
+SWEP.DamageType            = "Impact"
 
 SWEP.UseHands = true 
 SWEP.ViewModel = "models/weapons/tfa_csgo/c_mach_negev.mdl"

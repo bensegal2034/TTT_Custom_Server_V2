@@ -16,7 +16,7 @@ SWEP.HoldType = "ar2"
 SWEP.Primary.Ammo = "357"
 SWEP.Primary.Delay = 2
 SWEP.Primary.Recoil = 10
-SWEP.Primary.Cone = 0.001
+SWEP.Primary.Cone = 0.2
 SWEP.Primary.Damage = 200
 SWEP.Primary.Automatic = false
 SWEP.Primary.ClipSize = 5
@@ -24,6 +24,7 @@ SWEP.Primary.ClipMax = 15
 SWEP.Primary.DefaultClip = 10
 SWEP.Primary.Sound = Sound( "weapons/awp/awp1.wav" )
 SWEP.Secondary.Sound = Sound( "Default.Zoom" )
+SWEP.IsAiming = false
 
 --- Model properties
 SWEP.UseHands = true
@@ -86,10 +87,20 @@ function SWEP:SetZoom( state )
    elseif IsValid( self.Owner ) and self.Owner:IsPlayer() then
       if state then
          self.Owner:SetFOV( 20, 0.3 )
+         self.IsAiming(true)
+         self.Primary.Cone = 0.001
+
       else
          self.Owner:SetFOV( 0, 0.2 )
+         self.IsAiming(false)
+         self.Primary.Cone = 0.2
+
       end
    end
+end
+
+function SWEP:IsAiming(val)
+   return val
 end
 
 function SWEP:PrimaryAttack(worldsnd)

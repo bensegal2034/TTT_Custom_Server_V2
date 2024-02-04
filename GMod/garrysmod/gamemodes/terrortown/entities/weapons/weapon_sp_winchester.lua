@@ -19,8 +19,8 @@ SWEP.Spawnable = true
 SWEP.Kind = WEAPON_HEAVY
 
 SWEP.Primary.Ammo = "357"
-SWEP.Primary.Damage = 30
-SWEP.BaseDamage = 30
+SWEP.Primary.Damage = 20
+SWEP.BaseDamage = 20
 SWEP.Primary.Cone = 0
 SWEP.Primary.Delay = 1.05
 SWEP.Primary.ClipSize = 8
@@ -31,7 +31,17 @@ SWEP.Primary.NumShots = 1
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_357_ttt"
 
-SWEP.HeadshotMultiplier = 1.75
+SWEP.CloseDamage = 20
+SWEP.MediumDamage = 40
+SWEP.FarDamage = 75
+SWEP.MaxDamage = 200
+
+SWEP.CloseDist = 0
+SWEP.MediumDist = 1000
+SWEP.FarDist = 2000
+SWEP.MaxDist = 3000
+
+SWEP.HeadshotMultiplier = 1.5
 
 SWEP.UseHands			= false
 SWEP.ViewModelFlip		= true
@@ -240,14 +250,19 @@ hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
    if weapon:GetClass() == "weapon_sp_winchester" then
       
       local att = dmginfo:GetAttacker()
-      if not IsValid(att) then return 3 end
    
       local dist = target:GetPos():Distance(att:GetPos())
       local d = math.max(0, dist - 140)
       -- Decay from 2 to 1 slowly as distance increases. Note that this used to be
       -- 3+, but at that time shotgun bullets were treated like in HL2 where half
       -- of them were hull traces that could not headshot.
-      print(math.max(.5, (0.5 + 0.002 * (d ^ 1.02))))
-      dmginfo:ScaleDamage(math.max(.5, (0.5 + 0.0015 * (d ^ 1.02))))
+      
+      if (dist > weapon.MaxDist) then
+         dmginfo:ScaleDamage(10)
+      elseif (dist > weapon.FarDist) then
+         dmginfo:ScaleDamage(4)
+      elseif (dist > weapon.MediumDist) then
+         dmginfo:ScaleDamage(2)
+      end
    end
 end)

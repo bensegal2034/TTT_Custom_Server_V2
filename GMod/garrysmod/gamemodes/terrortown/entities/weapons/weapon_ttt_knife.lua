@@ -1,4 +1,8 @@
-AddCSLuaFile()
+if SERVER then
+   AddCSLuaFile()
+   resource.AddFile("models/weapons/w_knife_ct_real_not_fake.mdl")
+   resource.AddFile("materials/w_knife_ct_real_not_fake/w_knife_ct_real_not_fake.vtf")
+end
 
 SWEP.HoldType               = "knife"
 
@@ -23,7 +27,7 @@ SWEP.Base                   = "weapon_tttbase"
 
 SWEP.UseHands               = true
 SWEP.ViewModel              = "models/weapons/cstrike/c_knife_t.mdl"
-SWEP.WorldModel             = "models/weapons/w_knife_t.mdl"
+SWEP.WorldModel             = "models/weapons/w_knife_ct_real_not_fake.mdl"
 
 SWEP.Primary.Damage         = 100
 SWEP.Primary.ClipSize       = -1

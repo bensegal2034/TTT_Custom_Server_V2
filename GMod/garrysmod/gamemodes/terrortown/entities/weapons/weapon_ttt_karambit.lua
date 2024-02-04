@@ -27,7 +27,7 @@ if SERVER then
 	resource.AddFile("models/weapons/v_knife_2.mdl")
 	resource.AddFile("models/weapons/v_knife1.mdl")
 	resource.AddFile("models/weapons/v_knife3.mdl")
-	resource.AddFile("models/weapons/w_knife_t.mdl")
+	resource.AddFile("models/weapons/w_knife_t_karambit.mdl")
 
 	resource.AddWorkshop("774240766")
 end
@@ -55,7 +55,7 @@ SWEP.HoldType 				= "knife"
 SWEP.ViewModelFOV			= 70
 SWEP.ViewModelFlip			= false
 SWEP.ViewModel				= "models/weapons/v_knife_2.mdl"	-- Weapon view model
-SWEP.WorldModel				= "models/weapons/w_knife_t.mdl"	-- Weapon world model
+SWEP.WorldModel				= "models/weapons/w_knife_t_karambit.mdl"	-- Weapon world model
 SWEP.ShowWorldModel			= true
 SWEP.Base				= "weapon_tttbase"
 SWEP.Spawnable				= true

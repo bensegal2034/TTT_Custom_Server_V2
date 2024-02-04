@@ -25,7 +25,7 @@ SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.ClipMax       = 90
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_Glock.Single" )
-
+SWEP.DamageType            = "Impact"
 SWEP.AutoSpawnable         = true
 
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"

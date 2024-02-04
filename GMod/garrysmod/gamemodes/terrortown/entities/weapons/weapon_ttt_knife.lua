@@ -35,7 +35,7 @@ SWEP.Primary.DefaultClip    = -1
 SWEP.Primary.Automatic      = true
 SWEP.Primary.Delay          = 1.1
 SWEP.Primary.Ammo           = "none"
-
+SWEP.DamageType            = "True"
 SWEP.Secondary.ClipSize     = -1
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Automatic    = true

@@ -206,7 +206,7 @@ if CLIENT then
          surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
          
       end
-      if self.DamageType == "Elemental" then
+      if self.DamageType == "True" then
          surface.SetMaterial(elementalshad)
          surface.SetDrawColor(0, 0, 0, 255)
          surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)

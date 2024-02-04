@@ -62,7 +62,7 @@ SWEP.MagReset = false
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_revolver_ttt"
 SWEP.Primary.Sound			= "weapons/r_bull/r-bull-1.wav"
-
+SWEP.DamageType            = "Impact"
 SWEP.UseHands			= false
 SWEP.ViewModelFlip		= true
 SWEP.ViewModelFOV		= 80

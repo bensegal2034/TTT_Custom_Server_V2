@@ -29,7 +29,7 @@ SWEP.AccuracyTimer = 0
 SWEP.AccuracyDelay = 0.2
 SWEP.MovementInaccuracy = false
 SWEP.FirstShotAccuracyBullets = 0
-
+SWEP.DamageType            = "Puncture"
 SWEP.FirstShotAccuracy = true
 SWEP.FirstShotDelay = 0.5
 SWEP.FSAccuracyTimer = 0

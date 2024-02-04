@@ -89,6 +89,7 @@ SWEP.FirstShotAccuracy = true
 SWEP.FirstShotAccuracyBullets = 0
 SWEP.FirstShotDelay = 1.5
 SWEP.AccuracyTimer = 0
+SWEP.DamageType            = "Puncture"
 
 -- Model settings
 SWEP.UseHands = true

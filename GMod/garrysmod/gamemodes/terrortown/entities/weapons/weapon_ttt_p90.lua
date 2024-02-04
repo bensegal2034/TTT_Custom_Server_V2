@@ -30,7 +30,7 @@ SWEP.HeadshotMultiplier = 2.5
 SWEP.SpeedBoost = 55
 SWEP.Reloaded = false
 SWEP.SpeedBoostRemoved = false
-
+SWEP.DamageType            = "Impact"
 
 -- Model settings
 SWEP.UseHands = true

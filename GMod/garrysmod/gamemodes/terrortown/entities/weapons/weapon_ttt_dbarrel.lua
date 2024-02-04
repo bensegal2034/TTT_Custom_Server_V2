@@ -44,7 +44,7 @@ SWEP.Secondary.Damage = 8
 SWEP.Secondary.Delay = 4
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.NumShots = 24
-
+SWEP.DamageType            = "Impact"
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_box_buckshot_ttt"
 

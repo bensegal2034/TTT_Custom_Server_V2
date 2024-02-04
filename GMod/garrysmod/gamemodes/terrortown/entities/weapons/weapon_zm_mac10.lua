@@ -30,7 +30,7 @@ SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.Recoil      = 0
 SWEP.Primary.Sound       = Sound( "Weapon_mac10.Single" )
 SWEP.Primary.HeadshotMultiplier = 2
-
+SWEP.DamageType            = "Impact"
 SWEP.AutoSpawnable       = true
 SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
 

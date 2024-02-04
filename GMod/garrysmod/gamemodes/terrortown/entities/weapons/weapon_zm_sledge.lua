@@ -32,7 +32,7 @@ SWEP.Primary.Ammo          = "smg1"
 SWEP.Primary.Recoil        = 2.2
 SWEP.Primary.Sound         = Sound("Weapon_m249.Single")
 SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
-
+SWEP.DamageType            = "Impact"
 SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_mach_m249para.mdl"
 SWEP.WorldModel            = "models/weapons/w_mach_m249para.mdl"

@@ -42,6 +42,8 @@ SWEP.Primary.Sound                      = ( "weapons/sawedoff/sawedoff_fire.wav"
 SWEP.Primary.Recoil                     = 7
 --SWEP.IronSightsPos            = Vector( 5.7, -3, 3 )
 --SWEP.IronSightsPos			= Vector(-7.680, -2.951, 3.508)
+SWEP.DamageType            = "Puncture"
+
 
 SWEP.IronSightsPos = Vector(-5,1.1,3)
 SWEP.IronSightsAng = Vector(0.15, 0, 0)

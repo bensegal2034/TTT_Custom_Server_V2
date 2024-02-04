@@ -28,7 +28,7 @@ SWEP.Primary.ClipSize      = 20
 SWEP.Primary.ClipMax       = 60
 SWEP.Primary.DefaultClip   = 40
 SWEP.Primary.Sound         = Sound( "Weapon_M4A1.Single" )
-
+SWEP.DamageType            = "Impact"
 SWEP.HeadshotMultiplier    = 2
 
 SWEP.AutoSpawnable         = true

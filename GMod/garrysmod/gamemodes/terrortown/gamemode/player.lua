@@ -762,7 +762,10 @@ end
 function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
    if dmginfo:IsBulletDamage() and ply:HasEquipmentItem(EQUIP_ARMOR) then
       -- Body armor nets you a damage reduction.
-      dmginfo:ScaleDamage(0.7)
+      local wep = util.WeaponFromDamage(dmginfo)
+      if wep.DamageType != "Puncture" then
+         dmginfo:ScaleDamage(0.7)
+      end
    end
 
    ply.was_headshot = false
@@ -777,13 +780,6 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
          local s = wep:GetHeadshotMultiplier(ply, dmginfo) or 2
          dmginfo:ScaleDamage(s)
       end
-   elseif (hitgroup == HITGROUP_LEFTARM or
-           hitgroup == HITGROUP_RIGHTARM or
-           hitgroup == HITGROUP_LEFTLEG or
-           hitgroup == HITGROUP_RIGHTLEG or
-           hitgroup == HITGROUP_GEAR ) then
-
-      dmginfo:ScaleDamage(1)
    end
 
    -- Keep ignite-burn damage etc on old levels

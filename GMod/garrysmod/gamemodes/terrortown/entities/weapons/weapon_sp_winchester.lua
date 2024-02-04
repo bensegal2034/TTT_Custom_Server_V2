@@ -37,9 +37,9 @@ SWEP.FarDamage = 75
 SWEP.MaxDamage = 200
 
 SWEP.CloseDist = 0
-SWEP.MediumDist = 1000
-SWEP.FarDist = 2000
-SWEP.MaxDist = 3000
+SWEP.MediumDist = 500
+SWEP.FarDist = 1500
+SWEP.MaxDist = 2750
 
 SWEP.HeadshotMultiplier = 1.5
 

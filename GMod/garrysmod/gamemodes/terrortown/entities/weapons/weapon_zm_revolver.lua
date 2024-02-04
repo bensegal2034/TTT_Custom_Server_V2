@@ -62,7 +62,7 @@ SWEP.Primary.DefaultClip   = 16
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Sound         = Sound( "Weapon_Deagle.Single" )
 SWEP.Secondary.Sound       = Sound("Default.Zoom")
-
+SWEP.DamageType            = "Elemental"
 SWEP.HeadshotMultiplier    = 3
 
 SWEP.AutoSpawnable         = true

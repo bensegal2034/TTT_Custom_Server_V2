@@ -19,17 +19,16 @@ if CLIENT then
 
     hook.Add( "PostPlayerDraw", "DrawSniperGlint", function( ply )
         local wep = ply:GetActiveWeapon()
-
-        if wep:GetClass() == "weapon_ttt_awp" and wep:IsAiming() then
+        if wep:GetClass() == "weapon_ttt_awp" and wep:GetIronsights() then
             local tr = util.TraceLine( {
                 start = ply:EyePos(), 
-                endpos = LocalPlayer():GetEyeTrace().StartPos, 
+                endpos = LocalPlayer():GetEyeTrace().StartPos,
                 filter = { ply, LocalPlayer() },
                 mask = MASK_VISIBLE_AND_NPCS,
                 ignoreworld = false
             } )
 
-            if !tr.Hit and ply:GetPos():DistToSqr( LocalPlayer():GetPos() ) > minDist and ply:GetEyeTrace().Normal:Dot( LocalPlayer():GetEyeTrace().Normal ) < 0 then 
+            if !tr.Hit and ply:GetEyeTrace().Normal:Dot( LocalPlayer():GetEyeTrace().Normal ) < 0 then 
                 --Raw sprite size based on player distance and the Size Divisor
                 sprite_size = 128 + ply:GetPos():DistToSqr( LocalPlayer():GetPos() ) / GetConVar( "sv_st_glint_sizedivisor" ):GetFloat()
                 --Clamp sprite size between min and max values
@@ -37,7 +36,20 @@ if CLIENT then
                 --Glimmer effect
                 sprite_size = math.Clamp( sprite_size + math.random( -sprite_size * 0.1, sprite_size * 0.1 ), 0.75 * sprite_size, 1.25 * sprite_size )
                 render.SetMaterial( glint_sprite )
-                render.DrawSprite( ply:EyePos(), sprite_size, sprite_size )
+
+                local headBoneIndex = ply:LookupBone("ValveBiped.Bip01_Head1")
+                local headBoneMatrix = ply:GetBoneMatrix(headBoneIndex)
+                local headBonePos = headBoneMatrix:GetTranslation()
+
+                local distFromGlinterSquared = ply:GetPos():DistToSqr(LocalPlayer():GetPos())
+                local alpha = 0
+                if distFromGlinterSquared > math.pow(400, 2) then
+                    alpha = 140
+                elseif distFromGlinterSquared > math.pow(200, 2) then
+                    alpha = math.ceil((distFromGlinterSquared - math.pow(200, 2)) / math.pow(400, 2) * 140)
+                end
+
+                render.DrawSprite(headBonePos, sprite_size, sprite_size, Color(255, 255, 255, alpha))
             end
         end
     end )

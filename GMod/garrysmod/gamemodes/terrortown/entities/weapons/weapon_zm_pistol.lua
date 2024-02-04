@@ -28,6 +28,8 @@ SWEP.Primary.DefaultClip   = 8
 SWEP.Primary.ClipMax       = 16
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_FiveSeven.Single" )
+SWEP.DamageType            = "Puncture"
+
 
 SWEP.AutoSpawnable         = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
@@ -40,3 +42,4 @@ SWEP.IronSightsPos         = Vector(-5.95, -4, 2.799)
 SWEP.IronSightsAng         = Vector(0, 0, 0)
 
 SWEP.HeadshotMultiplier    = 2.7
+

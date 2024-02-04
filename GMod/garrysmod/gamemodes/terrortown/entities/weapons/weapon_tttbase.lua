@@ -2,6 +2,13 @@
 
 AddCSLuaFile()
 
+if SERVER then
+   resource.AddFile( "materials/vgui/damagetype/puncture.png" )
+   resource.AddFile( "materials/vgui/damagetype/impact.png" )
+   resource.AddFile( "materials/vgui/damagetype/elemental.png" )
+end
+
+
 ---- TTT SPECIAL EQUIPMENT FIELDS
 
 -- This must be set to one of the WEAPON_ types in TTT weapons for weapon
@@ -137,6 +144,12 @@ if CLIENT then
       if self.HUDHelp then
          self:DrawHelp()
       end
+      local puncture = Material("vgui/damagetype/puncture.png", "mips noclamp smooth")
+      local impact = Material("vgui/damagetype/impact.png", "mips noclamp smooth")
+      local elemental = Material("vgui/damagetype/elemental.png", "mips noclamp smooth")
+      local punctureshad = Material("vgui/damagetype/puncture.png", "mips noclamp smooth")
+      local impactshad = Material("vgui/damagetype/impact.png", "mips noclamp smooth")
+      local elementalshad = Material("vgui/damagetype/elemental.png", "mips noclamp smooth")
 
       local client = LocalPlayer()
       if disable_crosshair:GetBool() or (not IsValid(client)) then return end
@@ -173,6 +186,25 @@ if CLIENT then
       surface.DrawLine( x + length, y, x + gap, y )
       surface.DrawLine( x, y - length, x, y - gap )
       surface.DrawLine( x, y + length, x, y + gap )
+      if self.DamageType == "Puncture" then
+         surface.SetMaterial(punctureshad)
+         surface.SetDrawColor(0, 0, 0, 255)
+         surface.DrawTexturedRect(x * 0.02, y * 1.892, 28, 34)
+
+         surface.SetMaterial(puncture)
+         surface.SetDrawColor(255, 255, 255, 255)
+         surface.DrawTexturedRect(x * 0.02, y * 1.89, 28, 34)
+      end
+      if self.DamageType == "Impact" then
+         surface.SetMaterial(impact)
+         surface.SetDrawColor(255, 255, 255, 255)
+         surface.DrawTexturedRect(x * 0.022, y * 1.895, 20, 28)
+      end
+      if self.DamageType == "Elemental" then
+         surface.SetMaterial(elemental)
+         surface.SetDrawColor(255, 255, 255, 255)
+         surface.DrawTexturedRect(x * 0.02, y * 1.9, 24, 24)
+      end
    end
 
    local GetPTranslation = LANG.GetParamTranslation

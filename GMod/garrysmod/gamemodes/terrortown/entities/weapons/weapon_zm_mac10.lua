@@ -18,7 +18,11 @@ SWEP.Base                = "weapon_tttbase"
 SWEP.Kind                = WEAPON_HEAVY
 SWEP.WeaponID            = AMMO_MAC10
 
+<<<<<<< HEAD
 SWEP.Primary.Damage      = 10
+=======
+SWEP.Primary.Damage      = 5
+>>>>>>> b225583645fefed7b593bf59ff9d9c27801cc04f
 DAMAGE = SWEP.Primary.Damage
 SWEP.Primary.Delay       = 0.08
 SWEP.Primary.Cone        = 0
@@ -70,7 +74,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Src    = self.Owner:GetShootPos()
    bullet.Dir    = self.Owner:GetAimVector()
    bullet.Spread = Vector( cone, cone, 0 )
-   bullet.Tracer = 4
+   bullet.Tracer = 1
    bullet.TracerName = "Tracer"
    bullet.Force  = 10
    bullet.Damage = dmg
@@ -119,13 +123,13 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
 	
 	local ricochetbullet = {}
 		ricochetbullet.Num 		= 1
-		ricochetbullet.Src 		= tr.HitPos + (tr.HitNormal * 5)
+		ricochetbullet.Src 		= tr.HitPos
 		ricochetbullet.Dir 		= ((2 * tr.HitNormal * DotProduct) + tr.Normal) + (VectorRand() * 0.05)
 		ricochetbullet.Spread 	= Vector(0, 0, 0)
 		ricochetbullet.Tracer	= 1
-		ricochetbullet.TracerName 	= self.Tracer or "Tracer"
-		ricochetbullet.Force		= dmginfo:GetDamageForce() * 0.8
-		ricochetbullet.Damage	= dmginfo:GetDamage() * 0.8
+		ricochetbullet.TracerName 	= "Tracer"
+		ricochetbullet.Force		= dmginfo:GetDamageForce() * 2
+		ricochetbullet.Damage	= dmginfo:GetDamage() * 2
 		ricochetbullet.Callback  	= function(a, b, c)  
 			return self:RicochetCallback(bouncenum + 1, a, b, c) end
 

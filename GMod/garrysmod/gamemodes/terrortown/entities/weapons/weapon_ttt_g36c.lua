@@ -106,17 +106,17 @@ SWEP.HoldType			= "ar2"
 
 
 SWEP.DrawCrosshair			= false	
-SWEP.Primary.Delay       = 0.09
-SWEP.Primary.Recoil      = 1.9
+SWEP.Primary.Delay       = 0.16
+SWEP.Primary.Recoil      = .9
 SWEP.Primary.Automatic   = true
-SWEP.Primary.Damage      = 15
+SWEP.Primary.Damage      = 22
 SWEP.Primary.Cone        = 0
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.ClipSize    = 30
 SWEP.Primary.ClipMax     = 90
 SWEP.Primary.DefaultClip = 60
 SWEP.Primary.Sound 		= Sound("weapon_aug.single")
-SWEP.HeadshotMultiplier  = 2
+SWEP.HeadshotMultiplier  = 1.6
 
 --nopls
 SWEP.IronSightsPos = Vector(-2.605, -3.268, 2.63)

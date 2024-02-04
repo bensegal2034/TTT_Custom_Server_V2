@@ -32,7 +32,7 @@ SWEP.Primary.NumShots      = 8
 SWEP.Primary.Sound         = Sound( "Weapon_XM1014.Single" )
 SWEP.Primary.Recoil        = 12
 SWEP.Secondary.Delay       = 0.6
-
+SWEP.DamageType            = "Impact"
 
 SWEP.Secondary.Automatic   = true
 
@@ -184,6 +184,7 @@ function SWEP:SecondaryAttack()
    self.Primary.Damage   = 50
    self.Primary.NumShots = 1
    self.Primary.Cone     = 0
+   self.DamageType       = "Puncture"
    self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
    self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
 end
@@ -193,6 +194,7 @@ function SWEP:PrimaryAttack()
    self.Primary.Cone     = 0.075
    self.Primary.NumShots = 8
    self.Primary.Damage   = 9
+   self.DamageType       = "Impact"
    self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
 
 end

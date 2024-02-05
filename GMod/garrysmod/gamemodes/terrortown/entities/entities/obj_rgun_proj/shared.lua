@@ -26,11 +26,6 @@ function ENT:Initialize()
 	
 	self:EmitSound("weapons/raygun/wpn_ray_loop.wav", 70)
 	
-	if self:GetUpgraded() then
-		self.Damage = 400
-		self.CollidePCF = "raygun_impact_pap"
-	end
-	
 	self.LifeTime = CurTime() + 8
 end
 
@@ -44,7 +39,7 @@ if SERVER then
 		--dmg:SetDamageForce( Vector(0,0,0) )
 		util.BlastDamageInfo(dmg, hitpos, 72)
 		
-		ParticleEffect( self.CollidePCF, self:GetPos(), Angle(0,0,0))
+		-- SPAWN BLAST EFFECTS HERE
 		self:EmitSound(self.CollideSND, 85)
 		self:Remove()
 	end

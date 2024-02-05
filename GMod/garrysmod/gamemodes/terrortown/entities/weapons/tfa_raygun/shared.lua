@@ -69,19 +69,19 @@ end
 
 -- Variables that are used on both client and server
 SWEP.Kind = WEAPON_PISTOL
-SWEP.AutoSpawnable = false
 SWEP.AmmoEnt = "item_ammo_357_ttt"
 SWEP.AllowDrop = true
 SWEP.Gun = ("ray_gun") -- must be the name of your swep but NO CAPITALS!
 SWEP.PrintName				= "Ray Gun"		-- Weapon name (Shown on HUD)	
-SWEP.Slot				= 1				-- Slot in the weapon selection menu
+SWEP.Slot				    = 1				-- Slot in the weapon selection menu
 SWEP.SlotPos				= 3			-- Position in the slot
 SWEP.DrawAmmo				= true		-- Should draw the default HL2 ammo counter
-SWEP.DrawCrosshair			= true		-- set false if you want no crosshair
 SWEP.Weight					= 35		-- rank relative ot other weapons. bigger is better
 SWEP.HoldType 				= "pistol"		-- how others view you carrying the weapon
 -- normal melee melee2 fist knife smg ar2 pistol rpg physgun grenade shotgun crossbow slam passive 
 -- you're mostly going to use ar2, smg, shotgun or pistol. rpg makes for good sniper rifles
+
+SWEP.DrawCrosshair 			= false
 
 SWEP.ViewModelFOV			= 100
 SWEP.ViewModelFlip			= false
@@ -96,10 +96,11 @@ SWEP.Primary.Sound			= Sound("raygun_fire.wav")
 SWEP.Primary.Delay = 0.3
 SWEP.Primary.ClipSize			= 20		-- Size of a clip
 SWEP.Primary.DefaultClip		= 50		-- Bullets you start with
+SWEP.Primary.ClipMax       = 180
 SWEP.Primary.KickUp			= 0.76		-- Maximum up recoil (rise)
 SWEP.Primary.KickDown			= 0.45		-- Maximum down recoil (skeet)
 SWEP.Primary.KickHorizontal		= 0.005		-- Maximum up recoil (stock)
-SWEP.Primary.Automatic			= false	-- Automatic = true; Semi Auto = false
+SWEP.Primary.Automatic			= true	-- Automatic = true; Semi Auto = false
 SWEP.Primary.Ammo			= "357"			-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
 -- Pistol, buckshot, and slam always ricochet. 
 --Use AirboatGun for a light metal piercing shotgun pellets
@@ -107,6 +108,8 @@ SWEP.Primary.Ammo			= "357"			-- pistol, 357, smg1, ar2, buckshot, slam, SniperP
 SWEP.Primary.Damage		= 20	-- Base damage per bullet
 SWEP.Primary.Spread		= .022	-- Define from-the-hip accuracy 1 is terrible, .0001 is exact)
 SWEP.Primary.IronAccuracy	 = .007 -- Ironsight accuracy, should be the same for shotguns
+SWEP.DamageType            = "True"
+SWEP.AutoSpawnable         = true
 
 -- Enter iron sight info and bone mod info below
 
@@ -140,25 +143,28 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	
 	local own = self:GetOwner()
-	local shootpos = own:GetShootPos()
+
 	local aimvec = own:GetAimVector()
+	local side = aimvec:Cross(Vector(0, 0, 1))
+	local up = side:Cross(aimvec)
+	local shootpos = own:GetShootPos() + side * 8.5 + up * -5
 	
 	
 	if SERVER then
 		local proj = ents.Create("obj_rgun_proj")
 		
-		proj:SetPos(shootpos + VectorRand(-2, 2))
-		proj:SetAngles(own:EyeAngles())
-		proj.Owner = own
+		proj:SetPos(shootpos)
+		proj:SetAngles(Angle(0,0,0))
+		proj:SetOwner(self.Owner)
 		proj:Spawn()
 		proj:Activate()
 		local phys = proj:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:SetVelocityInstantaneous(aimvec*3000)
+			phys:EnableGravity(false)
+			util.SpriteTrail(proj, 0, Color(0, 255, 0), true, 3, 1, 0.5, 10, "trails/smoke")
 		end
 	end
-	
-	ParticleEffect( self.Ispackapunched and "raygun_muzzle_pap" or "raygun_muzzle", shootpos, own:EyeAngles() + Angle(90,0,0))
 	
 	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 	own:SetAnimation( PLAYER_ATTACK1 )

@@ -1,12 +1,14 @@
 CSGO/
 TF2/
 .vscode/
+.vs/
 GMod/logs/
 GMod/userdata/
 GMod/garrysmod/cache/
 GMod/depotcache/
 GMod/steam_cache/
 GMod/garrysmod/data/ulx_logs/
+GMod/garrysmod/downloadlists/
 GMod/config/config.vdf
 GMod/garrysmod/clientside_errors.txt
 GMod/garrysmod/data/ulib/users.txt
@@ -14,6 +16,7 @@ GMod/garrysmod/map.pack
 GMod/garrysmod/modelsounds.cache
 GMod/garrysmod/sv.db
 GMod/garrysmod/cfg/mount.cfg
+GMod/garrysmod/cfg/server.vdf
 updatecsgo.bat
 updatetf2.bat
 updatecsgo.txt
@@ -21,3 +24,5 @@ updatetf2.txt
 *.ain
 *.ztmp
 *.lst
+*.pyc
+

@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/raygun/weapon_red_dot_c"
+	"$surfaceprop" "Default"
+}

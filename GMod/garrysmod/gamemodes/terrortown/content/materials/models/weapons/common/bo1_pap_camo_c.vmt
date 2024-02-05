@@ -1,0 +1,21 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/common/bo1_pap_camo_s"
+	"$detail" "models/weapons/common/bo1_pap_camo_c"
+	"$detailscale" 1
+	"$detailblendfactor" 0.75
+	"$detailblendmode" 3
+	
+	"$phong" 1
+	"$phongboost" 128
+	//"$phongexponent" 1
+	"$phongexponenttexture" "models/weapons/common/exponent"
+	"$phongalbedotint" 1
+	"$phongfresnelranges" "[0.1 0.5 1.0]"
+	"$basemapalphaphongmask" 1
+	
+	"$envmap" "env_cubemap"
+	//"$basemapalphaenvmapmask" "1"
+	"$envmapmask" "models/weapons/common/bo1_pap_camo_s"
+	"$envmaptint" "[0.15 0.15 0.15]"
+}

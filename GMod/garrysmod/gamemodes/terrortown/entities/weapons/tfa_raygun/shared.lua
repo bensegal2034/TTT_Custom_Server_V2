@@ -59,12 +59,12 @@ if SERVER then
 	resource.AddFile("models/weapons/raygun/v_raygun.mdl")
 	resource.AddFile("models/weapons/raygun/w_raygun.mdl")
 	resource.AddFile("particles/raygun.pcf")
-	resource.AddCSLuaFile("autorun/raygun_autorun.lua")
-	resource.AddCSLuaFile("effects/effect_dist.lua")
-	resource.AddCSLuaFile("effects/rgun_muzzleflash/init.lua")
-	resource.AddCSLuaFile("entities/obj_rgun_proj/cl_init.lua")
-	resource.AddCSLuaFile("entities/obj_rgun_proj/shared.lua")
-	resource.AddCSLuaFile("weapons/tfa_raygun/shared.lua")
+	AddCSLuaFile("autorun/raygun_autorun.lua")
+	AddCSLuaFile("effects/effect_dist.lua")
+	AddCSLuaFile("effects/rgun_muzzleflash/init.lua")
+	AddCSLuaFile("entities/obj_rgun_proj/cl_init.lua")
+	AddCSLuaFile("entities/obj_rgun_proj/shared.lua")
+	AddCSLuaFile("weapons/tfa_raygun/shared.lua")
 end
 
 -- Variables that are used on both client and server

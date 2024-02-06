@@ -13,7 +13,7 @@ SWEP.AutoSpawnable = false
 SWEP.HoldType = "normal"
 SWEP.UseHands = true
 
-
+SWEP.DamageType = "True"
 --
 SWEP.AdminSpawnable		= true
 SWEP.ViewModelFlip = false
@@ -28,7 +28,8 @@ SWEP.FiresUnderwater = true
 --
 SWEP.Primary.Damage         = 50
 SWEP.Primary.ClipSize         	= 50 
-SWEP.Primary.DefaultClip    	= 50
+SWEP.Primary.DefaultClip    	= 150
+SWEP.Primary.MaxClip 			= 150
 SWEP.Primary.Automatic         	= false
 SWEP.Primary.Ammo         	= "none"
 SWEP.Primary.Force		= 1000
@@ -39,18 +40,15 @@ SWEP.Weight				= 5
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 --
-SWEP.Slot				= 1
+SWEP.Slot				= 6
 SWEP.SlotPos			= 1
 SWEP.DrawAmmo			= false
 SWEP.DrawCrosshair		= true
-
-util.PrecacheModel( SWEP.ViewModel )
-util.PrecacheModel( SWEP.WorldModel )
---
-
-   SWEP.Icon = "VGUI/ttt/icon_kamehameha_ttt"
-   SWEP.Slot = 2
-   SWEP.Category  = "Other"
+SWEP.WeaponActive 		= false
+SWEP.WeaponTimer 		= 0
+SWEP.Icon = "VGUI/ttt/icon_kamehameha_ttt"
+SWEP.Slot = 6
+SWEP.Category  = "Other"
 SWEP.EquipMenuData = {
       type  = "item_weapon",
       name  = "Kamehameha",
@@ -92,13 +90,22 @@ end
 function SWEP:SecondaryAttack()end
 
 function SWEP:Think()	
+	if self.WeaponActive == false then
+		if (self.Weapon:Clip1() < 50) then
+			self.WeaponTimer = self.WeaponTimer + 1
+			if self.WeaponTimer >= 7 then
+				self.Weapon:SetClip1(self.Weapon:Clip1()+ 1) 
+				self.WeaponTimer = 0
+			end
+		end
+	end
 end
 
 function SWEP:PrimaryAttack()
 	local ply = self.Owner
    local myposition = self.Owner:GetShootPos()
    local aimraytrace = myposition + (self.Owner:GetAimVector() * 70)
-
+	
    local kmins = Vector(1,1,1) * -10
    local kmaxs = Vector(1,1,1) * 10
 
@@ -109,6 +116,7 @@ function SWEP:PrimaryAttack()
    end
 	
     if (self.Weapon:Clip1() < 50) then return end
+		self.WeaponActive = true
 		for k, v in pairs( player.GetAll( ) ) do
 		  v:ConCommand( "play weapons/shoot/kamehame.wav\n" )
 		end
@@ -117,6 +125,7 @@ function SWEP:PrimaryAttack()
 	timer.Create( "timerUnFreezePlayer", 4.9, 1, function() 
 		if ply:Alive() then
 			self.Owner:Freeze(false) 
+			self.WeaponActive = false
 			end
 		end)
 	timer.Create( "FinalHA", 3.4, 1, function()

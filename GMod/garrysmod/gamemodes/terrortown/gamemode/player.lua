@@ -763,7 +763,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
    if dmginfo:IsBulletDamage() and ply:HasEquipmentItem(EQUIP_ARMOR) then
       -- Body armor nets you a damage reduction.
       local wep = util.WeaponFromDamage(dmginfo)
-      if wep.DamageType != "Puncture" or "True" then
+      if wep.DamageType == "Impact" then
          dmginfo:ScaleDamage(0.7)
       end
    end
@@ -1036,10 +1036,10 @@ function GM:PlayerTakeDamage(ent, infl, att, amount, dmginfo)
 
    -- general actions for pvp damage
    if ent != att and IsValid(att) and att:IsPlayer() and GetRoundState() == ROUND_ACTIVE and math.floor(dmginfo:GetDamage()) > 0 then
-
+      local wep = dmginfo:GetAttacker():GetActiveWeapon()
       -- scale everything to karma damage factor except the knife, because it
       -- assumes a kill
-      if not dmginfo:IsDamageType(DMG_SLASH) then
+      if (wep.DamageType == "Puncture" or wep.DamageType == "Impact") then
          dmginfo:ScaleDamage(att:GetDamageFactor())
       end
 

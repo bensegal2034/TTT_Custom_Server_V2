@@ -8,7 +8,7 @@ ENT.AdminSpawnable 	= false
 
 ENT.CollideSND = "weapons/raygun/wpn_ray_exp.mp3"
 ENT.CollidePCF = "raygun_impact"
-ENT.Damage = 200
+ENT.Damage = 70
 
 function ENT:SetupDataTables()
 	self:NetworkVar( "Bool", 0, "Upgraded")
@@ -27,6 +27,7 @@ function ENT:Initialize()
 	self:EmitSound("weapons/raygun/wpn_ray_loop.wav", 70)
 	
 	self.LifeTime = CurTime() + 8
+	self.LastRingTime = CurTime()
 end
 
 if SERVER then
@@ -37,9 +38,14 @@ if SERVER then
 		dmg:SetInflictor(self)
 		dmg:SetDamage(self.Damage)
 		--dmg:SetDamageForce( Vector(0,0,0) )
-		util.BlastDamageInfo(dmg, hitpos, 72)
+		util.BlastDamageInfo(dmg, hitpos, 100)
 		
-		-- SPAWN BLAST EFFECTS HERE
+		local proj = ents.Create("raygun_splash_proj")
+		proj:SetPos(self:GetPos())
+		proj:SetAngles(Angle(0,0,0))
+		proj:SetOwner(self.Owner)
+		proj:Spawn()
+
 		self:EmitSound(self.CollideSND, 85)
 		self:Remove()
 	end
@@ -57,6 +63,12 @@ if SERVER then
 		if CurTime() > self.LifeTime then
 			self:Remove()
 		end
+		local proj = ents.Create("raygun_ring_proj")
+		proj:SetPos(self:GetPos())
+		proj:SetAngles(Angle(0,0,0))
+		proj:SetOwner(self.Owner)
+		proj:Spawn()
+		self.LastRingTime = CurTime()
 	end
 end
 

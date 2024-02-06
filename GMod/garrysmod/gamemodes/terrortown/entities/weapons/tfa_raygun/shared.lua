@@ -39,6 +39,8 @@ if SERVER then
 	resource.AddFile("materials/sprites/zombie_glow2_noz.vmt")
 	resource.AddFile("materials/sprites/zombie_glow04.vmt")
 	resource.AddFile("materials/sprites/zombie_glow04_noz.vmt")
+	resource.AddFile("materials/sprites/raygun_ring.vmt")
+	resource.AddFile("materials/sprites/raygun_splash.vmt")
 	resource.AddFile("materials/vgui/entities/tfa_raygun.vmt")
 	resource.AddFile("materials/particle/animglow02.vmt")
 	resource.AddFile("materials/particle/beam001_white_dx80.vmt")
@@ -65,6 +67,8 @@ if SERVER then
 	AddCSLuaFile("entities/obj_rgun_proj/cl_init.lua")
 	AddCSLuaFile("entities/obj_rgun_proj/shared.lua")
 	AddCSLuaFile("weapons/tfa_raygun/shared.lua")
+	AddCSLuaFile("entities/raygun_ring_proj.lua")
+	AddCSLuaFile("entities/raygun_splash_proj.lua")
 end
 
 -- Variables that are used on both client and server
@@ -93,7 +97,7 @@ SWEP.ShowWorldModel			= true
 SWEP.UseHands = true
 
 SWEP.Primary.Sound			= Sound("raygun_fire.wav")
-SWEP.Primary.Delay = 0.3
+SWEP.Primary.Delay = 0.33
 SWEP.Primary.ClipSize			= 20		-- Size of a clip
 SWEP.Primary.DefaultClip		= 50		-- Bullets you start with
 SWEP.Primary.ClipMax       = 180
@@ -113,25 +117,13 @@ SWEP.AutoSpawnable         = true
 
 -- Enter iron sight info and bone mod info below
 
-SWEP.IronSightsPos         = Vector(-5.28, -5, 0.55)
+SWEP.IronSightsPos         = Vector(-5.109, -5, 0)
 SWEP.IronSightsAng         = Vector(5.599, -0, 2)
 
 SWEP.WElements = {
 	["world_model"] = { type = "Model", model = "models/weapons/raygun/w_raygun.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(-0.548, 0.301, 0.16), angle = Angle(-180, -180, 0), size = Vector(1.049, 1.049, 1.049), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
 }
 
-
--- Add some zoom to ironsights for this gun
-function SWEP:SecondaryAttack()
-   if not self.IronSightsPos then return end
-   if self:GetNextSecondaryFire() > CurTime() then return end
-
-   local bIronsights = not self:GetIronsights()
-
-   self:SetIronsights( bIronsights )
-
-   self:SetNextSecondaryFire( CurTime() + 0.3 )
-end
 
 function SWEP:PreDrop()
    self:SetIronsights(false)
@@ -147,7 +139,11 @@ function SWEP:PrimaryAttack()
 	local aimvec = own:GetAimVector()
 	local side = aimvec:Cross(Vector(0, 0, 1))
 	local up = side:Cross(aimvec)
-	local shootpos = own:GetShootPos() + side * 8.5 + up * -5
+	local side_scale = 8.5
+	if self:GetIronsights() then
+		side_scale = 0
+	end
+	local shootpos = own:GetShootPos() + side * side_scale + up * -5
 	
 	
 	if SERVER then

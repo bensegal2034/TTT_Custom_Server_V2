@@ -54,8 +54,9 @@ if SERVER then
 
 		self:EmitSound(self.CollideSND, 85)
 
-		self.LifeTime = math.min(CurTime() + 0.5, self.LifeTime)
-		self:SetMoveType(MOVETYPE_NONE)
+		self.LifeTime = math.min(CurTime() + 0.4, self.LifeTime)
+		self:GetPhysicsObject():SetPos(hitpos)
+		self:GetPhysicsObject():SetVelocityInstantaneous(Vector(0,0,0))
 	end
 	
 	function ENT:PhysicsCollide(data)
@@ -72,6 +73,7 @@ if SERVER then
 			self:Remove()
 		end
 		if self.HasBlasted then
+			self:GetPhysicsObject():SetVelocityInstantaneous(Vector(0,0,0))
 			return
 		end
 		local proj = ents.Create("raygun_ring_proj")

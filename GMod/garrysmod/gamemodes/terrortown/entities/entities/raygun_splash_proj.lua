@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-local SplashLifetime = 0.15
+local SplashLifetime = 0.3
 local SplashSize = 40
 
 ENT.Type 			= "anim"

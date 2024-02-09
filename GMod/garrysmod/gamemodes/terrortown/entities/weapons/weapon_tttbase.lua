@@ -187,33 +187,34 @@ if CLIENT then
       surface.DrawLine( x + length, y, x + gap, y )
       surface.DrawLine( x, y - length, x, y - gap )
       surface.DrawLine( x, y + length, x, y + gap )
-      if self.DamageType == "Puncture" then
-         surface.SetMaterial(punctureshad)
-         surface.SetDrawColor(0, 0, 0, 255)
-         surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
+      if client:GetObserverMode() == OBS_MODE_NONE then
+         if self.DamageType == "Puncture" then
+            surface.SetMaterial(punctureshad)
+            surface.SetDrawColor(0, 0, 0, 255)
+            surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
 
-         surface.SetMaterial(puncture)
-         surface.SetDrawColor(255, 255, 255, 255)
-         surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
-      end
-      if self.DamageType == "Impact" then
-         surface.SetMaterial(impactshad)
-         surface.SetDrawColor(0, 0, 0, 255)
-         surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
+            surface.SetMaterial(puncture)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
+         end
+         if self.DamageType == "Impact" then
+            surface.SetMaterial(impactshad)
+            surface.SetDrawColor(0, 0, 0, 255)
+            surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
 
-         surface.SetMaterial(impact)
-         surface.SetDrawColor(255, 255, 255, 255)
-         surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
-         
-      end
-      if self.DamageType == "True" then
-         surface.SetMaterial(elementalshad)
-         surface.SetDrawColor(0, 0, 0, 255)
-         surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
+            surface.SetMaterial(impact)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
+         end
+         if self.DamageType == "True" then
+            surface.SetMaterial(elementalshad)
+            surface.SetDrawColor(0, 0, 0, 255)
+            surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
 
-         surface.SetMaterial(elemental)
-         surface.SetDrawColor(255, 255, 255, 255)
-         surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
+            surface.SetMaterial(elemental)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
+         end
       end
    end
 

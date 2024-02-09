@@ -102,4 +102,5 @@
 	"stopwatch_cancel_cooldown"		"3"
 	"stopwatch_allow_cancelling_midair"		"1"
 	"stopwatch_nofall"		"1"
+	"earringing_disable"		"1"
 }

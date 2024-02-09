@@ -8,7 +8,7 @@ ENT.AdminSpawnable 	= false
 
 ENT.CollideSND = "weapons/raygun/wpn_ray_exp.mp3"
 ENT.CollidePCF = "raygun_impact"
-ENT.Damage = 70
+ENT.Damage = 40
 
 function ENT:SetupDataTables()
 	self:NetworkVar( "Bool", 0, "Upgraded")

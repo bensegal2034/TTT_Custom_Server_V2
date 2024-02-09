@@ -65,6 +65,7 @@ SWEP.Primary.Delay = 0.6
 SWEP.Primary.Recoil = 6
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 37
+SWEP.DamageType = "True"
 SWEP.Primary.Automatic = false
 SWEP.Primary.DefaultClip = defaultClipSize:GetInt()
 SWEP.Primary.ClipSize = clipSize:GetInt()

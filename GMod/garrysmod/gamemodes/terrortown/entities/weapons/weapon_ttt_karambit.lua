@@ -1,9 +1,5 @@
 if SERVER then
 	AddCSLuaFile()
-	AddCSLuaFile("clout_gun_base/cl_init.lua")
-	AddCSLuaFile("clout_gun_base/init.lua")
-	AddCSLuaFile("clout_gun_base/shared.lua")
-
 	-- this thing's model and texture locations are terrible but i'm not going to bother changing them so we ball
 	resource.AddFile("materials/models/weapons/v_models/arms/ct_arms_fbi.vtf")
 	resource.AddFile("materials/models/weapons/v_models/arms/ct_arms_idf.vmt")

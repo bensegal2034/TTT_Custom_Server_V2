@@ -60,7 +60,7 @@ SWEP.Primary.DelayMod    = 0
 SWEP.Primary.ClipSizeMod = 0
 SWEP.Primary.RecoilMod   = 0
 SWEP.Primary.NumShots      = 1
-
+SWEP.DamageType          = "Impact"
 SWEP.Primary.NumBullets  = 0
 SWEP.BulletRoll          = 0
 SWEP.TargetStat          = 0

@@ -1,0 +1,8 @@
+"SpriteCard"
+{
+	"$basetexture" "effects/codbo/codbo_raygun_ring"
+	$vertexcolor 1
+	$vertexalpha 1
+	$translucent 1
+	$DEPTHBLEND 1
+}

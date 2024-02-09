@@ -22,6 +22,7 @@ SWEP.Primary.Recoil         = 7
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "357"
 SWEP.Primary.Damage = 50
+SWEP.DamageType = "Puncture"
 SWEP.Primary.Cone = 0.005
 SWEP.Primary.ClipSize = 10
 SWEP.Primary.ClipMax = 20 -- keep mirrored to ammo
@@ -69,29 +70,6 @@ SWEP.wasAbleToShoot = false
 SWEP.startTime = 0
 SWEP.Reloadaftershoot = 0 				-- Can't reload when firing
 
-SWEP.WElements = {
-	["nsAWP"] = { type = "Model", model = "models/weapons/w_asii_awp.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(0.5, 0.8, 0.409), angle = Angle(-169, 180, -0), size = Vector(0.899, 0.899, 0.899), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} },
-	["gopro"] = { type = "Model", model = "models/dav0r/camera.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(20.26, 1.796, -6.5), angle = Angle(-15.844, 0, 180), size = Vector(0.15, 0.15, 0.15), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
-}
-SWEP.VElements = {
-	["screen"] = { type = "Quad", bone = "Bolt", rel = "", pos = Vector(0, 3.65, 0), angle = Angle(0, 3.332, 96.666), size = 0.04, draw_func = nil},
-	["goprosupport"] = { type = "Model", model = "models/combine_turrets/ceiling_turret.mdl", bone = "Body", rel = "", pos = Vector(-0.9, -11.948, 3), angle = Angle(85.324, -3.507, -82.987), size = Vector(0.009, 0.009, 0.009), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} },
-	["gopro"] = { type = "Model", model = "models/dav0r/camera.mdl", bone = "Body", rel = "", pos = Vector(-0.62, -14.027, 3), angle = Angle(3.506, 92.337, 1.169), size = Vector(0.068, 0.068, 0.068), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
-}
-
-
-
-function angleDifference(a1, a2)
-	local angDiff = a1 - a2
-	while (angDiff > 180) do
-		angDiff = (angDiff - 360)
-	end
-	while (angDiff < -180) do
-		angDiff = (angDiff + 360)
-	end
-	return angDiff
-end
-
 function SWEP:SetupDataTables()
 
 	self:NetworkVar("Float", 0, "CRot");
@@ -120,40 +98,6 @@ function SWEP:Initialize()
          end
       end
    end)
-   --[[
-   if CLIENT then
-
-      -- // Create a new table for every weapon instance
-      self.VElements = table.FullCopy( self.VElements )
-      self.WElements = table.FullCopy( self.WElements )
-      self.ViewModelBoneMods = table.FullCopy( self.ViewModelBoneMods )
-
-      self:CreateModels(self.VElements) -- create viewmodels
-      self:CreateModels(self.WElements) -- create worldmodels
-
-      -- // init view model bone build function
-      if IsValid(self.Owner) and self.Owner:IsPlayer() then
-         if self.Owner:Alive() then
-            local vm = self.Owner:GetViewModel()
-            if IsValid(vm) then
-               self:ResetBonePositions(vm)
-               -- // Init viewmodel visibility
-               if (self.ShowViewModel == nil or self.ShowViewModel) then
-                  vm:SetColor(Color(255,255,255,255))
-               else
-                  -- // however for some reason the view model resets to render mode 0 every frame so we just apply a debug material to prevent it from drawing
-                  vm:SetMaterial("Debug/hsv")
-               end
-            end
-
-         end
-      end
-   end
-   ]]--
-   -- stolen code
-   self:SetCCRot(0) --the counter-clockwise rotation
-   self:SetCRot(0) --the clockwise rotation
-   self:SetTimeLeft(0)
 end
 
 function SWEP:SetZoom(state)
@@ -244,12 +188,11 @@ if CLIENT then
    local scope = surface.GetTextureID("sprites/scope")
    function SWEP:DrawHUD()
       if self:GetIronsights() then
-         
+         -- Timer
          local x = ScrW() / 2.0
          local y = ScrH() / 2.0
          local scope_size = ScrH()
          surface.SetDrawColor( 0, 0, 0, 255 )
-         -- timer
          surface.SetFont("HealthAmmo")
          surface.SetTextPos(x, y + 55)
          if(CurTime() < self.AllowedShootDelayTimer) then
@@ -259,6 +202,15 @@ if CLIENT then
             surface.SetTextColor(255, 0, 0, 255)
             surface.DrawText("WEAPON OVERHEAT")
          end
+         -- Scope + Crosshair
+         surface.SetDrawColor( 0, 0, 0, 255 )
+         
+         local scrW = ScrW()
+         local scrH = ScrH()
+
+         local x = scrW / 2.0
+         local y = scrH / 2.0
+         local scope_size = scrH
 
          -- crosshair
          local gap = 80
@@ -281,6 +233,10 @@ if CLIENT then
          local w = (x - sh) + 2
          surface.DrawRect(0, 0, w, scope_size)
          surface.DrawRect(x + sh - 2, 0, w, scope_size)
+         
+         -- cover gaps on top and bottom of screen
+         surface.DrawLine( 0, 0, scrW, 0 )
+         surface.DrawLine( 0, scrH - 1, scrW, scrH - 1 )
 
          surface.SetDrawColor(255, 0, 0, 255)
          surface.DrawLine(x, y, x + 1, y + 1)
@@ -290,7 +246,6 @@ if CLIENT then
          surface.SetDrawColor(255, 255, 255, 255)
 
          surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
-
       else
          return self.BaseClass.DrawHUD(self)
       end
@@ -325,96 +280,4 @@ function SWEP:Think()
       self.AllowedShootDelayTimer = CurTime() + self.AllowedShootDelay
    end
    self.PreviousScopeState = self:GetIronsights()
-
-   -- stolen code
-   if SERVER then
-		local angles = self.Owner:GetAimVector():Angle()
-		local angDiff = angleDifference(angles.y, self.oRot)
-		local ccRot = self:GetCCRot();
-		local cRot = self:GetCRot();
-
-		if (math.abs(angDiff) > self.rotToDecDecay) then
-			self.decay = math.max(self.decay - self.decayDec, 0);
-		else
-			self.decay = math.min(self.decay + self.decayInc, self.maxDecay);
-		end
-
-		ccRot = ccRot - angDiff --ccRot is the opposite
-		cRot = cRot + angDiff
-
-		ccRot = ccRot - self.decay;
-		cRot = cRot - self.decay;
-
-		ccRot = math.max(ccRot, 0);
-		cRot = math.max(cRot, 0);
-
-		if (!self.wasAbleToShoot and self:GetCanBodyshot()) then
-			self.wasAbleToShoot = true
-		elseif (wasAbleToShoot and !self:GetCanBodyshot()) then
-			self.wasAbleToShoot = false
-		end
-
-		if (cRot > ccRot and self.rotDir == -1) then --this if statement is what creates the smooth transition between switching back and forth between rotation directions, resetting the values when swapping
-			self.rotDir = 1
-			ccRot = 0
-		elseif (ccRot > cRot and self.rotDir == -1) then
-			self.rotDir = -1
-			cRot = 0
-		end
-		if (cRot > 360 - self.endCrutch or ccRot > 360 - self.endCrutch) then
-			if (!self:GetCanBodyshot() and self:Clip1() > 0) then
-				if (!timer.Exists("NoScopeAwp".. self:EntIndex())) then --prevents stacking of the timer
-					timer.Create("NoScopeAwp".. self:EntIndex(), self.shootTime, 1, function()
-						self:SetCanBodyshot(false) --changes the value back
-					 end)
-				end
-				self:SetCanBodyshot(true)
-			end
-			if (cRot > 360 - self.endCrutch) then --automatically resets the value of the rotation distance that triggered the ability to shoot
-				cRot = 0
-			else
-				ccRot = 0
-			end
-		end
-		self.oRot = angles.y
-		self:SetCCRot(ccRot)
-		self:SetCRot(cRot)
-		if (timer.Exists("NoScopeAwp".. self:EntIndex())) then
-			self:SetTimeLeft(timer.TimeLeft("NoScopeAwp".. self:EntIndex()))
-		end
-	end
-
-   --[[
-   if CLIENT then
-		self.VElements["screen"].draw_func = function( weapon )
-
-				local displayRot = 0;
-				local cRot = self:GetCRot();
-				local ccRot = self:GetCCRot();
-
-				if (self.Weapon:Clip1() > 0) then
-					if (!self:GetCanBodyshot()) then
-						draw.RoundedBox(0,-38,-14,70,15,Color(100,100,100,100))
-						if (ccRot > cRot) then
-							displayRot = math.floor(ccRot)
-							draw.RoundedBox(0,-38,-14,ccRot*.2083,15,Color(100,100,255,160))
-						else
-							displayRot = math.floor(cRot)
-							draw.RoundedBox(0,-38,-14,cRot*.2083,15,Color(100,100,255,150))
-						end
-
-						draw.SimpleText("COOL METER: "..displayRot, "default", 0, 0, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-					else
-						draw.RoundedBox(0,-38,-14,70,15,Color(100,255,100,100))
-						draw.RoundedBox(0,-38,-14,math.max(self:GetTimeLeft(),0) * (70/self.shootTime),15,Color(100,255,100,200))
-						draw.SimpleText("COOL METER: MLG", "default", 0, 0, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-					end
-				else
-					draw.RoundedBox(0,-38,-14,70,15,Color(255,100,100,150 + math.sin(CurTime()*7) * 50))
-					draw.SimpleText("RELOAD", "default", 0, 0, Color(255,150,150,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-				end
-		end
-	end
-   ]]--
-   -- end stolen code
 end

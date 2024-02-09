@@ -167,12 +167,15 @@ if CLIENT then
    function SWEP:DrawHUD()
       if self:GetIronsights() then
          surface.SetDrawColor( 0, 0, 0, 255 )
+         
+         local scrW = ScrW()
+         local scrH = ScrH()
 
-         local x = ScrW() / 2.0
-         local y = ScrH() / 2.0
-         local scope_size = ScrH()
+         local x = scrW / 2.0
+         local y = scrH / 2.0
+         local scope_size = scrH
 
-         -- Crosshair
+         -- crosshair
          local gap = 80
          local length = scope_size
          surface.DrawLine( x - length, y, x - gap, y )
@@ -187,21 +190,25 @@ if CLIENT then
          surface.DrawLine( x, y - length, x, y - gap )
          surface.DrawLine( x, y + length, x, y + gap )
 
-         -- Cover edges
+
+         -- cover edges
          local sh = scope_size / 2
-         local w = ( x - sh ) + 2
-         surface.DrawRect( 0, 0, w, scope_size )
-         surface.DrawRect( x + sh - 2, 0, w, scope_size )
+         local w = (x - sh) + 2
+         surface.DrawRect(0, 0, w, scope_size)
+         surface.DrawRect(x + sh - 2, 0, w, scope_size)
+         
+         -- cover gaps on top and bottom of screen
+         surface.DrawLine( 0, 0, scrW, 0 )
+         surface.DrawLine( 0, scrH - 1, scrW, scrH - 1 )
 
-         surface.SetDrawColor( 255, 0, 0, 255 )
-         surface.DrawLine( x, y, x + 1, y + 1 )
+         surface.SetDrawColor(255, 0, 0, 255)
+         surface.DrawLine(x, y, x + 1, y + 1)
 
-         -- Scope
-         surface.SetTexture( scope )
-         surface.SetDrawColor( 255, 255, 255, 255 )
+         -- scope
+         surface.SetTexture(scope)
+         surface.SetDrawColor(255, 255, 255, 255)
 
-         surface.DrawTexturedRectRotated( x, y, scope_size, scope_size, 0 )
-
+         surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
       else
          return self.BaseClass.DrawHUD( self )
       end

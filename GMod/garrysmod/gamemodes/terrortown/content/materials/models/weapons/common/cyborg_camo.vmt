@@ -1,0 +1,13 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/common/cyborg_camo"
+	"$bumpmap" "models/weapons/common/cyborg_camo_n"
+	"$selfillum" 1
+	
+	"$phong" 	"1"
+	"$phongexponent" 	"35"
+	"$phongboost"	 "1"
+	"$phongfresnelranges" "[0.25 0.75 0.3]"
+	"$lightwarptexture" "models/weapons/common/clothes_wrp"
+}
+

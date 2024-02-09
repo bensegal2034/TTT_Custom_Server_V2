@@ -1,0 +1,19 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/common/orniment_silver_dark"
+	"$bumpmap" "models/weapons/common/orniment_soft_n"
+
+	"$envmap" "env_cubemap"
+	//"$envmapcontrast" 0.7
+	"$envmaptint" "[.5 .5 .5]"
+	"$normalmapalphaenvmapmask"	1
+	
+	"$phong"	1
+	"$phongboost"	72
+	//"$phongexponent"	4
+	"$phongexponenttexture"	"models/weapons/common/exponent"
+	"$phongalbedotint"	1
+	"$phongfresnelranges"	"[0.2 0.6 1.0]"
+	//"$normalmapalphaphongmask"	1
+}
+

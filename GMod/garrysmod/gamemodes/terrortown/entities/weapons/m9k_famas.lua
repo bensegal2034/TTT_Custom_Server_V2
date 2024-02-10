@@ -95,25 +95,34 @@ SWEP.ReloadSpeed = SWEP.ReloadSpeedBase
 SWEP.Reloading = false
 SWEP.ReloadTimer = 0
 
+
+local KillClipActive = false
+local KillClipReady = false
+local KillClipDelayTimer = 0
+
+local RapidHitActive = false
+local RapidHitStacks = 0
+local RapidHitStacksDelayTimer = 0
+
 if CLIENT then
    net.Receive("KillClipActive", function()
-      ClientVars.KillClipActive = net.ReadBool()
+      KillClipActive = net.ReadBool()
    end)
    net.Receive("KillClipReady", function()
-      ClientVars.KillClipReady = net.ReadBool()
+      KillClipReady = net.ReadBool()
    end)
    net.Receive("KillClipDelayTimer", function()
-      ClientVars.KillClipDelayTimer = net.ReadInt(32)
+      KillClipDelayTimer = net.ReadInt(32)
    end)
 
    net.Receive("RapidHitActive", function()
-      ClientVars.RapidHitActive = net.ReadBool()
+      RapidHitActive = net.ReadBool()
    end)
    net.Receive("RapidHitStacks", function()
-      ClientVars.RapidHitStacks = net.ReadInt(32)
+      RapidHitStacks = net.ReadInt(32)
    end)
    net.Receive("RapidHitStacksDelayTimer", function()
-      ClientVars.RapidHitStacksDelayTimer = net.ReadInt(32)
+      RapidHitStacksDelayTimer = net.ReadInt(32)
    end)
 end
 
@@ -126,7 +135,7 @@ if SERVER then
    util.AddNetworkString("RapidHitStacksDelayTimer")
 
    hook.Add("DoPlayerDeath", "KillClipReady", function(victim, attacker, dmginfo)
-      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+      if not IsValid(dmginfo:GetAttacker()) or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
          return nil
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
@@ -136,12 +145,12 @@ if SERVER then
 
          net.Start("KillClipReady")
             net.WriteBool(weapon.KillClipReady)
-         net.Broadcast()
+         net.Send(weapon:GetOwner())
       end
    end)
 
    hook.Add("ScalePlayerDamage", "RapidHit", function(target, hitgroup, dmginfo)
-      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+      if not IsValid(dmginfo:GetAttacker()) or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
          return
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
@@ -154,21 +163,21 @@ if SERVER then
 
                net.Start("RapidHitActive")
                   net.WriteBool(true)
-               net.Broadcast()
+               net.Send(weapon:GetOwner())
                net.Start("RapidHitStacks")
                   net.WriteInt(weapon.RapidHitStacks, 32)
-               net.Broadcast()
+               net.Send(weapon:GetOwner())
             elseif weapon.RapidHitActive then
                if weapon.RapidHitStacks < 5 then
                   weapon.RapidHitStacks = weapon.RapidHitStacks + 1
                   net.Start("RapidHitStacks")
                      net.WriteInt(weapon.RapidHitStacks, 32)
-                  net.Broadcast()
+                  net.Send(weapon:GetOwner())
                end
                weapon.RapidHitStacksDelayTimer = CurTime() + weapon.RapidHitStacksDelay
                net.Start("RapidHitStacksDelayTimer")
                   net.WriteInt(math.floor(weapon.RapidHitStacksDelayTimer), 32)
-               net.Broadcast()
+               net.Send(weapon:GetOwner())
             end
          end
       end
@@ -176,12 +185,6 @@ if SERVER then
 end
 
 function SWEP:Initialize()
-   if CLIENT then
-      ClientVars.KillClipReady = false
-      ClientVars.KillClipActive = false
-      ClientVars.KillClipDelayTimer = 0
-   end
-   
    self:SetDeploySpeed(self.DeploySpeed)
 end
 
@@ -207,10 +210,10 @@ if CLIENT then
       surface.SetFont("HealthAmmo")
 
       -- draw kill clip hud
-      if ClientVars.KillClipActive then
-         ClientVars.KillClipReady = false
+      if KillClipActive then
+         KillClipReady = false
 
-         local KillClipTimer = tostring(math.floor(ClientVars.KillClipDelayTimer) - math.floor(CurTime()))
+         local KillClipTimer = tostring(math.floor(KillClipDelayTimer) - math.floor(CurTime()))
 
          surface.SetDrawColor(73, 75, 77, 150)
          draw.RoundedBox(10, scrW * 0.005, scrH * 0.84, 163, 35, Color(73, 75, 77, 150))
@@ -236,7 +239,7 @@ if CLIENT then
          surface.SetTextPos(textPosKillClip.w + xOffsetKillClip, textPosKillClip.h)
          surface.DrawText("Kill Clip")
       end
-      if ClientVars.KillClipReady then 
+      if KillClipReady then 
          draw.RoundedBox(10, scrW * 0.005, scrH * 0.84, 163, 35, Color(73, 75, 77, 150))
          surface.SetTextColor(0, 0, 0, 255)
          surface.SetTextPos(dropShadowPosKillClip.w + xOffsetKillClip, dropShadowPosKillClip.h)
@@ -247,16 +250,16 @@ if CLIENT then
       end
 
       --draw rapid hit hud
-      if ClientVars.RapidHitActive then
-         local RapidHitTimer = tostring(math.floor(ClientVars.RapidHitStacksDelayTimer) - math.floor(CurTime()))
+      if RapidHitActive then
+         local RapidHitTimer = tostring(math.floor(RapidHitStacksDelayTimer) - math.floor(CurTime()))
 
          draw.RoundedBox(10, scrW * 0.005, scrH * 0.80, 209, 35, Color(73, 75, 77, 150))
          surface.SetTextColor(0, 0, 0, 255)
          surface.SetTextPos(dropShadowPosRapidHit.w + xOffsetRapidHit, dropShadowPosRapidHit.h)
-         surface.DrawText("Rapid Hit x" .. ClientVars.RapidHitStacks)
+         surface.DrawText("Rapid Hit x" .. RapidHitStacks)
          surface.SetTextColor(255, 255, 255, 255)
          surface.SetTextPos(textPosRapidHit.w + xOffsetRapidHit, textPosRapidHit.h)
-         surface.DrawText("Rapid Hit x" .. ClientVars.RapidHitStacks)
+         surface.DrawText("Rapid Hit x" .. RapidHitStacks)
 
          if tonumber(RapidHitTimer) < 10 then
             surface.SetTextColor(0, 0, 0, 255)
@@ -385,7 +388,7 @@ function SWEP:Think()
          end
          net.Start("RapidHitStacksDelayTimer")
             net.WriteInt(math.floor(self.RapidHitStacksDelayTimer), 32)
-         net.Broadcast()
+         net.Send(self:GetOwner())
       end
 
       -- check our timer, do we need to deactivate?
@@ -400,24 +403,23 @@ function SWEP:Think()
          -- let client know rapid hit is over
          net.Start("RapidHitActive")
             net.WriteBool(false)
-         net.Broadcast()
+         net.Send(self:GetOwner())
          net.Start("RapidHitStacksDelayTimer")
             net.WriteInt(0, 32)
-         net.Broadcast()
+         net.Send(self:GetOwner())
       end
-   end
-   if SERVER then
+
       -- kill clip logic
       if self.KillClipActive then
          self.KillClipActive = false
          self.KillClipDelayTimer = CurTime() + self.KillClipDelay
          net.Start("KillClipDelayTimer")
             net.WriteInt(math.floor(self.KillClipDelayTimer), 32)
-         net.Broadcast()
+         net.Send(self:GetOwner())
          self.Primary.Damage = tonumber(self.Primary.Damage) + (tonumber(self.Primary.Damage) * self.KillClipPctIncrease)
          net.Start("KillClipActive")
             net.WriteBool(true)
-         net.Broadcast()
+         net.Send(self:GetOwner())
       end
 
       -- check our timer, do we need to deactivate?
@@ -428,10 +430,10 @@ function SWEP:Think()
          -- let client know kc is over
          net.Start("KillClipActive")
             net.WriteBool(false)
-         net.Broadcast()
+         net.Send(self:GetOwner())
          net.Start("KillClipDelayTimer")
             net.WriteInt(0, 32)
-         net.Broadcast()
+         net.Send(self:GetOwner())
       end
    end
 end

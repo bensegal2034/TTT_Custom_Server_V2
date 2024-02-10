@@ -32,7 +32,6 @@ SWEP.SetClipQueued         = false
 SWEP.Secondary.Sound       = Sound("Default.Zoom")
 SWEP.DamageType            = "True"
 SWEP.HeadshotMultiplier    = 999
-SWEP.IsScoped              = false
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_357_ttt"
@@ -48,8 +47,10 @@ function SWEP:SetZoom(state)
    if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
       if state then
          self:GetOwner():SetFOV(20, 0.3)
+         self.Primary.Cone = 0
       else
          self:GetOwner():SetFOV(0, 0.2)
+         self.Primary.Cone = 0.35
       end
    end
 end
@@ -59,11 +60,6 @@ end
 
 function SWEP:PrimaryAttack( worldsnd )
    local currentClip = self:Clip1() 
-   if self.IsScoped == true then
-      self.Primary.Cone = 0
-   else
-      self.Primary.Cone = 0.35
-   end
    self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
    self:SetNextSecondaryFire( CurTime() + 0.1 )
    local traceRes = self.Owner:GetEyeTrace()
@@ -77,11 +73,7 @@ end
 function SWEP:SecondaryAttack()
    if not self.IronSightsPos then return end
    if self:GetNextSecondaryFire() > CurTime() then return end
-   if self.IsScoped == false then
-      self.IsScoped = true
-   else
-      self.IsScoped = false
-   end
+   
 
    local bIronsights = not self:GetIronsights()
 

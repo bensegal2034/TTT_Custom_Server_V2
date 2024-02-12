@@ -129,9 +129,11 @@ if SERVER then
 		net.WriteBool(VotedPlayer != false)
 		net.Broadcast()
 
-		timer.Simple(SHOW_VOTES_TIME + SHOW_RESULT_TIME, function()
-			VotedPlayer:Kill()
-		end)
+		if VotedPlayer != false then
+			timer.Simple(SHOW_VOTES_TIME + SHOW_RESULT_TIME, function()
+				VotedPlayer:Kill()
+			end)
+		end
 	end
 
 

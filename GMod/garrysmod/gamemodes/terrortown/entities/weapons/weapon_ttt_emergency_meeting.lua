@@ -1,5 +1,3 @@
--- TODO: indicate time left and who votes?
-
 if SERVER then
 	AddCSLuaFile()
 	resource.AddWorkshop("2622509062")
@@ -10,6 +8,7 @@ if SERVER then
 	resource.AddFile("materials/vgui/emergency_meeting/eject_result.png")
 	resource.AddFile("materials/vgui/emergency_meeting/skip_result.png")
 	resource.AddFile("materials/vgui/emergency_meeting/vote_icon.png")
+	resource.AddFile("materials/vgui/emergency_meeting/player_voted.png")
 	resource.AddFile("materials/vgui/ttt/icon_emergency_meeting.png")
 end
 
@@ -75,6 +74,7 @@ if SERVER then
 	util.AddNetworkString("EmergencyMeeting_Start")
 	util.AddNetworkString("EmergencyMeeting_Vote")
 	util.AddNetworkString("EmergencyMeeting_Skip")
+	util.AddNetworkString("EmergencyMeeting_Progress")
 	util.AddNetworkString("EmergencyMeeting_Result")
 
 	function CompleteVote(force)
@@ -96,6 +96,14 @@ if SERVER then
 			
 			if MeetingVotes[p] == nil then
 				if !force then
+					-- Not done voting, update progress
+					local WhoVoted = {}
+					for v, _ in pairs(MeetingVotes) do
+						WhoVoted[v] = true
+					end
+					net.Start("EmergencyMeeting_Progress")
+					net.WriteTable(WhoVoted)
+					net.Broadcast()
 					return
 				end
 			else
@@ -175,111 +183,24 @@ if SERVER then
 		end)
 		emergency_meeting_btn:Remove()
 		net.Start("EmergencyMeeting_Start")
+		net.WriteFloat(CurTime() + VOTING_TIME)
 		net.Broadcast()
 	end)
 end
 
 if CLIENT then
-	local VotePanel = nil;
+	local VotePanel = nil
+	local VoteEnd = nil
+	local HideButtons = false
+	local HasVoted = false
+	local VotesCast = {}
+	local VotesAssigned = {}
 
-	function DisableButtons(Panel)
-		for _, v in ipairs( Panel:GetChildren() ) do
-			if v:GetText() == VOTE_TEXT or v:GetText() == SKIP_TEXT then
-				v:SetEnabled(false)
-			end
-		end
-		Panel:InvalidateChildren(true)
-	end
-
-	net.Receive("EmergencyMeeting_Start", function(len, ply)
-		surface.PlaySound("weapons/emergency_meeting/start_meeting.mp3")
-		local AlertPanel = vgui.Create("DFrame")
-		local STARTWIDTH = 1920
-		local STARTHEIGHT = 1080
-
-		AlertPanel:SetPos((ScrW() - STARTWIDTH) / 2, (ScrH() - STARTHEIGHT) / 2)
-		AlertPanel:SetSize(STARTWIDTH, STARTHEIGHT)
-		AlertPanel:SetTitle("Emergency Meeting")
-		AlertPanel:ShowCloseButton(false) 
-		AlertPanel:MakePopup()
-
-		local StartImage = vgui.Create("DImage", AlertPanel)
-		StartImage:SetImage("vgui/emergency_meeting/start_meeting.png")
-		StartImage:SetSize(1920, 1080)
-
-		timer.Simple(1, function() 
-			AlertPanel:Close()
-
-			local Panel = vgui.Create("DFrame")
-			local WIDTH = 400
-			local HEIGHT = 800
-
-			Panel:SetPos((ScrW() - WIDTH) / 2, (ScrH() - HEIGHT) / 2)
-			Panel:SetSize(WIDTH, HEIGHT)
-			Panel:SetTitle("Emergency Meeting")
-			Panel:ShowCloseButton(false) 
-			Panel:MakePopup()
-			local offset = 0
-
-			for i, p in ipairs( player.GetAll() ) do
-				if p:Team() == TEAM_CONNECTING or p:Team() == TEAM_UNASSIGNED then
-					continue
-				end
-
-				offset = offset + 1;
-
-				if p:Alive() then
-					local Avatar = vgui.Create("AvatarImage", Panel)
-					Avatar:SetSize(64, 64)
-					Avatar:SetPos(4, 70 * offset)
-					Avatar:SetPlayer(p, 64)
-				else
-					local Avatar = vgui.Create("DKillIcon", Panel)
-					Avatar:SetSize(64, 64)
-					Avatar:SetPos(4, 70 * offset + 20)
-				end
-
-				local Label = vgui.Create("DLabel", Panel)
-				Label:SetPos(70, 70 * offset + 21)
-				Label:SetText(p:Nick())
-
-				local Button = vgui.Create("DButton", Panel)
-				Button:SetPos(140, 70 * offset + 20)
-				Button:SetText(VOTE_TEXT)
-				Button:SetEnabled(p:Alive() and LocalPlayer():Alive())
-
-				Button.DoClick = function()
-					net.Start("EmergencyMeeting_Vote")
-					net.WriteEntity(p)
-					net.SendToServer()
-					DisableButtons(Panel)
-				end
-			end
-
-			local NoVoteButton = vgui.Create("DButton", Panel)
-			NoVoteButton:SetPos(4, 750)
-			NoVoteButton:SetText(SKIP_TEXT)
-			NoVoteButton:SetEnabled(LocalPlayer():Alive())
-
-			NoVoteButton.DoClick = function()
-				net.Start("EmergencyMeeting_Skip")
-				net.SendToServer()
-				DisableButtons(Panel)
-			end
-
-			VotePanel = Panel
-		end)
-	end)
-
-	net.Receive("EmergencyMeeting_Result", function(len, ply)
-		surface.PlaySound("weapons/emergency_meeting/vote_done.mp3")
-		
-		if VotePanel != nil then
+	function GeneratePanel()
+		if IsValid(VotePanel) then
 			VotePanel:Close()
+			VotePanel:Remove()
 		end
-
-		local MeetingVotes = net.ReadTable()
-		local AnyEjected = net.ReadBool()
 
 		local Panel = vgui.Create("DFrame")
 		local WIDTH = 400
@@ -297,7 +218,7 @@ if CLIENT then
 				continue
 			end
 
-			offset = offset + 1;
+			offset = offset + 1
 
 			if p:Alive() then
 				local Avatar = vgui.Create("AvatarImage", Panel)
@@ -314,8 +235,29 @@ if CLIENT then
 			Label:SetPos(70, 70 * offset + 21)
 			Label:SetText(p:Nick())
 
-			if MeetingVotes[p] != nil then
-				for v = 1, MeetingVotes[p] do
+			if !HideButtons then
+				local Button = vgui.Create("DButton", Panel)
+				Button:SetPos(140, 70 * offset + 20)
+				Button:SetText(VOTE_TEXT)
+				Button:SetEnabled(p:Alive() and LocalPlayer():Alive() and !HasVoted)
+				Button.DoClick = function()
+					net.Start("EmergencyMeeting_Vote")
+					net.WriteEntity(p)
+					net.SendToServer()
+					HasVoted = true
+					GeneratePanel()
+				end
+
+				if VotesCast[p] != nil then
+					local Voted = vgui.Create("DImage", Panel)
+					Voted:SetSize(16, 16)
+					Voted:SetPos(4, 70 * offset)
+					Voted:SetImage("vgui/emergency_meeting/player_voted.png")
+				end
+			end
+
+			if VotesAssigned[p] != nil then
+				for v = 1, VotesAssigned[p] do
 					local Vote = vgui.Create("DImage", Panel)
 					Vote:SetSize(32, 32)
 					Vote:SetPos(v * 40 + 100, 70 * offset + 20)
@@ -324,8 +266,39 @@ if CLIENT then
 			end
 		end
 
-		if MeetingVotes[false] != nil then
-			for v = 1, MeetingVotes[false] do
+		if !HideButtons then
+			local NoVoteButton = vgui.Create("DButton", Panel)
+			NoVoteButton:SetPos(4, 750)
+			NoVoteButton:SetText(SKIP_TEXT)
+			NoVoteButton:SetEnabled(LocalPlayer():Alive() and !HasVoted)
+			NoVoteButton.DoClick = function()
+				net.Start("EmergencyMeeting_Skip")
+				net.SendToServer()
+				HasVoted = true
+				GeneratePanel()
+			end
+
+			local Timer = vgui.Create("DLabel", Panel)
+			Timer:SetExpensiveShadow(1, COLOR_BLACK)
+			Timer:SetFont("C4Timer")
+			Timer:SetPos(350, 750)
+			Timer:SetText("")
+			Timer.Think = function(s)
+				if VoteEnd == nil then
+					return
+				end
+				local delta = VoteEnd - CurTime()
+				if delta <= 10 then
+					s:SetTextColor(Color(200, 0, 0, 255))
+				end
+				if delta > 0 then
+					s:SetText(math.ceil(delta))
+				end
+			end
+		end
+
+		if VotesAssigned[false] != nil then
+			for v = 1, VotesAssigned[false] do
 				local Vote = vgui.Create("DImage", Panel)
 				Vote:SetSize(32, 32)
 				Vote:SetPos(v * 40 - 30, 750)
@@ -333,10 +306,59 @@ if CLIENT then
 			end
 		end
 
+		VotePanel = Panel
+	end
+
+	net.Receive("EmergencyMeeting_Start", function(len, ply)
+		surface.PlaySound("weapons/emergency_meeting/start_meeting.mp3")
+
+		VoteEnd = net.ReadFloat()
+		HasVoted = false
+		HideButtons = false
+		VotesCast = {}
+		VotesAssigned = {}
+		
+		local AlertPanel = vgui.Create("DFrame")
+		local STARTWIDTH = 1920
+		local STARTHEIGHT = 1080
+
+		AlertPanel:SetPos((ScrW() - STARTWIDTH) / 2, (ScrH() - STARTHEIGHT) / 2)
+		AlertPanel:SetSize(STARTWIDTH, STARTHEIGHT)
+		AlertPanel:SetTitle("Emergency Meeting")
+		AlertPanel:ShowCloseButton(false) 
+		AlertPanel:MakePopup()
+
+		local StartImage = vgui.Create("DImage", AlertPanel)
+		StartImage:SetImage("vgui/emergency_meeting/start_meeting.png")
+		StartImage:SetSize(1920, 1080)
+
+		timer.Simple(1, function() 
+			AlertPanel:Close()
+			GeneratePanel()
+		end)
+	end)
+
+	net.Receive("EmergencyMeeting_Progress", function(len, ply)
+		VotesCast = net.ReadTable()
+		GeneratePanel()
+	end)
+
+	net.Receive("EmergencyMeeting_Result", function(len, ply)
+		surface.PlaySound("weapons/emergency_meeting/vote_done.mp3")
+
+		HideButtons = true
+		VotesAssigned = net.ReadTable()
+		local AnyEjected = net.ReadBool()
+
+		GeneratePanel()
+
 		timer.Simple(SHOW_VOTES_TIME, function()
 			surface.PlaySound("weapons/emergency_meeting/eject_result.mp3")
 
-			Panel:Close()
+			if IsValid(VotePanel) then
+				VotePanel:Close()
+				VotePanel:Remove()
+			end
 
 			local EjectedPanel = vgui.Create("DFrame")
 			local STARTWIDTH = 1920

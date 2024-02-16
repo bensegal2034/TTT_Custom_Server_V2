@@ -69,7 +69,7 @@ local IsValid = IsValid
 local CurTime = CurTime
 
 hook.Add("EntityTakeDamage", "ZMCarryDamage", function( target, dmginfo)
-	if not IsValid(dmginfo:GetInflictor()) or not IsValid(target) then return end
+	if not IsValid(dmginfo:GetInflictor()) or not IsValid(target) or dmginfo:GetInflictor == nil or target == nil then return end
    if IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker == nil then return end
 
    local propStrStart, propStrEnd = string.find(tostring(dmginfo:GetInflictor()):lower(), "prop")

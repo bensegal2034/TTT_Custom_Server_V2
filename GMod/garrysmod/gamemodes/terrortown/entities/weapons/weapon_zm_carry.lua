@@ -41,6 +41,7 @@ SWEP.AllowDrop              = false
 SWEP.NoSights               = true
 
 SWEP.EntHolding             = nil
+SWEP.IsHolding              = false
 SWEP.CarryHack              = nil
 SWEP.Constr                 = nil
 SWEP.PrevOwner              = nil
@@ -67,6 +68,40 @@ local player = player
 local IsValid = IsValid
 local CurTime = CurTime
 
+hook.Add("EntityTakeDamage", "ZMCarryDamage", function( target, dmginfo)
+	if not IsValid(dmginfo:GetInflictor()) or not IsValid(target) then return end
+
+   local propStrStart, propStrEnd = string.find(tostring(dmginfo:GetInflictor()):lower(), "prop")
+   local sussiestSuspect = nil
+
+   if propStrStart then
+      -- attempt to find the person who prop killed via IsHolding tag and distance check
+      for i, p in ipairs(player.GetAll()) do
+         if not IsValid(p:GetActiveWeapon()) or not IsValid(p) or not p then continue end
+
+         if p:GetActiveWeapon():GetClass() == "weapon_zm_carry" then
+            if p:GetActiveWeapon().IsHolding then
+               if sussiestSuspect == nil then
+                  sussiestSuspect = p
+               else
+                  local susDist = sussiestSuspect:GetPos():Distance(target:GetPos())
+                  local pDist = p:GetPos():Distance(target:GetPos())
+
+                  if susDist > pDist then -- sus guy is further away from the target than currently checked player
+                     sussiestSuspect = p
+                  end
+               end
+            end
+         end
+      end
+
+      if not sussiestSuspect then -- we failed to find a valid suspect :(
+         print("Error finding valid player for prop damage event!")
+      else -- we did find a suspect, set them as the attacker
+         dmginfo:SetAttacker(sussiestSuspect)
+      end
+   end
+end)
 
 local function SetSubPhysMotionEnabled(ent, enable)
    if not IsValid(ent) then return end
@@ -351,6 +386,8 @@ function SWEP:Pickup()
    local trace = ply:GetEyeTrace(MASK_SHOT)
    local ent = trace.Entity
    self.EntHolding = ent
+   timer.Remove("DelayHoldingFlagTimer")
+   self.IsHolding = true
    local entphys = ent:GetPhysicsObject()
 
 
@@ -436,6 +473,9 @@ function SWEP:Drop()
    if SERVER then
       self.Constr:Remove()
       self.CarryHack:Remove()
+      timer.Create("DelayHoldingFlagTimer", 3, 1, function()
+         self.IsHolding = false
+      end)
 
       local ent = self.EntHolding
 

@@ -70,6 +70,7 @@ local CurTime = CurTime
 
 hook.Add("EntityTakeDamage", "ZMCarryDamage", function( target, dmginfo)
 	if not IsValid(dmginfo:GetInflictor()) or not IsValid(target) then return end
+   if IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker == nil then return end
 
    local propStrStart, propStrEnd = string.find(tostring(dmginfo:GetInflictor()):lower(), "prop")
    local sussiestSuspect = nil
@@ -95,7 +96,7 @@ hook.Add("EntityTakeDamage", "ZMCarryDamage", function( target, dmginfo)
          end
       end
 
-      if not sussiestSuspect then -- we failed to find a valid suspect :(
+      if sussiestSuspect == nil then -- we failed to find a valid suspect :(
          print("Error finding valid player for prop damage event!")
       else -- we did find a suspect, set them as the attacker
          dmginfo:SetAttacker(sussiestSuspect)

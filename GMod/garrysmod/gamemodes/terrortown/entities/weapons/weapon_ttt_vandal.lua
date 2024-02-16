@@ -43,15 +43,7 @@ end
 
 if SERVER then
    hook.Add("DoPlayerDeath", "PlayerDeathVandal", function(victim, attacker, dmginfo)
-      if not dmginfo:GetAttacker() then
-         return
-      end
-      if not IsValid(dmginfo:GetAttacker()) then
-         return
-      end
-      if not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
-         return
-      end
+      if not IsValid(dmginfo:GetAttacker()) or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) or not dmginfo:GetAttacker() or not dmginfo:GetAttacker():GetActiveWeapon() then return end
 
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 

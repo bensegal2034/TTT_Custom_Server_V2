@@ -242,9 +242,8 @@ end
 
 
 hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
-   if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
-      return
-   end
+   if not IsValid(dmginfo:GetAttacker()) or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) or not dmginfo:GetAttacker() or not dmginfo:GetAttacker():GetActiveWeapon() then return end
+   
    local weapon = dmginfo:GetAttacker():GetActiveWeapon()
    
    if weapon:GetClass() == "weapon_sp_winchester" then

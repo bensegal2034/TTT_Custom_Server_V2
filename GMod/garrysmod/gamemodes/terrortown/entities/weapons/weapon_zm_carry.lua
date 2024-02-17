@@ -69,8 +69,8 @@ local IsValid = IsValid
 local CurTime = CurTime
 
 hook.Add("EntityTakeDamage", "ZMCarryDamage", function( target, dmginfo)
-	if not IsValid(dmginfo:GetInflictor()) or not IsValid(target) or dmginfo:GetInflictor == nil or target == nil then return end
-   if IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker == nil then return end
+   if not IsValid(dmginfo:GetInflictor()) or not IsValid(target) or dmginfo:GetInflictor() == nil or target == nil then return end
+   if IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker() == nil then return end
 
    local propStrStart, propStrEnd = string.find(tostring(dmginfo:GetInflictor()):lower(), "prop")
    local sussiestSuspect = nil
@@ -137,6 +137,9 @@ function SWEP:Reset(keep_velocity)
    if IsValid(self.Constr) then
       self.Constr:Remove()
    end
+
+   self.IsHolding = false
+   timer.Remove("DelayHoldingFlagTimer")
 
    if IsValid(self.EntHolding) then
       -- it is possible for weapons to be already equipped at this point

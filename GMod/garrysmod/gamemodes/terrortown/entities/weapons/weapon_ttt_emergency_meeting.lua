@@ -65,7 +65,7 @@ local VOTE_TEXT = "Vote"
 local SKIP_TEXT = "Skip vote"
 local SHOW_VOTES_TIME = 4
 local SHOW_RESULT_TIME = 5
-local VOTING_TIME = 75
+local VOTING_TIME = 50
 
 if SERVER then
 	local MeetingVotes = {}
@@ -387,6 +387,9 @@ if CLIENT then
 end
 
 function SWEP:PrimaryAttack()
+	if GetRoundState() != ROUND_ACTIVE then
+		return
+	end
 	if CLIENT and IsFirstTimePredicted() then
 		net.Start("EmergencyMeeting_Request")
 		net.WriteEntity(self)

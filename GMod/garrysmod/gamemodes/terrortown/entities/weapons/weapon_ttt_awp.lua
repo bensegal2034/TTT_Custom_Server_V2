@@ -72,7 +72,7 @@ SWEP.NoSights = false
 
 if SERVER then
    hook.Add("ScalePlayerDamage", "AWPDamageHandler", function(target, hitgroup, dmginfo)
-      if not IsValid(target) and not IsValid(target:GetActiveWeapon()) and not IsValid(dmginfo:GetAttacker()) then return end
+      if not IsValid(target) or not IsValid(target:GetActiveWeapon()) or not IsValid(dmginfo:GetAttacker()) then return end
 
       if target:GetActiveWeapon():GetClass() == "weapon_ttt_awp" then
          dmginfo:SetDamage(999)

@@ -124,6 +124,16 @@ SWEP.WElements = {
 	["world_model"] = { type = "Model", model = "models/weapons/raygun/w_raygun.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(-0.548, 0.301, 0.16), angle = Angle(-180, -180, 0), size = Vector(1.049, 1.049, 1.049), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
 }
 
+if SERVER then
+	hook.Add("EntityTakeDamage", "RaygunFix", function(ply, dmginfo)
+		if not IsValid(dmginfo:GetInflictor()) or dmginfo:GetInflictor() == nil then return end
+
+		if dmginfo:GetInflictor():GetClass() == "obj_rgun_proj" and GetRoundState() != ROUND_ACTIVE then
+			return true
+		end
+	end)
+end
+
 
 function SWEP:PreDrop()
    self:SetIronsights(false)

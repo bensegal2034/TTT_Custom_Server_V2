@@ -42,18 +42,16 @@ if CLIENT then
 end
 
 if SERVER then
-   hook.Add("DoPlayerDeath", "PlayerDeathVandal", function(victim, attacker, dmginfo)
-      if not IsValid(dmginfo:GetAttacker()) or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) or not dmginfo:GetAttacker() or not dmginfo:GetAttacker():GetActiveWeapon() then return end
+   hook.Add("PlayerDeath", "PlayerDeathVandal", function(victim, inflictor, attacker)
+      if not IsValid(inflictor) or inflictor == nil then return end
 
-      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-
-      if weapon:GetClass() == "weapon_ttt_vandal" then
-         weapon.KillCount = weapon.KillCount + 1
-         weapon.KillEffectBuffer = true
-         weapon.FirstShotAccuracy = true
+      if inflictor:GetClass() == "weapon_ttt_vandal" then
+         inflictor.KillCount = inflictor.KillCount + 1
+         inflictor.KillEffectBuffer = true
+         inflictor.FirstShotAccuracy = true
 
          net.Start("PlayerDeathVandal")
-            net.WriteEntity(weapon)
+            net.WriteEntity(inflictor)
          net.Broadcast()
       end
    end)

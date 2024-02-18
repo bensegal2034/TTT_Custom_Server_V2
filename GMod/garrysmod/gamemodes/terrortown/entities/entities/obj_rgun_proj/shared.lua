@@ -44,7 +44,7 @@ if SERVER then
 		dmg:SetInflictor(self)
 		dmg:SetDamage(self.Damage)
 		--dmg:SetDamageForce( Vector(0,0,0) )
-		if GetRoundState() == ROUND_ACTIVE then
+		if GetRoundState() != ROUND_PREP then
 			util.BlastDamageInfo(dmg, hitpos, 100)
 		end
 		local proj = ents.Create("raygun_splash_proj")

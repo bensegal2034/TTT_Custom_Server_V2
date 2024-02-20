@@ -17,6 +17,23 @@ function ENT:Initialize()
 				hook.Remove("PreDrawEffects", hookName)
 				return
 			end
+
+			-- Hide the sprite if blocked line of sight
+			local client = LocalPlayer()
+			local startpos = client:EyePos()
+			local endpos = self:GetPos()
+
+			local trace = util.TraceLine({
+				start = startpos,
+				endpos = endpos,
+				mask = MASK_VISIBLE_AND_NPCS,
+				filter = client,
+			})
+
+			if trace.Hit and trace.Entity != self then
+				return
+			end
+
 			render.SetMaterial(Material("sprites/raygun_ring"))
 			local size =  math.ceil(RingSize * (CurTime() - self.SpawnTime) / RingLifetime)
 			render.DrawSprite(self:GetPos(), size, size, Color(0, 255, 0, 255))

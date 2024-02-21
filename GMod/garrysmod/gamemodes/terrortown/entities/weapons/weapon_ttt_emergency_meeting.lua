@@ -66,9 +66,11 @@ local SKIP_TEXT = "Skip vote"
 local SHOW_VOTES_TIME = 4
 local SHOW_RESULT_TIME = 5
 local VOTING_TIME = 50
+local STUN_TIME = 30
 
 if SERVER then
 	local MeetingVotes = {}
+	local StunnedPlayers = {}
 
 	util.AddNetworkString("EmergencyMeeting_Request")
 	util.AddNetworkString("EmergencyMeeting_Start")
@@ -76,6 +78,18 @@ if SERVER then
 	util.AddNetworkString("EmergencyMeeting_Skip")
 	util.AddNetworkString("EmergencyMeeting_Progress")
 	util.AddNetworkString("EmergencyMeeting_Result")
+
+	hook.Add("PlayerCanPickupWeapon", "EmergencyMeeting_Stun", function(ply, wep)
+		for i, p in ipairs(StunnedPlayers) do
+			if p == ply then
+				return false
+			end
+		end
+	end)
+
+	hook.Add("TTTPrepareRound", "EmergencyMeeting_Reset", function()
+		StunnedPlayers = {}
+	end)
 
 	function CompleteVote(force)
 		if force == nil then
@@ -139,7 +153,26 @@ if SERVER then
 
 		if VotedPlayer != false then
 			timer.Simple(SHOW_VOTES_TIME + SHOW_RESULT_TIME, function()
-				VotedPlayer:Kill()
+				table.insert(StunnedPlayers, VotedPlayer)
+				
+				for k, v in pairs(VotedPlayer:GetWeapons()) do
+					VotedPlayer:DropWeapon(v)
+				end
+
+				timer.Simple(STUN_TIME, function()
+					for i, v in ipairs(StunnedPlayers) do
+						if v == VotedPlayer then
+							table.remove(StunnedPlayers, i)
+							break
+						end
+					end
+					if !IsValid(VotedPlayer) or !(VotedPlayer:Alive()) then
+						return
+					end
+					VotedPlayer:Give("weapon_zm_improvised")
+					VotedPlayer:Give("weapon_zm_carry")
+					VotedPlayer:Give("weapon_ttt_unarmed")
+				end)
 			end)
 		end
 	end

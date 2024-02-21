@@ -95,19 +95,8 @@ end
 
 -- don't let handcuffed players pickup weapons
 hook.Add("PlayerCanPickupWeapon", "HandcuffNoPickup", function(ply, wep)
-    if not old_PlayerCanPickupWeapon(ply, wep) then
-        return false
-    end
-    
     if IsCuffed(ply) then
         ply:PrintMessage(HUD_PRINTCENTER,"You are cuffed!")
         return false
     end
-    
-   local tr = util.TraceEntity({start=wep:GetPos(), endpos=ply:GetShootPos()}, wep)
-   if tr.Fraction == 1.0 or tr.Entity == ply then
-      wep:SetPos(ply:GetShootPos())
-   end
-
-   return true
 end)

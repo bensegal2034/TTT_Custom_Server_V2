@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/{shirt1"
+	"$translucent" 1
+	"$surfaceprop" paper
+}

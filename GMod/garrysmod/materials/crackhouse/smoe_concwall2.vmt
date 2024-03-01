@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/smoe_concwall2"
+	"$surfaceprop" concrete
+}

@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/cstrike_OE4Vent"
+	"$surfaceprop" metal_barrel
+}

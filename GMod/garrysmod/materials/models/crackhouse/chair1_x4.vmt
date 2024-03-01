@@ -1,0 +1,5 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "crackhouse/chair1_x4"
+	"$surfaceprop" concrete
+}

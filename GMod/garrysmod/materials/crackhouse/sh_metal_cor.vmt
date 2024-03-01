@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/sh_metal_cor"
+	"$surfaceprop" metal
+}

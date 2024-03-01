@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/{po_freecsla"
+	"$translucent" 1
+	"$surfaceprop" metal
+}

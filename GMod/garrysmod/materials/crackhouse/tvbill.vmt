@@ -1,0 +1,15 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/tvbill"
+	"$surfaceprop" computer
+	
+	"Proxies"
+{
+"AnimatedTexture"
+{
+"animatedTextureVar" "$basetexture"
+"animatedTextureFrameNumVar" "$frame"
+"animatedTextureFrameRate" "10"
+}
+}
+}

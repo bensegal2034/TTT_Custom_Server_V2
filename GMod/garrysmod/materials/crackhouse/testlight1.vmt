@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/testlight1"
+	"$surfaceprop" glass
+}

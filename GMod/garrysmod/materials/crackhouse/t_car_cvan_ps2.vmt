@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crackhouse/t_car_cvan_ps2"
+	"$surfaceprop" metal
+}

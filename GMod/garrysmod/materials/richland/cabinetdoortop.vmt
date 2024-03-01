@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "richland/cabinetdoortop"
+	"$surfaceprop" "wood"
+	"$bumpmap" "richland/cabinetdoortop_normal"
+}

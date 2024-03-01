@@ -1,0 +1,6 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "richland/ceiling"
+	"$surfaceprop" "ceiling_tile"
+	"$bumpmap" "richland/ceiling_normal"
+}

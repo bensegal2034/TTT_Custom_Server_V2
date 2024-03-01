@@ -1,0 +1,9 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "richland/bathroomtile"
+	"$surfaceprop" "tile"
+	"$bumpmap" "richland/bathroomtile_normal"
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.08 .08 .08]"
+	"$envmapcontrast" 1
+}

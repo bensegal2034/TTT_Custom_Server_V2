@@ -1,0 +1,9 @@
+"lightmappedgeneric"
+{
+	"$basetexture" "richland/plasterwall"
+	"$surfaceprop" "plaster"
+	"$bumpmap" "richland/plasterwall_normal"
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.08 .08 .08]"
+	"$envmapcontrast" 1
+}

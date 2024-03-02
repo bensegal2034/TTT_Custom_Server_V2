@@ -2,7 +2,7 @@ const http = require('http'),
       fs   = require('fs'),
       mime = require('mime'),
       dir  = '../'
-      port = 80
+      port = 3000
 
 const server = http.createServer(function(request, response) {
     if (request.method !== 'GET') {
@@ -18,7 +18,7 @@ const server = http.createServer(function(request, response) {
         // if the error = null, then we've loaded the file successfully
         if (err === null) {
             console.log("Serving request for " + filename)
-            response.writeHeader(200, {'Content-Type': type})
+            response.writeHeader(200, {'Content-Length': Buffer.byteLength(content)})
             response.end(content)
 
         } else {

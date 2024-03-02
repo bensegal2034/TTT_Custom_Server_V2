@@ -1,0 +1,8 @@
+"LightmappedGeneric"
+{
+	// Original shader: DecalBaseTimesLightmapAlphaBlend
+	"$translucent" 1
+	"$surfaceprop" metal
+	"$basetexture" "MaiKsOverlays/MaiKsOverlays_dangersign67"
+                "%keywords" "sign"
+}

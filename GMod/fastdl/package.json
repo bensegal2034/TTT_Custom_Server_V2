@@ -1,0 +1,13 @@
+{
+    "name": "GarrysModWebserver",
+    "version": "",
+    "description": "",
+    "author": "",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "mime": "^3.0.0"
+    }
+  }
+  

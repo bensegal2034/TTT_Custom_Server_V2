@@ -79,13 +79,11 @@ sound.Add({
 })
 
 function SWEP:SetupDataTables()
-	self:NetworkVar( "Int", 0, "WeaponLuck" )
  	self:NetworkVar( "Int", 1, "HoldingAces" )
 end
 
 function SWEP:Initialize()
 	if SERVER then
-		self:SetWeaponLuck(math.random(1,6))
 		self:SetHoldingAces(math.random(1,6))
 	end
 	if CLIENT and self:Clip1() == -1 then
@@ -116,11 +114,7 @@ function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end
 
 	if self:Clip1() == self:GetHoldingAces() then
-		damage = damage * 2
-		self.Hawkmoon = true
-	end
-	if self:Clip1() == self:GetWeaponLuck() then
-		damage = damage * 2 
+		damage = damage * 3
 		self.Hawkmoon = true
 	end
 		
@@ -142,7 +136,6 @@ function SWEP:Reload()
 	self:DefaultReload(self.ReloadAnim)
 	self:SetIronsights( false )
 	if SERVER then
-		self:SetWeaponLuck(math.random(1,6))
 		self:SetHoldingAces(math.random(1,6))
 	end
 end

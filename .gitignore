@@ -25,4 +25,4 @@ updatetf2.txt
 *.ztmp
 *.lst
 *.pyc
-
+*.bz2

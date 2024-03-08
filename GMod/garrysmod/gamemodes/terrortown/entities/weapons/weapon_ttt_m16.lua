@@ -18,7 +18,7 @@ SWEP.Base                  = "weapon_tttbase"
 SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_M16
 
-SWEP.Primary.Delay         = 0.14
+SWEP.Primary.Delay         = 0
 SWEP.Primary.Recoil        = 1.4
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "Pistol"
@@ -30,6 +30,10 @@ SWEP.Primary.DefaultClip   = 40
 SWEP.Primary.Sound         = Sound( "Weapon_M4A1.Single" )
 SWEP.DamageType            = "Impact"
 SWEP.HeadshotMultiplier    = 2
+SWEP.ClickTime             = 0
+SWEP.ClickTimer            = 0
+SWEP.InCombat              = false
+
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
@@ -51,6 +55,51 @@ function SWEP:SetZoom(state)
    else
       self:GetOwner():SetFOV(0, 0.2)
    end
+end
+
+function SWEP:PrimaryAttack(worldsnd)
+
+   self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+
+   if not self:CanPrimaryAttack() then return end
+
+   if not worldsnd then
+      self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+   elseif SERVER then
+      sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
+   end
+
+   self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+
+   self:TakePrimaryAmmo( 1 )
+   self.InCombat = true
+   self.ClickTime = CurTime()
+   print(self.ClickTimer)
+   local owner = self:GetOwner()
+   if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
+
+   owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
+end
+
+function SWEP:DryFire(setnext)
+   if CLIENT and LocalPlayer() == self:GetOwner() then
+      self:EmitSound( "Weapon_Pistol.Empty" )
+   end
+
+   setnext(self, CurTime() + 0.2)
+
+   self:Reload()
+end
+
+function SWEP:CanPrimaryAttack()
+   if not IsValid(self:GetOwner()) then return end
+
+   if self:Clip1() <= 0 then
+      self:DryFire(self.SetNextPrimaryFire)
+      return false
+   end
+   return true
 end
 
 -- Add some zoom to ironsights for this gun
@@ -104,4 +153,18 @@ function SWEP:Initialize()
    if self.SetHoldType then
       self:SetHoldType(self.HoldType or "pistol")
    end
+end
+
+function SWEP:Think()
+   if self.InCombat == true then
+      self.ClickTimer = CurTime() - self.ClickTime
+      if self.ClickTimer < .3 then
+         self.Primary.Damage = 10
+      else
+         self.InCombat = false
+      end
+   else
+      self.Primary.Damage = 35
+   end
+   self:CalcViewModel()
 end

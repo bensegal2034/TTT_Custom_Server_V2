@@ -91,10 +91,10 @@ SWEP.Primary.Sound = "doohickey_fire.wav"
 SWEP.Primary.Damage = 16
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 4 
-SWEP.Primary.ClipMax       = 12
+SWEP.Primary.ClipMax       = 4
 SWEP.Primary.DefaultClip   = 4
-SWEP.Primary.Ammo = "Buckshot"
-SWEP.Primary.DefaultClip = 32
+SWEP.Primary.Ammo = "AlyxGun"
+SWEP.Primary.DefaultClip = 4
 SWEP.Primary.Cone = 0.20
 SWEP.Primary.NumShots = 20
 SWEP.Primary.Automatic = false
@@ -106,12 +106,11 @@ SWEP.Secondary.ClipSize = 0
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
-SWEP.ExplodeVal = 0
+SWEP.Explode = 0
+SWEP.Misfire = 0
 SWEP.HoldType = "shotgun"
 
-function SWEP:SetupDataTables()
-	self:NetworkVar( "Int", 0, "SelfExplode" )
-end
+
 
 function SWEP:PrimaryAttack()
  
@@ -129,12 +128,9 @@ function SWEP:PrimaryAttack()
 
 	local rnda = self.Primary.Recoil * -1 
 	local rndb = self.Primary.Recoil * math.random(-1, 1) 
-	if SERVER then
-		self.ExplodeVal = math.random(1,3)
-		self:SetSelfExplode(self.ExplodeVal)
-	end
-	self.ExplodeVal = self:GetSelfExplode()
-	if (self.ExplodeVal > 2) then
+
+	print(self.Misfire)
+	if self:Clip1() == self.Misfire then
 		util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 200, 999)
 		
 		local effectdata = EffectData()
@@ -156,7 +152,7 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:Reload()
-	self:EmitSound(Sound(self.ReloadSound)) 
+
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
 end
 
@@ -250,14 +246,26 @@ end
 		and only have to be visible to the client.
 ********************************************************/
 
-function SWEP:Initialize()
+function SWEP:SetupDataTables()
+	
+end
 
+function SWEP:SetupDataTables()
+	self:NetworkVar( "Int", 0, "Explode" )
+end
+
+function SWEP:Initialize()
+	
+	if SERVER then
+		self:SetExplode(math.random(1,4))
+	end
+	self.Misfire = self:GetExplode()
 util.PrecacheSound(self.Primary.Sound) 
 util.PrecacheSound(self.ReloadSound) 
         self:SetWeaponHoldType( self.HoldType )
 
 	// other initialize code goes here
-
+	
 	if CLIENT then
 
 		// Create a new table for every weapon instance

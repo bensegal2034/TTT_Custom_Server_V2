@@ -16,16 +16,17 @@ end
 SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Primary.Recoil        = 0.9
-SWEP.Primary.Damage        = 8
+SWEP.Primary.Damage        = 2
 SWEP.Primary.Delay         = 0.05
-SWEP.Primary.Cone          = 0.024
-SWEP.Primary.ClipSize      = 30
+SWEP.Primary.Cone          = 0.20
+SWEP.Primary.ClipSize      = 20
 SWEP.Primary.Automatic     = true
-SWEP.Primary.DefaultClip   = 60
-SWEP.Primary.ClipMax       = 90
+SWEP.Primary.DefaultClip   = 40
+SWEP.Primary.ClipMax       = 60
+SWEP.Primary.NumShots      = 8
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_Glock.Single" )
-SWEP.DamageType            = "Impact"
+SWEP.DamageType            = "True"
 SWEP.AutoSpawnable         = true
 
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"

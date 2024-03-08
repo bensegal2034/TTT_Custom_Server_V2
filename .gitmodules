@@ -4,6 +4,6 @@
 [submodule "GMod/garrysmod/addons/ulx"]
 	path = GMod/garrysmod/addons/ulx
 	url = https://github.com/TeamUlysses/ulx.git
-[submodule "GMod/garrysmod/addons/gmod-mapvote"]
-	path = GMod/garrysmod/addons/gmod-mapvote
-	url = https://github.com/tyrantelf/gmod-mapvote
+[submodule "GMod/garrysmod/addons/gmod-mapvote-revote"]
+	path = GMod/garrysmod/addons/gmod-mapvote-revote
+	url = https://github.com/bensegal2034/gmod-mapvote-revote

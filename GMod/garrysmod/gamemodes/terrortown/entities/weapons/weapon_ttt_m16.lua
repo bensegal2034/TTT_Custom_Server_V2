@@ -75,7 +75,7 @@ function SWEP:PrimaryAttack(worldsnd)
    self:TakePrimaryAmmo( 1 )
    self.InCombat = true
    self.ClickTime = CurTime()
-   print(self.ClickTimer)
+
    local owner = self:GetOwner()
    if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
 
@@ -158,7 +158,7 @@ end
 function SWEP:Think()
    if self.InCombat == true then
       self.ClickTimer = CurTime() - self.ClickTime
-      if self.ClickTimer < .3 then
+      if self.ClickTimer < .2 then
          self.Primary.Damage = 10
       else
          self.InCombat = false

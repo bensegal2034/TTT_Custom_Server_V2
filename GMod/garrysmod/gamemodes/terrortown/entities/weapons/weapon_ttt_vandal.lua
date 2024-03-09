@@ -81,6 +81,12 @@ SWEP.FirstShotDelay = 1.5
 SWEP.AccuracyTimer = 0
 SWEP.DamageType            = "Puncture"
 
+SWEP.Primary.MovementCone = 0.001
+SWEP.MovementAccuracyTimer = 0
+SWEP.AccuracyDelay = 0.2
+SWEP.MovementInaccuracy = false
+
+
 -- Model settings
 SWEP.UseHands = true
 SWEP.ViewModelFlip = false
@@ -160,18 +166,42 @@ function SWEP:Think()
       end
    end
 
+   if self.Owner:KeyDown(IN_FORWARD) then
+      self.MovementInaccuracy = true
+      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
+      self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
+   elseif self.Owner:KeyDown(IN_BACK) then
+      self.MovementInaccuracy = true
+      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
+      self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
+   elseif self.Owner:KeyDown(IN_MOVELEFT) then
+      self.MovementInaccuracy = true
+      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
+      self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
+   elseif self.Owner:KeyDown(IN_MOVERIGHT) then
+      self.MovementInaccuracy = true
+      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
+      self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
+   elseif CurTime() > self.MovementAccuracyTimer then
+      self.Primary.MovementCone = 0.001
+      self.MovementInaccuracy = false
+   end
+   
+   if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
+      self.Primary.Cone = 0.001
+   elseif self.FirstShotAccuracy != true then
+      self.Primary.Cone = 0 + (self.FirstShotAccuracyBullets / 10)
+      -- ((((self.AccuracyTimer - CurTime()) - 0) * 100) / (1.5 - 0)) / 100
+      -- formula for making accuracy start out at fully inaccurate and slowly decay over time
+   else
+      self.Primary.Cone = self.Primary.MovementCone
+   end
+
    if CurTime() > self.AccuracyTimer then
       self.FirstShotAccuracy = true
       self.FirstShotAccuracyBullets = 0
    end
-   
-   if self.FirstShotAccuracy then
-      self.Primary.Cone = 0.001
-   else
-      self.Primary.Cone = 0 + (self.FirstShotAccuracyBullets / 10)
-      -- ((((self.AccuracyTimer - CurTime()) - 0) * 100) / (1.5 - 0)) / 100
-      -- formula for making accuracy start out at fully inaccurate and slowly decay over time
-   end
+
 end
 
 function SWEP:PrimaryAttack(worldsnd)

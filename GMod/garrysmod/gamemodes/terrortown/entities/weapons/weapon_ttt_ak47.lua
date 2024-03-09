@@ -108,7 +108,7 @@ function SWEP:Think()
    if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
       self.Primary.Cone = 0.02
    elseif self.MovementInaccuracy != true then
-      self.Primary.Cone = 0 + (math.min(0.08, self.FirstShotAccuracyBullets / 90))
+      self.Primary.Cone = 0 + (math.min(0.08, self.FirstShotAccuracyBullets / 150))
    end
    if CurTime() > self.FSAccuracyTimer then
       self.FirstShotAccuracy = true

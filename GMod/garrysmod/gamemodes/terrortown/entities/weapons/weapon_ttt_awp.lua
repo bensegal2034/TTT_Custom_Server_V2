@@ -1,9 +1,13 @@
 AddCSLuaFile()
+if SERVER then
+   resource.AddFile("materials/VGUI/ttt/icon_awp.vtf")
+   resource.AddFile("materials/VGUI/ttt/icon_awp.vmt")
+end
 
 if CLIENT then
    SWEP.PrintName = "AWP"
-   SWEP.Slot = 2
-   SWEP.Icon = "vgui/ttt/icon_awp"
+   SWEP.Slot = 6
+   SWEP.Icon = "VGUI/ttt/icon_awp"
 end
 
 
@@ -13,14 +17,14 @@ SWEP.Base = "weapon_tttbase"
 -- Standard GMod values
 SWEP.HoldType = "ar2"
 
-SWEP.Primary.Ammo = "357"
+SWEP.Primary.Ammo = "alyxgun"
 SWEP.Primary.Delay = 2
 SWEP.Primary.Recoil = 10
 SWEP.Primary.Cone = 0.15
 SWEP.Primary.Damage = 200
 SWEP.Primary.Automatic = false
 SWEP.Primary.ClipSize = 5
-SWEP.Primary.ClipMax = 15
+SWEP.Primary.ClipMax = 10
 SWEP.Primary.DefaultClip = 10
 SWEP.Primary.Sound = Sound( "weapons/awp/awp1.wav" )
 SWEP.Secondary.Sound = Sound( "Default.Zoom" )
@@ -41,14 +45,11 @@ SWEP.IronSightsAng = Vector( 2.6, 1.37, 3.5 )
 -- Kind specifies the category this weapon is in. Players can only carry one of
 -- each. Can be: WEAPON_... MELEE, PISTOL, HEAVY, NADE, CARRY, EQUIP1, EQUIP2 or ROLE.
 -- Matching SWEP.Slot values: 0      1       2     3      4      6       7        8
-SWEP.Kind = WEAPON_HEAVY
+SWEP.Kind = WEAPON_AWP
 
 -- If AutoSpawnable is true and SWEP.Kind is not WEAPON_EQUIP1/2, then this gun can
 -- be spawned as a random weapon.
-SWEP.AutoSpawnable = true
-
--- The AmmoEnt is the ammo entity that can be picked up when carrying this gun.
-SWEP.AmmoEnt = "item_ammo_357_ttt"
+SWEP.AutoSpawnable = false
 
 -- InLoadoutFor is a table of ROLE_* entries that specifies which roles should
 -- receive this weapon as soon as the round starts. In this case, none.
@@ -59,8 +60,8 @@ SWEP.LimitedStock = true
 
 -- CanBuy is a table of ROLE_* entries like ROLE_TRAITOR and ROLE_DETECTIVE. If
 -- a role is in this table, those players can buy this.
-SWEP.CanBuy = {}
-
+SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.LimitedStock = true
 -- If AllowDrop is false, players can't manually drop the gun with Q
 SWEP.AllowDrop = true
 
@@ -223,7 +224,7 @@ end
 if CLIENT then
    -- Text shown in the equip menu
    SWEP.EquipMenuData = {
-      type = "Weapon",
-      desc = "AWP Sniper Rifle."
+      type = "AWP",
+      desc = "1 Shot Sniper Rifle\nMakes you die in 1 shot when hit\nIncreases enemy visibility of you while scoped"
    }
 end

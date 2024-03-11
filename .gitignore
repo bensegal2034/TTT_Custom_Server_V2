@@ -17,6 +17,7 @@ GMod/garrysmod/modelsounds.cache
 GMod/garrysmod/sv.db
 GMod/garrysmod/cfg/mount.cfg
 GMod/garrysmod/cfg/server.vdf
+GMod/garrysmod/cfg/fastdlsetup.cfg
 updatecsgo.bat
 updatetf2.bat
 updatecsgo.txt

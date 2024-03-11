@@ -158,7 +158,7 @@ end
 function SWEP:Think()
    if self.InCombat == true then
       self.ClickTimer = CurTime() - self.ClickTime
-      if self.ClickTimer < .2 then
+      if self.ClickTimer < .14 then
          self.Primary.Damage = 10
       else
          self.InCombat = false

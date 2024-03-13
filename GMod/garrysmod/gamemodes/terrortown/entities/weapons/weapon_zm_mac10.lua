@@ -21,7 +21,7 @@ SWEP.WeaponID            = AMMO_MAC10
 SWEP.Primary.Damage      = 5
 DAMAGE = SWEP.Primary.Damage
 SWEP.Primary.Delay       = 0.08
-SWEP.Primary.Cone        = 0
+SWEP.Primary.Cone        = 0.02
 SWEP.Primary.ClipSize    = 30
 SWEP.Primary.ClipMax     = 90
 SWEP.Primary.DefaultClip = 60
@@ -70,10 +70,10 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Src    = self.Owner:GetShootPos()
    bullet.Dir    = self.Owner:GetAimVector()
    bullet.Spread = Vector( cone, cone, 0 )
-   bullet.Tracer = 1
-   bullet.TracerName = "Tracer"
    bullet.Force  = 10
    bullet.Damage = dmg
+   bullet.Tracer = 1
+   bullet.TracerName = "AR2Tracer"
    bullet.Callback = function(ply, tr, dmginfo) 
      return self:RicochetCallback(0, ply, tr, dmginfo) 
    end
@@ -104,32 +104,40 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
 
 	if (tr.HitSky) then return end
 	
-	self.MaxRicochet = 1
+	self.MaxRicochet = 2
 	
-	if (bouncenum > self.MaxRicochet) then return end
+	if (bouncenum >= self.MaxRicochet) then return end
 	
-	// -- Bounce vector
-	local trace = {}
-	trace.start = tr.HitPos
-	trace.endpos = trace.start + (tr.HitNormal * 16384)
+	-- Bounce vector
+   if SERVER then
+      local DotProduct = tr.HitNormal:Dot(tr.Normal * -1)
+      local dir = ((2 * tr.HitNormal * DotProduct) + tr.Normal)
+      
+      local ricochetbullet = {}
+         ricochetbullet.Num 		= 1
+         ricochetbullet.Src 		= tr.HitPos
+         ricochetbullet.Dir 		= dir
+         ricochetbullet.Spread 	= Vector(0, 0, 0)
+         ricochetbullet.Force		= dmginfo:GetDamageForce() * 2
+         ricochetbullet.Damage	= dmginfo:GetDamage() * 2
+         ricochetbullet.Tracer   = 1
+         ricochetbullet.TracerName = "AR2Tracer"
+         ricochetbullet.Callback  	= function(a, b, c)  
+            return self:RicochetCallback(bouncenum + 1, a, b, c) end
 
-	local trace = util.TraceLine(trace)
-
- 	local DotProduct = tr.HitNormal:Dot(tr.Normal * -1) 
-	
-	local ricochetbullet = {}
-		ricochetbullet.Num 		= 1
-		ricochetbullet.Src 		= tr.HitPos
-		ricochetbullet.Dir 		= ((2 * tr.HitNormal * DotProduct) + tr.Normal) + (VectorRand() * 0.05)
-		ricochetbullet.Spread 	= Vector(0, 0, 0)
-		ricochetbullet.Tracer	= 1
-		ricochetbullet.TracerName 	= "Tracer"
-		ricochetbullet.Force		= dmginfo:GetDamageForce() * 2
-		ricochetbullet.Damage	= dmginfo:GetDamage() * 2
-		ricochetbullet.Callback  	= function(a, b, c)  
-			return self:RicochetCallback(bouncenum + 1, a, b, c) end
-
-	timer.Simple(0, function() attacker:FireBullets(ricochetbullet) end)
-	
-	return {damage = true, effects = true}
+      -- Unarmed so it doesn't have a model or an offset muzzle location or let you pick it up
+      local fakeswep = ents.Create("weapon_ttt_unarmed")
+      fakeswep:SetPos(tr.HitPos)
+      fakeswep:SetAngles(dir:Angle())
+      fakeswep:SetOwner(self.Owner)
+      
+      fakeswep:Spawn()
+      -- If the timer isn't here it breaks. Don't ask me why.
+      timer.Simple(0, function()
+         fakeswep:FireBullets(ricochetbullet)
+         fakeswep:Remove()
+      end)
+      
+      return {damage = true, effects = true}
+   end
 end

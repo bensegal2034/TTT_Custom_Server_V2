@@ -130,6 +130,7 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
       fakeswep:SetPos(tr.HitPos)
       fakeswep:SetAngles(dir:Angle())
       fakeswep:SetOwner(self.Owner)
+      fakeswep:DrawShadow(false)
       
       fakeswep:Spawn()
       -- If the timer isn't here it breaks. Don't ask me why.

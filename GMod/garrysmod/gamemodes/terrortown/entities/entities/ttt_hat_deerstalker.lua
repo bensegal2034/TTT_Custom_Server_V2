@@ -43,6 +43,7 @@ if SERVER then
    end
 
    function ENT:Drop(dir)
+      print("\n\n\n[HOLY FUCKING SHIT IT CALLED DROP!!!!!!!!!!!]\n")
       local ply = self:GetParent()
 
       ply.hat = nil

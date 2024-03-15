@@ -128,6 +128,12 @@ function SWEP:PrimaryAttack(ply)
     ply:PrintMessage(HUD_PRINTCENTER,"You were cuffed!")
     -- drop player weapons for everyone to see them
     for _, wep in ipairs(ply:GetWeapons()) do
+        if wep.PreDrop then
+            wep:PreDrop(false)
+        end
+        if !IsValid(wep) then
+            continue
+        end
         ply:DropWeapon(wep, nil, (ply:GetAimVector() * 25))
     end
     -- don't let player use magneto stick

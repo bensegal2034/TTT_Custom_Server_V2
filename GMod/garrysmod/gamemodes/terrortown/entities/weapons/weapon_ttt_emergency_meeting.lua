@@ -155,8 +155,14 @@ if SERVER then
 			timer.Simple(SHOW_VOTES_TIME + SHOW_RESULT_TIME, function()
 				table.insert(StunnedPlayers, VotedPlayer)
 				
-				for k, v in pairs(VotedPlayer:GetWeapons()) do
-					VotedPlayer:DropWeapon(v)
+				for k, wep in pairs(VotedPlayer:GetWeapons()) do
+					if wep.PreDrop then
+						wep:PreDrop(false)
+					end
+					if !IsValid(wep) then
+						continue
+					end
+					VotedPlayer:DropWeapon(wep)
 				end
 
 				timer.Simple(STUN_TIME, function()

@@ -102,7 +102,7 @@ SWEP.Primary.ClipSize = 30
 SWEP.Primary.ClipMax = 60
 SWEP.Primary.DefaultClip = 30
 SWEP.HeadshotMultiplier = 1.5
-SWEP.AutoSpawnable      = false
+SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_smg1_ttt"
 SWEP.HoldType			= "ar2"
 SWEP.UseHands			= true
@@ -115,9 +115,6 @@ SWEP.WorldModel			= "models/weapons/w_fn_scar_h.mdl"
 SWEP.data 				= {}				--The starting firemode
 SWEP.data.ironsights			= 1
 
-SWEP.ThirdPerson         = false
-SWEP.RoundOver = false
-
 SWEP.Primary.Sound = Sound( "Weapon_SCARH.Single" )
 
 --SWEP.IronSightsPos = Vector(-2.652, 0.187, 1.854)
@@ -129,93 +126,69 @@ SWEP.SightsAng = Vector(2.565, 0.034, 0)
 SWEP.RunSightsPos = Vector(6.063, -1.969, 0)
 SWEP.RunSightsAng = Vector(-11.655, 57.597, 3.582)
 
+function CalcCameraLocation(ply)
+   -- Move the camera back 70, right 20, up 5 from default position
+   local distPushAwayWall = 30
+   local pos = ply:EyePos() - (ply:EyeAngles():Forward() * 70) + (ply:EyeAngles():Right() * 20) + (ply:EyeAngles():Up() * 5)
+   local dir = (ply:EyePos() - pos):GetNormalized()
+   local ang = ply:EyeAngles() + Angle( 1, 1, 0 )
+
+   -- Draw line between new camera location and default camera location, if something is hit put the camera at the hit location instead
+   -- Offset from that hit location by distPushAwayWall units to avoid clipping
+   local trace = {}
+   trace.start = ply:EyePos()
+   trace.endpos = pos - (dir * distPushAwayWall)
+   trace.filter = ply
+   local traceresult = util.TraceLine(trace)
+   if traceresult.Hit then
+      pos = traceresult.HitPos + (dir * distPushAwayWall)
+   end
+
+   local result = {}
+   result.pos = pos
+   result.ang = ang
+   return result
+end
+
+-- Used by \GMod\garrysmod\gamemodes\base\gamemode\obj_player_extend.lua to override the GetAimVector function while in third person
+function SWEP:CalcAimVector(ply)
+   local result = CalcCameraLocation(ply)
+
+   -- Draw line from player's new perspective until something is hit
+   local trace = {}
+   trace.start = result.pos
+   trace.endpos = result.pos + (result.ang:Forward() * (4096 * 8))
+   trace.filter = ply
+   trace.mask = MASK_VISIBLE
+   local traceresult = util.TraceLine(trace)
+
+   -- Aim vector is a line from the default player camera position to the hit location with the modified camera
+   -- This avoids abusing third person to shoot from behind walls while still allowing the camera to aim properly
+   return (traceresult.HitPos - ply:EyePos()):GetNormalized()
+end
+
+if CLIENT then
+   hook.Add("ShouldDrawLocalPlayer", "ScarDrawLocal", function()
+      if IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "weapon_ttt_scarh" then
+         return true
+      end
+   end)
+
+   hook.Add("CalcView", "ScarThirdPerson", function(ply, pos, angles, fov)
+      if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "weapon_ttt_scarh" then
+         local result = CalcCameraLocation(ply)
+         return GAMEMODE:CalcView(ply, result.pos, result.ang, fov)
+      end
+   end)
+end
 
 -- Add some zoom to ironsights for this gun
 function SWEP:SecondaryAttack()
-
-end
-if CLIENT then
-   function SWEP:DrawHud()
-      local x = math.floor(ScrW() / 2.0)  
-      local y = math.floor(ScrH() / 2.0)
-      local scale = math.max(0.2,  10 * self:GetPrimaryCone())
-
-      local LastShootTime = self:LastShootTime()
-      scale = scale * (2 - math.Clamp( (CurTime() - LastShootTime) * 5, 0.0, 1.0 ))
-
-      local alpha = sights and sights_opacity:GetFloat() or 1
-      local bright = crosshair_brightness:GetFloat() or 1
-
-      local gap = math.floor(20 * scale * (sights and 0.8 or 1))
-      local length = math.floor(gap + (20000 * crosshair_size:GetFloat()) * scale)
-      surface.DrawLine( x - length, y, x - gap, y )
-      surface.DrawLine( x + length, y, x + gap, y )
-      surface.DrawLine( x, y - length, x, y - gap )
-      surface.DrawLine( x, y + length, x, y + gap )
-      if client:GetObserverMode() == OBS_MODE_NONE then
-         if self.DamageType == "Puncture" then
-            surface.SetMaterial(punctureshad)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
-
-            surface.SetMaterial(puncture)
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
-         end
-         if self.DamageType == "Impact" then
-            surface.SetMaterial(impactshad)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
-
-            surface.SetMaterial(impact)
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
-         end
-         if self.DamageType == "True" then
-            surface.SetMaterial(elementalshad)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
-
-            surface.SetMaterial(elemental)
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
-         end
-      end
-   end
-end
-
-function SWEP:PreDrop()
-   if CLIENT and self.ThirdPerson == true and self.RoundOver == false then
-      RunConsoleCommand("ulx", "thirdperson")
-      self.ThirdPerson = false
-   end
-   return self.BaseClass.PreDrop(self)
 end
 
 function SWEP:Deploy()
    self:SetIronsights(false)
-   if CLIENT then
-      if self.ThirdPerson == false and self.RoundOver == false then
-         RunConsoleCommand("ulx", "thirdperson")
-         self.ThirdPerson = true
-      end
-   end
    self.Weapon:EmitSound("Weapon_SCARH.Bolt") 
-   return true
-end
-
-function SWEP:Think()
-   if GetRoundState() == ROUND_POST and self.ThirdPerson == true and self.RoundOver == false then
-      self.RoundOver = true
-      RunConsoleCommand("ulx", "thirdperson")
-   end
-end
-
-function SWEP:Holster()
-   if CLIENT and self.ThirdPerson == true and self.RoundOver == false then
-      RunConsoleCommand("ulx", "thirdperson")
-      self.ThirdPerson = false
-   end
    return true
 end
 

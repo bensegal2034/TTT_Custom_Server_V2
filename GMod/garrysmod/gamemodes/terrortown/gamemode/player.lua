@@ -570,7 +570,10 @@ local function CheckCreditAward(victim, attacker)
 end
 
 function GM:DoPlayerDeath(ply, attacker, dmginfo)
-   if ply:IsSpec() then return end
+   if ply:IsSpec() then
+      print("\n\n==========================\nDoPlayerDeath called on a spectator, maybe a body is missing or a hat is flying?\n==========================\n")
+      return
+   end
 
    -- Experimental: Fire a last shot if ironsighting and not headshot
    if GetConVar("ttt_dyingshot"):GetBool() then

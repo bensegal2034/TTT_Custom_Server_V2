@@ -1,10 +1,8 @@
-const http = require("http"),
-      fs   = require("fs"),
-      mime = require("mime"),
-      path = require("path"),
-      compressjs = require("compressjs")
-      dir  = "../"
-      port = 3000
+const http         = require("http"),
+      fs           = require("fs"),
+      compressjs   = require("compressjs"),
+      compressmaps = require("./compressmaps"),
+      port         = 3000
 
 const server = http.createServer(function(request, response) {
     // headers should be an array of all the headers we need to write
@@ -38,11 +36,12 @@ const server = http.createServer(function(request, response) {
         )
         return
     }
+    
     // TODO: figure out how to compress maps and other large files
     if (rawPath.split(".").includes("bz2") && rawPath.split("/").includes("maps")) {
         serverResponse(
-            [404], 
-            "404 Error: File not found",
+            [500], 
+            "500 Error: Unable to serve request for compressed map",
             "Not serving a request for compressed map " + rawPath
         )
         return
@@ -50,9 +49,9 @@ const server = http.createServer(function(request, response) {
 
     // remove .bz2 if it exists from the filename & set up the flag for later compression
     if (rawPath.split(".").includes("bz2")) {
-        var rawPathSplit = rawPath.split(".")
-        rawPathSplit.pop()
-        rawPath = rawPathSplit.join(".")
+        const tempRawPath = rawPath.split(".")
+        tempRawPath.pop()
+        rawPath = tempRawPath.join(".")
         var shouldCompFile = true
     } else {
         var shouldCompFile = false
@@ -86,28 +85,27 @@ const server = http.createServer(function(request, response) {
         )
         return
     }
-    
 
     // if path contains a request for a compressed file, compress it & overwrite 
     // regardless of if it"s already compressed (prevents old data being sent to clients)
     if (shouldCompFile) {
-        console.log("Compressing file before sending..")
-        
         var pathContent = fs.readFileSync(path)
         var compFile = path + ".bz2"
         var algorithm = compressjs.Bzip2
-        var data = new Buffer.alloc(Buffer.byteLength(pathContent), path)
-        console.log("Buffer allocated!")
-        var compressedData = algorithm.compressFile(data)
-        console.log("Data compressed, writing to file!")
+        console.log("Compressing file at " + compFile)
+        var bufferedData = new Buffer.alloc(Buffer.byteLength(pathContent), path)
+        var compressedData = algorithm.compressFile(bufferedData)
         fs.writeFileSync(compFile, compressedData)
-        console.log("Compression complete!")
+        path = compFile
     }
     
-    //all checks passed, file can now be sent out
+    // all checks passed, file can now be sent out
     fs.readFile(path, function(err, content) {
         serverResponse(
-            [200, {"Content-Length": Buffer.byteLength(content)}], 
+            [
+                200, 
+                {"Content-Length": Buffer.byteLength(content)}
+            ],
             content,
             "Serving request for " + path
         )

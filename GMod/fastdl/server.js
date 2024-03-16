@@ -1,34 +1,56 @@
-const http = require('http'),
-      fs   = require('fs'),
-      mime = require('mime'),
-      path = require('path'),
-      compressjs = require('compressjs')
-      dir  = '../'
+const http = require("http"),
+      fs   = require("fs"),
+      mime = require("mime"),
+      path = require("path"),
+      compressjs = require("compressjs")
+      dir  = "../"
       port = 3000
 
 const server = http.createServer(function(request, response) {
-    // we don't respond to non-GET requests
-    if (request.method !== 'GET') {
-        console.log("Got a " + request.method + " request?")
+    // headers should be an array of all the headers we need to write
+    // end is what to end the response with
+    // consoleMsg is a string to write in the console if provided
+    function serverResponse(headers, end, consoleMsg) {
+        response.writeHeader(...headers)
+        response.end(end)
+        if (typeof consoleMsg !== undefined) {console.log(consoleMsg)}
+    }
+
+    // we don"t respond to non-GET requests
+    if (request.method !== "GET") {
+        serverResponse(
+            [404], 
+            "404 Error: File not found",
+            "Not serving a " + request.method + " request"
+        )
         return
     }
 
-    // remove /garrysmod/ from start of path
-    var rawPath = request.url.slice(11)
-    var rawPathSplit = rawPath.split(".")
-    var rawPathSplitSlash = rawPath.split("/")
-    var path = ""
-
+    // remove /garrysmod/ from start of path if it exists - if not, error code 404
+    if (request.url.split("/")[1] === "garrysmod") {
+        var rawPath = request.url.slice(11)
+        var path = ""
+    } else {
+        serverResponse(
+            [404], 
+            "404 Error: File not found",
+            "Not serving a request without /garrysmod/ in the path"
+        )
+        return
+    }
     // TODO: figure out how to compress maps and other large files
-    if (rawPathSplit.includes("bz2") && rawPathSplitSlash.includes("maps")) {
-        console.log("!!!!!!! FAILED TO SERVE REQUEST FOR COMPRESSED MAP " + rawPath + " !!!!!!! \n")
-        response.writeHeader(404)
-        response.end('404 Error: File Not Found')
+    if (rawPath.split(".").includes("bz2") && rawPath.split("/").includes("maps")) {
+        serverResponse(
+            [404], 
+            "404 Error: File not found",
+            "Not serving a request for compressed map " + rawPath
+        )
         return
     }
 
     // remove .bz2 if it exists from the filename & set up the flag for later compression
-    if (rawPathSplit.includes("bz2")) {
+    if (rawPath.split(".").includes("bz2")) {
+        var rawPathSplit = rawPath.split(".")
         rawPathSplit.pop()
         rawPath = rawPathSplit.join(".")
         var shouldCompFile = true
@@ -45,25 +67,29 @@ const server = http.createServer(function(request, response) {
         path = "../garrysmod/gamemodes/terrortown/content/" + rawPath
     }
 
-    // can't find the file requested, respond with 404
+    // can"t find the file requested, respond with 404
     if (path === "") {
-        console.log("!!!!!!! FAILED TO SERVE REQUEST FOR " + rawPath + " !!!!!!! \n")
-        response.writeHeader(404)
-        response.end('404 Error: File Not Found')
+        serverResponse(
+            [500], 
+            "500 Error: Unable to serve file",
+            "Failed to find file at " + request.url
+        )
         return
     }
 
     // are we about to try and serve a request for a directory? if so, 404
     if (fs.lstatSync(path).isDirectory()) {
-        console.log("Request denied for " + path + ": directory requested")
-        response.writeHeader(404)
-        response.end('404 Error: File Not Found')
+        serverResponse(
+            [500], 
+            "500 Error: Unable to serve directories",
+            "Not serving a request for a directory at " + request.url
+        )
         return
     }
     
 
     // if path contains a request for a compressed file, compress it & overwrite 
-    // regardless of if it's already compressed (prevents old data being sent to clients)
+    // regardless of if it"s already compressed (prevents old data being sent to clients)
     if (shouldCompFile) {
         console.log("Compressing file before sending..")
         
@@ -71,18 +97,22 @@ const server = http.createServer(function(request, response) {
         var compFile = path + ".bz2"
         var algorithm = compressjs.Bzip2
         var data = new Buffer.alloc(Buffer.byteLength(pathContent), path)
+        console.log("Buffer allocated!")
         var compressedData = algorithm.compressFile(data)
+        console.log("Data compressed, writing to file!")
         fs.writeFileSync(compFile, compressedData)
         console.log("Compression complete!")
     }
     
-    //file can now be sent out
+    //all checks passed, file can now be sent out
     fs.readFile(path, function(err, content) {
-        console.log("Serving request for " + path + "\n")
-        response.writeHeader(200, {'Content-Length': Buffer.byteLength(content)})
-        response.end(content)
+        serverResponse(
+            [200, {"Content-Length": Buffer.byteLength(content)}], 
+            content,
+            "Serving request for " + path
+        )
     })
 })
 
-console.log("Starting FastDL server...")
+console.log("Starting FastDL server... \n")
 server.listen(port)

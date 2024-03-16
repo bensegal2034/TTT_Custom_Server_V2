@@ -175,7 +175,7 @@ if CLIENT then
    end)
 
    hook.Add("CalcView", "ScarThirdPerson", function(ply, pos, angles, fov)
-      if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "weapon_ttt_scarh" then
+      if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "weapon_ttt_scarh" and ply:GetObserverMode() == OBS_MODE_NONE then
          local result = CalcCameraLocation(ply)
          return GAMEMODE:CalcView(ply, result.pos, result.ang, fov)
       end

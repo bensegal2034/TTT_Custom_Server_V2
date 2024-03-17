@@ -29,6 +29,8 @@ if SERVER then
    resource.AddFile( "materials/models/weapons/x_models/fnscarh/scar_diff.vmt" )
    resource.AddFile( "materials/models/weapons/x_models/fnscarh/sights-down.vmt" )
    resource.AddFile( "materials/models/weapons/x_models/fnscarh/sights-up.vmt" )
+   resource.AddFile( "models/weapons/v_rif_p4s.mdl" )
+   resource.AddFile( "models/weapons/w_fn_scar_h.mdl" )
    resource.AddFile( "sound/weapons/scarh/aug_boltpull.mp3" )
    resource.AddFile( "sound/weapons/scarh/aug_boltslap.mp3" )
    resource.AddFile( "sound/weapons/scarh/aug_clipin.mp3" )
@@ -159,7 +161,7 @@ function SWEP:CalcAimVector(ply)
    trace.start = result.pos
    trace.endpos = result.pos + (result.ang:Forward() * (4096 * 8))
    trace.filter = ply
-   trace.mask = MASK_VISIBLE
+   trace.mask = MASK_VISIBLE_AND_NPCS
    local traceresult = util.TraceLine(trace)
 
    -- Aim vector is a line from the default player camera position to the hit location with the modified camera
@@ -169,16 +171,71 @@ end
 
 if CLIENT then
    hook.Add("ShouldDrawLocalPlayer", "ScarDrawLocal", function()
-      if IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "weapon_ttt_scarh" then
-         return true
+      if !IsValid(LocalPlayer():GetActiveWeapon()) then
+         return
       end
+      if LocalPlayer():GetActiveWeapon():GetClass() != "weapon_ttt_scarh" then
+         return
+      end
+      if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
+         return
+      end
+
+      return true
    end)
 
    hook.Add("CalcView", "ScarThirdPerson", function(ply, pos, angles, fov)
-      if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "weapon_ttt_scarh" and ply:GetObserverMode() == OBS_MODE_NONE then
-         local result = CalcCameraLocation(ply)
-         return GAMEMODE:CalcView(ply, result.pos, result.ang, fov)
+      if !IsValid(ply:GetActiveWeapon()) then
+         return
       end
+      if ply:GetActiveWeapon():GetClass() != "weapon_ttt_scarh" then
+         return
+      end
+      if ply:GetObserverMode() != OBS_MODE_NONE then
+         return
+      end
+
+      local result = CalcCameraLocation(ply)
+      return GAMEMODE:CalcView(ply, result.pos, result.ang, fov)
+   end)
+
+   hook.Add("PreDrawEffects", "ScarBlockedIndicator", function()
+      local ply = LocalPlayer()
+      if !IsValid(ply:GetActiveWeapon()) then
+         return
+      end
+      if ply:GetActiveWeapon():GetClass() != "weapon_ttt_scarh" then
+         return
+      end
+      if ply:GetObserverMode() != OBS_MODE_NONE then
+         return
+      end
+
+      local camera = CalcCameraLocation(ply)
+      local aimdir = ply:GetActiveWeapon():CalcAimVector(ply)
+
+      local cameratrace = {}
+      cameratrace.start = camera.pos
+      cameratrace.endpos = camera.pos + (camera.ang:Forward() * (4096 * 8))
+      cameratrace.filter = ply
+      cameratrace.mask = MASK_VISIBLE_AND_NPCS
+      local camerapos = util.TraceLine(cameratrace).HitPos
+
+      local aimtrace = {}
+      aimtrace.start = ply:EyePos()
+      aimtrace.endpos = ply:EyePos() + (aimdir * (4096 * 8))
+      aimtrace.filter = ply
+      aimtrace.mask = MASK_VISIBLE_AND_NPCS
+      local aimpos = util.TraceLine(aimtrace).HitPos
+
+      -- < 30 unit difference between aim and camera
+      if camerapos:DistToSqr(aimpos) < 900 then
+         return
+      end
+      
+      -- Add indicator where aim is hitting to warn about blocker
+      render.SetMaterial(Material("sprites/light_ignorez"))
+      render.DrawSprite(aimpos, 30, 30, Color(255, 0, 0, 255))
    end)
 end
 

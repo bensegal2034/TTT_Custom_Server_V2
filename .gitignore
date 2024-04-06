@@ -9,6 +9,7 @@ GMod/depotcache/
 GMod/steam_cache/
 GMod/garrysmod/data/ulx_logs/
 GMod/garrysmod/downloadlists/
+GMod/garrysmod/download/
 GMod/config/config.vdf
 GMod/garrysmod/clientside_errors.txt
 GMod/garrysmod/data/ulib/users.txt

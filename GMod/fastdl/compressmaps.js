@@ -15,12 +15,15 @@ function compress(map) {
 
 async function compressMaps() {
     const dir = await fs.promises.opendir(mapDir)
+    const maps = []
     for await (const dirent of dir) {
         fullPath = dirent.path + "/" + dirent.name
         if (fullPath.split(".").includes("bsp") && !(fullPath.split(".").includes("bz2"))) {
-            compress(fullPath)
+            maps.push(fullPath)
         }
     }
+    console.log(maps)
+    
 }
 
 module.exports = compressMaps()

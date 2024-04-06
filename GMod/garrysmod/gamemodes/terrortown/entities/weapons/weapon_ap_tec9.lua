@@ -162,7 +162,7 @@ function SWEP:Initialize()
          end
          if (self.SwitchVal == 3) then
             if self.Primary.ConeMod < .4 then
-               self.Primary.ConeMod = self.Primary.ConeMod + 0.02
+               self.Primary.ConeMod = self.Primary.ConeMod + 0.03
                self.Tokens = self.Tokens - 1
             else
 

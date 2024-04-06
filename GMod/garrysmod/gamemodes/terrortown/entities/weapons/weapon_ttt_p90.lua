@@ -74,7 +74,7 @@ SWEP.AllowDrop = true
 SWEP.IsSilent = false
 
 -- If NoSights is true, the weapon won't have ironsights
-SWEP.NoSights = false
+SWEP.NoSights = true
 
 hook.Add("TTTPrepareRound", "ResetP90Speed", function()
    if SERVER then

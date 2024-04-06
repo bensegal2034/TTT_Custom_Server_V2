@@ -5,7 +5,7 @@ DEFINE_BASECLASS "weapon_tttbase"
 SWEP.HoldType              = "shotgun"
 
 if CLIENT then
-   SWEP.PrintName          = "shotgun_name"
+   SWEP.PrintName          = "XM1014"
    SWEP.Slot               = 2
 
    SWEP.ViewModelFlip      = false

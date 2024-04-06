@@ -30,7 +30,7 @@ end
 SWEP.HoldType			= "revolver"
 
 if CLIENT then
-   SWEP.PrintName			= "Raging Bull"			
+   SWEP.PrintName			= "Hawkmoon"			
    SWEP.Author				= "TTT"
 
    SWEP.Slot				= 1

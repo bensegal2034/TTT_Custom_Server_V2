@@ -18,7 +18,7 @@ end
 //Clientside\\
 if CLIENT then
 
-  SWEP.PrintName = "A-3000"
+  SWEP.PrintName = "Classic"
   SWEP.Slot = 1
 
   SWEP.ViewModelFOV = 90

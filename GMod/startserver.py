@@ -4,6 +4,7 @@ import os, random, time
 
 def startserver():
     os.system ("git pull")
+    os.system ("git submodule update --remote --merge")
     time.sleep(5)
     c = ws.Collection(2895023437)
     collection_maps = [map["title"].split(" ")[0] for map in c.items.values() if "ttt_" in map["title"].lower()]

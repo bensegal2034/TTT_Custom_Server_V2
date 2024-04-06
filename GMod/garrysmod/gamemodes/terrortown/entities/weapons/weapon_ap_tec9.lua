@@ -279,8 +279,6 @@ function SWEP:Initialize()
    self.Primary.DefaultClip = (self.Primary.ClipSize * 2)
    self.Upside = self:GetUpside()
    self.Downside = self:GetDownside()
-   print(self.Upside)
-   print(self.Downside)
    if (self.Upside == 15) then
       if SERVER then
          self:SetHoldingAces(math.random(1,self.Primary.ClipSize))

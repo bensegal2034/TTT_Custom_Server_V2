@@ -196,11 +196,20 @@ function SWEP:Initialize()
       self:SetNumBullets(self.Primary.NumBullets)
    end
    self.Primary.Damage = self.Primary.Damage + self:GetWeaponDamage()
+   self.Primary.DamageDisplay = self.Primary.Damage
    self.Primary.Delay = self.Primary.Delay - self:GetWeaponDelay()
+   self.Primary.DelayDisplay = self.Primary.Delay
    self.Primary.Cone = self.Primary.Cone - self:GetWeaponCone()
+   self.Primary.ConeDisplay = ((1-self.Primary.Cone)*100)
+
+      if (self.Primary.ConeDisplay > 100) then
+         self.Primary.ConeDisplay = 100
+      end
    self.Primary.ClipSize = self.Primary.ClipSize + self:GetWeaponClipSize()
-   self.Primary.Recoil = self.Primary.Recoil - self:GetWeaponRecoil()
+   self.Primary.Recoil = self.Primary.Recoil  - self:GetWeaponRecoil()
+   self.Primary.RecoilDisplay = self.Primary.Recoil
    self.Primary.NumShots = self:GetNumBullets()
+   self.Primary.NumShotsDisplay = self.Primary.NumShots
    self.Primary.DefaultClip = (self.Primary.ClipSize * 2)
 end
 
@@ -208,4 +217,89 @@ function SWEP:Reload()
 	if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
 	self:DefaultReload(self.ReloadAnim)
 	self:SetIronsights( false )
+end
+DEFINE_BASECLASS( SWEP.Base )
+if CLIENT then
+   function SWEP:DrawHUD(...)
+
+      local scrW = ScrW()
+      local scrH = ScrH()
+      surface.SetDrawColor(73, 75, 77, 150)
+      draw.RoundedBox(10, scrW * 0.14, scrH * 0.84, 183, 163, Color(20, 20, 20, 200))
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(275, 917, 28, 34)
+      surface.DrawText("Damage: ")
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(273, 915, 28, 34)
+      surface.DrawText("Damage: ")
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(402, 917, 28, 34)
+      surface.DrawText(tostring(math.Round(self.Primary.DamageDisplay)))
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(400, 915, 28, 34)
+      surface.DrawText(tostring(math.Round(self.Primary.DamageDisplay)))
+      
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(275, 947, 28, 34)
+      surface.DrawText("FireRate: ")
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(273, 945, 28, 34)
+      surface.DrawText("FireRate: ")
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(402, 947, 28, 34)
+      surface.DrawText(tostring((math.Truncate(self.Primary.DelayDisplay,2))))
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(400, 945, 28, 34)
+      surface.DrawText(tostring(math.Truncate(self.Primary.DelayDisplay,2)))
+
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(275, 977, 28, 34)
+      surface.DrawText("Accuracy: ")
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(273, 975, 28, 34)
+      surface.DrawText("Accuracy: ")
+
+
+      
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(402, 977, 28, 34)
+      surface.DrawText(tostring(math.Round(self.Primary.ConeDisplay)))
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(400, 975, 28, 34)
+      surface.DrawText(tostring(math.Round(self.Primary.ConeDisplay)))
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(275, 1007, 28, 34)
+      surface.DrawText("Recoil: ")
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(273, 1005, 28, 34)
+      surface.DrawText("Recoil: ")
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(402, 1007, 28, 34)
+      surface.DrawText(tostring(math.Truncate(self.Primary.RecoilDisplay),2))
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(400, 1005, 28, 34)
+      surface.DrawText(tostring(math.Truncate(self.Primary.RecoilDisplay),2))
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(275, 1037, 28, 34)
+      surface.DrawText("Bullets: ")
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(273, 1035, 28, 34)
+      surface.DrawText("Bullets: ")
+
+      surface.SetTextColor(0, 0, 0, 255)
+      surface.SetTextPos(402, 1037, 28, 34)
+      surface.DrawText(tostring(self.Primary.NumShotsDisplay))
+      surface.SetTextColor(255, 255, 255, 255)
+      surface.SetTextPos(400, 1035, 28, 34)
+      surface.DrawText(tostring(self.Primary.NumShotsDisplay))
+
+      return BaseClass.DrawHUD(self, ...)
+   end
 end

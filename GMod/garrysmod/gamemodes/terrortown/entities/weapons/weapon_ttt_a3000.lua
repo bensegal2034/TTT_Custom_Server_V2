@@ -21,7 +21,7 @@ if CLIENT then
   SWEP.PrintName = "Classic"
   SWEP.Slot = 1
 
-  SWEP.ViewModelFOV = 90
+  SWEP.ViewModelFOV = 80
   SWEP.ViewModelFlip = true
 
   SWEP.Icon = "VGUI/ttt/icon_a3000"
@@ -32,7 +32,7 @@ SWEP.Primary.Delay = 0.1125
 SWEP.Primary.Recoil = 3
 SWEP.Primary.Automatic = true
 SWEP.Primary.NumShots = 1
-SWEP.Primary.Damage = 18
+SWEP.Primary.Damage = 26
 SWEP.Primary.Cone = 0.01
 SWEP.Primary.Ammo = "Pistol"
 SWEP.Primary.ClipSize = 12
@@ -46,7 +46,7 @@ SWEP.AllowDrop = true
 SWEP.IsSilent = false
 SWEP.NoSights = false
 SWEP.UseHands = true
-SWEP.HeadshotMultiplier = 2
+SWEP.HeadshotMultiplier = 3
 
 //Sounds/Models\\
 SWEP.ViewModel = "models/weapons/gamefreak/v_pist_glock66.mdl"

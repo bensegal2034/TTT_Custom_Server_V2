@@ -62,6 +62,7 @@ SWEP.CanBuy = {}
 SWEP.AllowDrop = true
 SWEP.UseHands = false
 SWEP.HeadshotMultiplier = 1
+SWEP.HeadshotMultiplierReal = 1.3
 SWEP.HoldType = "Revolver"
 SWEP.Tracer = "Tracer"
 SWEP.FiresUnderwater = false
@@ -148,7 +149,6 @@ sound.Add({
 	soundlevel = 80,
 	sound = "halo1/zoomout.ogg"
 })
-
 function SWEP:IsEquipment()
 	return WEPS.IsEquipment(self)
 end
@@ -516,14 +516,9 @@ function SWEP:EntityIsEnemyVehicle(ent)
 end
 
 function SWEP:HaloReticle(tr)
+	-- we don't change the reticle color anymore because that is silly :3
 	surface.SetTexture(surface.GetTextureID("vgui/halohud/h1/h1pistol"))
-	if IsValid(tr.Entity) and tr.Entity:IsNPC() and self:GetNW2Bool("HaloSWEPSEntIsFriendly") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:IsPlayer() and tr.Entity:Team() == self.Owner:Team() and tr.Entity:Team() ~= TEAM_UNASSIGNED and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:GetNW2Bool("HaloSWEPSEntIsNextBot") == true and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and self:EntityIsVehicle(tr.Entity) and self:GetNW2Bool("HaloSWEPSEntIsEnemyVehicle") == false and self:GetNW2Bool("HaloSWEPSEntIsOccupiedVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true then
-		surface.SetDrawColor(0, 255, 0, 255)
-	elseif IsValid(tr.Entity) and tr.Entity:IsNPC() and self:GetNW2Bool("HaloSWEPSEntIsFriendly") == false and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or tr.Entity:IsPlayer() and tr.Entity:Team() ~= self.Owner:Team() and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:IsPlayer() and tr.Entity:Team() == TEAM_UNASSIGNED and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:GetNW2Bool("HaloSWEPSEntIsNextBot") == true and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") == false and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and self:EntityIsVehicle(tr.Entity) and self:GetNW2Bool("HaloSWEPSEntIsEnemyVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsOccupiedVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true then
-		surface.SetDrawColor(255, 0, 0, 255)
-	else
-		surface.SetDrawColor(56, 160, 232, 255)
-	end
+	surface.SetDrawColor(56, 160, 232, 255)
 
 	surface.DrawTexturedRect(ScrW() / 2 - 78, ScrH() / 2 - 77, 155, 155)
 end
@@ -733,6 +728,44 @@ function SWEP:PrimaryAttack()
 
 		self:SetNextIdle(0)
 		timer.Stop("weapon_idle" .. self:EntIndex())
+
+		-- logic for bullet magnetism
+		local validPlys = {}
+		local allPlys = player.GetAll()
+		local sphereSize = 15 -- how big is the magnetization to the head?
+	
+		for _, ply in ipairs(allPlys) do
+			if self:GetOwner():IsLineOfSightClear(ply) and ply != self:GetOwner() and ply:Alive() and IsValid(ply) then
+				local headBoneIndex = ply:LookupBone("ValveBiped.Bip01_Head1")
+				local headBoneMatrix = ply:GetBoneMatrix(headBoneIndex)
+	
+				local headBonePos = headBoneMatrix:GetTranslation() -- point vector
+				local eyePos = self:GetOwner():EyePos() -- point vector
+				local eyeAngles = self:GetOwner():EyeAngles():Forward() -- angle vector
+	
+				local eyeToHeadBone = headBonePos - eyePos -- angle vector
+				local eyeAnglesDot = eyeAngles:Dot(eyeToHeadBone)
+				local eyeAnglesDiv = eyeAnglesDot / (eyeAngles:Length() * eyeToHeadBone:Length())
+				local angleBetweenAimAndHead = math.acos(eyeAnglesDiv) -- radians (number)
+	
+				local distanceFromEyesToHead = eyePos:Distance(headBonePos) -- distance number
+				local distanceOnAimPos = distanceFromEyesToHead * math.cos(angleBetweenAimAndHead) -- distance number
+				local closestPointToHead = eyePos + (eyeAngles * distanceOnAimPos) -- point vector
+	
+				local distanceFromClosestAimPointToHead = closestPointToHead:Distance(headBonePos)
+				--debugoverlay.Sphere(headBonePos, sphereSize, 0.2, Color(255, 0, 0), true)
+				if distanceFromClosestAimPointToHead <= sphereSize then
+					table.insert(validPlys, {
+						ply = ply, 
+						aimDist = distanceFromClosestAimPointToHead, 
+						ownerDist = ply:GetPos():Distance(self:GetOwner():GetPos()),
+						eyeToHeadBone = eyeToHeadBone
+					})
+				end
+			end
+		end
+		
+		-- setup bullet table
 		local bullet = {}
 		bullet.Num = self.Primary.NumberofShots
 		bullet.Src = self.Owner:GetShootPos()
@@ -744,9 +777,27 @@ function SWEP:PrimaryAttack()
 		bullet.Force = self.Primary.Force
 		bullet.Damage = self.Primary.Damage
 		bullet.AmmoType = self.Primary.Ammo
+
 		local ang = self.Owner:GetAimVector()
 		local spos = self.Owner:GetShootPos()
+
+		-- only magnetize if we have valid targets
+		if not table.IsEmpty(validPlys) then
+			local bestTargetTbl = validPlys[1]
+			for _, plyTbl in ipairs(validPlys) do
+				if bestTargetTbl.ownerDist > plyTbl.ownerDist then
+					bestTargetTbl = plyTbl
+				end
+			end
+			
+			--print("Best target found: " .. bestTargetTbl.ply:GetName())
+			-- we have our best available target, point the bullet at their head
+			bullet.Dir = bestTargetTbl.eyeToHeadBone
+			bullet.Damage = self.Primary.Damage * self.HeadshotMultiplierReal
+		end
 		self.Owner:FireBullets(bullet)
+		-- end magnetism logic
+
 		self:EmitSound("Halo1_Pistol.Fire")
 		if SERVER then
 			local DistantFire = ents.Create("distant_weapon_gunfire_h1")

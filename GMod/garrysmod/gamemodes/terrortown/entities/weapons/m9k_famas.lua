@@ -7,21 +7,22 @@ end
 SWEP.HoldType = "ar2"
 
 if CLIENT then
-
-   SWEP.PrintName = "Famas"
-   SWEP.Slot = 2
-
+   SWEP.PrintName = "FAMAS"
+   SWEP.Slot = 6
+   SWEP.EquipMenuData = {
+      type = "Weapon",
+      desc = "Perks:\nRapid Hit: Reload faster and increase stability on precision hits\nKill Clip: Reload after a kill for a damage boost!"
+   }
    SWEP.Icon = "vgui/hud/m9k_famas"
-
    require("cl_m9k_famas")
 end
 
 
 SWEP.Base = "weapon_tttbase"
 
-SWEP.Kind = WEAPON_HEAVY
+SWEP.Kind = WEAPON_FAMAS
 
-SWEP.Primary.DamageBase  = 20
+SWEP.Primary.DamageBase  = 23
 SWEP.Primary.Damage      = SWEP.Primary.DamageBase
 SWEP.HeadshotMultiplier  = 2
 SWEP.Primary.Delay       = 0.30
@@ -35,7 +36,9 @@ SWEP.Primary.Ammo        = "pistol"
 SWEP.Primary.Recoil      = 1.35
 SWEP.Primary.Sound       = "weapons/fokku_tc_famas/shot-1.wav"
 
-SWEP.AutoSpawnable = true
+SWEP.AutoSpawnable = false
+SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.LimitedStock = true
 
 SWEP.AmmoEnt = "item_ammo_pistol_ttt"
 

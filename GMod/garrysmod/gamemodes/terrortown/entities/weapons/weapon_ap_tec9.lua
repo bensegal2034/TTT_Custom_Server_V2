@@ -61,7 +61,6 @@ SWEP.Primary.DelayMod    = 0
 SWEP.Primary.ClipSizeMod = 0
 SWEP.Primary.RecoilMod   = 0
 SWEP.Primary.NumShots      = 1
-SWEP.DamageType          = "Impact"
 SWEP.Primary.NumBullets  = 0
 SWEP.BulletRoll          = 0
 SWEP.TargetStat          = 0
@@ -79,11 +78,13 @@ SWEP.Primary.DamageDefault = 0
 SWEP.SpeedBoost = 55
 SWEP.Reloaded = false
 SWEP.SpeedBoostRemoved = false
+SWEP.DamageRoll   = 0
+SWEP.DamageValue = 0
 
 SWEP.Hawkmoon = false
 SWEP.HawkmoonVolume = 1
 
-SWEP.Tokens              = 60
+SWEP.Tokens              = 50
 SWEP.SwitchVal           = 0
 
 SWEP.AutoSpawnable = true
@@ -139,6 +140,7 @@ function SWEP:SetupDataTables()
    self:NetworkVar( "Int", 6, "Upside")
    self:NetworkVar( "Int", 7, "Downside")
    self:NetworkVar( "Int", 8, "HoldingAces" )
+   self:NetworkVar( "Int", 9, "DamageValue")
 end
 
 function SWEP:Initialize()
@@ -161,7 +163,8 @@ function SWEP:Initialize()
       self.BulletRoll = math.random(1,10)
       self.Upside = math.random(1,16)
       self.Downside = math.random(1,16)
-      
+      self.DamageRoll = math.random(1,3)
+
       if (self.Upside == 13) then
          self.Tokens = self.Tokens - 15
       end
@@ -197,10 +200,10 @@ function SWEP:Initialize()
          self.Primary.NumBullets = 3
       end
 
-      self.TargetStat = math.random(1,5)
-
+      self.TargetStat = math.random(1,4)
+      self.Primary.ClipSizeMod = math.random(0,28)
       while (self.Tokens > 0) do
-         self.SwitchVal = math.random(1,5)
+         self.SwitchVal = math.random(1,4)
          self.TargetStatRoll = math.random(1,3)
          
          if self.TargetStatRoll == 1 then
@@ -232,14 +235,6 @@ function SWEP:Initialize()
             end
          end
          if (self.SwitchVal == 4) then
-            if self.Primary.ClipSizeMod < 28 then
-               self.Primary.ClipSizeMod = self.Primary.ClipSizeMod + 2
-               self.Tokens = self.Tokens - 1
-            else
-
-            end
-         end
-         if (self.SwitchVal == 5) then
             if (self.Primary.RecoilMod < 6.7) then
                self.Primary.RecoilMod = self.Primary.RecoilMod + 0.3
                self.Tokens = self.Tokens - 1
@@ -259,6 +254,7 @@ function SWEP:Initialize()
       self:SetNumBullets(self.Primary.NumBullets)
       self:SetUpside(self.Upside)
       self:SetDownside(self.Downside)
+      self:SetDamageValue(self.DamageRoll)
    end
    self.Primary.Damage = self.Primary.Damage + self:GetWeaponDamage()
    self.Primary.DamageDisplay = self.Primary.Damage
@@ -268,6 +264,7 @@ function SWEP:Initialize()
    self.Primary.Cone = self.Primary.Cone - self:GetWeaponCone()
    self.Primary.ConeDefault = self.Primary.Cone
    self.Primary.ConeDisplay = ((1-self.Primary.Cone)*100)
+   self.Primary.DamageValue = self:GetDamageValue()
    if (self.Primary.ConeDisplay > 100) then
       self.Primary.ConeDisplay = 100
    end
@@ -279,6 +276,14 @@ function SWEP:Initialize()
    self.Primary.DefaultClip = (self.Primary.ClipSize * 2)
    self.Upside = self:GetUpside()
    self.Downside = self:GetDownside()
+   self.DamageValue = self:GetDamageValue()
+   if (self.DamageValue == 1) then
+      self.DamageType = "Impact"
+   elseif (self.DamageValue == 2) then
+      self.DamageType = "Puncture"
+   else
+      self.DamageType = "True"
+   end
    if (self.Upside == 15) then
       if SERVER then
          self:SetHoldingAces(math.random(1,self.Primary.ClipSize))

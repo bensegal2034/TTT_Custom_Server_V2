@@ -62,14 +62,14 @@ SWEP.CanBuy = {}
 SWEP.AllowDrop = true
 SWEP.UseHands = false
 SWEP.HeadshotMultiplier = 1
-SWEP.HeadshotMultiplierReal = 1.3
+SWEP.HeadshotMultiplierReal = 1.8
 SWEP.HoldType = "Revolver"
 SWEP.Tracer = "Tracer"
 SWEP.FiresUnderwater = false
 SWEP.DrawCrosshair = false
 SWEP.DrawAmmo = true
 SWEP.Base = "weapon_tttbase"
-SWEP.Primary.Damage = 36
+SWEP.Primary.Damage = 22
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 12
 SWEP.Primary.DefaultClip = 24
@@ -87,6 +87,9 @@ SWEP.Secondary.ClipSize = 0
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "Pistol"
+SWEP.DamageType = "Impact"
+
+
 if CLIENT then
 	SWEP.WepSelectIcon = surface.GetTextureID("vgui/entities/halo1_pistol")
 	killicon.Add("halo1_pistol", "VGUI/hud/halo1_pistol", color_white)

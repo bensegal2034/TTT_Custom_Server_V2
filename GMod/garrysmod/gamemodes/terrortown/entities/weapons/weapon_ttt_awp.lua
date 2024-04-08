@@ -79,12 +79,6 @@ if SERVER then
          dmginfo:SetDamage(999)
          return
       end
-      
-      if dmginfo:GetAttacker():GetActiveWeapon():GetClass() == "weapon_ttt_awp" then
-         if not (hitgroup == HITGROUP_HEAD or hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_STOMACH) then
-            dmginfo:ScaleDamage(0.4)
-         end
-      end
    end)
 end
 

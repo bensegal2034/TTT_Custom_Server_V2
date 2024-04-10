@@ -32,6 +32,7 @@ if SERVER then
    resource.AddFile( "models/weapons/v_kriss_svs.mdl" )
    resource.AddFile( "models/weapons/w_kriss_vector.mdl" )
    resource.AddWorkshop("371363909")
+   resource.AddWorkshop("128093075")
 end
 
 SWEP.HoldType = "ar2"
@@ -45,27 +46,57 @@ if CLIENT then
 end
 
 sound.Add({
-	name = "Activate",
-	channel = CHAN_STATIC,
-   volume = 500,
-	sound = "Weapon_StunStick.Melee_Miss",
+	name = 			"kriss_vector.Single",
+	channel = 		CHAN_USER_BASE+10,
+	volume = 		1.0,
+	sound = 			"weapons/Kriss/ump45-1.wav"
 })
 
 sound.Add({
-	name = "Deactivate",
-	channel = CHAN_STATIC,
-   volume = 500,
-	sound = "Weapon_StunStick.Melee_Miss",
+	name = 			"kriss_vector.Magrelease",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/Kriss/magrel.mp3"
 })
+
+sound.Add({
+	name = 			"kriss_vector.Clipout",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/Kriss/clipout.mp3"
+})
+
+sound.Add({
+	name = 			"kriss_vector.Clipin",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/Kriss/clipin.mp3"
+})
+
+
+sound.Add({
+	name = 			"kriss_vector.Boltpull",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/Kriss/boltpull.mp3"
+})
+
+sound.Add({
+	name = 			"kriss_vector.unfold",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/Kriss/unfold.mp3"
+})
+
 
 SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 
 SWEP.Primary.Damage      = 7
-SWEP.Primary.RageDamage  = 12
+SWEP.Primary.RageDamage  = 14
 SWEP.Primary.Delay       = 0.09
-SWEP.Primary.RageDelay   = 0.07
+SWEP.Primary.RageDelay   = 0.06
 SWEP.Primary.Cone        = 0.05
 SWEP.Primary.RageCone    = 0  
 SWEP.Primary.ConeSaved   = 0.05
@@ -78,20 +109,20 @@ SWEP.Primary.Recoil      = 1.1
 SWEP.Primary.Sound       = "weapons/kriss/ump45-1.wav"
 SWEP.RageActive          = false
 SWEP.HeadshotMultiplier  = 2
-SWEP.AutoSpawnable = true
-SWEP.StateValue = 0
-
+SWEP.AutoSpawnable       = true
+SWEP.StateValue          = 0
+SWEP.DamageType          = "Impact"
 
 SWEP.AmmoEnt = "item_ammo_smg1_ttt"
 
-SWEP.UseHands			= false
-SWEP.ViewModelFlip		= true
-SWEP.ViewModelFOV		= 70
-SWEP.ViewModel  = "models/weapons/v_kriss_svs.mdl"
-SWEP.WorldModel = "models/weapons/w_kriss_vector.mdl"
-SWEP.RoundOver = false
-SWEP.IronSightsPos = Vector(3.943, -0.129, 1.677)
-SWEP.IronSightsAng = Vector(-1.922, 0.481, 0)
+SWEP.UseHands			    = false
+SWEP.ViewModelFlip		 = true
+SWEP.ViewModelFOV		    = 70
+SWEP.ViewModel           = "models/weapons/v_kriss_svs.mdl"
+SWEP.WorldModel          = "models/weapons/w_kriss_vector.mdl"
+SWEP.RoundOver           = false
+SWEP.IronSightsPos       = Vector(3.943, -0.129, 1.677)
+SWEP.IronSightsAng       = Vector(-1.922, 0.481, 0)
 
 SWEP.DeploySpeed = 3
 

@@ -78,6 +78,28 @@ sound.Add({
 	sound = "weapons/r_bull/hk.wav",
 })
 
+sound.Add({
+	name = 			"weapon_r_bull.Single",
+	channel = 		CHAN_USER_BASE+10,
+	volume = 		1.0,
+	sound = 			"weapons/r_bull/r-bull-1.wav"
+})
+
+sound.Add({
+	name = 			"weapons_r_bull_bullreload_wav",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/r_bull/bullreload.mp3"
+})
+
+sound.Add({
+	name = 			"weapons_r_bull_draw_gun_wav",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/r_bull/draw_gun.mp3"
+})
+
+
 function SWEP:SetupDataTables()
  	self:NetworkVar( "Int", 1, "HoldingAces" )
 end

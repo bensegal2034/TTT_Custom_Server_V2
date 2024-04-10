@@ -26,6 +26,41 @@ if CLIENT then
 end
 
 
+sound.Add({
+	name = 			"Double_Barrel.Single",
+	channel = 		CHAN_USER_BASE+10,
+	volume = 		1.0,
+	sound = 			"weapons/dbarrel/xm1014-1.wav"
+})
+
+sound.Add({
+	name = 			"dbarrel_dblast",
+	channel = 		CHAN_USER_BASE+10,
+	volume = 		1.0,
+	sound = 			"weapons/dbarrel/dblast.wav"
+})
+
+sound.Add({
+	name = 			"Double_Barrel.InsertShell",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/dbarrel/xm1014_insertshell.mp3"
+})
+
+sound.Add({
+	name = 			"Double_Barrel.barreldown",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/dbarrel/barreldown.mp3"
+})
+
+sound.Add({
+	name = 			"Double_Barrel.barrelup",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/dbarrel/barrelup.mp3"
+})
+
 SWEP.Base				= "weapon_tttbase"
 SWEP.Spawnable = true
 

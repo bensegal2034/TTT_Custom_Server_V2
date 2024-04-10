@@ -41,6 +41,42 @@ if CLIENT then
 end
 
 
+sound.Add({
+	name = 			"Weapon_Tec9.Single",
+	channel = 		CHAN_USER_BASE+10,
+	volume = 		1.0,
+	sound = 			"weapons/tec9/ump45-1.wav"
+})
+
+sound.Add({
+	name = 			"Weapon_Tec9.Magin",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/tec9/tec9_magin.mp3"
+})
+
+sound.Add({
+	name = 			"Weapon_Tec9.Magout",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/tec9/tec9_magout.mp3"
+})
+
+sound.Add({
+	name = 			"Weapon_Tec9.NewMag",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/tec9/tec9_newmag.mp3"
+})
+
+sound.Add({
+	name = 			"Weapon_Tec9.Charge",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"weapons/tec9/tec9_charge.mp3"
+})
+
+
 SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_PISTOL

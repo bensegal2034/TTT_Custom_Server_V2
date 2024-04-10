@@ -7,7 +7,8 @@ if SERVER then
    resource.AddFile( "sound/weapons/kriss/magrel.mp3" )
    resource.AddFile( "sound/weapons/kriss/ump45-1.wav" )
    resource.AddFile( "sound/weapons/kriss/unfold.mp3" )
-   resource.AddFile( "sound/weapons/kriss/activate.mp3" )
+   resource.AddFile( "sound/weapons/kriss/on.wav" )
+   resource.AddFile( "sound/weapons/kriss/off.wav" )
    resource.AddFile( "materials/models/weapons/v_models/kriss/doodads.vmt" )
    resource.AddFile( "materials/models/weapons/v_models/kriss/doodads.vtf" )
    resource.AddFile( "materials/models/weapons/v_models/kriss/doodads_normal.vtf" )
@@ -65,7 +66,9 @@ SWEP.Primary.Damage      = 7
 SWEP.Primary.RageDamage  = 12
 SWEP.Primary.Delay       = 0.09
 SWEP.Primary.RageDelay   = 0.07
-SWEP.Primary.Cone        = 0.025
+SWEP.Primary.Cone        = 0.05
+SWEP.Primary.RageCone    = 0  
+SWEP.Primary.ConeSaved   = 0.05
 SWEP.Primary.ClipSize    = 45
 SWEP.Primary.ClipMax     = 135
 SWEP.Primary.DefaultClip = 45
@@ -73,9 +76,6 @@ SWEP.Primary.Automatic   = true
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.Recoil      = 1.1
 SWEP.Primary.Sound       = "weapons/kriss/ump45-1.wav"
-SWEP.ModulationCone      = 1
-SWEP.ModulationDelay     = 1
-SWEP.ModulationTime      = nil
 SWEP.RageActive          = false
 SWEP.HeadshotMultiplier  = 2
 SWEP.AutoSpawnable = true
@@ -130,6 +130,7 @@ function SWEP:PrimaryAttack(worldsnd)
    end
 
    if (self.StateValue == 1) then
+      self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
       self:ShootBullet( self.Primary.RageDamage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
       self:SetNextPrimaryFire( CurTime() + ragedelay )
       local owner = self:GetOwner()
@@ -137,6 +138,7 @@ function SWEP:PrimaryAttack(worldsnd)
          TakeDamage(owner, 2, owner, self)
       end
    else
+      
       self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
       self:SetNextPrimaryFire( CurTime() + delay )
    end
@@ -161,20 +163,21 @@ function SWEP:SecondaryAttack()
 		effectdata:SetMagnitude( 10 )
 		effectdata:SetScale( 10 )
 	   util.Effect( "VortDispel", effectdata)
-      self.BaseClass.ShootEffects( self )
-      self:EmitSound("Weapon_Crossbow.BoltElectrify")
+      self:EmitSound("weapons/kriss/on.wav")
+      self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
    elseif (self.StateValue == 1) then
       if SERVER then
          self.StateValue = 0
       end
-      self:EmitSound("Weapon_Crossbow.Reload")
+      self:EmitSound("weapons/kriss/off.wav")
+      self.Primary.Cone = self.Primary.ConeSaved
    end
 end
 
+
 function SWEP:GetPrimaryCone()
-   local cone = self.Primary.Cone or 0.05
-   cone = cone * self.ModulationCone
-   -- 10% accuracy bonus when sighting
+   local cone = self.Primary.Cone or 0.2
+   -- 15% accuracy bonus when sighting
    return self:GetIronsights() and (cone * 0.85) or cone
 end
 
@@ -184,12 +187,6 @@ function SWEP:Think()
       self:SetWeaponState(self.StateValue)
    end
    self.StateValue = self:GetWeaponState()
-
-	if self.ModulationTime and CurTime() > self.ModulationTime then
-		self.ModulationTime = nil
-		self.ModulationCone = 1
-		self.ModulationDelay = 1
-	end
 end
 
 function SWEP:PreDrop()

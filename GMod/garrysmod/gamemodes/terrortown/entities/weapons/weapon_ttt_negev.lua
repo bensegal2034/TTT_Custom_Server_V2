@@ -59,7 +59,7 @@ SWEP.IsFiring = false
 SWEP.FiringTimer = 0
 SWEP.FiringDelay = 0.2
 SWEP.DamageType            = "Impact"
-
+SWEP.AllowDrop = true
 SWEP.UseHands			= true
 SWEP.ViewModelFlip		= false
 SWEP.ViewModelFOV		= 72
@@ -124,8 +124,6 @@ end
 
 
 function SWEP:PreDrop()
-   self:SetZoom(false)
-   self:SetIronsights(false)
    return self.BaseClass.PreDrop(self)
 end
 

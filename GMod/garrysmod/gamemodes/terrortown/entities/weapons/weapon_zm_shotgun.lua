@@ -179,13 +179,13 @@ function SWEP:GetHeadshotMultiplier(victim, dmginfo)
    if d > 250 then
       return(1.5)
    elseif d < 250 then
-      return(2.3)
+      return(2.1)
    end
 end
 
 function SWEP:SecondaryAttack()
    self.Primary.Sound    = Sound("weapons/slug.wav")
-   self.Primary.Damage   = 45
+   self.Primary.Damage   = 49
    self.Primary.NumShots = 1
    self.Primary.Cone     = 0
    self.DamageType       = "Puncture"

@@ -243,7 +243,7 @@ function SWEP:Deploy()
 end
 
 function SWEP:Initialize()
-
+	self:SetDeploySpeed(5)
 	// other initialize code goes here
 	self:SetWeaponHoldType( "melee" )
 	if CLIENT then

@@ -102,7 +102,7 @@ SWEP.Primary.RageCone    = 0
 SWEP.Primary.ConeSaved   = 0.05
 SWEP.Primary.ClipSize    = 45
 SWEP.Primary.ClipMax     = 135
-SWEP.Primary.DefaultClip = 45
+SWEP.Primary.DefaultClip = 90
 SWEP.Primary.Automatic   = true
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.Recoil      = 1.1
@@ -136,6 +136,7 @@ function SWEP:Deploy()
 end
 
 function SWEP:Initialize()
+   self:SetDeploySpeed( 0.8 )
    function TakeDamage( victim, damage, attacker, inflictor )
       local dmg = DamageInfo() -- Create a server-side damage information class
       dmg:SetDamage( damage )

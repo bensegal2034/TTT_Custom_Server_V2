@@ -21,7 +21,7 @@ SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_SHOTGUN
 
 SWEP.Primary.Ammo          = "Buckshot"
-SWEP.Primary.Damage        = 9
+SWEP.Primary.Damage        = 7
 SWEP.Primary.Cone          = 0.075
 SWEP.Primary.Delay         = 0.4
 SWEP.Primary.ClipSize      = 8
@@ -176,12 +176,16 @@ function SWEP:GetHeadshotMultiplier(victim, dmginfo)
    -- Decay from 2 to 1 slowly as distance increases. Note that this used to be
    -- 3+, but at that time shotgun bullets were treated like in HL2 where half
    -- of them were hull traces that could not headshot.
-   return 1 + math.max(0, (1.0 - 0.002 * (d ^ 1.25)))
+   if d > 250 then
+      return(1.5)
+   elseif d < 250 then
+      return(2.3)
+   end
 end
 
 function SWEP:SecondaryAttack()
    self.Primary.Sound    = Sound("weapons/slug.wav")
-   self.Primary.Damage   = 50
+   self.Primary.Damage   = 45
    self.Primary.NumShots = 1
    self.Primary.Cone     = 0
    self.DamageType       = "Puncture"

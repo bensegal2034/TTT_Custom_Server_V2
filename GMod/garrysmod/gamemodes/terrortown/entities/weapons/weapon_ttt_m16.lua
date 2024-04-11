@@ -22,7 +22,7 @@ SWEP.Primary.Delay         = 0
 SWEP.Primary.Recoil        = 1.4
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "Pistol"
-SWEP.Primary.Damage        = 35
+SWEP.Primary.Damage        = 32
 SWEP.Primary.Cone          = 0.008
 SWEP.Primary.ClipSize      = 20
 SWEP.Primary.ClipMax       = 60
@@ -164,7 +164,7 @@ function SWEP:Think()
          self.InCombat = false
       end
    else
-      self.Primary.Damage = 35
+      self.Primary.Damage = 32
    end
    self:CalcViewModel()
 end

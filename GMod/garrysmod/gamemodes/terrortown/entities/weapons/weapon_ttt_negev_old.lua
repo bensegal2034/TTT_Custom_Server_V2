@@ -65,7 +65,7 @@ SWEP.UseHands = true
 SWEP.ViewModel = "models/weapons/tfa_csgo/c_mach_negev.mdl"
 SWEP.WorldModel	= "models/weapons/tfa_csgo/w_negev.mdl"
 
-SWEP.AutoSpawnable = true
+SWEP.AutoSpawnable = false
 SWEP.AllowDrop = true
 SWEP.UseHands = true
 SWEP.IronSightsPos = Vector(-7.9, -4, 2.32)

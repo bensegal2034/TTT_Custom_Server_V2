@@ -25,7 +25,7 @@ SWEP.Kind = WEAPON_FAMAS
 SWEP.Primary.DamageBase  = 23
 SWEP.Primary.Damage      = SWEP.Primary.DamageBase
 SWEP.HeadshotMultiplier  = 2
-SWEP.Primary.Delay       = 0.30
+SWEP.Primary.Delay       = 0.24
 SWEP.Primary.ConeBase    = 0.02
 SWEP.Primary.Cone        = SWEP.Primary.ConeBase
 SWEP.Primary.ClipSize    = 30
@@ -35,6 +35,7 @@ SWEP.Primary.Automatic   = true
 SWEP.Primary.Ammo        = "pistol"
 SWEP.Primary.Recoil      = 1.35
 SWEP.Primary.Sound       = "weapons/fokku_tc_famas/shot-1.wav"
+SWEP.DamageType          = "Piercing"
 
 SWEP.AutoSpawnable = false
 SWEP.CanBuy = { ROLE_TRAITOR }
@@ -51,12 +52,14 @@ SWEP.WorldModel = "models/weapons/w_tct_famas.mdl"
 SWEP.IronSightsPos = Vector(-3.342, 0, 0.247)
 SWEP.IronSightsAng = Vector(0.039, 0, 0)
 
-SWEP.BurstDelay = 0.10
+SWEP.BurstDelay = 0.08
 SWEP.BurstDelayTimer = 0
-SWEP.BurstShotAmt = 2
+SWEP.BurstShotAmt = 3
 SWEP.BurstShotsMade = 0
 SWEP.BurstInProgress = false
 SWEP.ReloadQueued = false
+
+SWEP.NetworkBurst = 0
 
 SWEP.KillClipActive = false
 SWEP.KillClipReady = false
@@ -98,6 +101,9 @@ SWEP.ReloadSpeed = SWEP.ReloadSpeedBase
 SWEP.Reloading = false
 SWEP.ReloadTimer = 0
 
+function SWEP:SetupDataTables()
+   self:NetworkVar( "Int", 0, "BurstShots" )
+end
 
 local KillClipActive = false
 local KillClipReady = false
@@ -336,23 +342,29 @@ function SWEP:Think()
 
    -- burst logic
    if self.BurstInProgress then
-      if self.BurstShotsMade == 0 then
-         self.BaseClass.PrimaryAttack(self.Weapon, worldsnd)
-         self.BurstShotsMade = self.BurstShotsMade + 1
-         return
+      if (self.BurstShotsMade == 0) then
+         if SERVER then
+            self.BurstShotsMade = self.BurstShotsMade + 1
+            self:SetBurstShots(self.BurstShotsMade)
+         end
+         self.BurstShotsMade = self:GetBurstShots()
       end
       if CurTime() > self.BurstDelayTimer then
-         if self.BurstShotAmt > self.BurstShotsMade then
+         if self.BurstShotAmt > self:GetBurstShots() then
             -- timer up AND the amount of shots fired is less than the amount we need to fire
             -- reset the timer, increment amount of shots fired, and fire another shot
             self.BurstDelayTimer = CurTime() + self.BurstDelay
-            self.BurstShotsMade = self.BurstShotsMade + 1
+            if SERVER then
+               self.BurstShotsMade = self.BurstShotsMade + 1
+               self:SetBurstShots(self.BurstShotsMade)
+            end
             self.BaseClass.PrimaryAttack(self.Weapon, worldsnd)
          else
             -- this is our last shot of the burst
             -- fire the last shot, we are no longer in a burst
             self.BaseClass.PrimaryAttack(self.Weapon, worldsnd)
             self.BurstShotsMade = 0
+            self:SetBurstShots(0)
             self.BurstDelayTimer = 0
             self.BurstInProgress = false
 

@@ -55,7 +55,7 @@ SWEP.ViewModel             = Model("models/weapons/c_357.mdl")
 SWEP.WorldModel            = Model("models/weapons/w_357.mdl")
 
 local Pregnant = {}
-local PregnancyLength = 10
+local PregnancyLength = 30
 
 if SERVER then
 	util.AddNetworkString("Pregnancy_Update")

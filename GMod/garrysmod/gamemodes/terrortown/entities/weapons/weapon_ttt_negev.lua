@@ -66,6 +66,8 @@ SWEP.ViewModelFOV		= 72
 SWEP.ViewModel			= "models/weapons/v_nach_m249para.mdl"
 SWEP.WorldModel			= "models/weapons/w_nach_m249para.mdl"
 
+SWEP.AutoSpawnable = true
+
 SWEP.IronSightsPos = Vector(-4.41, -3, 2.14)
 SWEP.IronSightsAng = Vector(0, 0.9, 0)
 

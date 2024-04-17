@@ -36,7 +36,7 @@ SWEP.Primary.ClipSize			= 75		-- Size of a clip
 SWEP.Primary.DefaultClip		= 150		-- Bullets you start with
 SWEP.Primary.Automatic			= true		-- Automatic = true; Semi Auto = false
 SWEP.Primary.Ammo			= "SMG1"			-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
-
+SWEP.DamageType 				= "Impact"
 SWEP.AmmoEnt = "item_ammo_smg1_ttt"
 -- Pistol, buckshot, and slam always ricochet. Use AirboatGun for a light metal peircing shotgun pellets
 
@@ -92,7 +92,7 @@ sound.Add({
 function SWEP:PrimaryAttack(worldsnd)
 
 	self.ModulationTime = CurTime() + 0.5
-	self.ModulationCone = math.min(10, self.ModulationCone * 1.04)
+	self.ModulationCone = math.min(2, self.ModulationCone * 1.04)
 	self.ModulationSpeed = math.min(440, self.ModulationSpeed * 1.02)
 	dmg = self.Primary.Damage
 	recoil = self.Primary.Recoil

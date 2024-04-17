@@ -113,6 +113,28 @@ function SWEP:Think()
    end
 end
 
+DEFINE_BASECLASS(SWEP.Base)
+function SWEP:DrawHUD(...)
+   if CLIENT then
+      local x = math.floor(ScrW() / 2.0)
+      local y = math.floor(ScrH() / 2.0)
+      local yOffset = 35
+      if self:GetPin() then
+         local timeBeforeDet = math.Truncate(self:GetDetTime() - CurTime(), 2)
+         local length = timeBeforeDet * 25
+
+         surface.SetDrawColor(255, 0, 0)
+         surface.DrawRect(x - (length / 2), y + yOffset, length, 25)
+
+         surface.SetTextColor(255, 0, 0)
+         surface.SetFont("HealthAmmo")
+         local textW, textH = surface.GetTextSize(tostring(timeBeforeDet))
+         surface.SetTextPos(x - (textW / 2), y - yOffset)
+         surface.DrawText(tostring(timeBeforeDet))
+      end
+   end
+   return BaseClass.DrawHUD(self, ...)
+end
 
 function SWEP:BlowInFace()
    local ply = self:GetOwner()

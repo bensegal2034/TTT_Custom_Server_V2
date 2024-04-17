@@ -420,10 +420,10 @@ if CLIENT then
       local recoilText = "Recoil: "
       surface.SetTextColor(0, 0, 0, 255)
       surface.SetTextPos(textWidth + shadowOffset, (scrH * recoilOffset) + shadowOffset)
-      surface.DrawText("Recoil: ")
+      surface.DrawText(recoilText)
       surface.SetTextColor(255, 255, 255, 255)
       surface.SetTextPos(textWidth, scrH * recoilOffset)
-      surface.DrawText("Recoil: ")
+      surface.DrawText(recoilText)
 
       surface.SetTextColor(0, 0, 0, 255)
       surface.SetTextPos((textWidth + surface.GetTextSize(recoilText)) + shadowOffset, (scrH * recoilOffset) + shadowOffset)
@@ -437,10 +437,10 @@ if CLIENT then
       local bulletText = "Bullets: "
       surface.SetTextColor(0, 0, 0, 255)
       surface.SetTextPos(textWidth + shadowOffset, (scrH * bulletOffset) + shadowOffset)
-      surface.DrawText("Bullets: ")
+      surface.DrawText(bulletText)
       surface.SetTextColor(255, 255, 255, 255)
       surface.SetTextPos(textWidth, scrH * bulletOffset)
-      surface.DrawText("Bullets: ")
+      surface.DrawText(bulletText)
 
       surface.SetTextColor(0, 0, 0, 255)
       surface.SetTextPos((textWidth + surface.GetTextSize(bulletText)) + shadowOffset, (scrH * bulletOffset) + shadowOffset)

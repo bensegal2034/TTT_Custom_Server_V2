@@ -355,80 +355,98 @@ if CLIENT then
 
       local scrW = ScrW()
       local scrH = ScrH()
+      local textWidth = scrW * 0.007
+      local shadowOffset = 2
+      local startingOffset = 0.775
+      local newlineOffset = 0.020
+
+      surface.SetFont("HealthAmmo") -- fuck you always do this if you don't do this when drawing text i will beat you to death
+      
+      -- DAMAGE TEXT
+      local damageOffset = startingOffset
+      local damageText = "Damage: "
       surface.SetDrawColor(73, 75, 77, 150)
-      draw.RoundedBox(10, scrW * 0.14, scrH * 0.84, 183, 163, Color(20, 20, 20, 200))
+      draw.RoundedBox(10, scrW * 0.003, scrH * 0.77, 183, 163, Color(20, 20, 20, 200))
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(275, 917, 28, 34)
-      surface.DrawText("Damage: ")
+      surface.SetTextPos(textWidth + shadowOffset, (scrH * damageOffset) + shadowOffset)
+      surface.DrawText(damageText)
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(273, 915, 28, 34)
-      surface.DrawText("Damage: ")
+      surface.SetTextPos(textWidth, scrH * damageOffset)
+      surface.DrawText(damageText)
 
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(402, 917, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(damageText)) + shadowOffset, (scrH * damageOffset) + shadowOffset)
       surface.DrawText(tostring(math.Round(self.Primary.DamageDisplay)))
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(400, 915, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(damageText)), scrH * damageOffset)
       surface.DrawText(tostring(math.Round(self.Primary.DamageDisplay)))
       
+      -- FIRE RATE TEXT
+      local fireRateOffset = startingOffset + (newlineOffset * 1)
+      local fireRateText = "Fire Rate: "
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(275, 947, 28, 34)
-      surface.DrawText("FireRate: ")
+      surface.SetTextPos(textWidth + shadowOffset, (scrH * fireRateOffset) + shadowOffset)
+      surface.DrawText(fireRateText)
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(273, 945, 28, 34)
-      surface.DrawText("FireRate: ")
+      surface.SetTextPos(textWidth, scrH * fireRateOffset)
+      surface.DrawText(fireRateText)
 
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(402, 947, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(fireRateText)) + shadowOffset, (scrH * fireRateOffset) + shadowOffset)
       surface.DrawText(tostring((math.Truncate(self.Primary.DelayDisplay,2))))
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(400, 945, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(fireRateText)), scrH * fireRateOffset)
       surface.DrawText(tostring(math.Truncate(self.Primary.DelayDisplay,2)))
 
-
+      -- ACCURACY TEXT
+      local accuracyOffset = startingOffset + (newlineOffset * 2)
+      local accuracyText = "Accuracy: "
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(275, 977, 28, 34)
-      surface.DrawText("Accuracy: ")
+      surface.SetTextPos(textWidth + shadowOffset, (scrH * accuracyOffset) + shadowOffset)
+      surface.DrawText(accuracyText)
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(273, 975, 28, 34)
-      surface.DrawText("Accuracy: ")
-
-
-      
+      surface.SetTextPos(textWidth, scrH * accuracyOffset)
+      surface.DrawText(accuracyText)
 
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(402, 977, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(accuracyText)) + shadowOffset, (scrH * accuracyOffset) + shadowOffset)
       surface.DrawText(tostring(math.Round(self.Primary.ConeDisplay)))
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(400, 975, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(accuracyText)), scrH * accuracyOffset)
       surface.DrawText(tostring(math.Round(self.Primary.ConeDisplay)))
 
+      -- RECOIL TEXT
+      local recoilOffset = startingOffset + (newlineOffset * 3)
+      local recoilText = "Recoil: "
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(275, 1007, 28, 34)
-      surface.DrawText("Recoil: ")
+      surface.SetTextPos(textWidth + shadowOffset, (scrH * recoilOffset) + shadowOffset)
+      surface.DrawText(recoilText)
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(273, 1005, 28, 34)
-      surface.DrawText("Recoil: ")
+      surface.SetTextPos(textWidth, scrH * recoilOffset)
+      surface.DrawText(recoilText)
 
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(402, 1007, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(recoilText)) + shadowOffset, (scrH * recoilOffset) + shadowOffset)
       surface.DrawText(tostring(math.Truncate(self.Primary.RecoilDisplay),2))
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(400, 1005, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(recoilText)), scrH * recoilOffset)
       surface.DrawText(tostring(math.Truncate(self.Primary.RecoilDisplay),2))
 
+      -- BULLETS TEXT
+      local bulletOffset = startingOffset + (newlineOffset * 4)
+      local bulletText = "Bullets: "
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(275, 1037, 28, 34)
-      surface.DrawText("Bullets: ")
+      surface.SetTextPos(textWidth + shadowOffset, (scrH * bulletOffset) + shadowOffset)
+      surface.DrawText(bulletText)
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(273, 1035, 28, 34)
-      surface.DrawText("Bullets: ")
+      surface.SetTextPos(textWidth, scrH * bulletOffset)
+      surface.DrawText(bulletText)
 
       surface.SetTextColor(0, 0, 0, 255)
-      surface.SetTextPos(402, 1037, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(bulletText)) + shadowOffset, (scrH * bulletOffset) + shadowOffset)
       surface.DrawText(tostring(self.Primary.NumShotsDisplay))
       surface.SetTextColor(255, 255, 255, 255)
-      surface.SetTextPos(400, 1035, 28, 34)
+      surface.SetTextPos((textWidth + surface.GetTextSize(bulletText)), scrH * bulletOffset)
       surface.DrawText(tostring(self.Primary.NumShotsDisplay))
 
       return BaseClass.DrawHUD(self, ...)

@@ -287,6 +287,23 @@ function WaitingForPlayersChecker()
 
          timer.Stop("waitingforply")
       end
+      -- so that waiting is less boring, spawn everyone who's dead & clear ragdolls to prevent lag
+      SpawnWillingPlayers(true)
+      ents.TTT.RemoveRagdolls()
+   end
+end
+
+function WeaponRemover()
+   swepList = weapons.GetList()
+   for _, ent in ipairs(ents.GetAll()) do
+      if IsValid(ent) and type(ent) == "Weapon" then
+         for _, wep in pairs(swepList) do
+            if ent:GetClass() == wep.ClassName then
+               ent:Remove()
+               break
+            end
+         end
+      end
    end
 end
 
@@ -296,6 +313,9 @@ function WaitForPlayers()
 
    if not timer.Start("waitingforply") then
       timer.Create("waitingforply", 2, 0, WaitingForPlayersChecker)
+   end
+   if not timer.Start("wepremover") then
+      timer.Create("wepremover", 2, 1, WeaponRemover)
    end
 end
 

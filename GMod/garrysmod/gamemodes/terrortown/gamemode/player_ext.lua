@@ -272,7 +272,10 @@ function plymeta:SpawnForRound(dead_only)
    -- (and will therefore be "alive")
    if dead_only and self:Alive() and (not self:IsSpec()) then
       -- if the player does not need respawn, make sure he has full health
-      self:SetHealth(self:GetMaxHealth())
+      -- only do this if we're not in ROUND_WAIT because of my silly little dm implementation :))
+      if GetRoundState() != ROUND_WAIT then
+         self:SetHealth(self:GetMaxHealth())
+      end
       return false
    end
 

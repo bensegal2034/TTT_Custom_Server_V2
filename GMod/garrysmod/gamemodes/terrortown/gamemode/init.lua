@@ -284,19 +284,25 @@ function WaitingForPlayersChecker()
    if GetRoundState() == ROUND_WAIT then
       if EnoughPlayers() then
          timer.Create("wait2prep", 1, 1, PrepareRound)
-
          timer.Stop("waitingforply")
       end
       -- so that waiting is less boring, spawn everyone who's dead & clear ragdolls to prevent lag
       SpawnWillingPlayers(true)
       ents.TTT.RemoveRagdolls()
+      if not timer.Exists("wepremover") then
+         WeaponRemover()
+      end
    end
 end
 
 function WeaponRemover()
-   swepList = weapons.GetList()
+   if GetRoundState() != ROUND_WAIT then return end
+
+   local swepList = weapons.GetList()
+
    for _, ent in ipairs(ents.GetAll()) do
       if IsValid(ent) and type(ent) == "Weapon" then
+         if IsValid(ent:GetOwner()) then continue end
          for _, wep in pairs(swepList) do
             if ent:GetClass() == wep.ClassName then
                ent:Remove()
@@ -581,13 +587,46 @@ end
 function SpawnWillingPlayers(dead_only)
    local plys = player.GetAll()
    local wave_delay = GetConVar("ttt_spawn_wave_interval"):GetFloat()
+   local swepList = weapons.GetList()
+   local validPrimaries = {}
+   local validSecondaries = {}
+   local validGrenades = {}
+
+   for _, wep in pairs(swepList) do
+      if (not wep.AutoSpawnable) or wep.CanBuy then continue end
+
+      if wep.Kind == WEAPON_HEAVY then
+         table.insert(validPrimaries, wep)
+      elseif wep.Kind == WEAPON_PISTOL then
+         table.insert(validSecondaries, wep)
+      elseif wep.Kind == WEAPON_NADE then
+         table.insert(validGrenades, wep)
+      end
+   end
+
+   local givePlayerRandomGuns = function(ply)
+      primary = validPrimaries[math.random(1, #validPrimaries)].ClassName
+      secondary = validSecondaries[math.random(1, #validSecondaries)].ClassName
+      grenade = validGrenades[math.random(1, #validGrenades)].ClassName
+
+      ply:Give(primary)
+      ply:Give(secondary)
+      ply:Give(grenade)
+      for _, wep in ipairs(ply:GetWeapons()) do
+         if wep:GetClass() == primary or wep:GetClass() == secondary then
+            ply:GiveAmmo(9999, wep.Primary.Ammo)
+         end
+      end
+   end
 
    -- simple method, should make this a case of the other method once that has
    -- been tested.
    if wave_delay <= 0 or dead_only then
       for k, ply in ipairs(plys) do
          if IsValid(ply) then
-            ply:SpawnForRound(dead_only)
+            if ply:SpawnForRound(dead_only) and IsValid(ply) then
+               if GetRoundState() == ROUND_WAIT then givePlayerRandomGuns(ply) end
+            end
          end
       end
    else
@@ -611,6 +650,7 @@ function SpawnWillingPlayers(dead_only)
                            if IsValid(ply) and ply:SpawnForRound() then
                               -- a spawn ent is now occupied
                               c = c + 1
+                              if GetRoundState() == ROUND_WAIT then givePlayerRandomGuns(ply) end
                            end
                            -- Few possible cases:
                            -- 1) player has now been spawned

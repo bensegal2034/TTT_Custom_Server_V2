@@ -98,7 +98,7 @@ SWEP.Primary.Delay			= 0.135
 SWEP.Primary.Recoil			= 1
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "SMG1"
-SWEP.Primary.Damage = 18
+SWEP.Primary.Damage = 21
 SWEP.Primary.Cone = 0.025
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.ClipMax = 90
@@ -168,6 +168,7 @@ function SWEP:CalcAimVector(ply)
    -- This avoids abusing third person to shoot from behind walls while still allowing the camera to aim properly
    return (traceresult.HitPos - ply:EyePos()):GetNormalized()
 end
+
 
 if CLIENT then
    hook.Add("ShouldDrawLocalPlayer", "ScarDrawLocal", function()
@@ -241,6 +242,12 @@ end
 
 -- Add some zoom to ironsights for this gun
 function SWEP:SecondaryAttack()
+end
+
+function SWEP:GetPrimaryCone()
+   local cone = self.Primary.Cone or 0.2
+   -- 15% accuracy bonus when sighting
+   return cone
 end
 
 function SWEP:Deploy()

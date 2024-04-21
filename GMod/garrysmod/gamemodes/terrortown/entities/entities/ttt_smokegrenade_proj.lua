@@ -52,10 +52,10 @@ if CLIENT then
             p:SetVelocity(VectorRand() * math.Rand(900, 1300))
             p:SetLifeTime(0)
             
-            p:SetDieTime(math.Rand(50, 70))
+            p:SetDieTime(60)
 
-            p:SetStartSize(150)
-            p:SetEndSize(150)
+            p:SetStartSize(100)
+            p:SetEndSize(100)
             p:SetAngles( Angle( math.Rand( -160, 160 ), math.Rand( -160, 160 ), math.Rand( -160, 160 ) ) )
 
             p:SetAirResistance(600)

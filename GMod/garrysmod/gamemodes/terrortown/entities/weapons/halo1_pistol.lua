@@ -194,20 +194,20 @@ end
 
 function SWEP:IsEntVisible(ent)
 	local LookTrace = {}
-	LookTrace.start = self.Owner:GetShootPos()
-	LookTrace.endpos = LookTrace.start + (self.Owner:GetAimVector() * self:GetNW2Int("PistolRangeH1"))
+	LookTrace.start = self:GetOwner():GetShootPos()
+	LookTrace.endpos = LookTrace.start + (self:GetOwner():GetAimVector() * self:GetNW2Int("PistolRangeH1"))
 	LookTrace.filter = function(ent)
-		if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
+		if ent == self or ent == self:GetOwner() or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 			return false
-		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self:GetOwner():GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self:GetOwner():GetEyeTrace().MatType ~= MAT_GLASS and self:GetOwner():GetEyeTrace().Contents ~= 268435458 then
 			return true
 		end
 	end
 
 	LookTrace.mask = MASK_SHOT
-	self.Owner:LagCompensation(true)
+	self:GetOwner():LagCompensation(true)
 	local looktr = util.TraceLine(LookTrace)
-	self.Owner:LagCompensation(false)
+	self:GetOwner():LagCompensation(false)
 	if IsValid(ent) and ent:IsPlayer() and looktr.Entity == ent then
 		self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
 		timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
@@ -233,20 +233,20 @@ function SWEP:IsEntVisible(ent)
 	end
 
 	local WallTrace = {}
-	WallTrace.start = self.Owner:GetShootPos()
-	WallTrace.endpos = WallTrace.start + (self.Owner:GetAimVector() * self:GetNW2Int("PistolRangeH1"))
+	WallTrace.start = self:GetOwner():GetShootPos()
+	WallTrace.endpos = WallTrace.start + (self:GetOwner():GetAimVector() * self:GetNW2Int("PistolRangeH1"))
 	WallTrace.filter = function(ent)
-		if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
+		if ent == self or ent == self:GetOwner() or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 			return false
-		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or IsValid(ent) or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or IsValid(ent) or self:GetOwner():GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self:GetOwner():GetEyeTrace().MatType ~= MAT_GLASS and self:GetOwner():GetEyeTrace().Contents ~= 268435458 then
 			return true
 		end
 	end
 
 	WallTrace.mask = MASK_VISIBLE_AND_NPCS
-	self.Owner:LagCompensation(true)
+	self:GetOwner():LagCompensation(true)
 	local walltr = util.TraceLine(WallTrace)
-	self.Owner:LagCompensation(false)
+	self:GetOwner():LagCompensation(false)
 	if IsValid(ent) and ent:IsPlayer() and looktr.SurfaceFlags == SURF_TRANS and not walltr.HitWorld and walltr.Entity == ent or IsValid(ent) and ent:IsPlayer() and looktr.MatType == MAT_GLASS and not walltr.HitWorld and walltr.Entity == ent or IsValid(ent) and ent:IsPlayer() and looktr.Contents == 268435458 and not walltr.HitWorld and walltr.Entity == ent then
 		self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
 		timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
@@ -263,7 +263,7 @@ function SWEP:IsEntVisible(ent)
 	end
 
 	if IsValid(ent) and ent:IsVehicle() and not scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") and ent:GetClass() ~= "gmod_sent_vehicle_fphysics_base" and walltr.HitWorld then return end
-	for id, v in ipairs(ents.FindAlongRay(self.Owner:EyePos(), self.Owner:EyePos() + (self.Owner:EyeAngles() + Angle(0, 0, 0)):Forward() * (self.Owner:EyePos() - walltr.HitPos):Length() * 0.92, Vector(0, 0, 0), Vector(0, 0, 0))) do
+	for id, v in ipairs(ents.FindAlongRay(self:GetOwner():EyePos(), self:GetOwner():EyePos() + (self:GetOwner():EyeAngles() + Angle(0, 0, 0)):Forward() * (self:GetOwner():EyePos() - walltr.HitPos):Length() * 0.92, Vector(0, 0, 0), Vector(0, 0, 0))) do
 		if self:EntityIsVehicle(v) and v == ent then
 			self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
 			timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
@@ -429,70 +429,70 @@ end
 
 function SWEP:HasHostilesInVehicle(ent)
 	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") then
-		if IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() ~= self.Owner:Team() and ent.Pilot:Team() ~= TEAM_UNASSIGNED or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() == TEAM_UNASSIGNED or IsEntity(ent.LeftGunner) and IsValid(ent.LeftGunner) and ent.LeftGunner:IsPlayer() and ent.LeftGunner:Team() ~= self.Owner:Team() and ent.LeftGunner:Team() ~= TEAM_UNASSIGNED or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and IsEntity(ent.LeftGunner) and IsValid(ent.LeftGunner) and ent.LeftGunner:IsPlayer() and ent.LeftGunner:Team() == TEAM_UNASSIGNED or IsEntity(ent.RightGunner) and IsValid(ent.RightGunner) and ent.RightGunner:IsPlayer() and ent.RightGunner:Team() ~= self.Owner:Team() and ent.RightGunner:Team() ~= TEAM_UNASSIGNED or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and IsEntity(ent.RightGunner) and IsValid(ent.RightGunner) and ent.RightGunner:IsPlayer() and ent.RightGunner:Team() == TEAM_UNASSIGNED then return true end
+		if IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() ~= self:GetOwner():Team() and ent.Pilot:Team() ~= TEAM_UNASSIGNED or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() == TEAM_UNASSIGNED or IsEntity(ent.LeftGunner) and IsValid(ent.LeftGunner) and ent.LeftGunner:IsPlayer() and ent.LeftGunner:Team() ~= self:GetOwner():Team() and ent.LeftGunner:Team() ~= TEAM_UNASSIGNED or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and IsEntity(ent.LeftGunner) and IsValid(ent.LeftGunner) and ent.LeftGunner:IsPlayer() and ent.LeftGunner:Team() == TEAM_UNASSIGNED or IsEntity(ent.RightGunner) and IsValid(ent.RightGunner) and ent.RightGunner:IsPlayer() and ent.RightGunner:Team() ~= self:GetOwner():Team() and ent.RightGunner:Team() ~= TEAM_UNASSIGNED or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and IsEntity(ent.RightGunner) and IsValid(ent.RightGunner) and ent.RightGunner:IsPlayer() and ent.RightGunner:Team() == TEAM_UNASSIGNED then return true end
 		if istable(ent.Seats) then
 			for k, p in pairs(ent.Seats) do
-				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self.Owner:Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self:GetOwner():Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 			end
 		end
 	end
 
 	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "halohover_base") or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "halohover2_base") then
-		if IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() ~= self.Owner:Team() and ent.Pilot:Team() ~= TEAM_UNASSIGNED or IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() == TEAM_UNASSIGNED or IsEntity(ent.Passenger) and IsValid(ent.Passenger) and ent.Passenger:IsPlayer() and ent.Passenger:Team() ~= self.Owner:Team() and ent.Passenger:Team() ~= TEAM_UNASSIGNED or IsEntity(ent.Passenger) and IsValid(ent.Passenger) and ent.Passenger:IsPlayer() and ent.Passenger:Team() == TEAM_UNASSIGNED then return true end
+		if IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() ~= self:GetOwner():Team() and ent.Pilot:Team() ~= TEAM_UNASSIGNED or IsEntity(ent.Pilot) and IsValid(ent.Pilot) and ent.Pilot:IsPlayer() and ent.Pilot:Team() == TEAM_UNASSIGNED or IsEntity(ent.Passenger) and IsValid(ent.Passenger) and ent.Passenger:IsPlayer() and ent.Passenger:Team() ~= self:GetOwner():Team() and ent.Passenger:Team() ~= TEAM_UNASSIGNED or IsEntity(ent.Passenger) and IsValid(ent.Passenger) and ent.Passenger:IsPlayer() and ent.Passenger:Team() == TEAM_UNASSIGNED then return true end
 		if istable(ent.Seats) then
 			for k, p in pairs(ent.Seats) do
-				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self.Owner:Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self:GetOwner():Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 			end
 		end
 	end
 
 	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "lunasflightschool_basescript") and ent.GetAI and ent.GetAITEAM then
-		if ent:GetAI() and ent:GetAITEAM() ~= self.Owner:lfsGetAITeam() and self.Owner:lfsGetAITeam() ~= 0 and ent:GetAITEAM() ~= 0 and GetConVar("ai_ignoreplayers"):GetInt() == 0 then return true end
-		if IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() ~= self.Owner:Team() and ent:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+		if ent:GetAI() and ent:GetAITEAM() ~= self:GetOwner():lfsGetAITeam() and self:GetOwner():lfsGetAITeam() ~= 0 and ent:GetAITEAM() ~= 0 and GetConVar("ai_ignoreplayers"):GetInt() == 0 then return true end
+		if IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() ~= self:GetOwner():Team() and ent:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 		for _, v in pairs(ent:GetPassengerSeats()) do
-			if IsValid(v) and IsValid(v:GetDriver()) and v:GetDriver():IsPlayer() and v:GetDriver():Team() ~= self.Owner:Team() and v:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(v) and IsValid(v:GetDriver()) and v:GetDriver():IsPlayer() and v:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+			if IsValid(v) and IsValid(v:GetDriver()) and v:GetDriver():IsPlayer() and v:GetDriver():Team() ~= self:GetOwner():Team() and v:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(v) and IsValid(v:GetDriver()) and v:GetDriver():IsPlayer() and v:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 		end
 	end
 
 	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "wac_hc_base") and istable(ent.passengers) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "wac_pl_base") and istable(ent.passengers) then
 		for k, p in pairs(ent.passengers) do
-			if IsValid(p) and p:IsPlayer() and p:Team() ~= self.Owner:Team() and p:Team() ~= TEAM_UNASSIGNED or IsValid(p) and p:IsPlayer() and p:Team() == TEAM_UNASSIGNED then return true end
+			if IsValid(p) and p:IsPlayer() and p:Team() ~= self:GetOwner():Team() and p:Team() ~= TEAM_UNASSIGNED or IsValid(p) and p:IsPlayer() and p:Team() == TEAM_UNASSIGNED then return true end
 		end
 	end
 
 	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") and istable(ent.Seats) then
 		for k, p in pairs(ent.Seats) do
-			if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self.Owner:Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+			if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self:GetOwner():Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 		end
 	end
 
 	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_carwheel") or IsValid(ent) and ent:GetClass() == "sent_sakarias_carwheel" then
 		if IsEntity(ent.SCarOwner) and IsValid(ent.SCarOwner) and istable(ent.SCarOwner.Seats) then
 			for k, p in pairs(ent.SCarOwner.Seats) do
-				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self.Owner:Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED or IsEntity(ent.SCarOwner.MadVehicle) and IsValid(ent.SCarOwner.MadVehicle) and GetConVar("ai_ignoreplayers"):GetInt() == 0 and GetConVar("madvehicle_targetplayer"):GetInt() == 1 then return true end
+				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self:GetOwner():Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED or IsEntity(ent.SCarOwner.MadVehicle) and IsValid(ent.SCarOwner.MadVehicle) and GetConVar("ai_ignoreplayers"):GetInt() == 0 and GetConVar("madvehicle_targetplayer"):GetInt() == 1 then return true end
 			end
 		end
 	end
 
 	if IsValid(ent) and ent:GetClass() == "gmod_sent_vehicle_fphysics_wheel" and IsValid(ent:GetBaseEnt()) then
-		if IsValid(ent:GetBaseEnt():GetDriver()) and ent:GetBaseEnt():GetDriver():IsPlayer() and ent:GetBaseEnt():GetDriver():Team() ~= self.Owner:Team() and ent:GetBaseEnt():GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetBaseEnt():GetDriver()) and ent:GetBaseEnt():GetDriver():IsPlayer() and ent:GetBaseEnt():GetDriver():Team() == TEAM_UNASSIGNED or IsValid(ent:GetBaseEnt()) and IsEntity(ent:GetBaseEnt().MadVehicle) and IsValid(ent:GetBaseEnt().MadVehicle) and GetConVar("ai_ignoreplayers"):GetInt() == 0 and GetConVar("madvehicle_targetplayer"):GetInt() == 1 then return true end
+		if IsValid(ent:GetBaseEnt():GetDriver()) and ent:GetBaseEnt():GetDriver():IsPlayer() and ent:GetBaseEnt():GetDriver():Team() ~= self:GetOwner():Team() and ent:GetBaseEnt():GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetBaseEnt():GetDriver()) and ent:GetBaseEnt():GetDriver():IsPlayer() and ent:GetBaseEnt():GetDriver():Team() == TEAM_UNASSIGNED or IsValid(ent:GetBaseEnt()) and IsEntity(ent:GetBaseEnt().MadVehicle) and IsValid(ent:GetBaseEnt().MadVehicle) and GetConVar("ai_ignoreplayers"):GetInt() == 0 and GetConVar("madvehicle_targetplayer"):GetInt() == 1 then return true end
 		if istable(ent:GetBaseEnt().pSeat) then
 			for k, p in pairs(ent:GetBaseEnt().pSeat) do
-				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self.Owner:Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self:GetOwner():Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 			end
 		end
 	end
 
 	if IsValid(ent) and ent:GetClass() == "gmod_sent_vehicle_fphysics_base" then
-		if IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() ~= self.Owner:Team() and ent:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+		if IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() ~= self:GetOwner():Team() and ent:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 		if istable(ent.pSeat) then
 			for k, p in pairs(ent.pSeat) do
-				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self.Owner:Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
+				if IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() ~= self:GetOwner():Team() and p:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(p:GetDriver()) and p:GetDriver():IsPlayer() and p:GetDriver():Team() == TEAM_UNASSIGNED then return true end
 			end
 		end
 	end
 
-	if IsValid(ent) and ent:IsVehicle() and not scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") then if IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() ~= self.Owner:Team() and ent:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() == TEAM_UNASSIGNED then return true end end
+	if IsValid(ent) and ent:IsVehicle() and not scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") then if IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() ~= self:GetOwner():Team() and ent:GetDriver():Team() ~= TEAM_UNASSIGNED or IsValid(ent:GetDriver()) and ent:GetDriver():IsPlayer() and ent:GetDriver():Team() == TEAM_UNASSIGNED then return true end end
 end
 
 function SWEP:EntityIsEnemyVehicle(ent)
@@ -509,7 +509,7 @@ function SWEP:EntityIsEnemyVehicle(ent)
 		npc_turret_floor = true
 	}
 
-	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "halohover_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "halohover2_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "lunasflightschool_basescript") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "wac_hc_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "wac_pl_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_carwheel") and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:GetClass() == "sent_sakarias_carwheel" and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:GetClass() == "gmod_sent_vehicle_fphysics_base" and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:GetClass() == "gmod_sent_vehicle_fphysics_wheel" and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:IsVehicle() and not scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") and self:HasHostilesInVehicle(ent) or SERVER and IsValid(ent) and ent:IsNPC() and VehicleEnts[ent:GetClass()] and ent:Disposition(self.Owner) == 1 or SERVER and IsValid(ent) and ent:IsNPC() and VehicleEnts[ent:GetClass()] and ent:Disposition(self.Owner) == 2 or IsValid(ent) and IsEntity(ent.MadVehicle) and IsValid(ent.MadVehicle) and ent.MadVehicle:GetClass() == "npc_madvehicle" and GetConVar("ai_ignoreplayers"):GetInt() == 0 and GetConVar("madvehicle_targetplayer"):GetInt() == 1 then
+	if IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "haloveh_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "halohover_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "halohover2_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "lunasflightschool_basescript") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "wac_hc_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "wac_pl_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") and self:HasHostilesInVehicle(ent) or IsValid(ent) and scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_carwheel") and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:GetClass() == "sent_sakarias_carwheel" and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:GetClass() == "gmod_sent_vehicle_fphysics_base" and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:GetClass() == "gmod_sent_vehicle_fphysics_wheel" and self:HasHostilesInVehicle(ent) or IsValid(ent) and ent:IsVehicle() and not scripted_ents.IsBasedOn(ent:GetClass(), "sent_sakarias_scar_base") and self:HasHostilesInVehicle(ent) or SERVER and IsValid(ent) and ent:IsNPC() and VehicleEnts[ent:GetClass()] and ent:Disposition(self:GetOwner()) == 1 or SERVER and IsValid(ent) and ent:IsNPC() and VehicleEnts[ent:GetClass()] and ent:Disposition(self:GetOwner()) == 2 or IsValid(ent) and IsEntity(ent.MadVehicle) and IsValid(ent.MadVehicle) and ent.MadVehicle:GetClass() == "npc_madvehicle" and GetConVar("ai_ignoreplayers"):GetInt() == 0 and GetConVar("madvehicle_targetplayer"):GetInt() == 1 then
 		self:SetNW2Bool("HaloSWEPSEntIsEnemyVehicle", true)
 		return true
 	else
@@ -527,49 +527,49 @@ function SWEP:HaloReticle(tr)
 end
 
 function SWEP:DrawHUD()
-	if self.Owner:InVehicle() and self.Owner:GetAllowWeaponsInVehicle() == false or GetViewEntity() ~= self.Owner then return end
+	if self:GetOwner():InVehicle() and self:GetOwner():GetAllowWeaponsInVehicle() == false or GetViewEntity() ~= self:GetOwner() then return end
 	local LookTrace = {}
-	LookTrace.start = self.Owner:GetShootPos()
-	LookTrace.endpos = LookTrace.start + (self.Owner:GetAimVector() * self:GetNW2Int("PistolRangeH1"))
+	LookTrace.start = self:GetOwner():GetShootPos()
+	LookTrace.endpos = LookTrace.start + (self:GetOwner():GetAimVector() * self:GetNW2Int("PistolRangeH1"))
 	LookTrace.filter = function(ent)
-		if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
+		if ent == self or ent == self:GetOwner() or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 			return false
-		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self:GetOwner():GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self:GetOwner():GetEyeTrace().MatType ~= MAT_GLASS and self:GetOwner():GetEyeTrace().Contents ~= 268435458 then
 			return true
 		end
 	end
 
 	LookTrace.mask = MASK_SHOT
-	self.Owner:LagCompensation(true)
+	self:GetOwner():LagCompensation(true)
 	local looktr = util.TraceLine(LookTrace)
-	self.Owner:LagCompensation(false)
+	self:GetOwner():LagCompensation(false)
 	if looktr.SurfaceFlags == SURF_TRANS or looktr.MatType == MAT_GLASS or looktr.Contents == 268435458 or looktr.Entity:IsNPC() or looktr.Entity:IsPlayer() or looktr.Entity:IsNextBot() or self:EntityIsVehicle(looktr.Entity) then
 		local Trace = {}
-		Trace.start = self.Owner:GetShootPos()
-		Trace.endpos = Trace.start + (self.Owner:GetAimVector() * self:GetNW2Int("PistolRangeH1"))
+		Trace.start = self:GetOwner():GetShootPos()
+		Trace.endpos = Trace.start + (self:GetOwner():GetAimVector() * self:GetNW2Int("PistolRangeH1"))
 		Trace.filter = function(ent)
-			if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
+			if ent == self or ent == self:GetOwner() or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 				return false
-			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self:GetOwner():GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self:GetOwner():GetEyeTrace().MatType ~= MAT_GLASS and self:GetOwner():GetEyeTrace().Contents ~= 268435458 then
 				return true
 			end
 		end
 
 		Trace.mask = MASK_SHOT
 		Trace.ignoreworld = true
-		self.Owner:LagCompensation(true)
+		self:GetOwner():LagCompensation(true)
 		local tr = util.TraceLine(Trace)
-		self.Owner:LagCompensation(false)
+		self:GetOwner():LagCompensation(false)
 		self:HaloReticle(tr)
 	else
 		local Trace = {}
-		Trace.start = self.Owner:GetShootPos()
-		Trace.endpos = Trace.start + (self.Owner:GetAimVector() * self:GetNW2Int("PistolRangeH1"))
+		Trace.start = self:GetOwner():GetShootPos()
+		Trace.endpos = Trace.start + (self:GetOwner():GetAimVector() * self:GetNW2Int("PistolRangeH1"))
 		Trace.filter = function(ent) if IsEntity(ent) then return false end end
 		Trace.mask = MASK_SHOT
-		self.Owner:LagCompensation(true)
+		self:GetOwner():LagCompensation(true)
 		local tr = util.TraceLine(Trace)
-		self.Owner:LagCompensation(false)
+		self:GetOwner():LagCompensation(false)
 		self:HaloReticle(tr)
 	end
 
@@ -597,7 +597,7 @@ function SWEP:Deploy()
 		self:SetNW2Int("NPCClipH1", -1)
 	end
 
-	if IsValid(self.Owner:GetViewModel()) then self.Owner:GetViewModel():SetWeaponModel(self.ViewModel, self) end
+	if IsValid(self:GetOwner():GetViewModel()) then self:GetOwner():GetViewModel():SetWeaponModel(self.ViewModel, self) end
 	self:SetNW2Bool("DrawnWeaponH1", true)
 	self:SetNextIdle(0)
 	timer.Stop("weapon_idle" .. self:EntIndex())
@@ -606,79 +606,79 @@ function SWEP:Deploy()
 		self:SetNW2Bool("PistolScopeH1", false)
 		self:SetNextChangeFOVH1(0)
 		self.ViewModelFOV = 70
-		self.Owner:GetViewModel():SetSkin(0)
+		self:GetOwner():GetViewModel():SetSkin(0)
 		if SERVER then
 			sound.Play("Halo1_Weapon.ZoomOut", self:GetPos(), 75)
-			self.Owner:SetFOV(0, 0.35)
+			self:GetOwner():SetFOV(0, 0.35)
 		end
 	end
 
 	self:SendWeaponAnim(ACT_VM_DRAW)
-	if IsFirstTimePredicted() and SERVER and not self.Owner:IsListenServerHost() then
-		timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.12, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
-	elseif IsFirstTimePredicted() and SERVER and self.Owner:IsListenServerHost() and not game.SinglePlayer() then
-		timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.22, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+	if IsFirstTimePredicted() and SERVER and not self:GetOwner():IsListenServerHost() then
+		timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.12, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+	elseif IsFirstTimePredicted() and SERVER and self:GetOwner():IsListenServerHost() and not game.SinglePlayer() then
+		timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.22, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 	elseif IsFirstTimePredicted() and game.SinglePlayer() then
-		timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+		timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 	end
 
 	self:SetNextPrimaryFire(CurTime() + self:SequenceDuration())
 	self:EmitSound("Halo1_Pistol.Deploy")
 	timer.Create("FakeThink" .. self:EntIndex(), 0, 0, function()
-		if not IsValid(self) or not IsValid(self.Owner) then return end
+		if not IsValid(self) or not IsValid(self:GetOwner()) then return end
 		local LookTrace = {}
-		LookTrace.start = self.Owner:GetShootPos()
-		LookTrace.endpos = LookTrace.start + (self.Owner:GetAimVector() * self:GetNW2Int("PistolRangeH1"))
+		LookTrace.start = self:GetOwner():GetShootPos()
+		LookTrace.endpos = LookTrace.start + (self:GetOwner():GetAimVector() * self:GetNW2Int("PistolRangeH1"))
 		LookTrace.filter = function(ent)
-			if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
+			if ent == self or ent == self:GetOwner() or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 				return false
-			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self:GetOwner():GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self:GetOwner():GetEyeTrace().MatType ~= MAT_GLASS and self:GetOwner():GetEyeTrace().Contents ~= 268435458 then
 				return true
 			end
 		end
 
 		LookTrace.mask = MASK_SHOT
-		self.Owner:LagCompensation(true)
+		self:GetOwner():LagCompensation(true)
 		local looktr = util.TraceLine(LookTrace)
-		self.Owner:LagCompensation(false)
+		self:GetOwner():LagCompensation(false)
 		self:IsVehicleOccupied(looktr.Entity)
 		self:EntityIsEnemyVehicle(looktr.Entity)
 		self:IsEntVisible(looktr.Entity)
 		if looktr.SurfaceFlags == SURF_TRANS or looktr.MatType == MAT_GLASS or looktr.Contents == 268435458 or looktr.Entity:IsNPC() or looktr.Entity:IsPlayer() or looktr.Entity:IsNextBot() then
 			local Trace = {}
-			Trace.start = self.Owner:GetShootPos()
-			Trace.endpos = Trace.start + (self.Owner:GetAimVector() * self:GetNW2Int("PistolRangeH1"))
+			Trace.start = self:GetOwner():GetShootPos()
+			Trace.endpos = Trace.start + (self:GetOwner():GetAimVector() * self:GetNW2Int("PistolRangeH1"))
 			Trace.filter = function(ent)
-				if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
+				if ent == self or ent == self:GetOwner() or ent:GetClass() == "melee_attack_h1" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 					return false
-				elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+				elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self:EntityIsVehicle(ent) or self:GetOwner():GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self:GetOwner():GetEyeTrace().MatType ~= MAT_GLASS and self:GetOwner():GetEyeTrace().Contents ~= 268435458 then
 					return true
 				end
 			end
 
 			Trace.mask = MASK_SHOT
 			Trace.ignoreworld = true
-			self.Owner:LagCompensation(true)
+			self:GetOwner():LagCompensation(true)
 			local tr = util.TraceLine(Trace)
-			self.Owner:LagCompensation(false)
+			self:GetOwner():LagCompensation(false)
 			self:IsVehicleOccupied(tr.Entity)
 			self:EntityIsEnemyVehicle(tr.Entity)
 			self:IsEntVisible(tr.Entity)
-			if SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self.Owner) == 3 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= true then
+			if SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self:GetOwner()) == 3 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= true then
 				self:SetNW2Bool("HaloSWEPSEntIsFriendly", true)
-			elseif SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self.Owner) == 4 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= true then
+			elseif SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self:GetOwner()) == 4 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= true then
 				self:SetNW2Bool("HaloSWEPSEntIsFriendly", true)
 			end
 
-			if SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self.Owner) == 2 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= false then
+			if SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self:GetOwner()) == 2 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= false then
 				self:SetNW2Bool("HaloSWEPSEntIsFriendly", false)
-			elseif SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self.Owner) == 1 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= false then
+			elseif SERVER and IsValid(tr.Entity) and tr.Entity:IsNPC() and tr.Entity:Disposition(self:GetOwner()) == 1 and self:GetNW2Bool("HaloSWEPSEntIsFriendly") ~= false then
 				self:SetNW2Bool("HaloSWEPSEntIsFriendly", false)
 			end
 
-			if SERVER and IsValid(tr.Entity) and tr.Entity:IsNextBot() and tr.Entity.Enemy == self.Owner and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") ~= false then
+			if SERVER and IsValid(tr.Entity) and tr.Entity:IsNextBot() and tr.Entity.Enemy == self:GetOwner() and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") ~= false then
 				self:SetNW2Bool("HaloSWEPSEntIsFriendlyNB", false)
-			elseif SERVER and IsValid(tr.Entity) and tr.Entity:IsNextBot() and tr.Entity.Enemy ~= self.Owner and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") ~= true then
+			elseif SERVER and IsValid(tr.Entity) and tr.Entity:IsNextBot() and tr.Entity.Enemy ~= self:GetOwner() and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") ~= true then
 				self:SetNW2Bool("HaloSWEPSEntIsFriendlyNB", true)
 			end
 		end
@@ -687,16 +687,16 @@ function SWEP:Deploy()
 end
 
 function SWEP:PrimaryAttack()
-	if IsValid(self.Owner) and self.Owner:IsNPC() then return end
-	if self.Owner:KeyDown(IN_USE) and self.GrenadeActivated == true then
+	if IsValid(self:GetOwner()) and self:GetOwner():IsNPC() then return end
+	if self:GetOwner():KeyDown(IN_USE) and self.GrenadeActivated == true then
 		if self:GetNW2Bool("PistolScopeH1") == true then
 			self:SetNW2Bool("PistolScopeH1", false)
 			self:SetNextChangeFOVH1(0)
 			self.ViewModelFOV = 70
-			self.Owner:GetViewModel():SetSkin(0)
+			self:GetOwner():GetViewModel():SetSkin(0)
 			if SERVER then
 				sound.Play("Halo1_Weapon.ZoomOut", self:GetPos(), 75)
-				self.Owner:SetFOV(0, 0)
+				self:GetOwner():SetFOV(0, 0)
 			end
 		end
 
@@ -706,15 +706,15 @@ function SWEP:PrimaryAttack()
 		self:SetNextSecondaryFire(CurTime() + 1.2)
 		timer.Create("GrenadeThrow" .. self:EntIndex(), 0.2, 1, function() self:ThrowGrenade() end)
 		self:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
-		if IsFirstTimePredicted() and SERVER and not self.Owner:IsListenServerHost() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
-		elseif IsFirstTimePredicted() and SERVER and self.Owner:IsListenServerHost() and not game.SinglePlayer() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.24, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+		if IsFirstTimePredicted() and SERVER and not self:GetOwner():IsListenServerHost() then
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+		elseif IsFirstTimePredicted() and SERVER and self:GetOwner():IsListenServerHost() and not game.SinglePlayer() then
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.24, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 		elseif IsFirstTimePredicted() and game.SinglePlayer() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 		end
 
-		self.Owner:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_THROW)
+		self:GetOwner():DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_THROW)
 		self:StopSound("Halo1_Magnum.Melee")
 		self:EmitSound("Halo1_Nade.Throw")
 	else
@@ -771,9 +771,8 @@ function SWEP:PrimaryAttack()
 		-- setup bullet table
 		local bullet = {}
 		bullet.Num = self.Primary.NumberofShots
-		bullet.Src = self.Owner:GetShootPos()
-		bullet.Dir = self.Owner:GetAimVector()
-		bullet.Callback = function(attacker, trace, dmginfo) util.ParticleTracerEx(self.Tracer, self.Owner:GetShootPos(), trace.HitPos, true, self:EntIndex(), 1) end
+		bullet.Src = self:GetOwner():GetShootPos()
+		bullet.Dir = self:GetOwner():GetAimVector()
 		bullet.Spread = Vector(self.Primary.Spread * 0.1, self.Primary.Spread * 0.1, 0)
 		bullet.Tracer = 0
 		bullet.TracerName = self.Tracer
@@ -781,8 +780,8 @@ function SWEP:PrimaryAttack()
 		bullet.Damage = self.Primary.Damage
 		bullet.AmmoType = self.Primary.Ammo
 
-		local ang = self.Owner:GetAimVector()
-		local spos = self.Owner:GetShootPos()
+		local ang = self:GetOwner():GetAimVector()
+		local spos = self:GetOwner():GetShootPos()
 
 		-- only magnetize if we have valid targets
 		if not table.IsEmpty(validPlys) then
@@ -794,56 +793,64 @@ function SWEP:PrimaryAttack()
 			end
 			
 			--print("Best target found: " .. bestTargetTbl.ply:GetName())
-			-- we have our best available target, point the bullet at their head
-			bullet.Dir = bestTargetTbl.eyeToHeadBone
-			bullet.Damage = self.Primary.Damage * self.HeadshotMultiplierReal
+			-- we have our best available target
+			-- set the damage to 0 and manually apply the correct damage
+			bestTargetPly = bestTargetTbl.ply
+			bullet.Callback = function(attacker, trace, dmginfo)
+				util.ParticleTracerEx(self.Tracer, self:GetOwner():GetShootPos(), trace.HitPos, true, self:EntIndex(), 1)
+				ret1 = {damage = false}
+				return ret1
+			end
+			if SERVER then 
+				bestTargetPly:TakeDamage(self.Primary.Damage * self.HeadshotMultiplierReal, self:GetOwner(), self)
+			end
 		end
-		self.Owner:FireBullets(bullet)
+		self:GetOwner():FireBullets(bullet)
 		-- end magnetism logic
 
 		self:EmitSound("Halo1_Pistol.Fire")
 		if SERVER then
 			local DistantFire = ents.Create("distant_weapon_gunfire_h1")
 			if not IsValid(DistantFire) then return end
-			DistantFire:SetAngles(self.Owner:GetAimVector():Angle(90, 90, 0))
+			DistantFire:SetAngles(self:GetOwner():GetAimVector():Angle(90, 90, 0))
 			DistantFire:SetPos(self:GetPos())
-			DistantFire:SetOwner(self.Owner)
-			DistantFire.Owner = self.Owner
+			DistantFire:SetOwner(self:GetOwner())
+			DistantFire.Owner = self:GetOwner()
 			DistantFire:SetMaxHealth(81)
 			DistantFire:Spawn()
 			DistantFire:Activate()
 		end
 
 		self:ShootEffects()
-		if IsFirstTimePredicted() and SERVER and not self.Owner:IsListenServerHost() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
-		elseif IsFirstTimePredicted() and SERVER and self.Owner:IsListenServerHost() and not game.SinglePlayer() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.15, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+		if IsFirstTimePredicted() and SERVER and not self:GetOwner():IsListenServerHost() then
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+		elseif IsFirstTimePredicted() and SERVER and self:GetOwner():IsListenServerHost() and not game.SinglePlayer() then
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.15, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 		elseif IsFirstTimePredicted() and game.SinglePlayer() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 		end
 
 		self:TakePrimaryAmmo(self.Primary.TakeAmmo)
-		if CLIENT and IsFirstTimePredicted() then self.Owner:SetEyeAngles(self.Owner:EyeAngles() + Angle(-0.005, 0, 0)) end
-		if game.SinglePlayer() == true then self.Owner:SetEyeAngles(self.Owner:EyeAngles() + Angle(-0.005, 0, 0)) end
-		util.ScreenShake(self.Owner:GetPos(), self.ShakeStrength, 0.3, self.ShakeDuration, self.ShakeDist)
+		if CLIENT and IsFirstTimePredicted() then self:GetOwner():SetEyeAngles(self:GetOwner():EyeAngles() + Angle(-0.005, 0, 0)) end
+		if game.SinglePlayer() == true then self:GetOwner():SetEyeAngles(self:GetOwner():EyeAngles() + Angle(-0.005, 0, 0)) end
+		util.ScreenShake(self:GetOwner():GetPos(), self.ShakeStrength, 0.3, self.ShakeDuration, self.ShakeDist)
 		self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 		self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
 	end
 end
 
 function SWEP:SecondaryAttack()
-	if self.Owner:KeyDown(IN_USE) then
+	if self:GetOwner():KeyDown(IN_USE) then
 		self:CanPrimaryAttack(false)
 		if self:GetNW2Bool("PistolScopeH1") == true then
 			self:CanPrimaryAttack(true)
 			self:SetNW2Bool("PistolScopeH1", false)
 			self:SetNextChangeFOVH1(0)
 			self.ViewModelFOV = 70
-			self.Owner:GetViewModel():SetSkin(0)
+			self:GetOwner():GetViewModel():SetSkin(0)
 			if SERVER then
 				sound.Play("Halo1_Weapon.ZoomOut", self:GetPos(), 75)
-				self.Owner:SetFOV(0, 0.35)
+				self:GetOwner():SetFOV(0, 0.35)
 			end
 		end
 
@@ -852,17 +859,17 @@ function SWEP:SecondaryAttack()
 		timer.Stop("GrenadeThrow" .. self:EntIndex())
 		timer.Stop("weapon_idle" .. self:EntIndex())
 		self:SendWeaponAnim(ACT_VM_HITCENTER)
-		if IsFirstTimePredicted() and SERVER and not self.Owner:IsListenServerHost() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
-		elseif IsFirstTimePredicted() and SERVER and self.Owner:IsListenServerHost() and not game.SinglePlayer() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.17, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+		if IsFirstTimePredicted() and SERVER and not self:GetOwner():IsListenServerHost() then
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+		elseif IsFirstTimePredicted() and SERVER and self:GetOwner():IsListenServerHost() and not game.SinglePlayer() then
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.17, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 		elseif IsFirstTimePredicted() and game.SinglePlayer() then
-			timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+			timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 		end
 
 		self:SetNextPrimaryFire(CurTime() + 1.25)
 		self:SetNextSecondaryFire(CurTime() + 1.15)
-		self.Owner:DoAnimationEvent(ACT_GMOD_GESTURE_MELEE_SHOVE_2HAND)
+		self:GetOwner():DoAnimationEvent(ACT_GMOD_GESTURE_MELEE_SHOVE_2HAND)
 		self:EmitSound("Halo1_Pistol.Melee")
 		self:StopSound("Halo1_Pistol.Deploy")
 	else
@@ -870,18 +877,18 @@ function SWEP:SecondaryAttack()
 			self:SetNW2Bool("PistolScopeH1", true)
 			if SERVER then
 				self:SetNextChangeFOVH1(CurTime() + 0.2)
-				self.Owner:GetViewModel():SetSkin(0)
+				self:GetOwner():GetViewModel():SetSkin(0)
 				sound.Play("Halo1_Weapon.Zoom", self:GetPos(), 75)
-				self.Owner:SetFOV(30, .3)
+				self:GetOwner():SetFOV(30, .3)
 			end
 		elseif self:GetNW2Bool("PistolScopeH1") == true and IsFirstTimePredicted() then
 			self:SetNW2Bool("PistolScopeH1", false)
 			self:SetNextChangeFOVH1(0)
 			self.ViewModelFOV = 70
-			self.Owner:GetViewModel():SetSkin(0)
+			self:GetOwner():GetViewModel():SetSkin(0)
 			if SERVER then
 				sound.Play("Halo1_Weapon.ZoomOut", self:GetPos(), 75)
-				self.Owner:SetFOV(0, 0.35)
+				self:GetOwner():SetFOV(0, 0.35)
 			end
 		end
 	end
@@ -889,53 +896,53 @@ end
 
 function SWEP:MeleeHit()
 	if IsFirstTimePredicted() then
-		local aim = self.Owner:GetAimVector()
+		local aim = self:GetOwner():GetAimVector()
 		local side = aim:Cross(Vector(0, 0, 1))
 		local up = side:Cross(aim)
-		local pos = self.Owner:GetShootPos() + side * 0 + up * 0
+		local pos = self:GetOwner():GetShootPos() + side * 0 + up * 0
 		if SERVER then
 			local melee = ents.Create("melee_attack_h1")
 			if not IsValid(melee) then return end
-			melee:SetAngles(self.Owner:GetAimVector():Angle(90, 90, 0))
+			melee:SetAngles(self:GetOwner():GetAimVector():Angle(90, 90, 0))
 			melee:SetPos(pos)
-			melee:SetOwner(self.Owner)
+			melee:SetOwner(self:GetOwner())
 			melee:Spawn()
-			melee.Owner = self.Owner
+			melee.Owner = self:GetOwner()
 			melee:Activate()
 			local phys = melee:GetPhysicsObject()
-			phys:SetVelocity(self.Owner:GetAimVector() * 410)
+			phys:SetVelocity(self:GetOwner():GetAimVector() * 410)
 		end
 
-		if SERVER and not self.Owner:IsNPC() then
+		if SERVER and not self:GetOwner():IsNPC() then
 			local anglo = Angle(-3, 0, 0)
-			self.Owner:ViewPunch(anglo)
+			self:GetOwner():ViewPunch(anglo)
 		end
 	end
 end
 
 function SWEP:ThrowGrenade()
 	if IsFirstTimePredicted() then
-		self.Owner:RemoveAmmo(1, self.Secondary.Ammo)
-		local aim = self.Owner:GetAimVector()
+		self:GetOwner():RemoveAmmo(1, self.Secondary.Ammo)
+		local aim = self:GetOwner():GetAimVector()
 		local side = aim:Cross(Vector(0, 0, 1))
 		local up = side:Cross(aim)
-		local pos = self.Owner:GetShootPos() + side * -8 + up * 0
+		local pos = self:GetOwner():GetShootPos() + side * -8 + up * 0
 		if SERVER then
 			local grenade = ents.Create("frag_grenade_h1")
 			if not IsValid(grenade) then return end
-			grenade:SetAngles(self.Owner:GetAimVector():Angle(90, 90, 0))
+			grenade:SetAngles(self:GetOwner():GetAimVector():Angle(90, 90, 0))
 			grenade:SetPos(pos)
-			grenade:SetOwner(self.Owner)
+			grenade:SetOwner(self:GetOwner())
 			grenade:Spawn()
-			grenade.Owner = self.Owner
+			grenade.Owner = self:GetOwner()
 			grenade:Activate()
 			local phys = grenade:GetPhysicsObject()
-			phys:SetVelocity(self.Owner:GetAimVector() * 900)
+			phys:SetVelocity(self:GetOwner():GetAimVector() * 900)
 		end
 
-		if SERVER and not self.Owner:IsNPC() then
+		if SERVER and not self:GetOwner():IsNPC() then
 			local anglo = Angle(-3, 0, 0)
-			self.Owner:ViewPunch(anglo)
+			self:GetOwner():ViewPunch(anglo)
 		end
 	end
 end
@@ -946,10 +953,10 @@ function SWEP:Reload()
 			self:SetNW2Bool("PistolScopeH1", false)
 			self:SetNextChangeFOVH1(0)
 			self.ViewModelFOV = 70
-			self.Owner:GetViewModel():SetSkin(0)
+			self:GetOwner():GetViewModel():SetSkin(0)
 			if SERVER then
 				sound.Play("Halo1_Weapon.ZoomOut", self:GetPos(), 75)
-				self.Owner:SetFOV(0, 0.35)
+				self:GetOwner():SetFOV(0, 0.35)
 			end
 		end
 
@@ -963,28 +970,28 @@ function SWEP:Reload()
 		timer.Create("ReloadAnim" .. self:EntIndex(), 1, 1, function() if IsValid(self) then self:SetHoldType(self.HoldType) end end)
 		if self:Clip1() > 0 then
 			self:DefaultReload(ACT_VM_RELOAD)
-			if IsFirstTimePredicted() and SERVER and not self.Owner:IsListenServerHost() then
-				timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.2, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
-			elseif IsFirstTimePredicted() and SERVER and self.Owner:IsListenServerHost() and not game.SinglePlayer() then
-				timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.33, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+			if IsFirstTimePredicted() and SERVER and not self:GetOwner():IsListenServerHost() then
+				timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.2, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+			elseif IsFirstTimePredicted() and SERVER and self:GetOwner():IsListenServerHost() and not game.SinglePlayer() then
+				timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.33, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 			elseif IsFirstTimePredicted() and game.SinglePlayer() then
-				timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+				timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 			end
 		elseif self:Clip1() <= 0 then
 			self:DefaultReload(ACT_VM_RELOAD_EMPTY)
-			if IsFirstTimePredicted() and SERVER and not self.Owner:IsListenServerHost() then
-				timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
-			elseif IsFirstTimePredicted() and SERVER and self.Owner:IsListenServerHost() and not game.SinglePlayer() then
-				timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration() / self.Owner:GetViewModel():GetPlaybackRate() - 0.99, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+			if IsFirstTimePredicted() and SERVER and not self:GetOwner():IsListenServerHost() then
+				timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.1, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+			elseif IsFirstTimePredicted() and SERVER and self:GetOwner():IsListenServerHost() and not game.SinglePlayer() then
+				timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration() / self:GetOwner():GetViewModel():GetPlaybackRate() - 0.99, 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 			elseif IsFirstTimePredicted() and game.SinglePlayer() then
-				timer.Create("weapon_idle" .. self:EntIndex(), self.Owner:GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
+				timer.Create("weapon_idle" .. self:EntIndex(), self:GetOwner():GetViewModel():SequenceDuration(), 1, function() if IsValid(self) then self:SetNextIdle(CurTime()) end end)
 			end
 		end
 	end
 end
 
 function SWEP:Holster()
-	if IsValid(self.Owner) and self.Owner:IsNPC() then return end
+	if IsValid(self:GetOwner()) and self:GetOwner():IsNPC() then return end
 	self:SetHoldType(self.HoldType)
 	timer.Stop("weapon_idle" .. self:EntIndex())
 	timer.Stop("ReloadAnim" .. self:EntIndex())
@@ -994,25 +1001,25 @@ function SWEP:Holster()
 	self:SetNW2Bool("HaloSWEPSEntIsOccupiedVehicle", false)
 	self:StopSound("Halo1_Pistol.Reload")
 	self:StopSound("Halo1_Pistol.Melee")
-	if IsFirstTimePredicted() and IsValid(self.Owner) and self.Owner:GetActiveWeapon() == self then self:EmitSound("Halo1_Weapon.StopSound") end
+	if IsFirstTimePredicted() and IsValid(self:GetOwner()) and self:GetOwner():GetActiveWeapon() == self then self:EmitSound("Halo1_Weapon.StopSound") end
 	self:SetNextChangeFOVH1(0)
 	self.ViewModelFOV = 70
-	if IsValid(self.Owner) and IsValid(self.Owner:GetViewModel()) and self:GetNW2Bool("DrawnWeaponH1") == true and self.Owner:GetActiveWeapon() == self then self.Owner:GetViewModel():SetSkin(0) end
+	if IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetViewModel()) and self:GetNW2Bool("DrawnWeaponH1") == true and self:GetOwner():GetActiveWeapon() == self then self:GetOwner():GetViewModel():SetSkin(0) end
 	self:SetNW2Bool("PistolScopeH1", false)
-	if SERVER and IsValid(self.Owner) and self:GetNW2Bool("PistolScopeH1") == true then self.Owner:SetFOV(0, 0.35) end
+	if SERVER and IsValid(self:GetOwner()) and self:GetNW2Bool("PistolScopeH1") == true then self:GetOwner():SetFOV(0, 0.35) end
 	return true
 end
 
 function SWEP:OnRemove()
-	if IsValid(self.Owner) and self.Owner:IsNPC() then
+	if IsValid(self:GetOwner()) and self:GetOwner():IsNPC() then
 		self:StopSound("Halo1_Pistol.NPCDeploy")
 		return
 	end
 
 	self:Holster()
-	if SERVER and IsValid(self.Owner) and self.Owner:GetActiveWeapon() == self and self.Owner:GetFOV() ~= GetConVar("fov_desired"):GetInt() then
-		self.Owner:SetFOV(0, 0.35)
-		if IsValid(self.Owner:GetViewModel()) then self.Owner:GetViewModel():SetSkin(0) end
+	if SERVER and IsValid(self:GetOwner()) and self:GetOwner():GetActiveWeapon() == self and self:GetOwner():GetFOV() ~= GetConVar("fov_desired"):GetInt() then
+		self:GetOwner():SetFOV(0, 0.35)
+		if IsValid(self:GetOwner():GetViewModel()) then self:GetOwner():GetViewModel():SetSkin(0) end
 	end
 	return true
 end
@@ -1024,19 +1031,19 @@ end
 
 function SWEP:OwnerChanged()
 	self:Holster()
-	if not IsValid(self.Owner) then self:StopSound("Halo1_Pistol.NPCDeploy") end
-	if IsValid(self.Owner) and self.Owner:IsNPC() and SERVER then
+	if not IsValid(self:GetOwner()) then self:StopSound("Halo1_Pistol.NPCDeploy") end
+	if IsValid(self:GetOwner()) and self:GetOwner():IsNPC() and SERVER then
 		self:StopSound("Player.PickupWeapon")
 		self:EmitSound("Halo1_Pistol.NPCDeploy")
 		timer.Simple(1, function()
-			if IsValid(self) and IsValid(self.Owner) then
-				self.Owner:Give("h1_magnum_swep_ai")
-				if IsValid(self.Owner:GetWeapon("h1_magnum_swep_ai")) then
-					self.Owner:GetWeapon("h1_magnum_swep_ai").PickedUp = true
+			if IsValid(self) and IsValid(self:GetOwner()) then
+				self:GetOwner():Give("h1_magnum_swep_ai")
+				if IsValid(self:GetOwner():GetWeapon("h1_magnum_swep_ai")) then
+					self:GetOwner():GetWeapon("h1_magnum_swep_ai").PickedUp = true
 					if self:GetNW2Int("NPCClipH1") ~= -1 then
-						self.Owner:GetWeapon("h1_magnum_swep_ai"):SetClip1(self:GetNW2Int("NPCClipH1"))
+						self:GetOwner():GetWeapon("h1_magnum_swep_ai"):SetClip1(self:GetNW2Int("NPCClipH1"))
 					else
-						self.Owner:GetWeapon("h1_magnum_swep_ai"):SetClip1(self:Clip1())
+						self:GetOwner():GetWeapon("h1_magnum_swep_ai"):SetClip1(self:Clip1())
 					end
 				end
 
@@ -1048,7 +1055,7 @@ function SWEP:OwnerChanged()
 end
 
 function SWEP:Equip()
-	if IsValid(self.Owner) and self.Owner:IsNPC() then self:StopSound("Player.PickupWeapon") end
+	if IsValid(self:GetOwner()) and self:GetOwner():IsNPC() then self:StopSound("Player.PickupWeapon") end
 end
 
 function SWEP:FireAnimationEvent(pos, ang, event, options, source)
@@ -1066,7 +1073,7 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:Think()
-	if self.Owner:InVehicle() and self.Owner:GetAllowWeaponsInVehicle() == false then return end
+	if self:GetOwner():InVehicle() and self:GetOwner():GetAllowWeaponsInVehicle() == false then return end
 	if self:GetNextIdle() ~= 0 and self:GetNextIdle() < CurTime() then
 		self:SendWeaponAnim(ACT_VM_IDLE)
 		self:SetNextIdle(0)
@@ -1079,8 +1086,8 @@ function SWEP:Think()
 	end
 
 	if self:GetNW2Bool("PistolScopeH1") == false and self.ViewModelFOV ~= 70 then self.ViewModelFOV = 70 end
-	if self:GetNW2Bool("PistolScopeH1") == true and IsValid(self.Owner) and IsValid(self.Owner:GetViewModel()) and self.Owner:GetViewModel():GetSkin() == 0 then self.Owner:GetViewModel():SetSkin(0) end
-	if self:GetNW2Bool("PistolScopeH1") == false and IsValid(self.Owner) and IsValid(self.Owner:GetViewModel()) and self.Owner:GetViewModel():GetSkin() == 1 and game.SinglePlayer() == true then self.Owner:GetViewModel():SetSkin(0) end
+	if self:GetNW2Bool("PistolScopeH1") == true and IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetViewModel()) and self:GetOwner():GetViewModel():GetSkin() == 0 then self:GetOwner():GetViewModel():SetSkin(0) end
+	if self:GetNW2Bool("PistolScopeH1") == false and IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetViewModel()) and self:GetOwner():GetViewModel():GetSkin() == 1 and game.SinglePlayer() == true then self:GetOwner():GetViewModel():SetSkin(0) end
 	if self:GetNextChangeFOVH1() ~= 0 and self:GetNextChangeFOVH1() < CurTime() then
 		self:SetNextChangeFOVH1(0)
 		self.ViewModelFOV = 95

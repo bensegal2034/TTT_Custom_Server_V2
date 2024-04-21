@@ -1,7 +1,5 @@
 const http         = require("http"),
       fs           = require("fs"),
-      compressjs   = require("compressjs"),
-      compressmaps = require("./compressmaps"),
       qs           = require("querystring"),
       port         = 3000
 
@@ -29,26 +27,6 @@ const server = http.createServer(function(request, response) {
             )
             return
         }
-        
-        // TODO: figure out how to compress maps and other large files
-        if (rawPath.split(".").includes("bz2") && rawPath.split("/").includes("maps")) {
-            serverResponse(
-                [500], 
-                "500 Error: Unable to serve request for compressed map",
-                "Not serving a request for compressed map " + rawPath
-            )
-            return
-        }
-
-        // remove .bz2 if it exists from the filename & set up the flag for later compression
-        if (rawPath.split(".").includes("bz2")) {
-            const tempRawPath = rawPath.split(".")
-            tempRawPath.pop()
-            rawPath = tempRawPath.join(".")
-            var shouldCompFile = true
-        } else {
-            var shouldCompFile = false
-        }
 
         // check all our various places we might be able to find the file
         if (fs.existsSync("../garrysmod/" + rawPath)) {
@@ -57,6 +35,8 @@ const server = http.createServer(function(request, response) {
             path = "../garrysmod/gamemodes/terrortown/" + rawPath
         } else if (fs.existsSync("../garrysmod/gamemodes/terrortown/content/" + rawPath)) {
             path = "../garrysmod/gamemodes/terrortown/content/" + rawPath
+        } else if (fs.existsSync("../garrysmod/addons/utannouncer/" + rawPath)) {
+            path = "../garrysmod/addons/utannouncer/" + rawPath
         }
 
         // can"t find the file requested, respond with 404
@@ -79,19 +59,6 @@ const server = http.createServer(function(request, response) {
             return
         }
 
-        // if path contains a request for a compressed file, compress it & overwrite 
-        // regardless of if it"s already compressed (prevents old data being sent to clients)
-        if (shouldCompFile) {
-            var pathContent = fs.readFileSync(path)
-            var compFile = path + ".bz2"
-            var algorithm = compressjs.Bzip2
-            console.log("Compressing file at " + compFile)
-            var bufferedData = new Buffer.alloc(Buffer.byteLength(pathContent), path)
-            var compressedData = algorithm.compressFile(bufferedData)
-            fs.writeFileSync(compFile, compressedData)
-            path = compFile
-        }
-        
         // all checks passed, file can now be sent out
         fs.readFile(path, function(err, content) {
             serverResponse(

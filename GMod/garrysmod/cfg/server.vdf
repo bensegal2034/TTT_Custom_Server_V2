@@ -7,7 +7,7 @@
 	"ttt_limit_spectator_voice"		"1"
 	"ttt_bots_are_spectators"		"0"
 	"ttt_sherlock_mode"		"1"
-	"ttt_minimum_players"		"1"
+	"ttt_minimum_players"		"5"
 	"ttt_ironsights_lowered"		"1"
 	"ttt_crowbar_unlocks"		"1"
 	"ttt_fire_fallback"		"0"

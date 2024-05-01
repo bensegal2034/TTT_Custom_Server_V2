@@ -34,7 +34,7 @@ SWEP.Primary.Sound         = Sound( "weapons/airboat/airboat_gun_energy1.wav" )
 SWEP.Secondary.Automatic   = false
 
 SWEP.Kind                  = WEAPON_POLTER
-SWEP.CanBuy                = {ROLE_TRAITOR} -- only traitors can buy
+SWEP.CanBuy                = {} -- only traitors can buy
 SWEP.WeaponID              = AMMO_POLTER
 
 SWEP.UseHands              = true

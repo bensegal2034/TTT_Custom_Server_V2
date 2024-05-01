@@ -447,7 +447,9 @@ L.newton_name     = "Newton launcher"
 L.newton_desc     = [[
 Push people from a safe distance.
 
-Infinite ammo, but slow to fire.]]
+Infinite ammo, but slow to fire.
+
+Right Click to Charge Push.]]
 
 -- Binoculars
 L.binoc_name      = "Binoculars"

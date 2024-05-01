@@ -38,7 +38,7 @@ SWEP.Secondary.Ammo         = "none"
 SWEP.Secondary.Delay        = 0.2
 
 SWEP.Kind                   = WEAPON_BINO
-SWEP.CanBuy                 = {ROLE_DETECTIVE} -- only detectives can buy
+SWEP.CanBuy                 = {} -- only detectives can buy
 SWEP.WeaponID               = AMMO_BINOCULARS
 
 SWEP.AllowDrop              = true

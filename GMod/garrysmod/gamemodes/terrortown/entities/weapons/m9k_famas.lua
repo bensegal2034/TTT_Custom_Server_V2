@@ -144,8 +144,12 @@ if SERVER then
    util.AddNetworkString("RapidHitStacksDelayTimer")
 
    hook.Add("DoPlayerDeath", "KillClipReady", function(victim, attacker, dmginfo)
-      if not IsValid(dmginfo:GetAttacker()) or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
-         return nil
+      if
+         not IsValid(dmginfo:GetAttacker())
+         or not dmginfo:GetAttacker():IsPlayer()
+         or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+      then
+         return
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
@@ -159,7 +163,11 @@ if SERVER then
    end)
 
    hook.Add("ScalePlayerDamage", "RapidHit", function(target, hitgroup, dmginfo)
-      if not IsValid(dmginfo:GetAttacker()) or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+      if
+         not IsValid(dmginfo:GetAttacker())
+         or not dmginfo:GetAttacker():IsPlayer()
+         or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+      then
          return
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()

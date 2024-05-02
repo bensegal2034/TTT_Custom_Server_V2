@@ -10,6 +10,8 @@ hook.Add( "Initialize", "ttt_preround_sabotage_info", function()
     local tbut_focus = surface.GetTextureID("vgui/ttt/tbut_hand_filled")
     local info_normal = surface.GetTextureID("vgui/ttt/tbut_info_line")
     local info_focus = surface.GetTextureID("vgui/ttt/tbut_info_filled")
+    print(info_normal)
+    print(info_focus)
     local size = 32
     local mid  = size / 2
     local focus_range = 25

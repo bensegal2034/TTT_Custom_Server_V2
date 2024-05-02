@@ -1,2 +1,2 @@
-py startserver.py -c "startserver()"
+py -c "import startserver; startserver.start()"
 pause

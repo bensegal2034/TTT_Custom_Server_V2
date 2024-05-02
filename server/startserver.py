@@ -1,7 +1,7 @@
 from pathlib import Path
 import os, random, time
 
-def startserver():
+def start():
     os.system("taskkill /F /IM node.exe")
     time.sleep(5)
     maps = [str(lmap).split("\\")[-1][:-4] for lmap in list(Path(os.path.join(os.getcwd(), "garrysmod\\maps")).glob('**/*.bsp'))]

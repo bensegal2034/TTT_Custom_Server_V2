@@ -35,11 +35,21 @@ const server = http.createServer(function(request, response) {
             path = "../garrysmod/gamemodes/terrortown/" + rawPath
         } else if (fs.existsSync("../garrysmod/gamemodes/terrortown/content/" + rawPath)) {
             path = "../garrysmod/gamemodes/terrortown/content/" + rawPath
-        } else if (fs.existsSync("../garrysmod/addons/utannouncer/" + rawPath)) {
-            path = "../garrysmod/addons/utannouncer/" + rawPath
         }
 
-        // can"t find the file requested, respond with 404
+        // iterate over addons
+        addons = fs.readdirSync("../garrysmod/addons/", { withFileTypes: true });
+        addons.forEach(file => {
+            if (file.isDirectory()) { // sanity check to make sure we don't include weird shit if present
+                console.log("../garrysmod/addons/" + path.basename(file) + "/" + rawPath)
+                if (fs.existsSync("../garrysmod/addons/" + path.basename(file) + "/" + rawPath)) {
+                    path = "../garrysmod/addons/" + path.basename(file) + "/" + rawPath
+                    return
+                }
+            }
+        })
+
+        // can't find the file requested, respond with 404
         if (path === "") {
             serverResponse(
                 [500], 

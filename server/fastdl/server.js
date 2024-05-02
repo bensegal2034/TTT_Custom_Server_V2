@@ -1,7 +1,6 @@
 const http         = require("http"),
       fs           = require("fs"),
       qs           = require("querystring"),
-      path         = require("path"),
       port         = 3000
 
 const server = http.createServer(function(request, response) {
@@ -42,9 +41,8 @@ const server = http.createServer(function(request, response) {
         addons = fs.readdirSync("../garrysmod/addons/", { withFileTypes: true });
         addons.forEach(file => {
             if (file.isDirectory()) { // sanity check to make sure we don't include weird shit if present
-                console.log("../garrysmod/addons/" + path.basename(file) + "/" + rawPath)
-                if (fs.existsSync("../garrysmod/addons/" + path.basename(file) + "/" + rawPath)) {
-                    path = "../garrysmod/addons/" + path.basename(file) + "/" + rawPath
+                if (fs.existsSync("../garrysmod/addons/" + file.basename + "/" + rawPath)) {
+                    path = "../garrysmod/addons/" + file.basename + "/" + rawPath
                     return
                 }
             }

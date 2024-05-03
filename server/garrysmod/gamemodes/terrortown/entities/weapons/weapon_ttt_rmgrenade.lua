@@ -25,7 +25,7 @@ SWEP.Weight				= 5
 SWEP.AutoSpawnable      = false
 -- really the only difference between grenade weapons: the model and the thrown
 -- ent.
-
+SWEP.NoCook = true
 if CLIENT then
    -- Path to the icon material
    	SWEP.PrintName	 = "Red Matter Bomb"

@@ -17,7 +17,7 @@ SWEP.Base               = "weapon_tttbasegrenade"
 
 --All grenades inherently use this value to determine fuse time, default ttt grenades don't set it and use a default value of 5
 SWEP.detonate_timer      = 5
-
+SWEP.NoCook             = true
 
 SWEP.WeaponID           = AMMO_SMOKE
 SWEP.Kind               = WEAPON_NADE

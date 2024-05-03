@@ -1,7 +1,7 @@
 -- common code for all types of grenade
 
 AddCSLuaFile()
-
+resource.AddFile("shock.mp3")
 DEFINE_BASECLASS "weapon_tttbase"
 
 SWEP.HoldReady             = "grenade"
@@ -40,6 +40,7 @@ SWEP.Secondary.Ammo        = "none"
 
 SWEP.Kind                  = WEAPON_NADE
 SWEP.IsGrenade             = true
+SWEP.NoCook = false
 
 SWEP.was_thrown            = false
 SWEP.detonate_timer        = 5
@@ -103,6 +104,9 @@ function SWEP:Think()
             self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
          end
       else
+         if self.NoCook == true then
+            self:SetDetTime(CurTime() + self.detonate_timer)
+         end
          -- still cooking it, see if our time is up
          if SERVER and self:GetDetTime() < CurTime() then
             self:BlowInFace()

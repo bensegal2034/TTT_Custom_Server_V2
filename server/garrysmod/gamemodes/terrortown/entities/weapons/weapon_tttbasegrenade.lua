@@ -123,7 +123,7 @@ function SWEP:DrawHUD(...)
       local x = math.floor(ScrW() / 2.0)
       local y = math.floor(ScrH() / 2.0)
       local yOffset = 35
-      if self:GetPin() then
+      if self:GetPin() and not self.NoCook then
          local timeBeforeDet = math.Truncate(self:GetDetTime() - CurTime(), 2)
          local length = timeBeforeDet * 25
 

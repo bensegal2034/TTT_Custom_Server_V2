@@ -7,3 +7,12 @@
 [submodule "GMod/garrysmod/addons/gmod-mapvote-revote"]
 	path = GMod/garrysmod/addons/gmod-mapvote-revote
 	url = https://github.com/bensegal2034/gmod-mapvote-revote
+[submodule "server/garrysmod/addons/gmod-mapvote-revote"]
+	path = server/garrysmod/addons/gmod-mapvote-revote
+	url = https://github.com/bensegal2034/gmod-mapvote-revote
+[submodule "server/garrysmod/addons/ulx"]
+	path = server/garrysmod/addons/ulx
+	url = https://github.com/TeamUlysses/ulx
+[submodule "server/garrysmod/addons/ulib"]
+	path = server/garrysmod/addons/ulib
+	url = https://github.com/TeamUlysses/ulib

@@ -1,6 +1,9 @@
 
 AddCSLuaFile()
 resource.AddFile("sound/shock.mp3")
+resource.AddFile("materials/vgui/ttt/icon_shockwave.vtf")
+resource.AddFile("materials/vgui/ttt/icon_shockwave.vmt")
+
 SWEP.HoldType           = "grenade"
 
 if CLIENT then
@@ -14,7 +17,7 @@ if CLIENT then
    SWEP.ViewModelFlip   = false
    SWEP.ViewModelFOV    = 54
 
-   SWEP.Icon            = "vgui/ttt/icon_nades"
+   SWEP.Icon            = "vgui/ttt/icon_shockwave"
    SWEP.IconLetter      = "h"
 end
 

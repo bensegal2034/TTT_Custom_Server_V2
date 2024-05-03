@@ -239,7 +239,6 @@ DefaultEquipment = {
       "weapon_ttt_sipistol",
       "weapon_ttt_teleport",
       "weapon_ttt_decoy",
-      EQUIP_ARMOR,
       EQUIP_RADAR,
       EQUIP_DISGUISE
    },

@@ -18,7 +18,7 @@ SWEP.Base                = "weapon_tttbase"
 SWEP.Kind                = WEAPON_HEAVY
 SWEP.WeaponID            = AMMO_MAC10
 
-SWEP.Primary.Damage      = 5
+SWEP.Primary.Damage      = 6
 DAMAGE = SWEP.Primary.Damage
 SWEP.Primary.Delay       = 0.08
 SWEP.Primary.Cone        = 0.02
@@ -97,18 +97,22 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 end
 
 function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
-	
-	if not IsFirstTimePredicted() then
-	return {damage = false, effects = false}
-	end
 
-	if (tr.HitSky) then return end
-	
-	self.MaxRicochet = 2
-	
-	if (bouncenum >= self.MaxRicochet) then return end
-	
-	-- Bounce vector
+   if not IsFirstTimePredicted() then
+      return {damage = false, effects = false}
+   end
+
+   self.MaxRicochet = 2
+
+   if 
+      bouncenum >= self.MaxRicochet
+      or tr.HitSky
+      or (IsValid(tr.Entity) and tr.Entity:IsPlayer())
+   then
+      return {damage = true, effects = true}
+   end
+
+   -- Bounce vector
    if SERVER then
       local DotProduct = tr.HitNormal:Dot(tr.Normal * -1)
       local dir = ((2 * tr.HitNormal * DotProduct) + tr.Normal)
@@ -122,6 +126,7 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
          ricochetbullet.Damage	= dmginfo:GetDamage() * 2
          ricochetbullet.Tracer   = 1
          ricochetbullet.TracerName = "AR2Tracer"
+         ricochetbullet.Attacker = self.Owner
          ricochetbullet.Callback  	= function(a, b, c)  
             return self:RicochetCallback(bouncenum + 1, a, b, c) end
 

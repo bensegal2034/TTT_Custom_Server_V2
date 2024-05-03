@@ -99,7 +99,11 @@ SWEP.reloadtimer = 0
 
 if SERVER then
    hook.Add("ScalePlayerDamage", "Knockback", function(ply, hitgroup, dmginfo)
-      if not IsValid(dmginfo:GetAttacker()) and not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
+      if
+         not IsValid(dmginfo:GetAttacker())
+         or not dmginfo:GetAttacker():IsPlayer()
+         or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+      then
          return
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()

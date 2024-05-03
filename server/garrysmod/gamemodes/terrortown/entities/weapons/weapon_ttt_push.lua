@@ -39,7 +39,7 @@ SWEP.Secondary.Delay       = 0.5
 SWEP.NoSights              = true
 
 SWEP.Kind                  = WEAPON_NEWTON
-SWEP.CanBuy                = {}
+SWEP.CanBuy                = {ROLE_TRAITOR}
 SWEP.WeaponID              = AMMO_PUSH
 
 SWEP.UseHands              = true

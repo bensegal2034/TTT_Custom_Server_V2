@@ -84,8 +84,15 @@ end
 
 -- end stolen code
 
-function SWEP:Initialize()
+if SERVER then
    hook.Add("ScalePlayerDamage", "EnableBodyshots", function(target, hitgroup, dmginfo)
+      if
+         not IsValid(dmginfo:GetAttacker())
+         or not dmginfo:GetAttacker():IsPlayer()
+         or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+      then
+         return
+      end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
       if weapon:GetClass() == "weapon_intervention" then

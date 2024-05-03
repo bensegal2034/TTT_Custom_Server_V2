@@ -120,7 +120,7 @@ SWEP.DamageValue = 0
 SWEP.Hawkmoon = false
 SWEP.HawkmoonVolume = 1
 
-SWEP.Tokens              = 50
+SWEP.Tokens              = 60
 SWEP.SwitchVal           = 0
 
 SWEP.AutoSpawnable = true

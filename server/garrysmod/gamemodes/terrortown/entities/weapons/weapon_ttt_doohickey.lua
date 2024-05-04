@@ -115,28 +115,16 @@ SWEP.HoldType = "shotgun"
 function SWEP:PrimaryAttack()
  
 	if ( !self:CanPrimaryAttack() ) then return end
-	
-	local bullet = {} 
-	bullet.Num = self.Primary.NumShots
-	bullet.Src = self.Owner:GetShootPos() 
-	bullet.Dir = self.Owner:GetAimVector() 
-	bullet.Cone = Vector( self.Primary.Cone * 0.1 , self.Primary.Cone * 0.1, 0)
-	bullet.Tracer = 1
-	bullet.Force = self.Primary.Force 
-	bullet.Damage = self.Primary.Damage 
-	bullet.AmmoType = self.Primary.Ammo 
-
-	local rnda = self.Primary.Recoil * -1 
-	local rndb = self.Primary.Recoil * math.random(-1, 1) 
 
 	print(self.Misfire)
 	if self:Clip1() == self.Misfire then
-		util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 200, 999)
-		
-		local effectdata = EffectData()
-		effectdata:SetOrigin(self:GetOwner():GetPos())
-		util.Effect("Explosion", effectdata, true, true)
-
+		if SERVER then
+			util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 200, 999)
+			
+			local effectdata = EffectData()
+			effectdata:SetOrigin(self:GetOwner():GetPos())
+			util.Effect("Explosion", effectdata, true, true)
+		end
 	else
 		self:ShootEffects()
 		

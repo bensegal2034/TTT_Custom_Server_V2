@@ -38,7 +38,7 @@ if CLIENT then
          prpos.z = prpos.z + 32
          local p = em:Add(table.Random(smokeparticles), center + prpos)
          if p then
-            if self.Funny == 1 then
+            if self:GetFunny() == 1 then
                local r = math.random(0,255)
                local g = math.random(0,255)
                local b = math.random(0,255)

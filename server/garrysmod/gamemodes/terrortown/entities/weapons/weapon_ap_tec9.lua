@@ -353,6 +353,8 @@ DEFINE_BASECLASS( SWEP.Base )
 if CLIENT then
    function SWEP:DrawHUD(...)
 
+      if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then return BaseClass.DrawHUD(self, ...) end
+
       local scrW = ScrW()
       local scrH = ScrH()
       local textWidth = scrW * 0.007

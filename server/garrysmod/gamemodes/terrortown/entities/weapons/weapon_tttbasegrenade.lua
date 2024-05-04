@@ -130,7 +130,7 @@ function SWEP:DrawHUD(...)
       local yOffsetText = 3
       local shadowOffset = 2
 
-      if self:GetPin() and not self.NoCook and self:GetOwner():GetObserverMode() == OBS_MODE_NONE then
+      if self:GetPin() and not self.NoCook and LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
          local pinPullTime = self:GetDetTime() - self.detonate_timer
          local secondsSincePinPulled = CurTime() - pinPullTime
          local pinPercentage = (1 - secondsSincePinPulled / self.detonate_timer) * barLength

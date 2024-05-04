@@ -112,7 +112,7 @@ if SERVER then
          local angles = dmginfo:GetAttacker():GetAngles()
          local forward = dmginfo:GetAttacker():GetForward()
          weapon.PushForce = dmginfo:GetDamage() * 50000
-         ply:SetVelocity(Vector(forward.r * (self.PushForce),forward.y * (self.PushForce),0))
+         ply:SetVelocity(Vector(forward.r * (weapon.PushForce),forward.y * (weapon.PushForce),0))
       end
    end)
 end

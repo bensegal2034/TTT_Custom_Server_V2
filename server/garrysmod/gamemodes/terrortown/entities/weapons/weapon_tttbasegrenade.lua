@@ -46,6 +46,9 @@ SWEP.was_thrown            = false
 SWEP.detonate_timer        = 5
 SWEP.DeploySpeed           = 1.5
 
+SWEP.LastPinState          = false
+SWEP.InitDetTimeDelta      = 0
+
 AccessorFunc(SWEP, "det_time", "DetTime")
 
 CreateConVar("ttt_no_nade_throw_during_prep", "1")
@@ -122,20 +125,31 @@ function SWEP:DrawHUD(...)
    if CLIENT then
       local x = math.floor(ScrW() / 2.0)
       local y = math.floor(ScrH() / 2.0)
+      local barLength = 100
       local yOffset = 35
-      if self:GetPin() and not self.NoCook then
-         local timeBeforeDet = math.Truncate(self:GetDetTime() - CurTime(), 2)
-         local length = timeBeforeDet * 25
+      local yOffsetText = 3
+      local shadowOffset = 2
 
-         surface.SetDrawColor(255, 0, 0)
-         surface.DrawRect(x - (length / 2), y + yOffset, length, 25)
+      if self:GetPin() and not self.NoCook and self:GetOwner():GetObserverMode() == OBS_MODE_NONE then
+         local pinPullTime = self:GetDetTime() - self.detonate_timer
+         local secondsSincePinPulled = CurTime() - pinPullTime
+         local pinPercentage = (1 - secondsSincePinPulled / self.detonate_timer) * barLength
+         local detTimeDelta = math.Clamp(math.abs(math.Truncate(self:GetDetTime() - CurTime(), 1)), 0, self.detonate_timer)
+         
 
-         surface.SetTextColor(255, 0, 0)
+         draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
+         draw.RoundedBox(10, x - (pinPercentage / 2), y + yOffset, pinPercentage, 30, Color(255, 0, 0, 200))
+
+         local textW, textH = surface.GetTextSize(tostring(detTimeDelta))
          surface.SetFont("HealthAmmo")
-         local textW, textH = surface.GetTextSize(tostring(timeBeforeDet))
-         surface.SetTextPos(x - (textW / 2), y - yOffset)
-         surface.DrawText(tostring(timeBeforeDet))
+         surface.SetTextColor(0, 0, 0, 255)
+         surface.SetTextPos(x - (textW / 2) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
+         surface.DrawText(tostring(detTimeDelta))
+         surface.SetTextColor(255, 255, 255)
+         surface.SetTextPos(x - (textW / 2), y + yOffset + yOffsetText)
+         surface.DrawText(tostring(detTimeDelta))
       end
+      self.LastPinState = self:GetPin()
    end
    return BaseClass.DrawHUD(self, ...)
 end

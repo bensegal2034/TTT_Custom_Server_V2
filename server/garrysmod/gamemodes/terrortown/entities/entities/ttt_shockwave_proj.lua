@@ -47,8 +47,7 @@ local function PushPullRadius(pos, pusher)
             if target != pusher then target:SetEyeAngles(eyeang) end
 
             target.was_pushed = {att=pusher, t=CurTime(), wep="weapon_ttt_confgrenade"}
-            target.ShouldReduceFallDamage = true
-
+            target.ShouldReduceFallDamage = CurTime()
 
          elseif IsValid(phys) then
             phys:ApplyForceCenter(dir * -1 * phys_force)
@@ -105,9 +104,19 @@ if SERVER then
    local function ReduceFallDamage(ent, inflictor, attacker, amount, dmginfo)
       if ent:IsPlayer() and ent.ShouldReduceFallDamage and inflictor:IsFallDamage() then
          inflictor:SetDamage(0)
-         ent.ShouldReduceFallDamage = false
+      end
+   end
+
+   local function ShouldTakeFallDamage()
+      for _, ply in ipairs(player.GetAll()) do
+         if ply.ShouldReduceFallDamage and ply:IsOnGround() and CurTime() - ply.ShouldReduceFallDamage > 1 then
+            timer.Simple(0.1, function()
+               ply.ShouldReduceFallDamage = false
+            end)
+         end
       end
    end
  
    hook.Add("EntityTakeDamage", "ReduceFallDamage", ReduceFallDamage)
+   hook.Add("Think", "ShouldTakeFallDamage", ShouldTakeFallDamage)
 end

@@ -127,6 +127,7 @@ SWEP.WElements = {
 if SERVER then
 	hook.Add("EntityTakeDamage", "RaygunFix", function(ply, dmginfo)
 		if not IsValid(dmginfo:GetInflictor()) or dmginfo:GetInflictor() == nil then return end
+		if not IsValid(ply) or not ply:IsPlayer() then return end
 
 		if dmginfo:GetInflictor():GetClass() == "obj_rgun_proj" and GetRoundState() == ROUND_PREP then
 			return true

@@ -96,8 +96,8 @@ SWEP.Primary.ConeMod     = 0
 SWEP.Primary.DelayMod    = 0
 SWEP.Primary.ClipSizeMod = 0
 SWEP.Primary.RecoilMod   = 0
-SWEP.Primary.NumShots      = 1
-SWEP.Primary.NumBullets  = 0
+SWEP.Primary.NumShots    = 1
+SWEP.Primary.NumBullets  = 1
 SWEP.BulletRoll          = 0
 SWEP.TargetStat          = 0
 SWEP.TargetStatRoll      = 0
@@ -226,10 +226,10 @@ function SWEP:Initialize()
          self.Tokens = self.Tokens + 15
       end
 
-      if (self.BulletRoll < 8) then
+      if (self.BulletRoll < 2) then
          self.Primary.NumBullets = 1
       end
-      if (self.BulletRoll > 8) then
+      if (self.BulletRoll >= 2) then
          self.Primary.NumBullets = 2
       end
       if (self.BulletRoll == 10) then
@@ -264,7 +264,7 @@ function SWEP:Initialize()
          end
          if (self.SwitchVal == 3) then
             if self.Primary.ConeMod < .4 then
-               self.Primary.ConeMod = self.Primary.ConeMod + 0.03
+               self.Primary.ConeMod = self.Primary.ConeMod + 0.01
                self.Tokens = self.Tokens - 1
             else
 
@@ -357,10 +357,10 @@ if CLIENT then
 
       local scrW = ScrW()
       local scrH = ScrH()
-      local textWidth = scrW * 0.007
-      local shadowOffset = 2
-      local startingOffset = 0.775
-      local newlineOffset = 0.020
+      local textWidth = scrW * 0.145
+      local shadowOffset = 2.5
+      local startingOffset = 0.85
+      local newlineOffset = 0.025
 
       surface.SetFont("HealthAmmo") -- fuck you always do this if you don't do this when drawing text i will beat you to death
       
@@ -368,7 +368,7 @@ if CLIENT then
       local damageOffset = startingOffset
       local damageText = "Damage: "
       surface.SetDrawColor(73, 75, 77, 150)
-      draw.RoundedBox(10, scrW * 0.003, scrH * 0.77, 183, 163, Color(20, 20, 20, 200))
+      draw.RoundedBox(10, scrW * 0.14, scrH * 0.84, 183, 163, Color(20, 20, 20, 200))
       surface.SetTextColor(0, 0, 0, 255)
       surface.SetTextPos(textWidth + shadowOffset, (scrH * damageOffset) + shadowOffset)
       surface.DrawText(damageText)
@@ -557,7 +557,7 @@ function IgniteTarget(att, path, dmginfo)
 end
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
-
+   
    self:SendWeaponAnim(self.PrimaryAnim)
 
    self:GetOwner():MuzzleFlash()
@@ -569,7 +569,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    cone   = cone   or 0.01
 
    local bullet = {}
-   bullet.Num       = 1
+   bullet.Num       = self.Primary.NumShots
    bullet.Src       = self:GetOwner():GetShootPos()
    bullet.Dir       = self:GetOwner():GetAimVector()
    bullet.Spread    = Vector( cone, cone, 0 )
@@ -681,6 +681,7 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
          ricochetbullet.Damage	= dmginfo:GetDamage() * 2
          ricochetbullet.Tracer   = 1
          ricochetbullet.TracerName = "AR2Tracer"
+         ricochetbullet.Attacker = self.Owner
          ricochetbullet.Callback  	= function(a, b, c)  
             return self:RicochetCallback(bouncenum + 1, a, b, c) end
 
@@ -702,7 +703,7 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
    end
 end
 
-function SWEP:PrimaryAttack(worldsnd)
+function SWEP:PrimaryAttack()
    if self.InPulloutAnim then
       return
    end
@@ -720,7 +721,7 @@ function SWEP:PrimaryAttack(worldsnd)
       self.HeadshotMultiplier = self.Primary.DamageDefault * 2
       self.Primary.Damage = 1
    end
-   self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
+
    if (self.Upside == 15) then
       self.Primary.Damage = self.Primary.DamageDefault
    end
@@ -732,7 +733,7 @@ function SWEP:PrimaryAttack(worldsnd)
          self.AccuracyTimer = CurTime() + self.FirstShotDelay
       end
    end
-
+   self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
 end
 
 function SWEP:Holster()

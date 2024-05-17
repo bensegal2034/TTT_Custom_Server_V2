@@ -38,7 +38,7 @@ function ENT:Think()
 end
 
 function ENT:Explosion()
-	util.BlastDamage( self, self:GetOwner(), self:GetPos(), 150, 50 ) --damage was 500 (way to high for TTT)
+	util.BlastDamage( self, self:GetOwner(), self:GetPos(), 100, 50 ) --damage was 500 (way to high for TTT)
 	local effectdata = EffectData()
 	effectdata:SetOrigin( self:GetPos() )
 	--util.Effect( "Molotov_Explosion", effectdata ) -- Explosion effect

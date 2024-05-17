@@ -97,25 +97,7 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.reloadtimer = 0
 
-if SERVER then
-   hook.Add("ScalePlayerDamage", "Knockback", function(ply, hitgroup, dmginfo)
-      if
-         not IsValid(dmginfo:GetAttacker())
-         or not dmginfo:GetAttacker():IsPlayer()
-         or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-      then
-         return
-      end
-      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
-      if weapon:GetClass() == "weapon_ttt_dbarrel" then
-         local angles = dmginfo:GetAttacker():GetAngles()
-         local forward = dmginfo:GetAttacker():GetForward()
-         weapon.PushForce = dmginfo:GetDamage() * 50000
-         ply:SetVelocity(Vector(forward.r * (weapon.PushForce),forward.y * (weapon.PushForce),0))
-      end
-   end)
-end
 
 function SWEP:SetupDataTables()
    self:DTVar("Bool", 0, "reloading")

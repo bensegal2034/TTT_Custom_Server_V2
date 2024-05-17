@@ -20,7 +20,7 @@ end
 SWEP.Base                               = "weapon_tttbase"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
-SWEP.PushForce = 300
+SWEP.PushForceSelf = 300
 SWEP.Kind = WEAPON_PISTOL
 SWEP.UseHands = true
 SWEP.Weight = 1
@@ -53,6 +53,26 @@ SWEP.RunSightsPos = Vector(0.328, -6.394, 1.475)
 SWEP.RunSightsAng = Vector(-4.591, -48.197, -1.721)
 
 SWEP.reloadtimer = 0
+
+if SERVER then
+   hook.Add("ScalePlayerDamage", "Knockback", function(ply, hitgroup, dmginfo)
+      if
+         not IsValid(dmginfo:GetAttacker())
+         or not dmginfo:GetAttacker():IsPlayer()
+         or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+      then
+         return
+      end
+      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+
+      if weapon:GetClass() == "weapon_ttt_sawedoff" then
+         local angles = dmginfo:GetAttacker():GetAngles()
+         local forward = dmginfo:GetAttacker():GetForward()
+         weapon.PushForce = dmginfo:GetDamage() * 350
+         ply:SetVelocity(Vector(forward.r * (weapon.PushForce),forward.y * (weapon.PushForce),0))
+      end
+   end)
+end
 
 function SWEP:SetupDataTables()
    self:NetworkVar("Bool", 0, "Reloading")
@@ -194,9 +214,9 @@ function SWEP:PrimaryAttack(worldsnd)
       local angles = self.Owner:GetAngles()
       local forward = self.Owner:GetForward()
       if self.Owner:IsOnGround() == false then
-         self.Owner:SetVelocity(Vector(forward.r * (self.PushForce * -1),forward.y * (self.PushForce * -1),angles.p * 4))
+         self.Owner:SetVelocity(Vector(forward.r * (self.PushForceSelf * -1),forward.y * (self.PushForceSelf * -1),angles.p * 4))
       else
-         self.Owner:SetVelocity(Vector(forward.r * (self.PushForce * -1),forward.y * (self.PushForce * -1),0))
+         self.Owner:SetVelocity(Vector(forward.r * (self.PushForceSelf * -1),forward.y * (self.PushForceSelf * -1),0))
       end
    end
 end

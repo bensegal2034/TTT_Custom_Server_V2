@@ -32,8 +32,9 @@ SWEP.DrawCrosshair 			= false
 
 SWEP.Primary.Sound			= Sound("Weapon_tmg.Single")		-- Script that calls the primary fire sound
 SWEP.Primary.Delay			= 0.11		-- This is in Rounds Per Minute
-SWEP.Primary.ClipSize			= 75		-- Size of a clip
-SWEP.Primary.DefaultClip		= 150		-- Bullets you start with
+SWEP.Primary.ClipSize			= 150		-- Size of a clip
+SWEP.Primary.DefaultClip		= 300		-- Bullets you start with
+SWEP.Primary.MaxClip 			= 450		
 SWEP.Primary.Automatic			= true		-- Automatic = true; Semi Auto = false
 SWEP.Primary.Ammo			= "SMG1"			-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
 SWEP.DamageType 				= "Impact"

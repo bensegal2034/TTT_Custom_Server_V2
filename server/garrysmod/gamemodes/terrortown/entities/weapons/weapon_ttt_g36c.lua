@@ -106,10 +106,10 @@ SWEP.HoldType			= "ar2"
 
 
 SWEP.DrawCrosshair			= false	
-SWEP.Primary.Delay       = 0.16
+SWEP.Primary.Delay       = 0.13
 SWEP.Primary.Recoil      = .9
 SWEP.Primary.Automatic   = true
-SWEP.Primary.Damage      = 22
+SWEP.Primary.Damage      = 19
 SWEP.Primary.Cone        = 0
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.ClipSize    = 30

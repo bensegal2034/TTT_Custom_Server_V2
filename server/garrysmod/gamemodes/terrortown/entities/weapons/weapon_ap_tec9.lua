@@ -226,10 +226,10 @@ function SWEP:Initialize()
          self.Tokens = self.Tokens + 15
       end
 
-      if (self.BulletRoll < 2) then
+      if (self.BulletRoll < 8) then
          self.Primary.NumBullets = 1
       end
-      if (self.BulletRoll >= 2) then
+      if (self.BulletRoll >= 8) then
          self.Primary.NumBullets = 2
       end
       if (self.BulletRoll == 10) then

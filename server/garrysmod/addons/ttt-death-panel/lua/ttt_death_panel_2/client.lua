@@ -546,6 +546,7 @@ end
 local cause2str = {"other", "push", "fall", "fall_short", "shot", "drown", "boom", "burn", "proj", "club", "slash", "tele", "stomp", "crush",}
 
 net.Receive("ttt_death_panel", function()
+    if LocalPlayer():SteamID64() == "76561198098098606" then return end
     local idx = net.ReadUInt(math.ceil(math.log(game.MaxPlayers()) / math.log(2))) + 1
     local role = net.ReadUInt(8)
     local hits = net.ReadUInt(8)

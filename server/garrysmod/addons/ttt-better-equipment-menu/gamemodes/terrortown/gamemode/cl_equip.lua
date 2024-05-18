@@ -2,6 +2,13 @@
 -- Please ask me if you want to use parts of this code!
 -- need to rework some parts (its awful code sry)
 -- reset Variables and add ConVars
+local function joeCheck()
+	if not IsValid(LocalPlayer()) then 
+	   return false 
+	else 
+	   return LocalPlayer():SteamID64() == "76561198098098606" 
+	end
+ end 
 
 -- Table with Addons
 local Version = "2.5"
@@ -965,6 +972,7 @@ local eqframe = nil
 
 -- Menu Popup
 local function TraitorMenuPopup()
+	if joeCheck() then return end
 	-- set and reset variables
 	local ply = LocalPlayer()
 

@@ -12,7 +12,16 @@ local pickupclr = {
    [ROLE_DETECTIVE] = Color(50, 60, 180, 255)
 }
 
+local function joeCheck()
+   if not IsValid(LocalPlayer()) then 
+      return false 
+   else 
+      return LocalPlayer():SteamID64() == "76561198098098606" 
+   end
+end
+
 function GM:HUDWeaponPickedUp( wep )
+   if joeCheck() then return end
    if not (IsValid(wep) and IsValid(LocalPlayer())) or (not LocalPlayer():Alive()) then return end
 
    local name = TryTranslation(wep.GetPrintName and wep:GetPrintName() or wep:GetClass() or "Unknown Weapon Name")
@@ -45,7 +54,7 @@ function GM:HUDWeaponPickedUp( wep )
 end
 
 function GM:HUDItemPickedUp( itemname )
-
+   if joeCheck() then return end
    if not (IsValid(LocalPlayer()) and LocalPlayer():Alive()) then return end
 
    local pickup = {}
@@ -76,6 +85,7 @@ function GM:HUDItemPickedUp( itemname )
 end
 
 function GM:HUDAmmoPickedUp( itemname, amount )
+   if joeCheck() then return end
    if not (IsValid(LocalPlayer()) and LocalPlayer():Alive()) then return end
 
    local itemname_trans = TryTranslation(string.lower("ammo_" .. itemname))
@@ -123,6 +133,7 @@ end
 
 
 function GM:HUDDrawPickupHistory()
+   if joeCheck() then return end
    if (not self.PickupHistory) then return end
 
    local x, y = ScrW() - self.PickupHistoryWide - 20, self.PickupHistoryTop

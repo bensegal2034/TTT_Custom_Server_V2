@@ -355,6 +355,7 @@ if CLIENT then
 
       if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then return BaseClass.DrawHUD(self, ...) end
 
+      local longestText = "Fire Rate: " -- this sucks
       local scrW = ScrW()
       local scrH = ScrH()
       local textWidth = scrW * 0.145
@@ -368,7 +369,7 @@ if CLIENT then
       local damageOffset = startingOffset
       local damageText = "Damage: "
       surface.SetDrawColor(73, 75, 77, 150)
-      draw.RoundedBox(10, scrW * 0.14, scrH * 0.84, 183, 163, Color(20, 20, 20, 200))
+      draw.RoundedBox(10, scrW * 0.14, scrH * 0.84, surface.GetTextSize(longestText) * 1.7, scrH * 0.14, Color(20, 20, 20, 200)) -- dont do that height bullshit
       surface.SetTextColor(0, 0, 0, 255)
       surface.SetTextPos(textWidth + shadowOffset, (scrH * damageOffset) + shadowOffset)
       surface.DrawText(damageText)

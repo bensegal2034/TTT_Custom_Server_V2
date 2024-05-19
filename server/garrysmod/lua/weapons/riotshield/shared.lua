@@ -515,8 +515,6 @@ function SWEP:SecondaryAttack()
 	local tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
 	local hitEnt = tr_main.Entity
  
-	self.Weapon:EmitSound(sound_single)
- 
 	if IsValid(hitEnt) or tr_main.HitWorld then
 	   self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
  

@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+    "$basetexture" "decals/scorch1"
+    "$decal" 1
+    "$decalscale" 0.9
+    "$translucent" 1
+}

@@ -201,28 +201,28 @@ function SWEP:Initialize()
       self.Downside = math.random(1,16)
       self.DamageRoll = math.random(1,3)
 
-      if (self.Upside == 13) then
+      if (self.Upside == 1) then
          self.Tokens = self.Tokens - 15
       end
-      if (self.Upside == 14) then
-         self.Tokens = self.Tokens - 20
+      if (self.Upside == 2) then
+         self.Tokens = self.Tokens - 5
       end
-      if (self.Upside == 15) then
-         self.Tokens = self.Tokens - 20
+      if (self.Upside == 3) then
+         self.Tokens = self.Tokens - 5
       end
-      if (self.Upside == 16) then
+      if (self.Upside == 4) then
          self.Tokens = self.Tokens - 15
       end
-      if (self.Downside == 13) then
+      if (self.Downside == 1) then
          self.Tokens = self.Tokens + 10
       end
-      if (self.Downside == 14) then
+      if (self.Downside == 2) then
          self.Tokens = self.Tokens + 10
       end
-      if (self.Downside == 15) then
+      if (self.Downside == 3) then
          self.Tokens = self.Tokens + 20
       end
-      if (self.Downside == 16) then
+      if (self.Downside == 4) then
          self.Tokens = self.Tokens + 15
       end
 
@@ -320,7 +320,7 @@ function SWEP:Initialize()
    else
       self.DamageType = "True"
    end
-   if (self.Upside == 15) then
+   if (self.Upside == 3) then
       if SERVER then
          self:SetHoldingAces(math.random(1,self.Primary.ClipSize))
       end
@@ -331,12 +331,12 @@ function SWEP:Reload()
 	if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
 	self:DefaultReload(self.ReloadAnim)
 	self:SetIronsights( false )
-   if self.Upside == 15 then
+   if self.Upside == 3 then
       if SERVER then
          self:SetHoldingAces(math.random(1,self.Primary.ClipSize))
       end
    end
-   if (self.Upside == 16) then
+   if (self.Upside == 4) then
       if self.Owner:GetWalkSpeed() == 220 then
          self.Reloaded = true
          timer.Simple(3,function()
@@ -577,10 +577,10 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Tracer    = 1
    bullet.Damage    = self.Primary.Damage
    bullet.TracerName = self.Tracer
-   if (self.Upside == 13) then
+   if (self.Upside == 1) then
       bullet.Callback = IgniteTarget
    end
-   if (self.Upside == 14) then
+   if (self.Upside == 2) then
       bullet.Callback = function(ply, tr, dmginfo) 
          return self:RicochetCallback(0, ply, tr, dmginfo) 
       end
@@ -603,7 +603,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 end
 
 function SWEP:Think()
-   if (self.Downside == 13) then
+   if (self.Downside == 1) then
       if self.Owner:KeyDown(IN_FORWARD) then
          self.MovementInaccuracy = true
          self.Primary.Cone = ((self.Owner:GetVelocity():Length()) / 220)
@@ -631,7 +631,7 @@ function SWEP:Think()
          self.Primary.Cone = 0 + (math.min(0.08, self.FirstShotAccuracyBullets / 150))
       end
    end
-   if (self.Downside == 14) then
+   if (self.Downside == 2) then
       if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
          self.Primary.Cone = self.Primary.ConeDefault
       elseif self.FirstShotAccuracy != true then
@@ -646,7 +646,7 @@ function SWEP:Think()
          self.FirstShotAccuracyBullets = 0
       end
    end
-   if (self.Upside == 16) then
+   if (self.Upside == 4) then
       if ((self:Clip1() <= 1) and self.Reloaded == false) then
          if self.SpeedBoostRemoved == false then
             self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() - self.SpeedBoost)
@@ -708,7 +708,7 @@ function SWEP:PrimaryAttack()
    if self.InPulloutAnim then
       return
    end
-   if (self.Upside == 15) then
+   if (self.Upside == 3) then
       if self:Clip1() == self:GetHoldingAces() then
          self.Primary.Damage = self.Primary.Damage * 3
          self.Hawkmoon = true
@@ -718,16 +718,16 @@ function SWEP:PrimaryAttack()
          self.Hawkmoon = false
       end
    end
-   if (self.Downside == 15) then
+   if (self.Downside == 3) then
       self.HeadshotMultiplier = self.Primary.DamageDefault * 2
-      self.Primary.Damage = 1
+      self.Primary.Damage = self.Primary.DamageDefault / 2
    end
 
-   if (self.Upside == 15) then
+   if (self.Upside == 3) then
       self.Primary.Damage = self.Primary.DamageDefault
    end
 
-   if (self.Downside == 14) then
+   if (self.Downside == 2) then
       if self:Clip1() > 0 and IsFirstTimePredicted() == false then
          self.FirstShotAccuracy = false
          self.FirstShotAccuracyBullets = self.FirstShotAccuracyBullets + 1
@@ -738,14 +738,14 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:Holster()
-   if (self.Upside == 16) then
+   if (self.Upside == 4) then
       if IsValid(self.Owner) and self.Owner:IsPlayer() then
          if self.SpeedBoostRemoved == false then
             self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() - self.SpeedBoost)
          end
       end
    end
-   if (self.Downside == 16) then
+   if (self.Downside == 4) then
       if IsValid(self.Owner) and self.Owner:IsPlayer() then
          self.Owner:SetJumpPower(160)
       end
@@ -754,7 +754,7 @@ function SWEP:Holster()
 end
 
 function SWEP:Deploy()
-   if (self.Upside == 16) then
+   if (self.Upside == 4) then
       self.SpeedBoostRemoved = false
       if IsValid(self.Owner) and self.Owner:IsPlayer() then
          local rand = math.random(1, 10000)
@@ -774,17 +774,17 @@ function SWEP:Deploy()
          end
       end
    end
-   if (self.Downside == 16) then
+   if (self.Downside == 4) then
       self.Owner:SetJumpPower(0)
    end
 end
 
 function SWEP:PreDrop()
-   if (self.Upside == 16) then
+   if (self.Upside == 4) then
       self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed())
    end
    
-   if (self.Downside == 16) then
+   if (self.Downside == 4) then
       self.Owner:SetJumpPower(160)
    end
    return self.BaseClass.PreDrop( self )

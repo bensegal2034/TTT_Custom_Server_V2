@@ -93,8 +93,8 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 
-SWEP.Primary.Damage      = 7
-SWEP.Primary.RageDamage  = 14
+SWEP.Primary.Damage      = 10
+SWEP.Primary.RageDamage  = 16
 SWEP.Primary.Delay       = 0.09
 SWEP.Primary.RageDelay   = 0.06
 SWEP.Primary.Cone        = 0.05

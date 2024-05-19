@@ -119,11 +119,10 @@ function SWEP:PrimaryAttack()
 	print(self.Misfire)
 	if self:Clip1() == self.Misfire then
 		if SERVER then
-			util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 200, 999)
-			
 			local effectdata = EffectData()
 			effectdata:SetOrigin(self:GetOwner():GetPos())
 			util.Effect("Explosion", effectdata, true, true)
+			util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 200, 999)
 		end
 	else
 		self:ShootEffects()

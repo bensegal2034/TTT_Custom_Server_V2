@@ -59,7 +59,6 @@ if CLIENT then
 	SWEP.Slot = 7
 	SWEP.SlotPos = 7
 	SWEP.DrawAmmo = false
-	SWEP.DrawCrosshair = false
 end
 
 SWEP.Spawnable = true
@@ -68,7 +67,7 @@ SWEP.AdminSpawnable = true
 SWEP.ViewModelFOV 	= 60
 SWEP.ViewModelFlip 	= false
 SWEP.UseHands 		= false
-SWEP.DrawCrosshair	= true
+SWEP.DrawCrosshair	= false
 SWEP.Weight			= 30
 SWEP.ViewModel 		= "models/weapons/v_stunbaton.mdl"
 SWEP.WorldModel 	= "models/arleitiss/riotshield/shield.mdl"
@@ -95,7 +94,7 @@ SWEP.Primary.Damage 		= 0
 SWEP.Primary.ClipSize		= -1
 SWEP.Primary.DefaultClip	= -1
 SWEP.Primary.Automatic		= false
-SWEP.Primary.Delay 			= 1
+SWEP.Primary.Delay 			= 2.5
 SWEP.Primary.Ammo			= "none"
 
 SWEP.Secondary.ClipSize 	= -1                    
@@ -179,7 +178,7 @@ function ragdollify(ent,ply)
 		ent:SetParent(ragdoll)
 		if ent:IsPlayer() then
 			if TTT then
-				ent:SetActiveWeapon("holstered")
+				ent:SetActiveWeapon(weapon_ttt_holstered)
 			else
 				ent:SetActiveWeapon(nil)
 				ent:DrawViewModel(false)
@@ -279,19 +278,17 @@ function endCharge(ply)
 end
 
 function chargeHit(ent,ply)
-	if ent:IsPlayer() or ent:IsNPC() then
+	if ent:IsPlayer() then
 		if SERVER and IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "riotshield" then
 			local dmginfo = DamageInfo()
-			dmginfo:SetDamage(Vector(ply:GetVelocity().x,ply:GetVelocity().y,0):Length()*damageMult/100)
+			dmginfo:SetDamage(0)
 			dmginfo:SetAttacker(ply)
 			dmginfo:SetInflictor(ply:GetActiveWeapon())
 			dmginfo:SetDamageType(DMG_CLUB)
 			dmginfo:SetDamagePosition(ply:GetPos())
 			ent:TakeDamageInfo(dmginfo)
-			if (Vector(ply:GetVelocity().x,ply:GetVelocity().y,0):Length()) >= speedThreshold then
-				ragdollify(ent,ply)
-				timer.Simple((Vector(ply:GetVelocity().x,ply:GetVelocity().y,0):Length()/600)*stuntimeMult, function() humanify(ent,ply) end)	
-			end
+			ragdollify(ent,ply)
+			timer.Simple(2*stuntimeMult, function() humanify(ent,ply) end)	
 			ply:GetActiveWeapon():SendWeaponAnim( ACT_VM_HITCENTER )
 			ply:EmitSound(chargeHitSound)
 		end
@@ -342,7 +339,8 @@ function shieldDMGReduct(target,dmginfo)
 	end
 end
 
-function SWEP:DrawHUD()
+DEFINE_BASECLASS(SWEP.Base)
+function SWEP:DrawHUD(...)
 	if IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "riotshield" then
 		--durabilityBar = pB_setProgress(durabilityBar,(LocalPlayer():GetNWFloat("durability")+5)/(maxdurability+5))
 		durabilityBar:SetProgress((LocalPlayer():GetNWFloat("durability")+5)/(maxdurability+5))
@@ -351,6 +349,32 @@ function SWEP:DrawHUD()
 		--pB_paint(durabilityBar)
 		durabilityBar:Paint()
 	end
+	if CLIENT then
+		local x = math.floor(ScrW() / 2.0)
+		local y = math.floor(ScrH() / 2.0)
+		local barLength = 70
+		local yOffset = 35
+		local yOffsetText = 3
+		local shadowOffset = 2
+		local attackTime = self.Weapon:GetNextPrimaryFire() - self.Primary.Delay
+		local secondsUntilCooldown  = CurTime() - attackTime
+		local cooldownPercentage = (1 - secondsUntilCooldown / self.Primary.Delay) * barLength
+		local attackTimeDelta = math.Clamp(math.Truncate(self.Weapon:GetNextPrimaryFire() - CurTime(), 1), 0, self.Primary.Delay)
+		if attackTimeDelta > 0 then
+			draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
+			draw.RoundedBox(10, x - (cooldownPercentage / 2), y + yOffset, cooldownPercentage, 30, Color(255, 0, 0, 200))
+
+			local textW, textH = surface.GetTextSize(tostring(detTimeDelta))
+			surface.SetFont("HealthAmmo")
+			surface.SetTextColor(0, 0, 0, 255)
+			surface.SetTextPos(x - (textW / 0.8) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
+			surface.DrawText(tostring(attackTimeDelta))
+			surface.SetTextColor(255, 255, 255)
+			surface.SetTextPos(x - (textW / 0.8), y + yOffset + yOffsetText)
+			surface.DrawText(tostring(attackTimeDelta))
+		end
+   	end
+   	return BaseClass.DrawHUD(self, ...)
 end
 
 function SWEP:Initialize()
@@ -373,7 +397,7 @@ function SWEP:Initialize()
 		hook.Add("EntityTakeDamage","ShieldDMGReduction",shieldDMGReduct)
 		hook.Add("Tick","chargeCheckTick",chargeCheckTick)
 		hook.Add("KeyRelease","chargeCheckRelease",chargeCheckRelease)
-		--hook.Add("CreateEntityRagdoll","chargeHitRagdoll",makeRagdoll)
+		hook.Add("CreateEntityRagdoll","chargeHitRagdoll",makeRagdoll)
 		if TTT then
 			hook.Add("TTTPlayerSpeed","tttChargeSpeed",tttChargeSpeed)
 		end
@@ -423,6 +447,8 @@ function SWEP:Initialize()
 		end
 		
 	end
+
+
 end
 
 function SWEP:Holster()
@@ -450,7 +476,7 @@ function SWEP:OnRemove()
 		hook.Remove("EntityTakeDamage","ShieldDMGReduction")
 		hook.Remove("Tick","chargeCheckTick")
 		hook.Remove("KeyRelease","chargeCheckRelease")
-		--hook.Remove("CreateEntityRagdoll","chargeHitRagdoll")
+		hook.Remove("CreateEntityRagdoll","chargeHitRagdoll")
 		if TTT then
 			hook.Remove("TTTPlayerSpeed","tttChargeSpeed")
 		end
@@ -460,49 +486,7 @@ end
 
 function SWEP:PrimaryAttack(worldsnd)
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-
-	if not IsValid(self.Owner) then return end
-
-	if self.Owner.LagCompensation then -- for some reason not always true
-		self.Owner:LagCompensation(true)
-	end
-	
-	/*if stuntimeMult != 0 then
-		local ply = self.Owner
-		ply:SetModelScale(1,0)
-		
-		local Data = duplicator.CopyEntTable( ply )
-		local speed = ply:GetVelocity()
-		local ragdoll = ents.Create( "prop_ragdoll" )
-			if not IsValid(ragdoll) then return end --failed to make a ragdoll
-			duplicator.DoGeneric( ragdoll, Data )
-		ragdoll:Spawn()
-		ragdoll:Activate()
-		ragdoll:GetPhysicsObject():SetVelocity(Vector(speed.x*5,speed.y*5,speed.z*2.5))
-		
-		ply:SetModelScale(0,0)
-		ply:SetParent(ragdoll)
-		if TTT then
-			ply:SetActiveWeapon("holstered")
-		else
-			ply:SetActiveWeapon(nil)
-		end
-		ply:SpectateEntity(ragdoll)
-		print((speed:Length()/600)*stuntimeMult)
-		timer.Simple((speed:Length()/600)*stuntimeMult, function()
-							
-							ply:SetModelScale(1,0)
-							ply:SetParent()
-							ply:SetPos(ragdoll:GetPos()+Vector(0,0,1))
-							ragdoll:Remove()
-						    ply:UnSpectate()
-						end)
-	end*/
-end
-
-function SWEP:SecondaryAttack()
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-
+	self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
 	if not IsValid(self:GetOwner()) then return end
  
 	if self:GetOwner().LagCompensation then -- for some reason not always true
@@ -511,7 +495,7 @@ function SWEP:SecondaryAttack()
  
 	local spos = self:GetOwner():GetShootPos()
 	local sdest = spos + (self:GetOwner():GetAimVector() * 70)
- 
+	local ply = self:GetOwner()
 	local tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
 	local hitEnt = tr_main.Entity
  
@@ -528,16 +512,16 @@ function SWEP:SecondaryAttack()
 		  --edata:SetDamageType(DMG_CLUB)
 		  edata:SetEntity(hitEnt)
  
-		  if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
-			 util.Effect("BloodImpact", edata)
- 
-			 -- does not work on players rah
-			 --util.Decal("Blood", tr_main.HitPos + tr_main.HitNormal, tr_main.HitPos - tr_main.HitNormal)
- 
-			 -- do a bullet just to make blood decals work sanely
-			 -- need to disable lagcomp because firebullets does its own
-			 self:GetOwner():LagCompensation(false)
-			 self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=0})
+		  if hitEnt:IsPlayer() then
+			util.Effect("BloodImpact", edata)
+
+			-- does not work on players rah
+			--util.Decal("Blood", tr_main.HitPos + tr_main.HitNormal, tr_main.HitPos - tr_main.HitNormal)
+
+			-- do a bullet just to make blood decals work sanely
+			-- need to disable lagcomp because firebullets does its own
+			self:GetOwner():LagCompensation(false)
+			chargeHit(hitEnt, ply)
 		  else
 			 util.Effect("Impact", edata)
 		  end
@@ -545,57 +529,11 @@ function SWEP:SecondaryAttack()
 	else
 	   self.Weapon:SendWeaponAnim( ACT_VM_MISSCENTER )
 	end
- 
- 
-	if CLIENT then
-	   -- used to be some shit here
-	else -- SERVER
- 
-	   -- Do another trace that sees nodraw stuff like func_button
-	   local tr_all = nil
-	   tr_all = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner()})
-	   
-	   self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
- 
-	   if hitEnt and hitEnt:IsValid() then
-		  if self:OpenEnt(hitEnt) == OPEN_NO and tr_all.Entity and tr_all.Entity:IsValid() then
-			 -- See if there's a nodraw thing we should open
-			 self:OpenEnt(tr_all.Entity)
-		  end
- 
-		  local dmg = DamageInfo()
-		  dmg:SetDamage(self.Primary.Damage)
-		  dmg:SetAttacker(self:GetOwner())
-		  dmg:SetInflictor(self.Weapon)
-		  dmg:SetDamageForce(self:GetOwner():GetAimVector() * 1500)
-		  dmg:SetDamagePosition(self:GetOwner():GetPos())
-		  dmg:SetDamageType(DMG_CLUB)
- 
-		  hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
- 
- --         self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )         
- 
- --         self:GetOwner():TraceHullAttack(spos, sdest, Vector(-16,-16,-16), Vector(16,16,16), 30, DMG_CLUB, 11, true)
- --         self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=20})
-	   
-	   else
- --         if tr_main.HitWorld then
- --            self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
- --         else
- --            self.Weapon:SendWeaponAnim( ACT_VM_MISSCENTER )
- --         end
- 
-		  -- See if our nodraw trace got the goods
-		  if tr_all.Entity and tr_all.Entity:IsValid() then
-			 self:OpenEnt(tr_all.Entity)
-		  end
-	   end
-	end
- 
-	if self:GetOwner().LagCompensation then
-	   self:GetOwner():LagCompensation(false)
-	end
-	self.Owner:DoAnimationEvent(ACT_GMOD_GESTURE_MELEE_SHOVE_2HAND)
+	if not IsValid(self.Owner) then return end
+end
+
+function SWEP:SecondaryAttack()
+	
 end
 
 if CLIENT then

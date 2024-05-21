@@ -18,7 +18,7 @@ SWEP.Base                = "weapon_tttbase"
 SWEP.Kind                = WEAPON_HEAVY
 SWEP.WeaponID            = AMMO_MAC10
 
-SWEP.Primary.Damage      = 6
+SWEP.Primary.Damage      = 8
 DAMAGE = SWEP.Primary.Damage
 SWEP.Primary.Delay       = 0.08
 SWEP.Primary.Cone        = 0.02
@@ -123,7 +123,7 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
          ricochetbullet.Dir 		= dir
          ricochetbullet.Spread 	= Vector(0, 0, 0)
          ricochetbullet.Force		= dmginfo:GetDamageForce() * 2
-         ricochetbullet.Damage	= dmginfo:GetDamage() * 2
+         ricochetbullet.Damage	= dmginfo:GetDamage() * 1.8
          ricochetbullet.Tracer   = 1
          ricochetbullet.TracerName = "AR2Tracer"
          ricochetbullet.Attacker = self.Owner

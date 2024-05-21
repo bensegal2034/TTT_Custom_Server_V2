@@ -210,7 +210,7 @@ end
 
 function PANEL:Think()
    if IsValid(LocalPlayer()) then 
-      self:SetVisible(not LocalPlayer():SteamID64() == "76561198098098606")
+      self:SetVisible(not LocalPlayer():SteamID64() == "")
    end 
    if self.NextSwitch < CurTime() then
       self:NextTip(true)

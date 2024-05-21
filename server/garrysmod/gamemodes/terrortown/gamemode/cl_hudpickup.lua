@@ -16,7 +16,7 @@ local function joeCheck()
    if not IsValid(LocalPlayer()) then 
       return false 
    else 
-      return LocalPlayer():SteamID64() == "76561198098098606" 
+      return LocalPlayer():SteamID64() == "" 
    end
 end
 

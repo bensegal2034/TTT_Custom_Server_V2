@@ -177,13 +177,10 @@ function ragdollify(ent,ply)
 		ent:SetModelScale(0,0)
 		ent:SetParent(ragdoll)
 		if ent:IsPlayer() then
-			if TTT then
-				ent:SetActiveWeapon(weapon_ttt_holstered)
-			else
-				ent:SetActiveWeapon(nil)
-				ent:DrawViewModel(false)
-			end
+			ent:SetObserverMode( OBS_MODE_CHASE )
+			ent:SetRagdollSpec(true)
 			ent:SpectateEntity(ragdoll)
+			ent:DrawViewModel(false)
 		elseif ent:IsNPC() then
 			NPCState = ent:GetNPCState()
 			ent:SetNPCState(NPC_STATE_IDLE )
@@ -191,17 +188,16 @@ function ragdollify(ent,ply)
 	end
 end
 
-function humanify(ent,ply)		
+function humanify(ent,ply,pos)		
 	if ent:IsNPC() and !IsValid(ent) then return end
 	ent:SetModelScale(1,0)
 	ent:SetParent()
 	ragdoll:Remove()
 	if ent:IsPlayer() then
-		ent:SetPos(ragdoll:GetPos()+Vector(0,0,1))
+		ent:SetPos(pos)
 		ent:UnSpectate()
-		if !TTT then
-			ent:DrawViewModel(true)
-		end
+		ent:SetNoTarget(true)
+		ent:DrawViewModel(true)
 	elseif ent:IsNPC() then
 		if IsValid(ent) then
 			ent:SetPos(ragdoll:GetPos()+Vector(0,0,1))
@@ -287,8 +283,9 @@ function chargeHit(ent,ply)
 			dmginfo:SetDamageType(DMG_CLUB)
 			dmginfo:SetDamagePosition(ply:GetPos())
 			ent:TakeDamageInfo(dmginfo)
+			local pos = ent:GetPos()
 			ragdollify(ent,ply)
-			timer.Simple(2*stuntimeMult, function() humanify(ent,ply) end)	
+			timer.Simple(2*stuntimeMult, function() humanify(ent,ply,pos) end)	
 			ply:GetActiveWeapon():SendWeaponAnim( ACT_VM_HITCENTER )
 			ply:EmitSound(chargeHitSound)
 		end
@@ -494,7 +491,7 @@ function SWEP:PrimaryAttack(worldsnd)
 	end
  
 	local spos = self:GetOwner():GetShootPos()
-	local sdest = spos + (self:GetOwner():GetAimVector() * 70)
+	local sdest = spos + (self:GetOwner():GetAimVector() * 90)
 	local ply = self:GetOwner()
 	local tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
 	local hitEnt = tr_main.Entity

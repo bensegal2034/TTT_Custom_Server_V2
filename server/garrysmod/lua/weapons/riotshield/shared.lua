@@ -194,7 +194,19 @@ function humanify(ent,ply,pos)
 	ent:SetParent()
 	ragdoll:Remove()
 	if ent:IsPlayer() then
-		ent:SetPos(pos)
+		local ragpos = ragdoll:GetPos() -- Choose your position.
+		local tr = {
+			start = ragpos,
+			endpos = ragpos,
+			mins = Vector( -16, -16, 0 ),
+			maxs = Vector( 16, 16, 71 )
+		}
+		local hullTrace = util.TraceHull( tr )
+		if ( hullTrace.Hit ) then
+			ent:SetPos(pos)
+		else
+			ent:SetPos(ragpos)
+		end
 		ent:UnSpectate()
 		ent:SetNoTarget(true)
 		ent:DrawViewModel(true)

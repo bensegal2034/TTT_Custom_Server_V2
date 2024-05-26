@@ -173,7 +173,7 @@ function ragdollify(ent,ply)
 		if IsValid(ragdoll:GetPhysicsObject()) then
 			ragdoll:GetPhysicsObject():SetVelocity(Vector(speed.x*knockbackMagnitude,speed.y*knockbackMagnitude,speed.z*knockbackMagnitude/2))
 		end
-		ent:SetNextPrimaryFire(CurTime()+2)
+		
 		ent:SetModelScale(0,0)
 		ent:SetParent(ragdoll)
 		if ent:IsPlayer() then

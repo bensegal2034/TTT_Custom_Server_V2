@@ -48,15 +48,14 @@ function ENT:Initialize()
     local r = math.random()
 
 	-- choose which weapon type table to spawn from
-	tbl = pistol
-	
-	if r < 0.72 then
-		tbl = nade
-	end
-	
-	if r < 0.44 then
-		tbl = heavy
-	end
+   -- 45% sidearm, 45% primary, 10% grenade
+	if r <= 0.45 then
+      tbl = pistol
+   elseif r <= 0.90 then
+      tbl = heavy
+   else
+      tbl = nade
+   end
 
 	-- choose a random weapons from this table	
     local classname = tbl[math.random(#tbl)]

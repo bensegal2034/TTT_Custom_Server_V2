@@ -8,7 +8,7 @@ SWEP.HoldType = "ar2"
 
 if CLIENT then
    SWEP.PrintName = "FAMAS"
-   SWEP.Slot = 6
+   SWEP.Slot = 2
    SWEP.EquipMenuData = {
       type = "Weapon",
       desc = "Perks:\nRapid Hit: Reload faster and increase stability on precision hits\nKill Clip: Reload after a kill for a damage boost!"
@@ -16,11 +16,12 @@ if CLIENT then
    SWEP.Icon = "vgui/hud/m9k_famas"
    require("cl_m9k_famas")
 end
+SWEP.Kind                  = WEAPON_HEAVY
 
 
 SWEP.Base = "weapon_tttbase"
 
-SWEP.Kind = WEAPON_FAMAS
+SWEP.Kind = WEAPON_HEAVY
 
 SWEP.Primary.DamageBase  = 19
 SWEP.Primary.Damage      = SWEP.Primary.DamageBase

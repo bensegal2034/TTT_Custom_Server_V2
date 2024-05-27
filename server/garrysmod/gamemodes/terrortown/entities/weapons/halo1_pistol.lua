@@ -69,6 +69,7 @@ SWEP.FiresUnderwater = false
 SWEP.DrawCrosshair = false
 SWEP.DrawAmmo = true
 SWEP.Base = "weapon_tttbase"
+SWEP.DamageType = "Impact"
 SWEP.Primary.Damage = 22
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 12
@@ -87,7 +88,6 @@ SWEP.Secondary.ClipSize = 0
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "Pistol"
-SWEP.DamageType = "Impact"
 
 
 if CLIENT then
@@ -581,6 +581,18 @@ function SWEP:DrawHUD()
 		surface.SetDrawColor(104, 160, 216, 255)
 		surface.DrawTexturedRect(ScrW() / 2 - -210, ScrH() / 2 - -140, 130, 130)
 	end
+		local impact = Material("vgui/damagetype/impact2.png", "mips noclamp smooth")
+		local impactshad = Material("vgui/damagetype/impact2.png", "mips noclamp smooth")
+		local client = LocalPlayer()
+		if client:GetObserverMode() == OBS_MODE_NONE then
+			surface.SetMaterial(impactshad)
+			surface.SetDrawColor(0, 0, 0, 255)
+			surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
+
+			surface.SetMaterial(impact)
+			surface.SetDrawColor(255, 255, 255, 255)
+			surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
+		end
 end
 
 function SWEP:CanBePickedUpByNPCs()

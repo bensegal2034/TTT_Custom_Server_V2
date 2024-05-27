@@ -70,8 +70,7 @@ SWEP.Primary.NumShots	= 1		-- How many bullets to shoot per trigger pull, AKA pe
 SWEP.Primary.Damage		= 14	-- Base damage per bullet
 SWEP.DamageType            = "Impact"
 -- Enter iron sight info and bone mod info below
-
-
+SWEP.BulletSpread = 1.5
 --- TTT config values
 
 -- Kind specifies the category this weapon is in. Players can only carry one of
@@ -169,51 +168,32 @@ function SWEP:ShootBullet( damage, recoil, cone, numbul, bforce, btracer )
 	bullet.Src 		= self.Owner:GetShootPos()
 	bullet.Dir 		= self.Owner:GetAimVector()
 	bullet.Spread 	= Vector( 0, 0, 0 )
-	bullet.Tracer	= 0
+	bullet.Tracer	= 1
 	bullet.Force	= bforce
 	bullet.Damage	= damage
-	
-	local bullet2 = {}
-	bullet2.Num 		= numbul
-	bullet2.Src 		= self.Owner:GetShootPos()
-	bullet2.Dir 		= self.Owner:GetAimVector() + Vector(.075,0,0)
-	bullet2.Spread 	= Vector( 0, 0, 0 )
-	bullet2.Tracer	= 0
-	bullet2.Force	= bforce
-	bullet2.Damage	= damage
 
-	local bullet3 = {}
-	bullet3.Num 		= numbul
-	bullet3.Src 		= self.Owner:GetShootPos()
-	bullet3.Dir 		= self.Owner:GetAimVector() + Vector(-.075,0,0)
-	bullet3.Spread 	= Vector( 0, 0, 0 )
-	bullet3.Tracer	= 0
-	bullet3.Force	= bforce
-	bullet3.Damage	= damage
-
-	local bullet4 = {}
-	bullet4.Num 		= numbul
-	bullet4.Src 		= self.Owner:GetShootPos()
-	bullet4.Dir 		= self.Owner:GetAimVector() + Vector(.15,0,0)
-	bullet4.Spread 	= Vector( 0, 0, 0 )
-	bullet4.Tracer	= 0
-	bullet4.Force	= bforce
-	bullet4.Damage	= damage
-
-	local bullet5 = {}
-	bullet5.Num 		= numbul
-	bullet5.Src 		= self.Owner:GetShootPos()
-	bullet5.Dir 		= self.Owner:GetAimVector() + Vector(-.15,0,0)
-	bullet5.Spread 	= Vector( 0, 0, 0 )
-	bullet5.Tracer	= 0
-	bullet5.Force	= bforce
-	bullet5.Damage	= damage
+	local aimVector = self.Owner:GetAimVector()
 
 	self.Owner:FireBullets( bullet )
-	self.Owner:FireBullets( bullet2 )
-	self.Owner:FireBullets( bullet3 )
-	self.Owner:FireBullets( bullet4 )
-	self.Owner:FireBullets( bullet5 )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,self.BulletSpread,0))
+	self.Owner:FireBullets( bullet )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,-self.BulletSpread,0))
+	self.Owner:FireBullets( bullet )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,self.BulletSpread*2,0))
+	self.Owner:FireBullets( bullet )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,-self.BulletSpread*2,0))
+	self.Owner:FireBullets( bullet )
+	
+
+
 	if ( self.Owner:IsNPC() ) then return end
 	
 		self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK )

@@ -36,6 +36,7 @@ SWEP.Category				= "Not Micro's Heavy Weapons"
 SWEP.Author				= ""
 SWEP.Contact				= ""
 SWEP.Purpose				= ""
+SWEP.Spread = 0
 SWEP.Instructions				= ""
 SWEP.PrintName				= "Pump Shotgun"		-- Weapon name (Shown on HUD)	
 SWEP.Slot				= 2			-- Slot in the weapon selection menu
@@ -52,25 +53,24 @@ SWEP.ViewModel				= "models/weapons/v_notmic_icarus.mdl"	-- Weapon view model
 SWEP.WorldModel				= "models/weapons/w_notmic_icarus.mdl"	-- Weapon world model
 SWEP.Base 				= "weapon_tttbase"
 SWEP.Primary.Sound			= Sound("weapons/37/fire.wav")		-- script that calls the primary fire sound
-SWEP.Primary.Delay = .65
+SWEP.Primary.Delay = .675
 SWEP.Primary.ClipSize			= 6			-- Size of a clip
 SWEP.Primary.DefaultClip			= 24	-- Default number of bullets in a clip
-SWEP.Primary.Automatic			= false		-- Automatic/Semi Auto
+SWEP.Primary.Automatic			= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "buckshot"	-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
 -- Pistol, buckshot, and slam always ricochet. Use AirboatGun for a light metal peircing shotgun pellets
 SWEP.ViewModelFOV		= 65
 SWEP.Primary.ClipMax = 24
 SWEP.reloadtimer = 0
-SWEP.Primary.Cone = 0.06
+SWEP.Primary.Cone = 0.00
 SWEP.HeadshotMultiplier = 1.5
 SWEP.data 				= {}				--The starting firemode
 SWEP.Primary.Recoil = 1
-SWEP.Primary.NumShots	= 5		-- How many bullets to shoot per trigger pull, AKA pellets
+SWEP.Primary.NumShots	= 1		-- How many bullets to shoot per trigger pull, AKA pellets
 SWEP.Primary.Damage		= 14	-- Base damage per bullet
 SWEP.DamageType            = "Impact"
 -- Enter iron sight info and bone mod info below
-
-
+SWEP.BulletSpread = 1.5
 --- TTT config values
 
 -- Kind specifies the category this weapon is in. Players can only carry one of
@@ -158,22 +158,42 @@ sound.Add({
 	sound = 			"weapons/37/deploy.wav"
 })
 
-function SWEP:ShootBullet( damage, recoil, numbul, cone, bforce, btracer )
+function SWEP:ShootBullet( damage, recoil, cone, numbul, bforce, btracer )
 
 	numbul 	= numbul 	or 1
-	cone 	= cone 		or 0.01
+	cone = 0
 
 	local bullet = {}
 	bullet.Num 		= numbul
 	bullet.Src 		= self.Owner:GetShootPos()
 	bullet.Dir 		= self.Owner:GetAimVector()
-	bullet.Spread 	= Vector( cone, 0, 0 )
-	bullet.Tracer	= 0
+	bullet.Spread 	= Vector( 0, 0, 0 )
+	bullet.Tracer	= 1
 	bullet.Force	= bforce
 	bullet.Damage	= damage
-	
+
+	local aimVector = self.Owner:GetAimVector()
+
+	self.Owner:FireBullets( bullet )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,self.BulletSpread,0))
+	self.Owner:FireBullets( bullet )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,-self.BulletSpread,0))
+	self.Owner:FireBullets( bullet )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,self.BulletSpread*2,0))
+	self.Owner:FireBullets( bullet )
+
+	bullet.Dir = Vector(self.Owner:GetAimVector())
+	bullet.Dir:Rotate(Angle(0,-self.BulletSpread*2,0))
 	self.Owner:FireBullets( bullet )
 	
+
+
 	if ( self.Owner:IsNPC() ) then return end
 	
 		self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
@@ -192,6 +212,31 @@ function SWEP:SetupDataTables()
 	self:NetworkVar("Bool", 0, "Reloading")
 	self:NetworkVar("Float", 0, "ReloadTimer")
 end
+
+
+
+function SWEP:PrimaryAttack(worldsnd)
+
+	self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+ 
+	if not self:CanPrimaryAttack() then return end
+ 
+	if not worldsnd then
+	   self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+	elseif SERVER then
+	   sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
+	end
+ 
+	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, 0 )
+ 
+	self:TakePrimaryAmmo( 1 )
+ 
+	local owner = self:GetOwner()
+	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
+ 
+	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
+ end
 
 function SWEP:CanPrimaryAttack()
 	if self:Clip1() <= 0 then

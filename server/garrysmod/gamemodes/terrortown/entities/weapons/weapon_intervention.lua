@@ -1,5 +1,7 @@
 if SERVER then
    AddCSLuaFile( "weapon_intervention.lua" )
+   resource.AddFile("materials/vgui/ttt/icon_intervention.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_intervention.vmt")
    resource.AddWorkshop("334016220")
 end
 
@@ -8,7 +10,7 @@ SWEP.HoldType           = "ar2"
 if CLIENT then
    SWEP.PrintName          = "Intervention"
    SWEP.Slot               = 2
-   SWEP.Icon = "vgui/ttt/icon_scout"
+   SWEP.Icon = "vgui/ttt/icon_intervention"
 end
 
 SWEP.Base               = "weapon_tttbase"

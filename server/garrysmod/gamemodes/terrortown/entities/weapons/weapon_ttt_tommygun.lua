@@ -3,6 +3,10 @@ SWEP.Gun = ("weapon_ttt_tommygun") -- must be the name of your swep but NO CAPIT
 if (GetConVar(SWEP.Gun.."_allowed")) != nil then
 	if not (GetConVar(SWEP.Gun.."_allowed"):GetBool()) then SWEP.Base = "bobs_blacklisted" SWEP.PrintName = SWEP.Gun return end
 end
+if SERVER then
+	resource.AddFile("materials/vgui/ttt/icon_tommygun.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_tommygun.vmt")
+end
 
 SWEP.Category				= "M9K Submachine Guns"
 SWEP.Author				= ""
@@ -10,7 +14,7 @@ SWEP.Contact				= ""
 SWEP.Purpose				= ""
 SWEP.Instructions				= ""
 
-
+SWEP.Icon = "vgui/ttt/icon_tommygun"
 SWEP.PrintName				= "Tommy Gun"		-- Weapon name (Shown on HUD)	
 SWEP.Slot				= 2				-- Slot in the weapon selection menu
 SWEP.SlotPos				= 54			-- Position in the slot

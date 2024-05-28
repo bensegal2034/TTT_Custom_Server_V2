@@ -27,6 +27,8 @@ if SERVER then
 	resource.AddFile("sound/weapons/auga3/boltslap.mp3")
 	resource.AddFile("sound/weapons/auga3/clipin.mp3")
 	resource.AddFile("sound/weapons/auga3/clipout.mp3")
+	resource.AddFile("materials/vgui/ttt/icon_aug.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_aug.vmt")
 	resource.AddWorkshop("128089118")
 end
 
@@ -35,7 +37,7 @@ end
 SWEP.Gun = ("weapon_ttt_aug") -- must be the name of your swep but NO CAPITALS!
 
 SWEP.Kind                  = WEAPON_HEAVY
-
+SWEP.Icon = "vgui/ttt/icon_aug"
 SWEP.Base = "weapon_tttbase"
 SWEP.Category				= "M9K Assault Rifles"
 SWEP.Author				= ""

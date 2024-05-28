@@ -24,7 +24,8 @@ if SERVER then
 	resource.AddFile("models/weapons/v_knife1.mdl")
 	resource.AddFile("models/weapons/v_knife3.mdl")
 	resource.AddFile("models/weapons/w_knife_t_karambit.mdl")
-
+	resource.AddFile("materials/vgui/ttt/icon_karambit.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_karambit.vmt")
 	resource.AddWorkshop("774240766")
 end
 
@@ -36,6 +37,7 @@ SWEP.Contact				= ""
 SWEP.Purpose				= ""
 SWEP.Instructions				= ""
 SWEP.PrintName				= "Karambit"	
+SWEP.Icon = "vgui/ttt/icon_karambit"
 SWEP.Slot				= 1			
 SWEP.Kind = WEAPON_PISTOL
 SWEP.AutoSpawnable = true			

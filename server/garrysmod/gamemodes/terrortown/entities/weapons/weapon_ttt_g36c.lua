@@ -19,6 +19,8 @@ if SERVER then
    resource.AddFile("materials/vgui/gfx/vgui/aug.vtf")
    resource.AddFile("models/weapons/v_rif_kiw.mdl")
    resource.AddFile("models/weapons/w_rif_kiw.mdl")
+   resource.AddFile("materials/vgui/ttt/icon_g36c.vmt")
+   resource.AddFile("materials/vgui/ttt/icon_g36c.vtf")
    resource.AddWorkshop("403979337")
 end
 
@@ -124,7 +126,7 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.ViewModel				= "models/weapons/v_rif_kiw.mdl"
 SWEP.WorldModel				= "models/weapons/w_rif_kiw.mdl"
-
+SWEP.Icon = "vgui/ttt/icon_g36c"
 --- TTT config values
 
 -- Kind specifies the category this weapon is in. Players can only carry one of

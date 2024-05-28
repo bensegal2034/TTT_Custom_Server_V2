@@ -20,6 +20,8 @@ if SERVER then
    resource.AddFile("sound/weapons/afterglow/magin_start.wav")
    resource.AddFile("sound/weapons/afterglow/magout.wav")
    resource.AddFile("materials/vgui/killicons/killbanner.png")
+   resource.AddFile("materials/vgui/ttt/icon_vandal.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_vandal.vmt")
    resource.AddWorkshop("2892783240")
    
    util.AddNetworkString("PlayerDeathVandal")
@@ -61,7 +63,7 @@ SWEP.Base = "weapon_tttbase"
 
 -- Standard GMod values
 SWEP.HoldType = "ar2"
-
+SWEP.Icon = "vgui/ttt/icon_vandal"
 SWEP.Primary.Ammo = "pistol"
 SWEP.Primary.Delay = 0.095
 SWEP.Primary.Recoil = 2.5

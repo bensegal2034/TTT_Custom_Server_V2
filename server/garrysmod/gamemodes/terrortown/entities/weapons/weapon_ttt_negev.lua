@@ -4,7 +4,7 @@ if SERVER then
    resource.AddFile( "materials/models/weapons/v_models/mach_negev/mach_negev.vmt" )
    resource.AddFile( "materials/models/weapons/v_models/mach_negev/mach_negev_exponent.vtf" )
    resource.AddFile( "materials/vgui/gfx/vgui/m249.vtf" )
-   resource.AddFile( "materials/vgui/ttt/icon_negev.vmt" )
+   resource.AddFile( "materials/vgui/ttt/icon_negev2.vmt" )
    resource.AddFile( "models/weapons/v_nach_m249para.mdl")
    resource.AddFile( "models/weapons/w_nach_m249para.mdl")
    resource.AddFile( "sound/weapons/negev/m249-1.wav" )
@@ -21,7 +21,7 @@ if CLIENT then
 
    SWEP.Slot				= 2
 
-   SWEP.Icon = "VGUI/ttt/icon_negev"
+   SWEP.Icon = "VGUI/ttt/icon_negev2"
 
    SWEP.ViewModelFlip		= false
 end

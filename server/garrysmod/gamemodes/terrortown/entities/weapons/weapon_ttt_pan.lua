@@ -12,11 +12,13 @@ if SERVER then
 	resource.AddFile( "sound/weapons/pan/melee_frying_pan_02.wav")
 	resource.AddFile( "sound/weapons/pan/melee_frying_pan_03.wav")
 	resource.AddFile( "sound/weapons/pan/melee_frying_pan_04.wav")
+	resource.AddFile("materials/vgui/ttt/icon_pan.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_pan.vmt")
 	resource.AddWorkshop("2598540535")
 end
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
-
+SWEP.Icon = "vgui/ttt/icon_pan"
 SWEP.BounceWeaponIcon = false
 
 SWEP.Author = ""

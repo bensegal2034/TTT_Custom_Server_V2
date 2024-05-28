@@ -29,12 +29,15 @@ if SERVER then
     resource.AddFile("sound/weapons/tfre/volcanic/peacemaker_insert3.wav")
     resource.AddFile("sound/weapons/tfre/volcanic/peacemaker_open.wav")
     resource.AddFile("sound/weapons/tfre/volcanic/volcanic_single2.wav")
+    resource.AddFile("materials/vgui/ttt/icon_volcanic.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_volcanic.vmt")
     resource.AddWorkshop("1879061816")
 end
 
 SWEP.Gun = "weapon_ttt_volcanic"
 
 SWEP.Base               = "weapon_tttbase"
+SWEP.Icon = "vgui/ttt/icon_volcanic"
 SWEP.Category               = "TFA TF:RE" --The category.  Please, just choose something generic or something I've already done if you plan on only doing like one swep..
 SWEP.Manufacturer = "" --Gun Manufactrer (e.g. Hoeckler and Koch )
 SWEP.Author             = "" --Author Tooltip
@@ -53,11 +56,11 @@ SWEP.Weight             = 30            -- This controls how "good" the weapon i
  
 --[[WEAPON HANDLING]]--
 SWEP.Primary.Sound = Sound("Weapon_TFRE_Volcanic.Single") -- This is the sound of the weapon, when you shoot.
-SWEP.Primary.Damage = 1 -- Damage, in standard damage points.
+SWEP.Primary.Damage = 40 -- Damage, in standard damage points.
 SWEP.Primary.NumShots = 1 --The number of shots the weapon fires.  SWEP.Shotgun is NOT required for this to be >1.
 SWEP.Primary.Automatic = false -- Automatic/Semi Auto
 SWEP.Primary.Delay = 0.5 -- This is in Rounds Per Minute / RPM
- 
+SWEP.HeadshotMultiplier = 3
 --Ammo Related
 SWEP.Primary.ClipSize = 1 -- This is the size of a clip
 SWEP.Primary.DefaultClip = 8 -- This is the number of bullets the gun gives you, counting a clip as defined directly above.
@@ -356,13 +359,15 @@ end
     if weapon:GetClass() == "weapon_ttt_volcanic" then
         local att = dmginfo:GetAttacker()
         if target:IsPlayer() then
-            dmginfo:ScaleDamage(0)
             local savedSpeed = target:GetWalkSpeed()
             local savedJump = target:GetJumpPower()
             target:SetWalkSpeed(1)
             target:SetJumpPower(1)
             timer.Create( "RootTimer", 3, 1, function() target:SetWalkSpeed(savedSpeed) end )
             timer.Create( "RootTimer2", 3, 1, function() target:SetJumpPower(savedJump) end )
+            if hitgroup != HITGROUP_HEAD then
+                dmginfo:ScaleDamage(0)
+            end
         end
     end
 end)

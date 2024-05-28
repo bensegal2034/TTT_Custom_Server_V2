@@ -1,0 +1,21 @@
+VertexLitGeneric
+{
+	"$baseTexture" "models/tfre/weapons/volcanic/volcanic_d"
+	"$bumpmap"     "models/tfre/weapons/volcanic/volcanic_n"
+	
+	//phong settings
+	"$phong" 1
+	"$phongboost" 1.8
+	"$phongfresnelranges" "[1 5 10]"
+	"$phongexponenttexture" "models/tfre/weapons/volcanic/volcanic_g"
+
+	"$phongalbedotint" "1"	
+
+	//reflection settings
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.02 .02 .02]" //Darken the reflection/cubemap.
+	"$envmapfresnel" 1 
+	"$normalmapalphaenvmapmask" 1
+
+}
+

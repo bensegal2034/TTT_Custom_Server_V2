@@ -356,7 +356,7 @@ function SWEP:Think()
 			if GetRoundState() != ROUND_PREP then
 			self.PreRoundCheck = 1
 				self.StackTimer = self.StackTimer + 1
-				if self.StackTimer % 10 == 0 then
+				if self.StackTimer % 300 == 0 then
 					self.StackCount = self.StackCount + 1
 					self:SetStackCount(self.StackCount)
 				end

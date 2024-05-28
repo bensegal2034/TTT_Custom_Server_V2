@@ -1,0 +1,26 @@
+VertexLitGeneric
+{
+	"$baseTexture" "models/tfre/weapons/volcanic/volcanic_d"
+
+	"$bumpmap"     "models/tfre/weapons/volcanic/volcanic_n"
+	
+	//phong settings
+	"$phong" 1
+	"$phongboost" 1.8
+	"$phongfresnelranges" "[1 5 10]"
+	"$phongexponenttexture" "models/tfre/weapons/volcanic/volcanic_g"
+
+	"$detail" "models/tfre/weapons/volcanic/volcanic_detail"	
+	"$detailscale" "1"
+	"$detailblendfactor" 0
+	"$detailblendmode" 1
+	
+	"Proxies"
+	{		
+		"Booster"
+		{
+			"resultVar" "$detailblendfactor"
+		}
+	}
+}
+

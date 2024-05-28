@@ -331,40 +331,35 @@ end
 
 hook.Add("TTTPrepareRound", "ResetVolcanic Root", function()
     if SERVER then
-       local rf = RecipientFilter()
-       rf:AddAllPlayers()
-       players = rf:GetPlayers()
-       for i = 1, #players do
-          players[i]:SetJumpPower(160)
-          players[i]:SetWalkSpeed(220)
-       end
+        local rf = RecipientFilter()
+        rf:AddAllPlayers()
+        players = rf:GetPlayers()
+        for i = 1, #players do
+            players[i]:SetJumpPower(160)
+            players[i]:SetWalkSpeed(220)
+        end
     end
- end)
+end)
  
 
 
 hook.Add("ScalePlayerDamage", "VolcanicRoot", function(target, hitgroup, dmginfo)
-if
-    not IsValid(dmginfo:GetAttacker())
-    or not dmginfo:GetAttacker():IsPlayer()
-    or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-then
+if not IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker():IsPlayer() or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
     return
 end
 
     local weapon = dmginfo:GetAttacker():GetActiveWeapon()
     
     if weapon:GetClass() == "weapon_ttt_volcanic" then
-        
         local att = dmginfo:GetAttacker()
         if target:IsPlayer() then
             dmginfo:ScaleDamage(0)
             local savedSpeed = target:GetWalkSpeed()
             local savedJump = target:GetJumpPower()
-            target:SetWalkSpeed(0)
-            target:SetJumpPower(0)
+            target:SetWalkSpeed(1)
+            target:SetJumpPower(1)
             timer.Create( "RootTimer", 3, 1, function() target:SetWalkSpeed(savedSpeed) end )
-            timer.Create( "RootTimer", 3, 1, function() target:SetJumpPower(savedJump) end )
+            timer.Create( "RootTimer2", 3, 1, function() target:SetJumpPower(savedJump) end )
         end
     end
 end)

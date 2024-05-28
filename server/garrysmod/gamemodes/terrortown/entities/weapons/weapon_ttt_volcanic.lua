@@ -61,8 +61,11 @@ SWEP.Primary.Delay = 0.5 -- This is in Rounds Per Minute / RPM
 --Ammo Related
 SWEP.Primary.ClipSize = 1 -- This is the size of a clip
 SWEP.Primary.DefaultClip = 8 -- This is the number of bullets the gun gives you, counting a clip as defined directly above.
-SWEP.Primary.Ammo = "pistol" -- What kind of ammo.  Options, besides custom, include pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, and AirboatGun.
- 
+SWEP.Primary.ClipMax       = 16
+
+SWEP.AmmoEnt               = "item_ammo_revolver_ttt" 
+SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
+
 --Recoil Related
 SWEP.Primary.Recoil = 0.3 -- This is the maximum upwards recoil (rise)
 

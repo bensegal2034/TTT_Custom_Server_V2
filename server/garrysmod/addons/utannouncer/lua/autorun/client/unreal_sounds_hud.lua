@@ -70,8 +70,8 @@ local holyShitCount = false
 
 local classicsounds = {}
 classicsounds["HEADSHOT"] = {title = "Headshot", soundfile = "ut/headshot.wav", pos = 0}
-classicsounds["DOUBLEKILL"] = {title = "Double Kill", soundfile = "ut/doublekill.wav", pos = 0}
-classicsounds["TRIPLEKILL"] = {title = "Triple Kill!", soundfile = "ut/triplekill.wav", pos = 0}
+classicsounds["DOUBLEKILL"] = {title = "Double Kill", soundfile = "ut/doublekill.mp3", pos = 0}
+classicsounds["TRIPLEKILL"] = {title = "Triple Kill!", soundfile = "ut/triplekill.mp3", pos = 0}
 classicsounds["HOLYSHIT"] = {title = "H O L Y  S H I T !", soundfile = "ut/holyshit.wav", pos = 0}
 classicsounds["DOMINATING"] = {title = "Dominating!", soundfile = "ut/dominating.wav", pos = 1, other = "is Dominating."}
 --sounds["FIRSTBLOOD"] = {title = "First Blood", soundfile = utfolder.."/firstblood.wav", pos = 0}

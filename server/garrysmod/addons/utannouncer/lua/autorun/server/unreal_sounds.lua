@@ -3,8 +3,8 @@
 //Revision 071016
 
 resource.AddFile("sound/ut/dominating.wav")
-resource.AddFile("sound/ut/doublekill.wav")
-resource.AddFile("sound/ut/triplekill.wav")
+resource.AddFile("sound/ut/doublekill.mp3")
+resource.AddFile("sound/ut/triplekill.mp3")
 resource.AddFile("sound/ut/firstblood.wav")
 resource.AddFile("sound/ut/godlike.wav")
 resource.AddFile("sound/ut/headshot.wav")

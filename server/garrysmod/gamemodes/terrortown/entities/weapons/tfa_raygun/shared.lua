@@ -58,6 +58,8 @@ if SERVER then
 	resource.AddFile("materials/models/weapon/raygun/ray_gun_n.vtf")
 	resource.AddFile("materials/models/weapon/raygun/ray_gun_o.vtf")
 	resource.AddFile("materials/models/weapon/raygun/weapon_red_dot_c.vmt")
+	resource.AddFile( "materials/vgui/ttt/icon_raygun.vmt" )
+   resource.AddFile( "materials/vgui/ttt/icon_raygun.vtf" )
 	resource.AddFile("models/weapons/raygun/v_raygun.mdl")
 	resource.AddFile("models/weapons/raygun/w_raygun.mdl")
 	resource.AddFile("particles/raygun.pcf")
@@ -84,7 +86,7 @@ SWEP.Weight					= 35		-- rank relative ot other weapons. bigger is better
 SWEP.HoldType 				= "pistol"		-- how others view you carrying the weapon
 -- normal melee melee2 fist knife smg ar2 pistol rpg physgun grenade shotgun crossbow slam passive 
 -- you're mostly going to use ar2, smg, shotgun or pistol. rpg makes for good sniper rifles
-
+SWEP.Icon 					= "vgui/ttt/icon_raygun"
 SWEP.DrawCrosshair 			= false
 
 SWEP.ViewModelFOV			= 100

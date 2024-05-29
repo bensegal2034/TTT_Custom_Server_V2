@@ -37,6 +37,8 @@ if SERVER then
 	resource.AddFile("sound/halo1/pistol_reload.ogg")
 	resource.AddFile("sound/halo1/zoom.ogg")
 	resource.AddFile("sound/halo1/zoomout.ogg")
+	resource.AddFile( "materials/vgui/ttt/icon_magnum.vmt" )
+   resource.AddFile( "materials/vgui/ttt/icon_magnum.vtf" )
 	resource.AddWorkshop("2703072069")
 end
 
@@ -88,7 +90,7 @@ SWEP.Secondary.ClipSize = 0
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "Pistol"
-
+SWEP.Icon 					= "vgui/ttt/icon_magnum"
 
 if CLIENT then
 	SWEP.WepSelectIcon = surface.GetTextureID("vgui/entities/halo1_pistol")

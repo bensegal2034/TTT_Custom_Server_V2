@@ -1,6 +1,8 @@
 if SERVER then
    AddCSLuaFile("m9k_famas.lua")
    AddCSLuaFile("includes/modules/cl_m9k_famas.lua")
+   resource.AddFile( "materials/vgui/ttt/icon_famas2.vmt" )
+   resource.AddFile( "materials/vgui/ttt/icon_famas2.vtf" )
    resource.AddWorkshop("2743728984")
 end
 
@@ -37,6 +39,7 @@ SWEP.Primary.Ammo        = "pistol"
 SWEP.Primary.Recoil      = 1.35
 SWEP.Primary.Sound       = "weapons/fokku_tc_famas/shot-1.wav"
 SWEP.DamageType          = "Puncture"
+SWEP.Icon 					= "vgui/ttt/icon_famas2"
 
 SWEP.AutoSpawnable = true
 SWEP.CanBuy = {}

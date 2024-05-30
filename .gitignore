@@ -17,6 +17,7 @@ server/garrysmod/sv.db
 server/garrysmod/cfg/mount.cfg
 server/garrysmod/cfg/server.vdf
 server/garrysmod/cfg/fastdlsetup.cfg
+server/garrysmod/data/mapvote/recentmaps.txt
 *.ain
 *.ztmp
 *.lst

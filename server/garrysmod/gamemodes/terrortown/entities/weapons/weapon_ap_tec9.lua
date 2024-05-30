@@ -358,9 +358,9 @@ if CLIENT then
       local longestText = "Fire Rate: " -- this sucks
       local scrW = ScrW()
       local scrH = ScrH()
-      local textWidth = scrW * 0.145
+      local textWidth = 280
       local shadowOffset = 2.5
-      local startingOffset = 0.85
+      local startingOffset = 0.86
       local newlineOffset = 0.025
 
       surface.SetFont("HealthAmmo") -- fuck you always do this if you don't do this when drawing text i will beat you to death
@@ -369,7 +369,7 @@ if CLIENT then
       local damageOffset = startingOffset
       local damageText = "Damage: "
       surface.SetDrawColor(73, 75, 77, 150)
-      draw.RoundedBox(10, scrW * 0.14, scrH * 0.84, surface.GetTextSize(longestText) * 1.7, scrH * 0.14, Color(20, 20, 20, 200)) -- dont do that height bullshit
+      draw.RoundedBox(10, 270, scrH * 0.854, surface.GetTextSize(longestText) * 1.7, scrH * 0.138, Color(20, 20, 20, 200))
       surface.SetTextColor(0, 0, 0, 255)
       surface.SetTextPos(textWidth + shadowOffset, (scrH * damageOffset) + shadowOffset)
       surface.DrawText(damageText)

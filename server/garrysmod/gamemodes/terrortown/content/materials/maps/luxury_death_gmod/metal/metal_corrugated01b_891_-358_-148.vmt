@@ -1,8 +1,0 @@
-"patch"
-{
-	"include"		"materials/METAL/METAL_CORRUGATED01B.vmt"
-	"replace"
-	{
-		"$envmap"		"maps/luxury_death_gmod/c891_-358_-148"
-	}
-}

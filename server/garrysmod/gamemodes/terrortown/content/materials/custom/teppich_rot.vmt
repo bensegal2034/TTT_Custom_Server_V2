@@ -1,6 +1,0 @@
-"LightmappedGeneric"
-{
-	"$basetexture" "custom/teppich_rot"
-                "$translucent" 1
-	"$surfaceprop" "carpet"
-}

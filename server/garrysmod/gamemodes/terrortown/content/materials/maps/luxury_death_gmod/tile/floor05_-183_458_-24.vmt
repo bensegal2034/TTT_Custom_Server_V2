@@ -1,8 +1,0 @@
-"patch"
-{
-	"include"		"materials/TILE/FLOOR05.vmt"
-	"replace"
-	{
-		"$envmap"		"maps/luxury_death_gmod/c-183_458_-24"
-	}
-}

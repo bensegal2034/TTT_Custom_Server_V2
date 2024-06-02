@@ -1,8 +1,0 @@
-"VertexLitGeneric"
-{
-	"$baseTexture" "models\gaming-models\nebukadnezar\gibs\pc_gibs\alien_pc_broken"
-	"$envmapmask"	"models\gaming-models\nebukadnezar\gibs\pc_gibs\alien_pc_broken"
-	"$envmap" "Env_Cubemap"
-//	"$envmaptint" "[.4 .4 .4]"
-	
-}

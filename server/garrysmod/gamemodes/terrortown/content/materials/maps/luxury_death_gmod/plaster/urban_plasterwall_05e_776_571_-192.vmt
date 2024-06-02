@@ -1,8 +1,0 @@
-"patch"
-{
-	"include"		"materials/PLASTER/URBAN_PLASTERWALL_05E.vmt"
-	"replace"
-	{
-		"$envmap"		"maps/luxury_death_gmod/c776_571_-192"
-	}
-}

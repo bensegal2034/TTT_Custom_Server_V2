@@ -1,8 +1,0 @@
-"patch"
-{
-	"include"		"materials/GLASS/HOTEL_GLASS002.vmt"
-	"replace"
-	{
-		"$envmap"		"maps/luxury_death_gmod/c-184_503_-200"
-	}
-}

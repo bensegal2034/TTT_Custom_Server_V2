@@ -1,6 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture" "models/Jules/xbox/xbox"
-	"$bumpmap" "models/Jules/xbox/xbox_nrm"
-	"$surfaceprop" "plastic"
-}

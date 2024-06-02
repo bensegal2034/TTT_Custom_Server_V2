@@ -1,6 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture" "models/Jules/bilderrahmen/frame_05"
-	"$bumpmap" "models/Jules/bilderrahmen/frame_diff_NRM"
-	"$surfaceprop" "wood"
-}

@@ -1,7 +1,0 @@
-"LightmappedGeneric"
-{
-	"$basetexture" "custom/3er_bild"
-	"$translucent" 1
-	$decal 1
-	$decalscale "0.15000"
-}

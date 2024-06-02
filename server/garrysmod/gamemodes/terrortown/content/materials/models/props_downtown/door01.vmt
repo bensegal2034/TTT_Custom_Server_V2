@@ -1,5 +1,0 @@
-VertexLitGeneric
-{
-$baseTexture "models\props_downtown/door01"
-"$bumpmap" "models\props_downtown/door01_bump"
-}

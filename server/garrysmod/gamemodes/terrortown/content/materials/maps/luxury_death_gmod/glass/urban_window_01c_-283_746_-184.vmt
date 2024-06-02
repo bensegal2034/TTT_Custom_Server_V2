@@ -1,8 +1,0 @@
-"patch"
-{
-	"include"		"materials/GLASS/URBAN_WINDOW_01C.vmt"
-	"replace"
-	{
-		"$envmap"		"maps/luxury_death_gmod/c-283_746_-184"
-	}
-}

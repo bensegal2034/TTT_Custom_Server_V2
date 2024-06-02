@@ -1,8 +1,0 @@
-"patch"
-{
-	"include"		"materials/PROPS_FOLIAGE/COASTROCK02.vmt"
-	"replace"
-	{
-		"$envmap"		"maps/luxury_death_gmod/c863_172_-192"
-	}
-}

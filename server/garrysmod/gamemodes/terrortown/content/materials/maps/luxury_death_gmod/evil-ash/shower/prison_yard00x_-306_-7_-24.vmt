@@ -1,8 +1,0 @@
-"patch"
-{
-	"include"		"materials/EVIL-ASH/SHOWER/PRISON_YARD00X.vmt"
-	"replace"
-	{
-		"$envmap"		"maps/luxury_death_gmod/c-306_-7_-24"
-	}
-}

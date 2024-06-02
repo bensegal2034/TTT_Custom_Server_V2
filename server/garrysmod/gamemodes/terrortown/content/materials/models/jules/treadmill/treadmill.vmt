@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-$baseTexture "models/jules/treadmill/treadmill"
-$surfaceprop "metal"
-
-}

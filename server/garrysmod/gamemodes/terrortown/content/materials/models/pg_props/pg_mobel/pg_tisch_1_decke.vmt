@@ -1,9 +1,0 @@
-"vertexlitgeneric"
-{
-	"$baseTexture" "models\PG_props\pg_mobel/pg_tisch_1_decke"
-	"$bumpmap" "models\PG_props\pg_mobel/pg_tisch_1_decke_bump"
- 	"$normalmapalphaenvmapmask" "1"
-    "$surfaceprop" "carbet"
-	"$model" 1
-
-}

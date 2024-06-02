@@ -1,7 +1,0 @@
-"vertexlitgeneric"
-{
-	"$baseTexture" "models\PG_props\pg_mobel/brocken_wood"
-        "$surfaceprop" "wood"
-	"$model" 1
-
-}

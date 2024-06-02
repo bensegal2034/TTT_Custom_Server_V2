@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+     "$basetexture" "models/Jules/couchtisch/tischglas"
+$surfaceprop glass
+$translucent 1
+$nocull 1
+$envmaptint "[.5 .5 .5]"
+$envmap env_cubemap
+$model 1
+}
+

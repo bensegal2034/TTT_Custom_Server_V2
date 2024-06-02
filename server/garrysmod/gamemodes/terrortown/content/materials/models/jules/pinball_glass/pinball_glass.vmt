@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/Jules/pinball_glass/pinball_glass"
+    $surfaceprop "glass"
+	"$translucent" 1
+}

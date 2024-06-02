@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+$baseTexture "models/jules/poker_table/poker_table"
+$surfaceprop "wood"
+
+}

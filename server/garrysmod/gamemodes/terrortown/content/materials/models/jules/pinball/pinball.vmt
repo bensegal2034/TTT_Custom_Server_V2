@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+$baseTexture "models/jules/pinball/pinball"
+$surfaceprop "metal"
+
+}

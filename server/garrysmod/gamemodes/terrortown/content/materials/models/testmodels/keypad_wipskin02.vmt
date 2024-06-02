@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$surfaceprop" "metalvent"
+	"$baseTexture" "models\testmodels\keypad_wipskin02"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[0.4 0.4 0.4]"
+	"$bumpmap" "models\testmodels\keypad_wipskin02_normal"
+	
+}

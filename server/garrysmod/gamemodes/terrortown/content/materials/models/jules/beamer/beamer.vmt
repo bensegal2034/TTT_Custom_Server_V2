@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/Jules/beamer/beamer"
+	"$bumpmap" "models/Jules/beamer/beamer_NRM"
+	"$surfaceprop" "Metal"
+}

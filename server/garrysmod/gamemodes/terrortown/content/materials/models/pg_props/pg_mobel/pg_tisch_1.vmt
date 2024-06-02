@@ -1,0 +1,10 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models\PG_props\pg_mobel/pg_tisch_1"
+	"$bumpmap" "models\PG_props\pg_mobel/pg_tisch_1_bump"
+	"$envmap"  "env_cubemap"
+        "$normalmapalphaenvmapmask" "1"
+        "$surfaceprop" "wood"
+	"$model" 1
+
+}

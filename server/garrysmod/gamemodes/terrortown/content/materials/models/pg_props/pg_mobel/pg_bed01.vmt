@@ -1,0 +1,19 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models\PG_props\pg_mobel/pg_bed01"
+	"$bumpmap" "models\PG_props\pg_mobel/pg_bed01_bump"
+        "$surfaceprop" "metal"
+	//"$nodecal" "1"
+	"$model" "1"
+
+	"$phong" "1"
+	"$phongexponent" "9"
+	"$phongboost"	"1"
+	"$phongfresnelranges"	"[0.05 0.5 1]"
+
+	$rimlight               0
+	$rimlightexponent       700
+	$rimlightboost          1	
+
+
+}

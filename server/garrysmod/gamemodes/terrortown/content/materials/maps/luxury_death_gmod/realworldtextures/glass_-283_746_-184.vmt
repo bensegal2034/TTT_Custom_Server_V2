@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/REALWORLDTEXTURES/GLASS.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/luxury_death_gmod/c-283_746_-184"
+	}
+}

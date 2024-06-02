@@ -1,0 +1,10 @@
+WorldVertexTransition
+{
+$basetexture2 "RealWorldTextures/floor/floor_1_05"
+$basetexture "RealWorldTextures/new/Grass_Outside"
+"%detailtype" "rural_trainyarddirt_leaves"
+
+
+$surfaceprop2 tile
+$surfaceprop grass
+}

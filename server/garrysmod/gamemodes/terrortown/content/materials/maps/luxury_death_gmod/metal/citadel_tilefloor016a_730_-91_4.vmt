@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/METAL/CITADEL_TILEFLOOR016A.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/luxury_death_gmod/c730_-91_4"
+	}
+}

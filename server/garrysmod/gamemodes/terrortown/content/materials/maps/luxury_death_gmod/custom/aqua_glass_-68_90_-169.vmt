@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/CUSTOM/AQUA_GLASS.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/luxury_death_gmod/c-68_90_-169"
+	}
+}

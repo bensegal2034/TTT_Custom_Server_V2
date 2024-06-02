@@ -1,0 +1,20 @@
+"VertexLitGeneric"
+{
+	"$surfaceprop" "metalvent"
+	"$baseTexture" "models\testmodels\plasmascreen_skin"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[0.3 0.3 0.3]"
+	"$bumpmap" "models\testmodels\plasmascreen_skin_normal"	
+    "Proxies"
+    {
+      "AnimatedTexture"
+      {
+         "animatedtexturevar" "$basetexture"
+         "animatedtextureframenumvar" "$frame"
+         "animatedtextureframerate" "10"
+      }
+   }
+}

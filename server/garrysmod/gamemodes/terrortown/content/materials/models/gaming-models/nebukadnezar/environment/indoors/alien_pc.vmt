@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\gaming-models\nebukadnezar\environment\indoors\alien_pc"
+	"$envmapmask"	"models\gaming-models\nebukadnezar\environment\indoors\alien_pc_spec"
+	"$selfillum" "0"
+	"$selfillumtexture" "models\gaming-models\nebukadnezar\environment\indoors\alien_pc_illum_2"
+	"$envmap" "Env_Cubemap"
+//	"$envmaptint" "[.4 .4 .4]"
+	
+}

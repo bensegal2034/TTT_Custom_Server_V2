@@ -1,0 +1,9 @@
+"patch"
+{
+	"include"		"materials/GLASS/GLASS01.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/luxury_death_gmod/c699_194_-24"
+		"$crackmaterial"		"maps/luxury_death_gmod/glass/offwndwb_break_699_194_-24"
+	}
+}

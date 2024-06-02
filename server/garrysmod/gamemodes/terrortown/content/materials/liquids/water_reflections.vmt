@@ -1,0 +1,14 @@
+"LightMappedGeneric"
+  { 
+"$baseTexture" "liquids/water_reflections"
+"$translucent" "1"
+"Proxies" 
+     { 
+       "AnimatedTexture" 
+       { 
+          "animatedTextureVar" "$basetexture" 
+          "animatedTextureFrameNumVar" "$frame" 
+          "animatedTextureFrameRate" "24" 
+       }
+     } 
+  }

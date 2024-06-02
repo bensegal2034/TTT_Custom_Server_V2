@@ -1,0 +1,15 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "custom/bubble"
+	"$translucent" 1
+	"proxies"
+	{
+
+        "TextureScroll"
+            {
+            "Texturescrollvar" "$Basetexturetransform"
+            "Texturescrollrate" "0.3"
+            "texturescrollangle" "90"
+             }
+    }
+}

@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/WOOD/DESK01.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/luxury_death_gmod/c349_124_-24"
+	}
+}

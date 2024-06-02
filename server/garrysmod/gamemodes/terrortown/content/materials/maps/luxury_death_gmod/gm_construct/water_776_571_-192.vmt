@@ -1,0 +1,11 @@
+"patch"
+{
+	"include"		"materials/GM_CONSTRUCT/WATER.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/luxury_death_gmod/c776_571_-192"
+		"Proxies"
+		{
+		}
+	}
+}

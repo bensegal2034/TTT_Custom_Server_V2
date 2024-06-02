@@ -1,0 +1,11 @@
+"LightmappedGeneric"
+{
+"$basetexture" "custom/audiomixer2"
+"$surfaceprop" "plastic"
+$halflambert 1
+$phong 1
+$phongboost 3
+$phongexponent 20
+$basemapluminancephongmask 1
+$phongfresnelranges "[0.5 1 2]"
+}

@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/maps/luxury_death_gmod/gm_construct/water_286_1637_-846.vmt"
+	"insert"
+	{
+		"$waterdepth"		"144"
+	}
+}

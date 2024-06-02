@@ -1,0 +1,9 @@
+WorldVertexTransition
+{
+$basetexture2 "RealWorldTextures/newer/0/cliff_0_03"
+$basetexture "RealWorldTextures/new/Grass_Outside"
+
+
+$surfaceprop2 rock
+$surfaceprop grass
+}

@@ -1,0 +1,14 @@
+"LightmappedGeneric"
+{
+   "$basetexture" "custom/fatass"
+   "$selfillum" "1"
+   "Proxies"
+   {
+      "AnimatedTexture"
+      {
+         "animatedtexturevar" "$basetexture"
+         "animatedtextureframenumvar" "$frame"
+         "animatedtextureframerate" "10"
+      }
+   }
+}

@@ -1,0 +1,15 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models\PG_props\pg_obj/pg_druckbank"
+	"$bumpmap" "models\PG_props\pg_obj/pg_druckbank_bump"
+	"$halflambert" "1"
+        "$normalmapalphaenvmapmask" "1"
+        "$surfaceprop" "metal"
+	"$model" 1
+
+
+	//"$phong" "1"
+	"$phongexponent" 6
+	"$phongboost"	"60"
+	"$phongfresnelranges"	"[0.05 0.5 1]"
+}

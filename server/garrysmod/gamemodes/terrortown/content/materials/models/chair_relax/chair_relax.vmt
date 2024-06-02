@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/chair_relax/chair_relax"
+	"$envmap" "env_cubemap"
+	"$basemapalphaenvmapmask" 1
+	"$surfaceprop" "Metal"
+}

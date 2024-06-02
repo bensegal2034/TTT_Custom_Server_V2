@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "custom/jalousien"
+	"$translucent" 1
+                "$nocull" "1"
+}

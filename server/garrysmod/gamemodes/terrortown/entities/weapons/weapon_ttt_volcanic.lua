@@ -146,7 +146,7 @@ SWEP.ShellTime = 1 -- For shotguns, how long it takes to insert a shell.
 SWEP.DoProceduralReload = false--Animate first person reload using lua?
 SWEP.ProceduralReloadTime = 1 --Procedural reload time?
 
-SWEP.DamageType = "True"
+SWEP.DamageType = "Piercing"
 
 DEFINE_BASECLASS( SWEP.Base )
 

@@ -26,7 +26,7 @@ if CLIENT then
 end
 
 SWEP.Base = "weapon_tttbase"
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_CAMERA
 SWEP.CanBuy = {ROLE_DETECTIVE}
 SWEP.LimitedStock = true
 SWEP.AutoSpawnable = false

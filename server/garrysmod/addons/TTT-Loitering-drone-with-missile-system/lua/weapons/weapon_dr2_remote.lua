@@ -1,4 +1,7 @@
 AddCSLuaFile()
+if SERVER then
+	resource.AddWorkshop("3066505251")
+end
 
 SWEP.Base                  = "weapon_tttbase"
 

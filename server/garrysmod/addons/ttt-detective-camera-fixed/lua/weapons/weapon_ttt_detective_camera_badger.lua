@@ -4,6 +4,7 @@ AddCSLuaFile()
 if SERVER then
     resource.AddFile("materials/vgui/ttt/icon_badger_camera.vmt")
     resource.AddFile("materials/tttcamera/cameranoise.vmt")
+    resource.AddWorkshop("1834616508")
 end
 
 SWEP.Author = "Select (Justin Back) and Badger"

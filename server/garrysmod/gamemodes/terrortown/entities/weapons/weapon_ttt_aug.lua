@@ -72,7 +72,7 @@ SWEP.Primary.Delay				= 0.15
 SWEP.Primary.ClipSize			= 30		-- Size of a clip
 SWEP.Primary.DefaultClip			= 60	-- Bullets you start with
 SWEP.Primary.ClipMax			= 90
-SWEP.Primary.Recoil				= 1.8			-- Maximum up recoil (rise)
+SWEP.Primary.Recoil				= 1.4			-- Maximum up recoil (rise)
 SWEP.Primary.Automatic			= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
@@ -226,10 +226,37 @@ function SWEP:Initialize()
 	
 end
 
+function SWEP:PrimaryAttack(worldsnd)
+
+	self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+ 
+	if not self:CanPrimaryAttack() then return end
+ 
+	if not worldsnd then
+	   self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+	elseif SERVER then
+	   sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
+	end
+ 
+	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+ 
+	self:TakePrimaryAmmo( 1 )
+ 
+	local owner = self:GetOwner()
+	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
+ 
+	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil * 3, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil * 3, 0 ) )
+end
+
+function SWEP:GetPrimaryCone()
+	local cone = self.Primary.Cone or 0.2
+	-- 15% accuracy bonus when sighting
+	return self:GetIronsights() and (cone * 0.1) or cone
+ end
+
 function SWEP:SetZoom(state)
-    if CLIENT then
-       return
-    elseif IsValid(self.Owner) and self.Owner:IsPlayer() then
+    if IsValid(self.Owner) and self.Owner:IsPlayer() then
        if state then
           self.Owner:SetFOV(20, 0.3)
        else
@@ -368,7 +395,7 @@ function SWEP:Think()
 
 	self.StackCount = self:GetStackCount()
 	self.StackDamage = (self.StackCount/2) + self.BaseDamage
-	self.StackCone = math.max(0, self.Primary.BaseCone - self.StackCount / 390)
+	self.StackCone = math.max(0, self.Primary.BaseCone - self.StackCount / 250)
 	self.Primary.Cone = self.StackCone
 
 	self.Primary.Damage = self.StackDamage
@@ -381,7 +408,7 @@ function SWEP:Think()
 	if self.StackCount >= 40 then
 		self.DamageType = "True"
 	end
-	if self.StackCount >= 20 then
+	if self.StackCount >= 30 then
 		self.Primary.Recoil = 0.4
 	end
 end	
@@ -420,9 +447,4 @@ if SERVER then
 		end
 	end)
 end
-function SWEP:GetPrimaryCone()
-	local cone = self.Primary.Cone or 0.2
-	-- 15% accuracy bonus when sighting
-	return self:GetIronsights() and (cone * 0.85) or cone
- end
  

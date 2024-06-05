@@ -23,7 +23,7 @@ SWEP.Primary.Recoil        = 7
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
 SWEP.Primary.Damage        = 35
-SWEP.Primary.Cone          = 0.35
+SWEP.Primary.Cone          = 0.0001
 SWEP.Primary.ClipSize      = 3
 SWEP.Primary.ClipMax       = 9 -- keep mirrored to ammo
 SWEP.Primary.DefaultClip   = 6
@@ -47,16 +47,17 @@ function SWEP:SetZoom(state)
    if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
       if state then
          self:GetOwner():SetFOV(20, 0.3)
-         self.Primary.Cone = 0
       else
          self:GetOwner():SetFOV(0, 0.2)
-         self.Primary.Cone = 0.35
       end
    end
 end
 
-
-
+function SWEP:GetPrimaryCone()
+	local cone = self.Primary.Cone or 0.2
+	-- 15% accuracy bonus when sighting
+	return self:GetIronsights() and (cone * 0.001) or cone
+end
 
 function SWEP:PrimaryAttack( worldsnd )
    local currentClip = self:Clip1() 
@@ -68,6 +69,7 @@ function SWEP:PrimaryAttack( worldsnd )
          self:SetClip1(self:Clip1() + 1)
       end
    end
+   
 end
 -- Add some zoom to ironsights for this gun
 function SWEP:SecondaryAttack()

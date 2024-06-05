@@ -59,7 +59,7 @@ SWEP.Primary.Sound = Sound("Weapon_TFRE_Volcanic.Single") -- This is the sound o
 SWEP.Primary.Damage = 40 -- Damage, in standard damage points.
 SWEP.Primary.NumShots = 1 --The number of shots the weapon fires.  SWEP.Shotgun is NOT required for this to be >1.
 SWEP.Primary.Automatic = false -- Automatic/Semi Auto
-SWEP.Primary.Delay = 0.5 -- This is in Rounds Per Minute / RPM
+SWEP.Primary.Delay = 2 -- This is in Rounds Per Minute / RPM
 SWEP.HeadshotMultiplier = 3
 --Ammo Related
 SWEP.Primary.ClipSize = 1 -- This is the size of a clip
@@ -306,12 +306,7 @@ end
 
 function SWEP:Think()
     BaseClass.Think(self)
-    if self:GetReloading() then
-       if self:GetOwner():KeyDown(IN_ATTACK) or self:GetOwner():KeyDown(IN_ATTACK2) then
-          self:FinishReload()
-          return
-       end
- 
+    if self:GetReloading() then 
        if self:GetReloadTimer() <= CurTime() then
  
           if self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0 then

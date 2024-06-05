@@ -18,11 +18,11 @@ SWEP.Base                  = "weapon_tttbase"
 SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_RIFLE
 
-SWEP.Primary.Delay         = 1.5
+SWEP.Primary.Delay         = 1.3
 SWEP.Primary.Recoil        = 7
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
-SWEP.Primary.Damage        = 35
+SWEP.Primary.Damage        = 50
 SWEP.Primary.Cone          = 0.0001
 SWEP.Primary.ClipSize      = 3
 SWEP.Primary.ClipMax       = 9 -- keep mirrored to ammo

@@ -39,7 +39,7 @@ SWEP.AutoSwitchTo        = true
 SWEP.AutoSwitchFrom        = true
 
 SWEP.Kind = WEAPON_DRONE
-SWEP.CanBuy = {ROLE_TRAITOR}
+SWEP.CanBuy = {ROLE_DETECTIVE}
 SWEP.LimitedStock = true
 SWEP.AllowDrop = true  --disallow dropping by the player
 SWEP.IsSilent = false

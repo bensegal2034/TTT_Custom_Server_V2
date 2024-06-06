@@ -22,7 +22,8 @@ SWEP.Primary.Delay         = 1.3
 SWEP.Primary.Recoil        = 7
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
-SWEP.Primary.Damage        = 50
+SWEP.Primary.BaseDamage    = 40
+SWEP.Primary.Damage        = 40
 SWEP.Primary.Cone          = 0.0001
 SWEP.Primary.ClipSize      = 3
 SWEP.Primary.ClipMax       = 9 -- keep mirrored to ammo
@@ -31,7 +32,7 @@ SWEP.Primary.Sound         = Sound("Weapon_Scout.Single")
 SWEP.SetClipQueued         = false
 SWEP.Secondary.Sound       = Sound("Default.Zoom")
 SWEP.DamageType            = "Puncture"
-SWEP.HeadshotMultiplier    = 5
+SWEP.HeadshotMultiplier    = 2
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_357_ttt"
@@ -43,12 +44,28 @@ SWEP.WorldModel            = Model("models/weapons/w_snip_scout.mdl")
 SWEP.IronSightsPos         = Vector( 5, -15, -2 )
 SWEP.IronSightsAng         = Vector( 2.6, 1.37, 3.5 )
 
+SWEP.MaxCharge = 200
+SWEP.CurrentCharge = 0
+
+SWEP.ChargeMulti = 1
+
+SWEP.DotSize = 0
+SWEP.DotVisibility = 0
+
+function SWEP:SetupDataTables()
+   self:NetworkVar("Int", 0, "ChargeTime")
+   self:NetworkVar("Bool", 3, "IronsightsPredicted")
+   self:NetworkVar("Float", 3, "IronsightsTime")
+end
+
 function SWEP:SetZoom(state)
    if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
       if state then
          self:GetOwner():SetFOV(20, 0.3)
+         self.IsCharging = true
       else
          self:GetOwner():SetFOV(0, 0.2)
+         self.IsCharging = false
       end
    end
 end
@@ -61,15 +78,12 @@ end
 
 function SWEP:PrimaryAttack( worldsnd )
    local currentClip = self:Clip1() 
+   self.Primary.Damage = self.Primary.BaseDamage * self.ChargeMulti
    self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
    self:SetNextSecondaryFire( CurTime() + 0.1 )
    local traceRes = self.Owner:GetEyeTrace()
-   if traceRes.HitWorld then
-      if (currentClip != 0) then
-         self:SetClip1(self:Clip1() + 1)
-      end
-   end
-   
+   self.CurrentCharge = 0
+   self:SetChargeTime(0)
 end
 -- Add some zoom to ironsights for this gun
 function SWEP:SecondaryAttack()
@@ -90,9 +104,6 @@ end
 function SWEP:PreDrop()
    self:SetZoom(false)
    self:SetIronsights(false)
-   if self.IsScoped == true then
-      self.IsScoped = false
-   end
    return self.BaseClass.PreDrop(self)
 end
 
@@ -101,18 +112,12 @@ function SWEP:Reload()
    self:DefaultReload( ACT_VM_RELOAD )
    self:SetIronsights( false )
    self:SetZoom( false )
-   if self.IsScoped == true then
-      self.IsScoped = false
-   end
 end
 
 
 function SWEP:Holster()
    self:SetIronsights(false)
    self:SetZoom(false)
-   if self.IsScoped == true then
-      self.IsScoped = false
-   end
    return true
 end
 
@@ -163,6 +168,23 @@ if CLIENT then
          surface.SetDrawColor(255, 255, 255, 255)
 
          surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
+
+         if CLIENT then
+            local x = math.floor(ScrW() / 2.0)
+            local y = math.floor(ScrH() / 2.0)
+            local barLength = 70
+            local yOffset = 35
+            local yOffsetText = 3
+            local shadowOffset = 2
+            local chargeTime = self.CurrentCharge
+            local maxCharge  = self.MaxCharge
+            local chargePercentage = (chargeTime/maxCharge) * barLength
+            local chargeTimeDelta = math.Clamp(math.Truncate(chargeTime, 1), 0, maxCharge)
+            if chargeTimeDelta > 0 then
+               draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
+               draw.RoundedBox(10, x - (chargePercentage / 2), y + yOffset, chargePercentage, 30, Color(255, 0, 0, 200))
+            end
+         end
       else
          return self.BaseClass.DrawHUD(self)
       end
@@ -170,5 +192,23 @@ if CLIENT then
 
    function SWEP:AdjustMouseSensitivity()
       return (self:GetIronsights() and 0.2) or nil
+   end
+end
+
+function SWEP:Think()
+   self:CalcViewModel()
+   if self.IsCharging then
+      if self.CurrentCharge < self.MaxCharge then
+         if SERVER then
+            self.CurrentCharge = self.CurrentCharge + 1
+            self:SetChargeTime(self.CurrentCharge)
+         end
+         self.CurrentCharge = self:GetChargeTime()
+         self.ChargeMulti = 1 + self.CurrentCharge / 200
+      end
+   else
+      self.CurrentCharge = 0
+      self.ChargeMulti = 1
+      self:SetChargeTime(0)
    end
 end

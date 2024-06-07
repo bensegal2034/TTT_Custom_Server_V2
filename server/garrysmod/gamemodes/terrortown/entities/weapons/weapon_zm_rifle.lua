@@ -54,6 +54,8 @@ SWEP.DotVisibility = 0
 
 function SWEP:SetupDataTables()
    self:NetworkVar("Int", 0, "ChargeTime")
+   self:NetworkVar("Float", 0, "DotSize")
+   self:NetworkVar("Int", 0, "DotVisibility")
    self:NetworkVar("Bool", 3, "IronsightsPredicted")
    self:NetworkVar("Float", 3, "IronsightsTime")
 end
@@ -170,8 +172,8 @@ if CLIENT then
          surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
 
          if CLIENT then
-            local x = math.floor(ScrW() / 2.0)
-            local y = math.floor(ScrH() / 2.0)
+            local x = 1024
+            local y = math.floor(ScrH() / 2.15)
             local barLength = 70
             local yOffset = 35
             local yOffsetText = 3
@@ -181,8 +183,8 @@ if CLIENT then
             local chargePercentage = (chargeTime/maxCharge) * barLength
             local chargeTimeDelta = math.Clamp(math.Truncate(chargeTime, 1), 0, maxCharge)
             if chargeTimeDelta > 0 then
-               draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
-               draw.RoundedBox(10, x - (chargePercentage / 2), y + yOffset, chargePercentage, 30, Color(255, 0, 0, 200))
+               draw.RoundedBox(0, x, y, 5, barLength, Color(20, 20, 20, 200))
+               draw.RoundedBox(0, x, y, 5, chargePercentage,  Color(255, 0, 0, 200))
             end
          end
       else
@@ -206,9 +208,42 @@ function SWEP:Think()
          self.CurrentCharge = self:GetChargeTime()
          self.ChargeMulti = 1 + self.CurrentCharge / 200
       end
+      if self.DotSize < 20 then
+         if SERVER then
+            self.DotSize = self.DotSize + 0.1
+            self:SetDotSize(self.DotSize)
+         end
+         self.DotSize = self:GetDotSize()
+      end
    else
       self.CurrentCharge = 0
       self.ChargeMulti = 1
       self:SetChargeTime(0)
+      self.DotSize = 0
+      self:SetDotSize(0)
    end
 end
+
+hook.Add("PostPlayerDraw", "RifleRedDot", function()
+   local ply = LocalPlayer()
+   if !IsValid(ply:GetActiveWeapon()) then
+      return
+   end
+   if ply:GetActiveWeapon():GetClass() != "weapon_zm_rifle" then
+      return
+   end
+
+
+   local weapon = ply:GetActiveWeapon()
+
+   local aimtrace = {}
+   aimtrace.start = ply:EyePos()
+   aimtrace.endpos = ply:GetEyeTrace().HitPos
+   aimtrace.filter = ply
+   aimtrace.mask = MASK_VISIBLE_AND_NPCS
+   local aimpos = util.TraceLine(aimtrace).HitPos
+
+   -- Add indicator where aim is hitting to warn about blocker
+   render.SetMaterial(Material("sprites/light_ignorez"))
+   render.DrawSprite(aimpos, weapon.DotSize, weapon.DotSize, Color(255, 0, 0, 255))
+end)

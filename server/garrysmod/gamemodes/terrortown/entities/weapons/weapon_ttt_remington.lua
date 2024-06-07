@@ -29,7 +29,6 @@ if SERVER then
 	resource.AddFile("sound/weapons/7615p/scout_fire-1.wav")
 	resource.AddFile("sound/weapons/7615p/sg550_clipin.mp3")
 	resource.AddFile("sound/weapons/7615p/sg550_clipout.mp3")
-	AddCSLuaFile( "entities/effects/m9k_effect_mad_penetration_trace/init.lua" );
 	resource.AddWorkshop("128091208")
 end
 
@@ -65,7 +64,6 @@ SWEP.HoldType 				= "ar2"		-- how others view you carrying the weapon
 -- you're mostly going to use ar2, smg, shotgun or pistol. rpg and crossbow make for good sniper rifles
 SWEP.HeadshotMultiplier = 3
 
-SWEP.DeploySpeed = 2
 
 SWEP.ViewModelFOV			= 70
 SWEP.ViewModelFlip			= true
@@ -100,6 +98,7 @@ SWEP.Primary.Damage		= 65	--base damage per bullet
 SWEP.Primary.Cone		= .3	--define from-the-hip accuracy 1 is terrible, .0001 is exact)
 
 -- enter iron sight info and bone mod info below
+SWEP.DeploySpeed = 2
 
 SWEP.Ricochet = false
 SWEP.Penetration = true
@@ -412,5 +411,17 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
 		   
 	timer.Simple(0, function() if attacker != nil then attacker:FireBullets(penetratedbullet) end end)
 
+	return true
+end
+
+function SWEP:DeployFix()
+	if IsValid(self.Owner) and self.Owner:GetActiveWeapon():GetClass() == "weapon_ttt_remington" then
+		self:SendWeaponAnim(ACT_VM_IDLE)
+	end
+end
+
+function SWEP:Deploy()
+	self:SetIronsights(false)
+	timer.Simple(0.45, function() self:DeployFix() end)
 	return true
 end

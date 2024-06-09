@@ -361,7 +361,7 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
    
 	local MaxPenetration
 
-	MaxPenetration = 20
+	MaxPenetration = 90
 
 	local DoDefaultEffect = false
 	// -- Don't go through metal, sand or player
@@ -373,9 +373,7 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
    
 	// -- Direction (and length) that we are going to penetrate
 	local PenetrationDirection = tr.Normal * MaxPenetration
-   
-	if (tr.MatType == MAT_FLESH or tr.MatType == MAT_ALIENFLESH) then return false end
-	
+   	
 	local trace     = {}
 	trace.endpos    = tr.HitPos
 	trace.start     = tr.HitPos + PenetrationDirection
@@ -403,6 +401,7 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
 	penetratedbullet.Tracer = 2
 	penetratedbullet.TracerName     = "m9k_effect_mad_ricochet_trace"
 	penetratedbullet.Force          = 5
+	penetratedbullet.IgnoreEntity   = tr.HitEnt
 	penetratedbullet.Damage = dmginfo:GetDamage() * fDamageMulti
 	penetratedbullet.Callback       = function(a, b, c) if (self.Ricochet) then    
 	local impactnum

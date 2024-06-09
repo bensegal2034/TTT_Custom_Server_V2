@@ -172,14 +172,14 @@ if CLIENT then
          surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
 
          if CLIENT then
-            local x = 1024
-            local y = math.floor(ScrH() / 2.15)
             local barLength = 70
             local yOffset = 35
             local yOffsetText = 3
             local shadowOffset = 2
             local chargeTime = self.CurrentCharge
             local maxCharge  = self.MaxCharge
+            local x = math.floor(ScrW() / 2) + 63
+            local y = math.floor(ScrH() / 2) - (barLength / 2)
             local chargePercentage = (chargeTime/maxCharge) * barLength
             local chargeTimeDelta = math.Clamp(math.Truncate(chargeTime, 1), 0, maxCharge)
             if chargeTimeDelta > 0 then
@@ -224,26 +224,42 @@ function SWEP:Think()
    end
 end
 
-hook.Add("PostPlayerDraw", "RifleRedDot", function()
-   local ply = LocalPlayer()
-   if !IsValid(ply:GetActiveWeapon()) then
-      return
+hook.Add("PreDrawEffects", "RifleRedDot", function(ply)
+   for _, ply in ipairs(player.GetAll()) do
+      if !IsValid(ply:GetActiveWeapon()) or !IsValid(ply) then
+         continue
+      end
+      if ply:GetActiveWeapon():GetClass() != "weapon_zm_rifle" then
+         continue
+      end
+   
+      local weapon = ply:GetActiveWeapon()
+   
+      local aimtrace = {}
+      aimtrace.start = ply:EyePos()
+      aimtrace.endpos = ply:GetEyeTrace().HitPos
+      aimtrace.filter = ply
+      aimtrace.mask = MASK_VISIBLE_AND_NPCS
+      local aimpos = util.TraceLine(aimtrace).HitPos
+
+      -- AWESOME COPYPASTED CODE THANKS MICHAEL
+      -- LOVE YOU <3
+      local client = LocalPlayer()
+      local startpos = client:EyePos()
+      local endpos = aimpos
+
+      local trace = util.TraceLine({
+         start = startpos,
+         endpos = endpos,
+         mask = MASK_VISIBLE_AND_NPCS,
+         filter = client,
+      })
+
+      if trace.Hit and trace.Entity != weapon then
+         continue
+      end
+      
+      render.SetMaterial(Material("sprites/light_ignorez"))
+      render.DrawSprite(aimpos, weapon:GetDotSize(), weapon:GetDotSize(), Color(255, 0, 0, 255))
    end
-   if ply:GetActiveWeapon():GetClass() != "weapon_zm_rifle" then
-      return
-   end
-
-
-   local weapon = ply:GetActiveWeapon()
-
-   local aimtrace = {}
-   aimtrace.start = ply:EyePos()
-   aimtrace.endpos = ply:GetEyeTrace().HitPos
-   aimtrace.filter = ply
-   aimtrace.mask = MASK_VISIBLE_AND_NPCS
-   local aimpos = util.TraceLine(aimtrace).HitPos
-
-   -- Add indicator where aim is hitting to warn about blocker
-   render.SetMaterial(Material("sprites/light_ignorez"))
-   render.DrawSprite(aimpos, weapon.DotSize, weapon.DotSize, Color(255, 0, 0, 255))
 end)

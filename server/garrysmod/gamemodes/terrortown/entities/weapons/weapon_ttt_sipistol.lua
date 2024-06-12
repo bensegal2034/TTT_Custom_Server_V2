@@ -46,6 +46,9 @@ SWEP.WorldModel            = "models/weapons/w_pist_usp_silencer.mdl"
 SWEP.IronSightsPos         = Vector( -5.91, -4, 2.84 )
 SWEP.IronSightsAng         = Vector(-0.5, 0, 0)
 
+SWEP.PrimaryAnim           = ACT_VM_PRIMARYATTACK_SILENCED
+SWEP.ReloadAnim            = ACT_VM_RELOAD_SILENCED
+
 function SWEP:Deploy()
    self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
    return self.BaseClass.Deploy(self)

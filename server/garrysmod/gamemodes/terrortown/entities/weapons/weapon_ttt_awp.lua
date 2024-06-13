@@ -222,3 +222,43 @@ if CLIENT then
       desc = "1 Shot Sniper Rifle\nMakes you die in 1 shot when hit\nIncreases enemy visibility of you while scoped"
    }
 end
+
+hook.Add("PreDrawEffects", "AWPRedDot", function(ply)
+   for _, ply in ipairs(player.GetAll()) do
+      if !IsValid(ply:GetActiveWeapon()) or !IsValid(ply) then
+         continue
+      end
+      if ply:GetActiveWeapon():GetClass() != "weapon_ttt_awp" then
+         continue
+      end
+   
+      local weapon = ply:GetActiveWeapon()
+   
+      local aimtrace = {}
+      aimtrace.start = ply:EyePos()
+      aimtrace.endpos = ply:GetEyeTrace().HitPos
+      aimtrace.filter = ply
+      aimtrace.mask = MASK_VISIBLE_AND_NPCS
+      local aimpos = util.TraceLine(aimtrace).HitPos
+
+      -- AWESOME COPYPASTED CODE THANKS MICHAEL
+      -- LOVE YOU <3
+      local client = LocalPlayer()
+      local startpos = client:EyePos()
+      local endpos = aimpos
+
+      local trace = util.TraceLine({
+         start = startpos,
+         endpos = endpos,
+         mask = MASK_VISIBLE_AND_NPCS,
+         filter = client,
+      })
+
+      if trace.Hit and trace.Entity != weapon then
+         continue
+      end
+      
+      render.SetMaterial(Material("sprites/light_ignorez"))
+      render.DrawSprite(aimpos, 20, 20, Color(255, 0, 0, 255))
+   end
+end)

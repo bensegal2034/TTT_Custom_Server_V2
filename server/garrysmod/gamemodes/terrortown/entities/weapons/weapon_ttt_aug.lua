@@ -315,6 +315,7 @@ DEFINE_BASECLASS( SWEP.Base )
 if CLIENT then
 	
 	function SWEP:DrawHUD(...)
+		if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then return BaseClass.DrawHUD(self, ...) end
 		surface.SetFont("HealthAmmo")
 
 		local scrW = ScrW()

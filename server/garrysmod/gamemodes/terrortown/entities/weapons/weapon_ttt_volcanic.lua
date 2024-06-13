@@ -341,8 +341,6 @@ hook.Add("TTTPrepareRound", "ResetVolcanic Root", function()
         end
     end
 end)
- 
-
 
 hook.Add("ScalePlayerDamage", "VolcanicRoot", function(target, hitgroup, dmginfo)
 if not IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker():IsPlayer() or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
@@ -358,11 +356,22 @@ end
             local savedJump = target:GetJumpPower()
             target:SetWalkSpeed(1)
             target:SetJumpPower(1)
-            timer.Create( "RootTimer", 3, 1, function() target:SetWalkSpeed(savedSpeed) end )
-            timer.Create( "RootTimer2", 3, 1, function() target:SetJumpPower(savedJump) end )
+            timer.Create("RootTimer" .. tostring(math.Rand(0, 1)), 3, 1, function() 
+                target:SetWalkSpeed(savedSpeed) 
+                target:SetJumpPower(savedJump)
+            end)
             if hitgroup != HITGROUP_HEAD then
                 dmginfo:ScaleDamage(0)
             end
+        end
+    end
+end)
+
+-- maybe fix this so that it puts the halo on everyones screen somehow
+hook.Add("PreDrawHalos", "RootHalos", function()
+    for _, ply in ipairs(player.GetAll()) do
+        if ply:GetWalkSpeed() == 1 and ply:GetJumpPower() == 1 then
+            halo.Add({ply}, Color(255, 0, 0, 255), 5, 5, 1, true, false)
         end
     end
 end)

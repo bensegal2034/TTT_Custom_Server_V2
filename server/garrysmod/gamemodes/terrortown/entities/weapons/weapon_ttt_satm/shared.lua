@@ -59,14 +59,6 @@ SWEP.CanBuy = {}
 SWEP.TPClipSize = satmteleportcharges:GetInt()
 --SWEP.TPDefaultClip = 1
 
-if (detectiveEnabled:GetBool()) then
-	table.insert(SWEP.CanBuy, ROLE_DETECTIVE)
-end
-
-if (traitorEnabled:GetBool()) then
-	table.insert(SWEP.CanBuy, ROLE_TRAITOR)
-end
-
 SWEP.LimitedStock = true
 --Sounds/Models\\
 SWEP.ViewModel = "models/weapons/gamefreak/v_buddyfinder.mdl"

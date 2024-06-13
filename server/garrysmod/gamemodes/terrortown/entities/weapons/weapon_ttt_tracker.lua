@@ -1,5 +1,9 @@
 AddCSLuaFile()
 
+if SERVER then
+   resource.AddFile("materials/VGUI/ttt/icon_tracker.vmt")
+end
+
 SWEP.HoldType              = "pistol"
 
 if CLIENT then
@@ -12,9 +16,10 @@ if CLIENT then
 
    SWEP.EquipMenuData = {
       type = "item_weapon",
+      desc = "Tracker Dart Pistol\nShoot a target to ping them every 15 seconds\nComes with 2 shots"
    };
 
-   SWEP.Icon               = "vgui/ttt/icon_silenced"
+   SWEP.Icon               = "vgui/ttt/icon_tracker"
    SWEP.IconLetter         = "a"
 end
 
@@ -25,10 +30,10 @@ SWEP.Primary.Damage        = 25
 SWEP.DamageType            = "Puncture"
 SWEP.Primary.Delay         = 0.56
 SWEP.Primary.Cone          = 0.02
-SWEP.Primary.ClipSize      = 3
+SWEP.Primary.ClipSize      = 2
 SWEP.Primary.Automatic     = true
-SWEP.Primary.DefaultClip   = 3
-SWEP.Primary.ClipMax       = 3
+SWEP.Primary.DefaultClip   = 2
+SWEP.Primary.ClipMax       = 2
 SWEP.Primary.Ammo          = "AlyxGun"
 SWEP.Tracer = "GaussTracer"
 SWEP.Kind                  = WEAPON_SIPISTOL

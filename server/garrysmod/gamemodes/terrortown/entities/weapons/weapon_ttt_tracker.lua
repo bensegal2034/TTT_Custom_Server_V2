@@ -208,7 +208,23 @@ if CLIENT then
          end
       end
       
-   end   
+   end
+
+   hook.Add("TTTEndRound", "Deimos_EndRound", function(result)
+      Targets = {}
+      Locations = {}
+   end)
+   
+   hook.Add("TTTBeginRound", "Deimos_BeginRound", function()
+      Targets = {}
+      Locations = {}
+   end)
+   
+   hook.Add("TTTPrepareRound", "Deimos_PrepareRound", function()
+      Targets = {}
+      Locations = {}
+   end)
+   
 end
 
 function SWEP:PrimaryAttack()

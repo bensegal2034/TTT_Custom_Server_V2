@@ -55,6 +55,8 @@ if SERVER then
 	resource.AddFile("materials/VGUI/ttt/icon_satm.vmt")
 	resource.AddFile("sound/weapons/satm/sm_enter.wav")
 	resource.AddFile("sound/weapons/satm/sm_exit.wav")
+	resource.AddFile("materials/vgui/ttt/icon_deathmark.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_deathmark.vmt")
 	resource.AddWorkshop("671603913")
 	
 	util.AddNetworkString("Deimos_SetTrack")
@@ -89,7 +91,7 @@ if CLIENT then
 	SWEP.Slot = 7
 	SWEP.ViewModelFOV = 70
 	SWEP.ViewModelFlip = false
-	SWEP.Icon = "VGUI/ttt/icon_satm"
+	SWEP.Icon = "VGUI/ttt/icon_deathmark"
 
 	SWEP.EquipMenuData = {
 		type = "weapon",

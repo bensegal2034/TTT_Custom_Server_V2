@@ -57,6 +57,15 @@ if SERVER then
 	resource.AddFile("sound/weapons/satm/sm_exit.wav")
 	resource.AddFile("materials/vgui/ttt/icon_deathmark.vtf")
 	resource.AddFile("materials/vgui/ttt/icon_deathmark.vmt")
+	resource.AddFile("sound/deimos/deimos_tracked1.wav")
+	resource.AddFile("sound/deimos/deimos_tracked2.wav")
+	resource.AddFile("sound/deimos/deimos_tracked3.wav")
+	resource.AddFile("sound/deimos/deimos_tracked4.wav")
+	resource.AddFile("sound/deimos/deimos_tracked5.wav")
+	resource.AddFile("sound/deimos/deimos_tracked6.wav")
+	resource.AddFile("sound/deimos/deimos_tracked7.wav")
+	resource.AddFile("sound/deimos/deimos_tracked8.wav")
+	resource.AddFile("sound/deimos/deimos_tracked9.wav")
 	resource.AddWorkshop("671603913")
 	
 	util.AddNetworkString("Deimos_SetTrack")
@@ -105,6 +114,21 @@ if CLIENT then
 		if !hasLocation then
 			PlayerLocations[ply] = nil
 			return
+		end
+		if PlayerLocations[ply] == nil then
+			local files = {
+				"deimos/deimos_tracked1.wav",
+				"deimos/deimos_tracked2.wav",
+				"deimos/deimos_tracked3.wav",
+				"deimos/deimos_tracked4.wav",
+				"deimos/deimos_tracked5.wav",
+				"deimos/deimos_tracked6.wav",
+				"deimos/deimos_tracked7.wav",
+				"deimos/deimos_tracked8.wav",
+				"deimos/deimos_tracked9.wav",
+			}
+			local file = files[math.random(#files)]
+			surface.PlaySound(file)
 		end
 		local pos = Vector()
 		pos.x = net.ReadInt(32)

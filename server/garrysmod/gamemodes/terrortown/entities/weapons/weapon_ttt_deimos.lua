@@ -85,7 +85,7 @@ if SERVER then
 end
 
 if CLIENT then
-	SWEP.PrintName = "Death Mark"
+	SWEP.PrintName = "DeathMARK Tracker"
 	SWEP.Slot = 7
 	SWEP.ViewModelFOV = 70
 	SWEP.ViewModelFlip = false
@@ -93,7 +93,8 @@ if CLIENT then
 
 	SWEP.EquipMenuData = {
 		type = "weapon",
-		desc = "Deimos!\nChoose a player to track with MOUSE2 \nand active it with MOUSE1."
+		desc = "Deimos!\nChoose a player to track with MOUSE2 \nand active it with MOUSE1.",
+		name = "DeathMARK Tracker"
 	}
 
 	net.Receive("Deimos_UpdateLocation", function(len, ply)

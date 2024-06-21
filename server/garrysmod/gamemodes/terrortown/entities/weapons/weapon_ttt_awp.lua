@@ -258,7 +258,9 @@ hook.Add("PreDrawEffects", "AWPRedDot", function(ply)
          continue
       end
       
-      render.SetMaterial(Material("sprites/light_ignorez"))
-      render.DrawSprite(aimpos, 20, 20, Color(255, 0, 0, 255))
+      if weapon:GetIronsights() then
+         render.SetMaterial(Material("sprites/light_ignorez"))
+         render.DrawSprite(aimpos, 20, 20, Color(255, 0, 0, 255))
+      end
    end
 end)

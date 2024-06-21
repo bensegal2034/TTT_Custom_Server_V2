@@ -14,7 +14,7 @@ SWEP.Primary.Cone = 0.001
 SWEP.DrawAmmo = false;
 SWEP.Secondary.Ammo = ""
 SWEP.InLoadoutFor = nil
-SWEP.AllowDrop = true -- TODO: false
+SWEP.AllowDrop = false
 SWEP.IsSilent = false
 SWEP.NoSights = true
 SWEP.UseHands = false
@@ -93,7 +93,7 @@ if CLIENT then
 
 	SWEP.EquipMenuData = {
 		type = "weapon",
-		desc = "Deimos!\nChoose a player to track with MOUSE2 \nand active it with MOUSE1.",
+		desc = "Deimos can choose from any identified defender, and have a DeathMARK track their exact location, with the drawback of also revealing his location to whoever he is tracking. This location tracking gives Deimos a constant 3D ping and a constant readout of what room his target is in. The operator getting tracked also gets a 3D ping (albeit delayed), but does not get a readout of what room Deimos is in.",
 		name = "DeathMARK Tracker"
 	}
 

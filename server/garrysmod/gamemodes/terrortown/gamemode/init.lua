@@ -295,6 +295,15 @@ function WaitingForPlayersChecker()
    end
 end
 
+-- heal people when they get kills
+hook.Add("DoPlayerDeath", "HealOnDMKill", function(ply, attacker, dmg)
+   if !IsValid(dmg:GetAttacker()) then return end
+   local att = dmg:GetAttacker()
+   if GetRoundState() == ROUND_WAIT then
+      att:SetHealth(math.min(att:Health() + (att:GetMaxHealth() / 4), att:GetMaxHealth()))
+   end
+end)
+
 function WeaponRemover()
    if GetRoundState() != ROUND_WAIT then return end
 

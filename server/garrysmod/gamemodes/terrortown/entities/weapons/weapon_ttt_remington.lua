@@ -246,14 +246,13 @@ if CLIENT then
 			surface.SetDrawColor(0, 0, 0, 255)
 			surface.SetTexture(surface.GetTextureID("scope/gdcw_scopesight"))
 			surface.DrawTexturedRect(self.LensTable.x, self.LensTable.y, self.LensTable.w, self.LensTable.h)
-			
+		else
+			return BaseClass.DrawHUD(self, ...)
 		end
-
-		return BaseClass.DrawHUD(self, ...)
 	end
 
 	function SWEP:AdjustMouseSensitivity()
-		return (self:GetIronsights() and 0.2) or nil
+		return (self:GetIronsights() and 0.6) or nil
 	end
 
 end
@@ -424,3 +423,50 @@ function SWEP:Deploy()
 	timer.Simple(0.45, function() self:DeployFix() end)
 	return true
 end
+
+--[[
+hook.Add("HUDPaint", "DrawThroughSmoke", function()
+	if !IsValid(LocalPlayer():GetActiveWeapon()) then return end
+	local localwep = LocalPlayer():GetActiveWeapon()
+	if !localwep:GetClass() == "weapon_ttt_remington" then return end
+    cam.Start3D()
+		local drawing = {}
+        for id, ply in ipairs(player.GetAll()) do
+			if !IsValid(ply) or !ply or ply == LocalPlayer() then
+				continue
+			end
+			if LocalPlayer():IsLineOfSightClear(ply) then
+				ply:DrawModel()
+				ply:GetActiveWeapon():DrawModel()
+				table.insert(drawing, ply)
+			end
+        end
+		PrintTable(drawing)
+		if !table.IsEmpty(drawing) then
+			LocalPlayer():DrawViewModel(false)
+			local model = LocalPlayer():GetViewModel()
+			model:SetPos(model:GetPos() )
+			model:DrawModel()
+		else
+			LocalPlayer():DrawViewModel(true)
+		end
+    cam.End3D()
+end)
+hook.Add("PreDrawEffects", "DrawThroughSmoke", function()
+	if not(IsValid(LocalPlayer():GetActiveWeapon())) then return end
+	local localwep = LocalPlayer():GetActiveWeapon()
+	if not(localwep:GetClass() == "weapon_ttt_remington") then return end
+	print(localwep:GetClass())
+	for id, ply in ipairs(player.GetAll()) do
+		if !IsValid(ply) or not(ply) or ply == LocalPlayer() or !ply:Alive() then
+			print("skipping " .. ply:GetName())
+			continue
+		end
+		if LocalPlayer():IsLineOfSightClear(ply) then
+			print("drawing " .. ply:GetName())
+			ply:DrawModel()
+			ply:GetActiveWeapon():DrawModel()
+		end
+	end
+end)
+]]--

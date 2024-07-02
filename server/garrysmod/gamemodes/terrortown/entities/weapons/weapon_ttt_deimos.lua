@@ -57,15 +57,15 @@ if SERVER then
 	resource.AddFile("sound/weapons/satm/sm_exit.wav")
 	resource.AddFile("materials/vgui/ttt/icon_deathmark.vtf")
 	resource.AddFile("materials/vgui/ttt/icon_deathmark.vmt")
-	resource.AddFile("sound/deimos/deimos_tracked1.wav")
-	resource.AddFile("sound/deimos/deimos_tracked2.wav")
-	resource.AddFile("sound/deimos/deimos_tracked3.wav")
-	resource.AddFile("sound/deimos/deimos_tracked4.wav")
-	resource.AddFile("sound/deimos/deimos_tracked5.wav")
-	resource.AddFile("sound/deimos/deimos_tracked6.wav")
-	resource.AddFile("sound/deimos/deimos_tracked7.wav")
-	resource.AddFile("sound/deimos/deimos_tracked8.wav")
-	resource.AddFile("sound/deimos/deimos_tracked9.wav")
+	resource.AddFile("sound/deimos/deimos_tracked1_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked2_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked3_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked4_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked5_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked6_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked7_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked8_amp.wav")
+	resource.AddFile("sound/deimos/deimos_tracked9_amp.wav")
 	resource.AddWorkshop("671603913")
 	
 	util.AddNetworkString("Deimos_SetTrack")
@@ -117,18 +117,18 @@ if CLIENT then
 		end
 		if PlayerLocations[ply] == nil then
 			local files = {
-				"deimos/deimos_tracked1.wav",
-				"deimos/deimos_tracked2.wav",
-				"deimos/deimos_tracked3.wav",
-				"deimos/deimos_tracked4.wav",
-				"deimos/deimos_tracked5.wav",
-				"deimos/deimos_tracked6.wav",
-				"deimos/deimos_tracked7.wav",
-				"deimos/deimos_tracked8.wav",
-				"deimos/deimos_tracked9.wav",
+				"deimos/deimos_tracked1_amp.wav",
+				"deimos/deimos_tracked2_amp.wav",
+				"deimos/deimos_tracked3_amp.wav",
+				"deimos/deimos_tracked4_amp.wav",
+				"deimos/deimos_tracked5_amp.wav",
+				"deimos/deimos_tracked6_amp.wav",
+				"deimos/deimos_tracked7_amp.wav",
+				"deimos/deimos_tracked8_amp.wav",
+				"deimos/deimos_tracked9_amp.wav",
 			}
 			local file = files[math.random(#files)]
-			surface.PlaySound(file)
+			EmitSound(file, Vector(0, 0, 0), -2, 1, SNDLVL_NONE)
 		end
 		local pos = Vector()
 		pos.x = net.ReadInt(32)

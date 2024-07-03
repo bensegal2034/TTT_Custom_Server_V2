@@ -158,7 +158,7 @@ function SWEP:SetupDataTables()
 end
 
 local fireSoundTable = {
-	channel = CHAN_AUTO, 
+	channel = CHAN_WEAPON, 
 	volume = 1,
 	level = 97, 
 	pitchstart = 92,
@@ -171,7 +171,7 @@ local function addFireSound(name, snd, volume, soundLevel, channel, pitchStart, 
 	-- use defaults if no args are provided
 	volume = volume or 1
 	soundLevel = soundLevel or 97
-	channel = channel or CHAN_AUTO
+	channel = channel or CHAN_WEAPON
 	pitchStart = pitchStart or 92
 	pitchEnd = pitchEnd or 112
 	

@@ -316,7 +316,7 @@ end
 hook.Add("PreDrawEffects", "DrawThroughSmoke", function()
     if not(IsValid(LocalPlayer():GetActiveWeapon())) then return end
     local localwep = LocalPlayer():GetActiveWeapon()
-    if not(localwep:GetClass() == "weapon_ttt_remington") then return end
+    if not(localwep:GetClass() == "weapon_ttt_dragunov") then return end
     if !localwep:GetIronsights() then return end
     for id, ply in ipairs(player.GetAll()) do
         if !IsValid(ply) or not(ply) or ply == LocalPlayer() or !ply:Alive() then

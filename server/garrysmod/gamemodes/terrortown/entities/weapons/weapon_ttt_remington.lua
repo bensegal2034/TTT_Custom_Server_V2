@@ -78,8 +78,9 @@ SWEP.Primary.DefaultClip		= 10	-- Bullets you start with
 SWEP.Primary.MaxClip 			= 15
 SWEP.Primary.Recoil 			= 10
 SWEP.Primary.Automatic			= false		-- Automatic/Semi Auto
-SWEP.Primary.Ammo			= "SniperPenetratedRound"	-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
+SWEP.Primary.Ammo			= "357"	-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
 -- Pistol, buckshot, and slam always ricochet. Use AirboatGun for a light metal peircing shotgun pellets
+SWEP.AmmoEnt               = "item_ammo_357_ttt"
 SWEP.Primary.Sound			= Sound("7615p_remington.Single")		-- script that calls the primary fire sound
 SWEP.Secondary.ScopeZoom			= 9	
 SWEP.Secondary.UseACOG			= false -- Choose one scope type

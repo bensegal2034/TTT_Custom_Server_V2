@@ -314,29 +314,66 @@ function SWEP:PreDrop()
 end
 
 hook.Add("PreDrawEffects", "DrawThroughSmoke", function()
-    if not(IsValid(LocalPlayer():GetActiveWeapon())) then return end
-    local localwep = LocalPlayer():GetActiveWeapon()
-    if not(localwep:GetClass() == "weapon_ttt_dragunov") then return end
-    if !localwep:GetIronsights() then return end
-    for id, ply in ipairs(player.GetAll()) do
-        if !IsValid(ply) or not(ply) or ply == LocalPlayer() or !ply:Alive() then
-            continue
-        end
-        render.SetColorMaterial()
-        local amblight = render.GetAmbientLightColor()
-        render.SetAmbientLight(1, 0.8, 0 )
-        render.ResetModelLighting(1, 0.8, 0)
-        render.SuppressEngineLighting(true)
-        render.SetColorModulation(1, 0.8, 0)
-
-        ply:DrawModel()
-        if ply:GetActiveWeapon() != NULL then
-            ply:GetActiveWeapon():DrawModel()
-        end
-
-        render.SetAmbientLight(amblight.x, amblight.y, amblight.z)
-        render.SetColorModulation(1, 1, 1)
-        render.SuppressEngineLighting(false)
-        render.MaterialOverride(nil)
-    end
+	-- Only run this when aiming down sighes with the remington
+	if not(IsValid(LocalPlayer():GetActiveWeapon())) then return end
+	local localwep = LocalPlayer():GetActiveWeapon()
+	--please do not make 1 line commits fixing syntax issues on code we are actively working on i will scream so loud you will hear it
+	if not(localwep:GetClass() == "weapon_ttt_dragunov") then return end
+	if !localwep:GetIronsights() then return end
+	
+	-- Set a bunch of stuff to make the player yellow instead of white
+	local amblight = render.GetAmbientLightColor()
+	render.SetAmbientLight(1, 0.8, 0 )
+	render.ResetModelLighting(1, 0.8, 0)
+	render.SuppressEngineLighting(true)
+	render.SetColorModulation(1, 0.8, 0)
+	
+	-- Apply to all players
+	for id, ply in ipairs(player.GetAll()) do
+		-- Skip dead players and the client
+		if !IsValid(ply) or not(ply) or ply == LocalPlayer() or !ply:Alive() then
+			continue
+		end
+		
+		-- Create a clientside only copy of the player model to make yellow
+		local entity = ClientsideModel(ply:GetModel())
+		entity:SetPos(ply:GetPos())
+		entity:SetMaterial("models/debug/debugwhite")
+		
+		-- Setup the bones so they are ready to be read/written
+		ply:SetupBones()
+		entity:SetupBones()
+		
+		-- Add four fake copies to avoid zfighting
+		-- Can't disable the original model because that disables animation updates
+		-- Not easy to change the size of the fake model because that requires at least one tick to pass
+		-- Would require persistently storing a ClientsideModel for each player, and updating it every tick instead
+		-- This method is laggy, consider trying that one in the future if the lag is too much
+		for offsetx=-0.2,0.2,.4 do
+			for offsety=-0.2,0.2,.4 do
+				-- Copy the current state of the bones from the player to the copy
+				for i=0, ply:GetBoneCount()-1 do
+					-- idk why the the bones are invalid, but the only other source I found
+					-- using SetBonePosition also had to do this so I guess it's just like that
+					if entity:GetBoneName(i) == "__INVALIDBONE__" then
+						continue
+					end
+					local bmat = ply:GetBoneMatrix(i)
+					local bpos = bmat:GetTranslation()
+					local bang = bmat:GetAngles()
+					entity:SetBonePosition(i, bpos+ Vector(offsetx, offsety, 0), bang)
+				end
+				-- Draw the copy
+				entity:DrawModel()
+			end
+		end
+		-- Cleanup the copy
+		entity:Remove()
+	end
+	
+	-- Cleanup the render conditions
+	render.SetAmbientLight(amblight.x, amblight.y, amblight.z)
+	render.SetColorModulation(1, 1, 1)
+	render.SuppressEngineLighting(false)
+	render.MaterialOverride(nil)
 end)

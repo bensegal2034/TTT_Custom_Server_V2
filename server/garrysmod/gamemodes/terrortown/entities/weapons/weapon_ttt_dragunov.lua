@@ -64,7 +64,7 @@ SWEP.Weight				= 50			-- Rank relative ot other weapons. bigger is better
 SWEP.AutoSwitchTo			= true		-- Auto switch to if we pick it up
 SWEP.AutoSwitchFrom			= true		-- Auto switch from if you pick up a better weapon
 SWEP.BoltAction				= false		-- Is this a bolt action rifle?
-SWEP.HoldType 				= "crossbow"		-- how others view you carrying the weapon
+SWEP.HoldType 				= "rpg"		-- how others view you carrying the weapon
 -- normal melee melee2 fist knife smg ar2 pistol rpg physgun grenade shotgun crossbow slam passive 
 -- you're mostly going to use ar2, smg, shotgun or pistol. rpg and crossbow make for good sniper rifles
 
@@ -198,6 +198,10 @@ if CLIENT then
 			return BaseClass.DrawHUD(self, ...)
 		end
 	end
+
+	function SWEP:AdjustMouseSensitivity()
+        return (self:GetIronsights() and 0.6) or nil
+    end
 end
 
 function SWEP:Initialize(...)

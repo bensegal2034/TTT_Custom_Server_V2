@@ -108,20 +108,20 @@ SWEP.HoldType			= "ar2"
 
 
 SWEP.DrawCrosshair			= false	
-SWEP.Primary.Delay       = 0.13
-SWEP.Primary.Recoil      = .9
+SWEP.Primary.Delay       = 0.11
+SWEP.Primary.Recoil      = 1.2
 SWEP.Primary.Automatic   = true
-SWEP.Primary.Damage      = 19
-SWEP.Primary.Cone        = 0
+SWEP.Primary.Damage      = 18
+SWEP.Primary.Cone        = 0.1
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.ClipSize    = 30
-SWEP.Primary.ClipMax     = 90
+SWEP.Primary.ClipMax     = 120
 SWEP.Primary.DefaultClip = 60
 SWEP.Primary.Sound 		= Sound("weapon_aug.single")
-SWEP.HeadshotMultiplier  = 1.6
-SWEP.DamageType            = "Puncture"
+SWEP.HeadshotMultiplier  = 2
+SWEP.DamageType            = "Impact"
 --nopls
-SWEP.IronSightsPos = Vector(-2.605, -3.268, 2.63)
+SWEP.IronSightsPos = Vector(-2.605, 0, 0)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.ViewModel				= "models/weapons/v_rif_kiw.mdl"
@@ -148,25 +148,21 @@ SWEP.IsSilent = false
 -- If NoSights is true, the weapon won't have ironsights
 SWEP.NoSights = false
 
-
-
-
-
-SWEP.SightsPos = Vector(-3.55, -4.268, 0.79)
+SWEP.SightsPos = Vector(0, 0, 0)
 SWEP.SightsAng = Vector(0, 0.15, 0)
 SWEP.RunSightsPos = Vector(2.829, -2.926, -2.301)
 SWEP.RunSightsAng = Vector(-19.361, 64.291, -32.039)
 SWEP.Offset = {
-Pos = {
-Up = -0.7,
-Right = 1.0,
-Forward = -3.0,
-},
-Ang = {
-Up = 0,
-Right = 6.5,
-Forward = 0,
-}
+   Pos = {
+      Up = -0.7,
+      Right = 1.0,
+      Forward = -3.0,
+   },
+   Ang = {
+      Up = 0,
+      Right = 6.5,
+      Forward = 0,
+   }
 }
 
 function SWEP:Deploy()
@@ -186,4 +182,80 @@ function SWEP:Holster()
       self.Owner:SetJumpPower(160)
       return true
    end
+end
+
+function SWEP:DrawWorldModel( )
+   local hand, offset, rotate
+
+   if not IsValid( self.Owner ) then
+      self:DrawModel( )
+      return
+   end
+
+   if not self.Hand then
+      self.Hand = self.Owner:LookupAttachment( "anim_attachment_rh" )
+   end
+
+   hand = self.Owner:GetAttachment( self.Hand )
+
+   if not hand then
+      self:DrawModel( )
+      return
+   end
+
+   offset = hand.Ang:Right( ) * self.Offset.Pos.Right + hand.Ang:Forward( ) * self.Offset.Pos.Forward + hand.Ang:Up( ) * self.Offset.Pos.Up
+
+   hand.Ang:RotateAroundAxis( hand.Ang:Right( ), self.Offset.Ang.Right )
+   hand.Ang:RotateAroundAxis( hand.Ang:Forward( ), self.Offset.Ang.Forward )
+   hand.Ang:RotateAroundAxis( hand.Ang:Up( ), self.Offset.Ang.Up )
+
+   self:SetRenderOrigin( hand.Pos + offset )
+   self:SetRenderAngles( hand.Ang )
+
+   self:DrawModel( )
+end
+
+
+function SWEP:ShootBullet( dmg, recoil, numbul, cone )
+
+   self:SendWeaponAnim(self.PrimaryAnim)
+
+   self:GetOwner():MuzzleFlash()
+   self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+
+   local sights = self:GetIronsights()
+
+   numbul = numbul or 1
+   cone   = cone   or 0.01
+
+   local bullet = {}
+   bullet.Num    = numbul
+   bullet.Src    = self:GetOwner():GetShootPos()
+   bullet.Dir    = self:GetOwner():GetAimVector()
+   bullet.Spread = Vector( cone, cone, 0 )
+   bullet.Tracer = 1
+   bullet.TracerName = self.Tracer or "Tracer"
+   bullet.Force  = 10
+   bullet.Damage = dmg
+   self:GetOwner():FireBullets( bullet )
+
+   -- Owner can die after firebullets
+   if (not IsValid(self:GetOwner())) or (not self:GetOwner():Alive()) or self:GetOwner():IsNPC() then return end
+
+   if ((game.SinglePlayer() and SERVER) or
+       ((not game.SinglePlayer()) and CLIENT and IsFirstTimePredicted())) then
+
+      -- reduce recoil if ironsighting
+      recoil = sights and (recoil) or recoil
+
+      local eyeang = self:GetOwner():EyeAngles()
+      eyeang.pitch = eyeang.pitch - recoil
+      self:GetOwner():SetEyeAngles( eyeang )
+   end
+end
+
+function SWEP:GetPrimaryCone()
+   local cone = self.Primary.Cone or 0.2
+   -- 15% accuracy bonus when sighting
+   return self:GetIronsights() and (cone * 0.05) or cone
 end

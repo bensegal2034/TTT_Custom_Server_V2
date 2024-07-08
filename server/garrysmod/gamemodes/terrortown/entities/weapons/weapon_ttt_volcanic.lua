@@ -59,7 +59,7 @@ SWEP.Primary.Sound = Sound("Weapon_TFRE_Volcanic.Single") -- This is the sound o
 SWEP.Primary.Damage = 40 -- Damage, in standard damage points.
 SWEP.Primary.NumShots = 1 --The number of shots the weapon fires.  SWEP.Shotgun is NOT required for this to be >1.
 SWEP.Primary.Automatic = false -- Automatic/Semi Auto
-SWEP.Primary.Delay = 0.5 -- This is in Rounds Per Minute / RPM
+SWEP.Primary.Delay = 2 -- This is in Rounds Per Minute / RPM
 SWEP.HeadshotMultiplier = 3
 --Ammo Related
 SWEP.Primary.ClipSize = 1 -- This is the size of a clip
@@ -146,7 +146,7 @@ SWEP.ShellTime = 1 -- For shotguns, how long it takes to insert a shell.
 SWEP.DoProceduralReload = false--Animate first person reload using lua?
 SWEP.ProceduralReloadTime = 1 --Procedural reload time?
 
-SWEP.DamageType = "True"
+SWEP.DamageType = "Puncture"
 
 DEFINE_BASECLASS( SWEP.Base )
 
@@ -158,7 +158,7 @@ function SWEP:SetupDataTables()
 end
 
 local fireSoundTable = {
-	channel = CHAN_AUTO, 
+	channel = CHAN_WEAPON, 
 	volume = 1,
 	level = 97, 
 	pitchstart = 92,
@@ -171,7 +171,7 @@ local function addFireSound(name, snd, volume, soundLevel, channel, pitchStart, 
 	-- use defaults if no args are provided
 	volume = volume or 1
 	soundLevel = soundLevel or 97
-	channel = channel or CHAN_AUTO
+	channel = channel or CHAN_WEAPON
 	pitchStart = pitchStart or 92
 	pitchEnd = pitchEnd or 112
 	
@@ -306,12 +306,7 @@ end
 
 function SWEP:Think()
     BaseClass.Think(self)
-    if self:GetReloading() then
-       if self:GetOwner():KeyDown(IN_ATTACK) or self:GetOwner():KeyDown(IN_ATTACK2) then
-          self:FinishReload()
-          return
-       end
- 
+    if self:GetReloading() then 
        if self:GetReloadTimer() <= CurTime() then
  
           if self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0 then
@@ -346,8 +341,6 @@ hook.Add("TTTPrepareRound", "ResetVolcanic Root", function()
         end
     end
 end)
- 
-
 
 hook.Add("ScalePlayerDamage", "VolcanicRoot", function(target, hitgroup, dmginfo)
 if not IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker():IsPlayer() or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then
@@ -363,8 +356,10 @@ end
             local savedJump = target:GetJumpPower()
             target:SetWalkSpeed(1)
             target:SetJumpPower(1)
-            timer.Create( "RootTimer", 3, 1, function() target:SetWalkSpeed(savedSpeed) end )
-            timer.Create( "RootTimer2", 3, 1, function() target:SetJumpPower(savedJump) end )
+            timer.Create("RootTimer" .. tostring(math.Rand(0, 1)), 3, 1, function() 
+                target:SetWalkSpeed(savedSpeed) 
+                target:SetJumpPower(savedJump)
+            end)
             if hitgroup != HITGROUP_HEAD then
                 dmginfo:ScaleDamage(0)
             end

@@ -55,7 +55,6 @@ SWEP.AllowDrop = true
 SWEP.NoSights = true
 
 function SWEP:PrimaryAttack()
-print(self:GetMaxClip1())
 	if not self:CanPrimaryAttack() then
 	return end
 	

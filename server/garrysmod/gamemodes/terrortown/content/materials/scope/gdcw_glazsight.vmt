@@ -1,0 +1,11 @@
+"UnlitGeneric"
+{
+	"$basetexture" "scope/gdcw_glazsight"
+	"$translucent" 1
+	"$alpha" 1
+	"$vertexalpha" "1"
+	"$ignorez"     "1"
+	"$no_fullbright" "1"
+	
+}
+

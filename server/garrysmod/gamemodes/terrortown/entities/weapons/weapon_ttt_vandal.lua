@@ -1,6 +1,7 @@
 if SERVER then
    AddCSLuaFile("weapon_ttt_vandal.lua")
-
+   resource.AddFile("models/weapons/v_rif_rgxv.mdl")
+   resource.AddFile("models/weapons/w_rif_rgxv.mdl")
    resource.AddFile("sound/weapons/afterglow/boltpull.wav")
    resource.AddFile("sound/weapons/afterglow/equip_start.wav")
    resource.AddFile("sound/weapons/afterglow/equip_whiz.wav")

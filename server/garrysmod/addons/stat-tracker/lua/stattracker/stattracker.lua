@@ -9,13 +9,29 @@ debugCvar = CreateConVar(
 
 local function debugPrintSwepTables()
     print("---------------------- HEAVY ----------------------")
-    PrintTable(HEAVY)
+    local heavyNames = ""
+    for name, _ in pairs(HEAVY) do
+        heavyNames = heavyNames .. name .. ", "
+    end
+    print(heavyNames)
     print("---------------------- PISTOL ----------------------")
-    PrintTable(PISTOL)
+    local pistolNames = ""
+    for name, _ in pairs(PISTOL) do
+        pistolNames = pistolNames .. name .. ", "
+    end
+    print(pistolNames)
     print("---------------------- NADE ----------------------")
-    PrintTable(NADE)
+    local nadeNames = ""
+    for name, _ in pairs(NADE) do
+        nadeNames = nadeNames .. name .. ", "
+    end
+    print(nadeNames)
     print("---------------------- BUYABLE ----------------------")
-    PrintTable(BUYABLE)
+    local buyableNames = ""
+    for name, _ in pairs(BUYABLE) do
+        buyableNames = buyableNames .. name .. ", "
+    end
+    print(buyableNames)
 end
 
 local function buildSwepTables()
@@ -64,6 +80,8 @@ totalDamage = totalDamage or {}
 totalUsage = totalUsage or {}
 timestamp = timestamp or nil --os.date("%I:%M%p - %d/%m/%Y", os.time())
 roundLength = roundLength or nil
+roundStart = roundStart or nil 
+roundEnd = roundEnd or nil
 
 --[[
 -- example tables to help me write this 3:
@@ -102,14 +120,17 @@ local function checkValidWeapon(wepClassName)
     return false
 end
 
-local function isTrackingOk(dmg, ent)
-    dmg = dmg or nil
-    ent = ent or nil
+local function isTrackingOk(dmg, ply)
+    dmg = dmg or 0
+    ply = ply or 0
 
     -- ensure we don't take into account a CTakeDamageInfo obj
     -- if there was not one provided with the func call
-    if not(dmg == nil) then
+    if not(dmg == 0) then
         if not(IsValid(dmg:GetAttacker())) then 
+            return false
+        end
+        if not(dmg:GetAttacker():IsPlayer()) then
             return false
         end
         if dmg:GetAttacker().GetActiveWeapon == nil then
@@ -119,16 +140,19 @@ local function isTrackingOk(dmg, ent)
             return false
         end
     end
-    -- if an entity is provided to evaluate, make sure it's
-    -- valid and it has a valid weapon
-    if not(ent == nil) then
-        if not(IsValid(ent)) then
+    -- if a player is provided to evaluate, make sure it's
+    -- valid, is a player, and it has a valid weapon
+    if not(ply == 0) then
+        if not(IsValid(ply)) then
             return false
         end
-        if ent.GetActiveWeapon == nil then
+        if not(ply:IsPlayer()) then
             return false
         end
-        if not(IsValid(ent:GetActiveWeapon())) then
+        if ply.GetActiveWeapon == nil then
+            return false
+        end
+        if not(IsValid(ply:GetActiveWeapon())) then
             return false
         end
     end
@@ -149,12 +173,15 @@ hook.Add("PostGamemodeLoaded", "BuildSWEPTablesInitialLoad", function()
     buildSwepTables()
 end)
 
-hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(ent, dmg, took)
+hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dmg, took)
     -- ensure we should be tracking stats right now
-    if not(isTrackingOk(dmg)) then return end
+    if not(isTrackingOk(dmg, entTakingDamage)) then return end
     local wepName = dmg:GetAttacker():GetActiveWeapon():GetClass()
+    print(dmg:GetInflictor())
     -- ensure the weapon is present in our list of valid weapons
     if not(checkValidWeapon(wepName)) then return end
+    -- ensure we're not shooting ourselves (don't want to track self damage)
+    if dmg:GetAttacker() == entTakingDamage then return end
     -- this next line WAS necessary to prevent the damage from being added twice
     -- but now it is not
     -- i do not understand but i fear the day this bug returns again. 
@@ -193,12 +220,10 @@ hook.Add("ScalePlayerDamage", "TrackSWEPHeadshots", function(ply, hitgroup, dmg)
     if debugCvar:GetBool() then PrintTable(totalHeadshots) end
 end)
 
-hook.Add("PostEntityFireBullets", "TrackSWEPUsageBullets", function(entity, data)
-    print("blargh")
-    --[[
+hook.Add("EntityFireBullets", "TrackSWEPUsageBullets", function(entity, data)
     -- ensure we should be tracking stats right now
     if not(isTrackingOk(nil, entity)) then return end
-    local wepName = dmg:GetAttacker():GetActiveWeapon():GetClass()
+    local wepName = entity:GetActiveWeapon():GetClass()
     -- ensure the weapon is present in our list of valid weapons
     if not(checkValidWeapon(wepName)) then return end
 
@@ -206,10 +231,17 @@ hook.Add("PostEntityFireBullets", "TrackSWEPUsageBullets", function(entity, data
         totalUsage[wepName] = true
     end
     if debugCvar:GetBool() then PrintTable(totalUsage) end
-    ]]--
 end)
 
-hook.Add("TTTPrepareRound", "WriteStats", function()
+hook.Add("TTTBeginRound", "RoundStartTracker", function()
+    roundStart = CurTime()
+end)
+
+hook.Add("TTTEndRound", "WriteStats", function()
+    roundEnd = CurTime()
+    roundLength = math.Round(roundEnd - roundStart)
+    if debugCvar:GetBool() then print("Round length: " .. roundLength) end
+
     table.Empty(totalDamage)
     table.Empty(totalHeadshots)
     table.Empty(totalUsage)

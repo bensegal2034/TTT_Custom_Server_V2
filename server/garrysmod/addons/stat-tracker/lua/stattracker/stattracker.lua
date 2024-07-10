@@ -78,7 +78,7 @@ end
 totalHeadshots = totalHeadshots or {}
 totalDamage = totalDamage or {}
 totalUsage = totalUsage or {}
-timestamp = timestamp or nil --os.date("%I:%M%p - %d/%m/%Y", os.time())
+timestamp = timestamp or nil --os.time()
 roundLength = roundLength or nil
 roundStart = roundStart or nil 
 roundEnd = roundEnd or nil

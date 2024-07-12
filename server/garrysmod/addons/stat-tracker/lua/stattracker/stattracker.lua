@@ -66,19 +66,20 @@ HEAVY = HEAVY or {}
 PISTOL = PISTOL or {}
 NADE = NADE or {}
 BUYABLE = BUYABLE or {}
+MISC = {"weapon_zm_improvised"}
 
 if not(table.IsEmpty(HEAVY)) or not(table.IsEmpty(PISTOL)) or not(table.IsEmpty(PISTOL)) or not(table.IsEmpty(BUYABLE)) then
     buildSwepTables()
 end
 
--- we clear all of these tables every time a new round begins, 
--- and save their data to the sv.db file
--- we also log a timestamp of when the round occurred, and how long the round took
+-- we clear all of these vars every time a new round begins, 
+-- and save their data to sv.db
 
 totalHeadshots = totalHeadshots or {}
 totalDamage = totalDamage or {}
 totalUsage = totalUsage or {}
-timestamp = timestamp or nil --os.time()
+roundTimestamp = roundTimestamp or nil --os.time()
+roundWinners = roundWinners or nil -- ""
 roundLength = roundLength or nil
 roundStart = roundStart or nil 
 roundEnd = roundEnd or nil
@@ -117,6 +118,7 @@ local function checkValidWeapon(wepClassName)
     if not(PISTOL[wepClassName] == nil) then return true end
     if not(NADE[wepClassName] == nil) then return true end
     if not(BUYABLE[wepClassName] == nil) then return true end
+    if table.HasValue(MISC, wepClassName) then return true end
     return false
 end
 
@@ -174,10 +176,10 @@ hook.Add("PostGamemodeLoaded", "BuildSWEPTablesInitialLoad", function()
 end)
 
 hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dmg, took)
+    print("---CALLED------CALLED------CALLED------CALLED------CALLED---")
     -- ensure we should be tracking stats right now
     if not(isTrackingOk(dmg, entTakingDamage)) then return end
     local wepName = dmg:GetAttacker():GetActiveWeapon():GetClass()
-    print(dmg:GetInflictor())
     -- ensure the weapon is present in our list of valid weapons
     if not(checkValidWeapon(wepName)) then return end
     -- ensure we're not shooting ourselves (don't want to track self damage)
@@ -197,8 +199,22 @@ hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dm
         }
     end
     if debugCvar:GetBool() then PrintTable(totalDamage) end
+
+    if totalHeadshots[wepName] == nil then
+        totalHeadshots[wepName] = {
+            ["head"] = 0,
+            ["body"] = 0
+        }
+    end
+    if entTakingDamage:LastHitGroup() == HITGROUP_HEAD then
+        totalHeadshots[wepName]["head"] = totalHeadshots[wepName]["head"] + 1
+    else
+        totalHeadshots[wepName]["body"] = totalHeadshots[wepName]["body"] + 1
+    end
+    if debugCvar:GetBool() then PrintTable(totalHeadshots) end
 end)
 
+--[[
 hook.Add("ScalePlayerDamage", "TrackSWEPHeadshots", function(ply, hitgroup, dmg)
     -- ensure we should be tracking stats right now
     if not(isTrackingOk(dmg)) then return end
@@ -219,6 +235,7 @@ hook.Add("ScalePlayerDamage", "TrackSWEPHeadshots", function(ply, hitgroup, dmg)
     end
     if debugCvar:GetBool() then PrintTable(totalHeadshots) end
 end)
+]]--
 
 hook.Add("EntityFireBullets", "TrackSWEPUsageBullets", function(entity, data)
     -- ensure we should be tracking stats right now
@@ -240,11 +257,26 @@ end)
 hook.Add("TTTEndRound", "WriteStats", function()
     roundEnd = CurTime()
     roundLength = math.Round(roundEnd - roundStart)
-    if debugCvar:GetBool() then print("Round length: " .. roundLength) end
+    local getWin = hook.Call("TTTCheckForWin", GAMEMODE)
+    if getWin == WIN_NONE then
+        roundWinners = "WIN_NONE" -- shouldn't happen
+    elseif getWin == WIN_TRAITOR then
+        roundWinners = "WIN_TRAITOR"
+    elseif getWin == WIN_INNOCENT then
+        roundWinners = "WIN_INNOCENT"
+    elseif getWin == WIN_TIMELIMIT then
+        roundWinners = "WIN_TIMELIMIT"
+    else
+        roundWinners = "INVALID" -- REALLY shouldn't happen
+    end
+    if debugCvar:GetBool() then 
+        print("Round length: " .. roundLength)
+        print("Round winners: " .. roundWinners)
+    end
 
     table.Empty(totalDamage)
     table.Empty(totalHeadshots)
     table.Empty(totalUsage)
-    timestamp = nil
+    roundTimestamp = nil
     roundLength = nil
 end)

@@ -6,8 +6,8 @@ if CLIENT then
    SWEP.PrintName          = "M16"
    SWEP.Slot               = 2
 
-   SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 64
+   SWEP.ViewModelFlip      = true
+   SWEP.ViewModelFOV       = 78
 
    SWEP.Icon               = "vgui/ttt/icon_m16"
    SWEP.IconLetter         = "w"
@@ -39,8 +39,8 @@ SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
-SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_rif_m4a1.mdl"
+SWEP.UseHands              = false
+SWEP.ViewModel             = "models/weapons/v_rif_m4a1.mdl"
 SWEP.WorldModel            = "models/weapons/w_rif_m4a1.mdl"
 
 SWEP.IronSightsPos         = Vector(-7.58, -9.2, 0.55)

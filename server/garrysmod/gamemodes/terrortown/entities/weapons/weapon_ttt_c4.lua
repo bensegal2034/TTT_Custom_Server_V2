@@ -10,8 +10,6 @@ if CLIENT then
    SWEP.Slot                = 6
    
    SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 54
-   SWEP.DrawCrosshair      = false
 
    SWEP.EquipMenuData = {
       type  = "item_weapon",
@@ -30,7 +28,7 @@ SWEP.CanBuy                 = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.WeaponID               = AMMO_C4
 
 SWEP.UseHands               = true
-SWEP.ViewModel              = Model("models/weapons/cstrike/c_c4.mdl")
+SWEP.ViewModel              = Model("models/weapons/v_c4.mdl")
 SWEP.WorldModel             = Model("models/weapons/w_c4.mdl")
 
 SWEP.Primary.ClipSize       = -1

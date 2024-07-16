@@ -6,9 +6,6 @@ if CLIENT then
    SWEP.PrintName        = "MAC10"
    SWEP.Slot             = 2
 
-   SWEP.ViewModelFlip    = false
-   SWEP.ViewModelFOV     = 54
-
    SWEP.Icon             = "vgui/ttt/icon_mac"
    SWEP.IconLetter       = "l"
 end
@@ -34,12 +31,11 @@ SWEP.DamageType            = "Impact"
 SWEP.AutoSpawnable       = true
 SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
 
-SWEP.UseHands            = true
-SWEP.ViewModel           = "models/weapons/cstrike/c_smg_mac10.mdl"
+SWEP.ViewModel           = "models/weapons/v_smg_mac10.mdl"
 SWEP.WorldModel          = "models/weapons/w_smg_mac10.mdl"
 
-SWEP.IronSightsPos       = Vector(-8.921, -9.528, 2.9)
-SWEP.IronSightsAng       = Vector(0.699, -5.301, -7)
+SWEP.IronSightsPos       = Vector( 6.62, -3, 2.9 )
+SWEP.IronSightsAng       =  Vector( 0.7, 5.3, 7 )
 
 SWEP.DeploySpeed         = 3
 

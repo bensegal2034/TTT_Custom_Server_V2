@@ -32,6 +32,29 @@ if SERVER then
    resource.AddFile("materials/models/ferris4227/stattrack/stat_digit005.vmt")
    resource.AddFile("materials/models/ferris4227/stattrack/stattrak_module.vmt")
    resource.AddFile("materials/models/ferris4227/stattrack/stattrak_module_exponent.vtf")
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/partssilber.vmt" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/partssilber.vtf" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/partssilber_ref.vtf" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/silberbody.vmt" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/silberbody.vtf" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/silberbody_ref.vtf" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/silberslide.vmt" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/silberslide.vtf" )
+   resource.AddFile( "materials/models/weapons/v_models/pist_deagle/silberslide_ref.vtf" )
+   resource.AddFile( "materials/vgui/entities/pist_weagon.vmt" )
+   resource.AddFile( "materials/vgui/entities/pist_weagon.vtf" )
+   resource.AddFile( "sound/weapons/automag/deagle-1.wav" )
+   resource.AddFile( "models/weapons/v_pist_weagon.dx80.vtx" )
+   resource.AddFile( "models/weapons/v_pist_weagon.dx90.vtx" )
+   resource.AddFile( "models/weapons/v_pist_weagon.mdl" )
+   resource.AddFile( "models/weapons/v_pist_weagon.sw.vtx" )
+   resource.AddFile( "models/weapons/v_pist_weagon.vvd" )
+   resource.AddFile( "models/weapons/w_pist_weagon.dx80.vtx" )
+   resource.AddFile( "models/weapons/w_pist_weagon.dx90.vtx" )
+   resource.AddFile( "models/weapons/w_pist_weagon.mdl" )
+   resource.AddFile( "models/weapons/w_pist_weagon.phy" )
+   resource.AddFile( "models/weapons/w_pist_weagon.sw.vtx" )
+   resource.AddFile( "models/weapons/w_pist_weagon.vvd" )
    resource.AddWorkshop("3130013131")
 end
 SWEP.HoldType              = "pistol"
@@ -40,8 +63,8 @@ if CLIENT then
    SWEP.PrintName          = "Deagle"
    SWEP.Slot               = 1
 
-   SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 54
+   SWEP.ViewModelFlip      = true
+   SWEP.ViewModelFOV       = 78
 
    SWEP.Icon               = "vgui/ttt/icon_deagle"
 end
@@ -69,9 +92,9 @@ SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 
-SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_pist_deagleb.mdl"
-SWEP.WorldModel            = "models/weapons/w_pist_deagleb.mdl"
+SWEP.UseHands              = false
+SWEP.ViewModel             = "models/weapons/v_pist_weagon.mdl"
+SWEP.WorldModel            = "models/weapons/w_pist_weagon.mdl"
 
 SWEP.IronSightsPos         = Vector(-6.361, -3.701, 2.15)
 SWEP.IronSightsAng         = Vector(0, 0, 0)

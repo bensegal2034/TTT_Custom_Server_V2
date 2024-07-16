@@ -6,9 +6,6 @@ if CLIENT then
    SWEP.PrintName          = "Five-Seven"
    SWEP.Slot               = 1
 
-   SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 54
-
    SWEP.Icon               = "vgui/ttt/icon_pistol"
    SWEP.IconLetter         = "u"
 end
@@ -34,11 +31,10 @@ SWEP.DamageType            = "Puncture"
 SWEP.AutoSpawnable         = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
-SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_pist_fiveseven.mdl"
+SWEP.ViewModel             = "models/weapons/v_pist_fiveseven.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_fiveseven.mdl"
 
-SWEP.IronSightsPos         = Vector(-5.95, -4, 2.799)
+SWEP.IronSightsPos         = Vector( 4.53, -4, 3.2 )
 SWEP.IronSightsAng         = Vector(0, 0, 0)
 
 SWEP.HeadshotMultiplier    = 2.7

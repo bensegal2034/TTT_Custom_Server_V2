@@ -15,8 +15,7 @@ end
 
 SWEP.Base                    = "weapon_tttbase"
 
-SWEP.UseHands                = true
-SWEP.ViewModel               = "models/weapons/c_crowbar.mdl"
+SWEP.ViewModel               = "models/weapons/v_crowbar.mdl"
 SWEP.WorldModel              = "models/weapons/w_crowbar.mdl"
 
 SWEP.Primary.Damage          = 20

@@ -11,7 +11,6 @@ if CLIENT then
    SWEP.Slot                = 6
    SWEP.SlotPos             = 1
    SWEP.ViewModelFlip       = false
-   SWEP.ViewModelFOV        = 54
    SWEP.DrawCrosshair       = false
 
    SWEP.EquipMenuData = {
@@ -26,7 +25,7 @@ end
 SWEP.Base                   = "weapon_tttbase"
 
 SWEP.UseHands               = true
-SWEP.ViewModel              = "models/weapons/cstrike/c_knife_t.mdl"
+SWEP.ViewModel              = "models/weapons/v_knife_t.mdl"
 SWEP.WorldModel             = "models/weapons/w_knife_ct_real_not_fake.mdl"
 
 SWEP.Primary.Damage         = 100

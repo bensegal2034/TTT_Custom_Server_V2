@@ -57,7 +57,6 @@ net.Receive("NotifyWeaponEquip", function()
     if firstLoad then timing = 3 else timing = 0.1 end
     timer.Simple(timing, function()
         local wep = LocalPlayer():GetWeapon(wepName)
-        print(wep)
         handleWeapon(wep, cvar:GetBool())
     end)
 end)

@@ -55,7 +55,7 @@ net.Receive("NotifyWeaponEquip", function()
     -- this timer needs to be here, else
     -- the client reads the weapon as null for some reason
     -- i hate gmod
-    if firstLoad then timing = 2.5 else timing = 0.1 end
+    if firstLoad then timing = 3 else timing = 0.1 end
 
     timer.Simple(timing, function()
         local wep = LocalPlayer():GetWeapon(wepName)

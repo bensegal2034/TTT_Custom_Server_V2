@@ -33,6 +33,7 @@ SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
 
 SWEP.ViewModel           = "models/weapons/v_smg_mac10.mdl"
 SWEP.WorldModel          = "models/weapons/w_smg_mac10.mdl"
+SWEP.ViewModelFlip       = true
 
 SWEP.IronSightsPos       = Vector( 6.62, -3, 2.9 )
 SWEP.IronSightsAng       =  Vector( 0.7, 5.3, 7 )

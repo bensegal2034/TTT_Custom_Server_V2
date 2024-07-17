@@ -26,12 +26,13 @@ local function handleWeapon(wep, currentCvarState)
     local wepClassName = wep:GetClass()
     local doLeftHand = not(currentCvarState)
     local default = weaponDefaults[wepClassName]
-
+    --print("Runnning for " .. wepClassName .. ", default " .. tostring(default))
     if doLeftHand then
         wep.ViewModelFlip = not(default)
     else
         wep.ViewModelFlip = default
     end
+    --print("ViewModelFlip = " .. tostring(wep.ViewModelFlip))
 end
 
 cvars.AddChangeCallback("cl_righthand", function(cvarName, oldValue, newValue)
@@ -54,7 +55,8 @@ net.Receive("NotifyWeaponEquip", function()
     -- this timer needs to be here, else
     -- the client reads the weapon as null for some reason
     -- i hate gmod
-    if firstLoad then timing = 3 else timing = 0.1 end
+    if firstLoad then timing = 2 else timing = 0.1 end
+
     timer.Simple(timing, function()
         local wep = LocalPlayer():GetWeapon(wepName)
         handleWeapon(wep, cvar:GetBool())

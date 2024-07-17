@@ -22,6 +22,7 @@ SWEP.Base                      = "weapon_tttbase"
 SWEP.Spawnable                 = false
 SWEP.AdminSpawnable            = true
 SWEP.ViewModel                 = "models/weapons/v_pist_usp.mdl"
+SWEP.ViewModelFlip             = true
 SWEP.WorldModel             = "models/weapons/w_pist_usp.mdl"
  
 SWEP.NoSights = true

@@ -15,6 +15,7 @@ SWEP.AdminSpawnable		= true		// Spawnable in singleplayer or by server admins
 
 SWEP.ViewModel			= "models/weapons/v_c4.mdl"
 SWEP.WorldModel			= "models/weapons/w_c4.mdl"
+SWEP.ViewModelFlip      = true
 
 //TTT Convertion Code \\
 

@@ -34,6 +34,7 @@ SWEP.WeaponID              = AMMO_GLOCK
 SWEP.HeadshotMultiplier    = 2
 
 SWEP.UseHands              = true
+SWEP.ViewModelFlip         = true
 SWEP.ViewModel             = "models/weapons/v_pist_glock18.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_glock18.mdl"
 

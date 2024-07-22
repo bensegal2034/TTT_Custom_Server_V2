@@ -88,6 +88,20 @@ sound.Add({
 	sound = 			"weapons/Kriss/unfold.mp3"
 })
 
+hook.Add("TTTPrepareRound", "ResetVectorColor", function()
+   if SERVER then
+      local rf = RecipientFilter()
+      rf:AddAllPlayers()
+      players = rf:GetPlayers()
+      for i = 1, #players do
+         local colDefault = Color(255,255,255,255)
+         self:SetColor(colDefault)
+         self:GetOwner():GetViewModel():SetColor(colDefault)
+         self:GetOwner():SetColor(colDefault)
+      end
+   end
+end)
+
 
 SWEP.Base = "weapon_tttbase"
 
@@ -134,7 +148,6 @@ end
 
 function SWEP:Initialize()
    self:SetDeploySpeed( 0.8 )
-   print(self:GetColor())
    function TakeDamage( victim, damage, attacker, inflictor )
       local dmg = DamageInfo() -- Create a server-side damage information class
       dmg:SetDamage( damage )

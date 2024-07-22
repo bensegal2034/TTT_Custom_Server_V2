@@ -36,6 +36,7 @@ AddCSLuaFile()
 	resource.AddFile( "models/orange_blossom/piss/piss_world.mdl" )
 	resource.AddFile( "models/weapons/c_models/urinejar.mdl" )
 	resource.AddFile( "sound/jarate/jar_explode.wav" )
+	resource.AddFile( "particles/item_fx.pcf" )
 	resource.AddWorkshop("3020452666")
 end
 

@@ -232,7 +232,6 @@ function SWEP:PrimaryAttack()
 		local forward = self.Owner:GetForward()
   
 		self.Owner:SetVelocity(Vector(forward.r * ((self.PushForceSelf) * -1),forward.y * ((self.PushForceSelf) * -1),angles.p))
-		print(Vector(forward.r * ((self.PushForceSelf) * -1),forward.y * ((self.PushForceSelf) * -1),angles.p))
 		self.Owner:ConCommand( "-speed" )
 		self.Owner:ConCommand( "+walk" )
 		

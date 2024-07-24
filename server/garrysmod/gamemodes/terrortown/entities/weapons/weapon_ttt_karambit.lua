@@ -316,4 +316,4 @@ local function hop( ent )
 		end
 	end
 end
-hook.Add("CreateMove", "Hop", hop)
+hook.Add("CreateMove", "KarambitHop", hop)

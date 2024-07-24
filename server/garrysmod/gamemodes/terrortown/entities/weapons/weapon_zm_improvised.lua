@@ -156,6 +156,16 @@ function SWEP:PrimaryAttack()
             -- do a bullet just to make blood decals work sanely
             -- need to disable lagcomp because firebullets does its own
             self:GetOwner():LagCompensation(false)
+
+            x = self.Owner:GetVelocity().x
+            y = self.Owner:GetVelocity().y
+            z = self.Owner:GetVelocity().z
+            z = math.min(0,z)
+            velocity = math.sqrt(math.pow(x,2) + math.pow(y,2) + math.pow(z,2))
+            if velocity > 350 then
+               self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=200})
+            end
+
             self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=0})
          else
             util.Effect("Impact", edata)

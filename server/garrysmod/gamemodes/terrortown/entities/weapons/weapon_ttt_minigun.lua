@@ -115,7 +115,7 @@ function SWEP:Think()
 	end
 	
 
-	if 	self.Owner:KeyReleased(IN_ATTACK) then
+	if self.Owner:IsValid() and	self.Owner:KeyReleased(IN_ATTACK) then
 		local vm = self.Owner:GetViewModel()	
 		self.Weapon:StopSound( "weapons/minigun1/New3/minigunspin.wav" )
 		self.Weapon:EmitSound(Sound("Minigun.Stop"))

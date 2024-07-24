@@ -72,7 +72,7 @@ SWEP.IsSilent = false
 -- If NoSights is true, the weapon won't have ironsights
 SWEP.NoSights = false
 
-SWEP.AutoSpawnable         = true
+SWEP.AutoSpawnable         = false
 SWEP.Spawnable             = true
 
 SWEP.Category = "Team Fortress 2"
@@ -80,10 +80,10 @@ SWEP.Category = "Team Fortress 2"
 SWEP.ViewModel = "models/weapons/v_stunstick.mdl"
 SWEP.WorldModel = "models/weapons/w_crowbar.mdl"
 SWEP.ShowWorldModel = false
-SWEP.Kind = WEAPON_HEAVY
+SWEP.Kind = WEAPON_MELEE
 SWEP.Primary.Delay			= 0.5
 SWEP.Primary.Recoil			= 0
-SWEP.Primary.Damage			= 70
+SWEP.Primary.Damage			= 20
 SWEP.Primary.Force          = 0
 SWEP.Primary.NumShots		= 5
 SWEP.Primary.Cone			= 0
@@ -107,7 +107,7 @@ SWEP.Primary.SoundLevel = 0.5
 SWEP.IronSightsPos = Vector(0, 0, 0)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 
-
+local sound_single = Sound("Weapon_Crowbar.Single")
 
 function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -134,7 +134,7 @@ function SWEP:PrimaryAttack()
 		"weapons/pan/melee_frying_pan_04.wav",
 		}
 		local random = math.random(1, #randomsounds)
-		self.Weapon:EmitSound(randomsounds[random], 100, 100, 0.25, CHAN_WEAPON)
+		self.Weapon:EmitSound(randomsounds[random], 100, 100, 0.25)
 	   if not (CLIENT and (not IsFirstTimePredicted())) then
 		  local edata = EffectData()
 		  edata:SetStart(spos)
@@ -160,7 +160,7 @@ function SWEP:PrimaryAttack()
 			z = self.Owner:GetVelocity().z
 			z = math.min(0,z)
 			velocity = math.sqrt(math.pow(x,2) + math.pow(y,2) + math.pow(z,2))
-			if velocity > 250 then
+			if velocity > 350 then
 				self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=200})
 			else
 				self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=70})
@@ -721,6 +721,43 @@ if CLIENT then
 	
 end	
 
+function SWEP:SecondaryAttack()
+	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self.Weapon:SetNextSecondaryFire( CurTime() + 0.1 )
+ 
+	if self:GetOwner().LagCompensation then
+	   self:GetOwner():LagCompensation(true)
+	end
+ 
+	local tr = self:GetOwner():GetEyeTrace(MASK_SHOT)
+ 
+	if tr.Hit and IsValid(tr.Entity) and tr.Entity:IsPlayer() and (self:GetOwner():EyePos() - tr.HitPos):Length() < 100 then
+	   local ply = tr.Entity
+ 
+	   if SERVER and (not ply:IsFrozen()) then
+		  local pushvel = tr.Normal * GetConVar("ttt_crowbar_pushforce"):GetFloat()
+ 
+		  -- limit the upward force to prevent launching
+		  pushvel.z = math.Clamp(pushvel.z, 50, 100)
+ 
+		  ply:SetVelocity(ply:GetVelocity() + pushvel)
+		  self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+ 
+		  ply.was_pushed = {att=self:GetOwner(), t=CurTime(), wep=self:GetClass()} --, infl=self}
+	   end
+ 
+	   self.Weapon:EmitSound(sound_single)      
+	   self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
+ 
+	   self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+	end
+	
+	if self:GetOwner().LagCompensation then
+	   self:GetOwner():LagCompensation(false)
+	end
+end
 
 
-
+if SERVER then
+	CreateConVar("ttt_pan_pushforce", "395", FCVAR_NOTIFY)
+end

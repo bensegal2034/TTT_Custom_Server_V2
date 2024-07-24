@@ -1,0 +1,33 @@
+"Refract"
+{
+ 	//"$model" 1
+
+ 	//"$refractamount" ".2"
+ 	//"$bluramount" "1"
+	"$REFRACTTINT" "{255 240 180}"
+	"$scale" "[1 1]"
+	"$dudvmap" "dev/water_dudv"
+ 	"$normalmap" "dev/water_normal"
+ 	"$surfaceprop" "water"
+	"$dudvframe" "0"
+	"$bumpframe" "0"
+//	"$nocull" 1
+	//"$REFRACTTINTTEXTURE" "models/props_lab/glass_tint001"
+	"Proxies"
+	{
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$dudvmap"
+			"animatedtextureframenumvar" "$dudvframe"
+			"animatedtextureframerate" 30.00
+		}
+
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$normalmap"
+			"animatedtextureframenumvar" "$bumpframe"
+			"animatedtextureframerate" 30.00
+		}
+
+	}
+}

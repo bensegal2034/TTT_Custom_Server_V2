@@ -1,261 +1,83 @@
-if SERVER then
-	AddCSLuaFile()
-	resource.AddFile( "materials/fryingpan/pan.vmt" )
-	resource.AddFile( "materials/fryingpan/pan.vtf" )
-	resource.AddFile( "models/weapons/c_crowbar_nohands/c_crowbar_nohands.dx80.vtx" )
-	resource.AddFile( "models/weapons/c_crowbar_nohands/c_crowbar_nohands.dx90.vtx" )
-	resource.AddFile( "models/weapons/c_crowbar_nohands/c_crowbar_nohands.mdl" )
-	resource.AddFile( "models/weapons/c_crowbar_nohands/c_crowbar_nohands.sw.vtx" )
-	resource.AddFile( "models/weapons/c_crowbar_nohands/c_crowbar_nohands.vvd" )
-	resource.AddFile( "sound/weapons/cbar_miss1.wav")
-	resource.AddFile( "sound/weapons/pan/melee_frying_pan_01.wav")
-	resource.AddFile( "sound/weapons/pan/melee_frying_pan_02.wav")
-	resource.AddFile( "sound/weapons/pan/melee_frying_pan_03.wav")
-	resource.AddFile( "sound/weapons/pan/melee_frying_pan_04.wav")
-	resource.AddFile("materials/vgui/ttt/icon_pan.vtf")
-	resource.AddFile("materials/vgui/ttt/icon_pan.vmt")
-	resource.AddWorkshop("2598540535")
-end
-SWEP.Spawnable = true
-SWEP.AdminOnly = false
-SWEP.Icon = "vgui/ttt/icon_pan"
-SWEP.BounceWeaponIcon = false
 
+SWEP.PrintName = "Holy Mackerel"
+    
 SWEP.Author = ""
-SWEP.Instructions = ""
-SWEP.Purpose = "Panning & Killing"
 SWEP.Contact = ""
-SWEP.Base = "weapon_tttbase"
-if CLIENT then
-
-	SWEP.PrintName = "Frying Pan"
-	SWEP.HoldType = "melee"
-	SWEP.ViewModelFOV = 62
-    SWEP.ViewModelFlip = false
-	SWEP.Slot = 2
-	SWEP.SlotPos = 2
-
-	
-	SWEP.WepSelectIcon		= surface.GetTextureID( "weapons/pan" )
-	
-	killicon.Add( "pan", "fryingpan/pan", color_white )
-	
-	SWEP.ViewModelBoneMods = {}
-	
-	SWEP.VElements = {
-	["pan"] = { type = "Model", model = "models/weapons/c_models/c_frying_pan/c_frying_pan.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(3.181, 1.7, -5), angle = Angle(-1.024, 111.476, -180), size = Vector(1.003, 1.003, 1.003), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
-}
-
-    SWEP.WElements = {
-	["pan"] = { type = "Model", model = "models/weapons/c_models/c_frying_pan/c_frying_pan.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(4.091, 1.363, -4.092), angle = Angle(-168.75, 11.25, 7.158), size = Vector(0.833, 0.833, 0.833), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
-}
-end
-
--- The AmmoEnt is the ammo entity that can be picked up when carrying this gun.
-SWEP.AmmoEnt = "none"
-
--- CanBuy is a table of ROLE_* entries like ROLE_TRAITOR and ROLE_DETECTIVE. If
--- a role is in this table, those players can buy this.
-SWEP.CanBuy = {}
-
-SWEP.InLoadoutFor = { nil }
-
--- If LimitedStock is true, you can only buy one per round.
-SWEP.LimitedStock = true
-
--- If AllowDrop is false, players can't manually drop the gun with Q
-SWEP.AllowDrop = true
-
--- If IsSilent is true, victims will not scream upon death.
-SWEP.IsSilent = false
-
--- If NoSights is true, the weapon won't have ironsights
-SWEP.NoSights = false
-
-SWEP.AutoSpawnable         = false
-SWEP.Spawnable             = true
+SWEP.Purpose = "Level "..math.Round(math.Rand(1,100)).." Fish"
+SWEP.Instructions = "Getting hit by a fish has got to be humiliating."
 
 SWEP.Category = "Team Fortress 2"
 
-SWEP.ViewModel = "models/weapons/v_stunstick.mdl"
-SWEP.WorldModel = "models/weapons/w_crowbar.mdl"
+SWEP.Spawnable= true
+SWEP.AutoSpawnable = true
+SWEP.AdminSpawnable= true
+SWEP.AdminOnly = false
+
+SWEP.ViewModelFOV = 60
+SWEP.ViewModel = "models/weapons/v_models/v_bat_scout.mdl" 
+SWEP.WorldModel = "models/weapons/w_pistol.mdl"
+SWEP.ViewModelFlip = false
+
+SWEP.ShowViewModel = true
 SWEP.ShowWorldModel = false
-SWEP.Kind = WEAPON_MELEE
-SWEP.Primary.Delay			= 0.5
-SWEP.Primary.Recoil			= 0
-SWEP.Primary.Damage			= 20
-SWEP.Primary.Force          = 0
-SWEP.Primary.NumShots		= 5
-SWEP.Primary.Cone			= 0
-SWEP.Primary.ClipSize		= -1
-SWEP.Primary.DefaultClip	= -1
-SWEP.Primary.Automatic   	= true
-SWEP.Primary.Ammo         	= "none"
-SWEP.DamageType            = "True"
+SWEP.ViewModelBoneMods = {
+	["weapon_bone"] = { scale = Vector(0.009, 0.009, 0.009), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) }
+}
 
-SWEP.Secondary.Delay		= 0
-SWEP.Secondary.Recoil		= 0
-SWEP.Secondary.Damage		= 0
-SWEP.Secondary.NumShots		= 0
-SWEP.Secondary.Cone			= 0
-SWEP.Secondary.ClipSize		= -1
-SWEP.Secondary.DefaultClip	= -1
-SWEP.Secondary.Automatic   	= false
-SWEP.Secondary.Ammo         = "none"
-SWEP.Primary.SoundLevel = 0.5
+SWEP.AutoSwitchTo = false
+SWEP.AutoSwitchFrom = false
 
-SWEP.IronSightsPos = Vector(0, 0, 0)
-SWEP.IronSightsAng = Vector(0, 0, 0)
-
-local sound_single = Sound("Weapon_Crowbar.Single")
-
-function SWEP:PrimaryAttack()
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
-	if not IsValid(self:GetOwner()) then return end
+SWEP.Slot = 1
+SWEP.Kind = WEAPON_PISTOL
+SWEP.SlotPos = 1
  
+SWEP.UseHands = true
 
- 
-	local spos = self:GetOwner():GetShootPos()
-	local sdest = spos + (self:GetOwner():GetAimVector() * 90)
- 
-	local tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
-	local hitEnt = tr_main.Entity
+SWEP.HoldType = "melee" 
 
-	
-	
-	if IsValid(hitEnt) or tr_main.HitWorld then
-	   self.Owner:SetAnimation( PLAYER_ATTACK1 )
-		local randomsounds = {
-		"weapons/pan/melee_frying_pan_01.wav",
-		"weapons/pan/melee_frying_pan_02.wav",
-		"weapons/pan/melee_frying_pan_03.wav",
-		"weapons/pan/melee_frying_pan_04.wav",
-		}
-		local random = math.random(1, #randomsounds)
-		self.Weapon:EmitSound(randomsounds[random], 100, 100, 0.25)
-	   if not (CLIENT and (not IsFirstTimePredicted())) then
-		  local edata = EffectData()
-		  edata:SetStart(spos)
-		  edata:SetOrigin(tr_main.HitPos)
-		  edata:SetNormal(tr_main.Normal)
-		  edata:SetSurfaceProp(tr_main.SurfaceProps)
-		  edata:SetHitBox(tr_main.HitBox)
-		  --edata:SetDamageType(DMG_CLUB)
-		  edata:SetEntity(hitEnt)
- 
-		  if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
-			 util.Effect("BloodImpact", edata)
-			 self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
-			 -- does not work on players rah
-			 --util.Decal("Blood", tr_main.HitPos + tr_main.HitNormal, tr_main.HitPos - tr_main.HitNormal)
- 
-			 -- do a bullet just to make blood decals work sanely
-			 -- need to disable lagcomp because firebullets does its own
-			 self:GetOwner():LagCompensation(false)
+SWEP.FiresUnderwater = true
 
-			x = self.Owner:GetVelocity().x
-			y = self.Owner:GetVelocity().y
-			z = self.Owner:GetVelocity().z
-			z = math.min(0,z)
-			velocity = math.sqrt(math.pow(x,2) + math.pow(y,2) + math.pow(z,2))
-			if velocity > 350 then
-				self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=200})
-			else
-				self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=70})
-			end
-			 
-		  else
-			self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=70})
-			 util.Effect("Impact", edata)
-		  end
-	   end
-	else
-		self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
-		self.Owner:SetAnimation( PLAYER_ATTACK1 )
-	end
- 
- 
-	if CLIENT then
-	   -- used to be some shit here
-	else -- SERVER
- 
-	-- Do another trace that sees nodraw stuff like func_button
-	local tr_all = nil
-	tr_all = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner()})
-	
-	self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
+SWEP.DrawCrosshair = false
 
-		if hitEnt and hitEnt:IsValid() then
-			if self:OpenEnt(hitEnt) == OPEN_NO and tr_all.Entity and tr_all.Entity:IsValid() then
-				-- See if there's a nodraw thing we should open
-				self:OpenEnt(tr_all.Entity)
-			end
+SWEP.DrawAmmo = false
 
-			local dmg = DamageInfo()
-			
-			dmg:SetDamage(self.Primary.Damage)
-			dmg:SetAttacker(self:GetOwner())
-			dmg:SetInflictor(self.Weapon)
-			dmg:SetDamageForce(self:GetOwner():GetAimVector() * 1500)
-			dmg:SetDamagePosition(self:GetOwner():GetPos())
-			dmg:SetDamageType(DMG_CLUB)
+SWEP.ReloadSound = ""
 
-			hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
-			
-			self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )  
-			self.Owner:SetAnimation( PLAYER_ATTACK1 )       
- 
-        self:GetOwner():TraceHullAttack(spos, sdest, Vector(-16,-16,-16), Vector(16,16,16), 30, DMG_CLUB, 11, true)
-        self:GetOwner():FireBullets({Num=1, Src=spos, Dir=self:GetOwner():GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=20})
-	   
-	   	else
-       	if tr_main.HitWorld then
-           self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
-        else
-           self.Weapon:SendWeaponAnim( ACT_VM_MISSCENTER )
-        end
- 
-		  -- See if our nodraw trace got the goods
-		  if tr_all.Entity and tr_all.Entity:IsValid() then
-			 self:OpenEnt(tr_all.Entity)
-		  end
-	   end
-	end
- 
-	if self:GetOwner().LagCompensation then
-	   self:GetOwner():LagCompensation(false)
-	end
- end
+SWEP.Base = "weapon_tttbase"
 
-function SWEP:SecondaryAttack() //No secondary ability
+SWEP.Primary.Sound = Sound( "Weapon_FireAxe.Miss" )
+SWEP.Primary.ClipSize = -1
+SWEP.Primary.DefaultClip = -1
+SWEP.Primary.Automatic = true
+SWEP.Primary.Ammo = "none"
+SWEP.Primary.Damage = 35
+SWEP.Primary.Delay = 0.5
+SWEP.Primary.Force = 2
 
-end
+SWEP.Secondary.ClipSize = 0
+SWEP.Secondary.DefaultClip = 0
+SWEP.Secondary.Automatic = false
+SWEP.Secondary.Ammo = "None"
 
-function SWEP:Reload() //Reload does nothing
+SWEP.VElements = {
+	["vm_holymackerel"] = { type = "Model", model = "models/weapons/c_models/c_holymackerel.mdl", bone = "weapon_bone", rel = "", pos = Vector(0, 0, 0), angle = Angle(90, 0, -90), size = Vector(1, 1, 1), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
+}
 
-end
-
-function SWEP:Deploy()
-	self:SetIronsights(false)
-	self:SetWeaponHoldType( "melee" )
-	return true
-end
+SWEP.WElements = {
+	["wm_holymackerel"] = { type = "Model", model = "models/weapons/c_models/c_holymackerel.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(3.635, 1.557, 1.557), angle = Angle(-180, 0, 0), size = Vector(0.8, 0.8, 0.8), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
+}
 
 function SWEP:Initialize()
-	self:SetDeploySpeed(5)
+	self:SetWeaponHoldType( self.HoldType )
 	// other initialize code goes here
-	self:SetWeaponHoldType( "melee" )
+
 	if CLIENT then
 	
-	    
 		// Create a new table for every weapon instance
 		self.VElements = table.FullCopy( self.VElements )
 		self.WElements = table.FullCopy( self.WElements )
 		self.ViewModelBoneMods = table.FullCopy( self.ViewModelBoneMods )
-		
+
 		self:CreateModels(self.VElements) // create viewmodels
 		self:CreateModels(self.WElements) // create worldmodels
 		
@@ -298,7 +120,15 @@ function SWEP:OnRemove()
 	self:Holster()
 end
 
+function SWEP:DrawWeaponSelection(x, y, wide, tall, alpha)
 
+     surface.SetDrawColor(255, 255, 255, alpha)
+     surface.SetMaterial(Material("backpack/scout/holymackerel"))
+     surface.DrawTexturedRect(x + wide/7.5, y + tall/100 - 10, wide/1.35, tall)
+
+     self:PrintWeaponInfo(x + wide, y + tall, alpha)
+
+end
 
 if CLIENT then
 
@@ -719,45 +549,121 @@ if CLIENT then
 		
 	end
 	
-end	
+end
+
+
+
+function SWEP:Deploy()
+	self:SetWeaponHoldType( self.HoldType )
+	self.Weapon:SendWeaponAnim( ACT_VM_DRAW )
+	self:SetNextPrimaryFire( CurTime() + 0.5 )
+	self:SetNextSecondaryFire( CurTime() + 0.5 )
+	self.Attack = 0
+	self.AttackTimer = CurTime()
+	self.Idle = 0
+	self.IdleTimer = CurTime() + self.Owner:GetViewModel():SequenceDuration()
+	return true
+end
+
+function SWEP:PrimaryAttack()
+	self:EmitSound( self.Primary.Sound )
+	self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
+	self.Owner:SetAnimation( PLAYER_ATTACK1 )
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+	self.Attack = 1
+	self.AttackTimer = CurTime() + 0.2
+	self.Idle = 0
+	self.IdleTimer = CurTime() + self.Owner:GetViewModel():SequenceDuration()
+end
 
 function SWEP:SecondaryAttack()
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-	self.Weapon:SetNextSecondaryFire( CurTime() + 0.1 )
- 
-	if self:GetOwner().LagCompensation then
-	   self:GetOwner():LagCompensation(true)
+end
+
+function SWEP:Reload()
+end
+
+function SWEP:Think()
+	if self.Attack == 1 and self.AttackTimer <= CurTime() then
+	local tr = util.TraceLine( {
+	start = self.Owner:GetShootPos(),
+	endpos = self.Owner:GetShootPos() + self.Owner:GetAimVector() * 64,
+	filter = self.Owner,
+	mask = MASK_SHOT_HULL,
+	} )
+	if !IsValid( tr.Entity ) then
+		tr = util.TraceHull( {
+		start = self.Owner:GetShootPos(),
+		endpos = self.Owner:GetShootPos() + self.Owner:GetAimVector() * 64,
+		filter = self.Owner,
+		mins = Vector( -16, -16, 0 ),
+		maxs = Vector( 16, 16, 0 ),
+		mask = MASK_SHOT_HULL,
+		} )
 	end
- 
-	local tr = self:GetOwner():GetEyeTrace(MASK_SHOT)
- 
-	if tr.Hit and IsValid(tr.Entity) and tr.Entity:IsPlayer() and (self:GetOwner():EyePos() - tr.HitPos):Length() < 100 then
-	   local ply = tr.Entity
- 
-	   if SERVER and (not ply:IsFrozen()) then
-		  local pushvel = tr.Normal * GetConVar("ttt_crowbar_pushforce"):GetFloat()
- 
-		  -- limit the upward force to prevent launching
-		  pushvel.z = math.Clamp(pushvel.z, 50, 100)
- 
-		  ply:SetVelocity(ply:GetVelocity() + pushvel)
-		  self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
- 
-		  ply.was_pushed = {att=self:GetOwner(), t=CurTime(), wep=self:GetClass()} --, infl=self}
-	   end
- 
-	   self.Weapon:EmitSound(sound_single)      
-	   self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
- 
-	   self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+	if SERVER and IsValid( tr.Entity ) then
+		local dmg = DamageInfo()
+		local attacker = self.Owner
+		if !IsValid( attacker ) then
+		attacker = self
+		end
+		dmg:SetAttacker( attacker )
+		dmg:SetInflictor( self )
+		dmg:SetDamage( self.Primary.Damage )
+		dmg:SetDamageForce( self.Owner:GetForward() * self.Primary.Force )
+		dmg:SetDamageType( DMG_CLUB )
+		tr.Entity:TakeDamageInfo( dmg )
 	end
-	
-	if self:GetOwner().LagCompensation then
-	   self:GetOwner():LagCompensation(false)
+	if tr.Hit then
+		if SERVER then
+			if tr.Entity:IsNPC() || tr.Entity:IsPlayer() then
+				self.Owner:EmitSound( "Weapon_HolyMackerel.HitFlesh" )
+			end
+			if !( tr.Entity:IsNPC() || tr.Entity:IsPlayer() ) then
+				self.Owner:EmitSound( "Weapon_HolyMackerel.HitWorld" )
+			end
+		end
+	end
+	self.Attack = 0
+	end
+	if self.Idle == 0 and self.IdleTimer <= CurTime() then
+		if SERVER then
+			self.Weapon:SendWeaponAnim( ACT_VM_IDLE )
+		end
+		self.Idle = 1
 	end
 end
 
 
-if SERVER then
-	CreateConVar("ttt_pan_pushforce", "395", FCVAR_NOTIFY)
+function SWEP:CanHop( ent )
+	if ( !ent:KeyDown( IN_JUMP ) ) then return false end
+	if ( LocalPlayer():IsOnGround() ) then return false end
+	if ( LocalPlayer():InVehicle() ) then return false end
+	if ( LocalPlayer():GetMoveType() == MOVETYPE_NOCLIP ) then return false end
+	if ( LocalPlayer():WaterLevel() >= 2 ) then return false end
+	return true
 end
+DEFINE_BASECLASS( SWEP.Base )
+function SWEP:DrawHUD(...)
+	local weapon = LocalPlayer():GetActiveWeapon()
+	if not IsValid( weapon ) then return end
+	if weapon:GetClass() == "weapon_ttt_holymackerel" then
+		local w, h = 300, 30
+		local x, y = math.floor( ScrW() / 2 - w / 2 ), ScrH() - h - 30
+		local velocity = math.Round(LocalPlayer():GetVelocity():Length2DSqr() / 1000)
+		draw.RoundedBox(0, x, y, math.Clamp(velocity, 0, w), h,Color(0,255,100,205))
+		draw.RoundedBox( 0, x-1, y-1, w+2, h+2, Color( 20, 20, 20, 150 ) )
+		draw.SimpleText(velocity, "Trebuchet24", ScrW() / 2, y + 3, velocity >= 1000 and Color(220, 65, 65, 220) or color_white, TEXT_ALIGN_CENTER )
+	end
+	return BaseClass.DrawHUD(self, ...)
+end
+
+local function hop( ent )
+	local weapon = LocalPlayer():GetActiveWeapon()
+	if IsValid(weapon) and weapon:GetClass() == "weapon_ttt_holymackerel" then
+		if weapon.CanHop and weapon:CanHop(ent) then 
+			ent:SetButtons( ent:GetButtons() - IN_JUMP )
+		end
+	end
+end
+hook.Add("CreateMove", "MackerelHop", hop)

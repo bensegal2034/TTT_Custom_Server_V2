@@ -1,0 +1,5 @@
+UnlitGeneric
+{
+	$basetexture "models/orange_blossom/piss/piss_icon"
+	$translucent 1
+}

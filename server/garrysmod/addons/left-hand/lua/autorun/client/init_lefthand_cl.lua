@@ -24,7 +24,6 @@ if not(table.IsEmpty(weaponDefaults)) then buildWeaponDefaultTable() end
 
 local function handleWeapon(wepName, currentCvarState)
     local wep = LocalPlayer():GetWeapon(wepName)
-    print("blargh")
     if not(IsValid(wep)) then
         timer.Simple(0.5, function()
             handleWeapon(wepName, currentCvarState)

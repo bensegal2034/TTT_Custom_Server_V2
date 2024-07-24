@@ -45,7 +45,7 @@ end
 
 function PissedDamage(ply,hitgroup,dmginfo)
 	if ply:GetNWBool("PissedOn") then 
-	dmginfo:ScaleDamage(1.5)
+	dmginfo:ScaleDamage(1.35)
 	end
 end
 

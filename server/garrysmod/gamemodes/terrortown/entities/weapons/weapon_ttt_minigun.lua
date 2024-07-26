@@ -96,7 +96,7 @@ SWEP.Secondary.Sound = ""
 SWEP.Secondary.TakeAmmo = 0
 SWEP.Secondary.ClipSize = -1
 
-
+SWEP.HeadshotMultiplier = 2
 
 function SWEP:Think()
 

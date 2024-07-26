@@ -23,7 +23,7 @@ firstLoad = firstLoad or true
 if not(table.IsEmpty(weaponDefaults)) then buildWeaponDefaultTable() end
 
 local function handleWeapon(wepName, currentCvarState)
-    local getWeapon = LocalPlayer.GetWeapon
+    local getWeapon = LocalPlayer().GetWeapon
     if not(IsValid(getWeapon)) then
         timer.Simple(0.5, function()
             handleWeapon(wepName, currentCvarState)

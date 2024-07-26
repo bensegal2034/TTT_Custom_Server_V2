@@ -177,7 +177,12 @@ if CLIENT then
 				model:SetPos(pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z )
 				ang:RotateAroundAxis(ang:Up(), v.angle.y)
 				ang:RotateAroundAxis(ang:Right(), v.angle.p)
-				ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				if (IsValid(self.Owner) and self.Owner:IsPlayer() and self.ViewModelFlip) then
+					ang:RotateAroundAxis(ang:Forward(), -v.angle.r)
+				else
+					ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				end
+
 
 				model:SetAngles(ang)
 				//model:SetModelScale(v.size)

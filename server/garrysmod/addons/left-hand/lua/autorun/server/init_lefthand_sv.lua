@@ -1,0 +1,6 @@
+util.AddNetworkString("NotifyWeaponEquip")
+hook.Add("WeaponEquip", "NotifyClientWeaponEquip", function(wep, owner)
+    net.Start("NotifyWeaponEquip")
+        net.WriteString(wep:GetClass())
+    net.Send(owner)
+end)

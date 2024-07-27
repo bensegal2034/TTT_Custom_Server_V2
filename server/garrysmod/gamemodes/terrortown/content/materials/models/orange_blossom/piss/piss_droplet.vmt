@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	$basetexture "models/orange_blossom/piss/piss_droplet"
+	$vertexalpha 1
+	$vertexcolor 1
+}

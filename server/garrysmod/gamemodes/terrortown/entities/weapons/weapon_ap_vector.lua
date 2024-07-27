@@ -88,6 +88,19 @@ sound.Add({
 	sound = 			"weapons/Kriss/unfold.mp3"
 })
 
+hook.Add("TTTPrepareRound", "ResetVectorColor", function()
+   if SERVER then
+      local rf = RecipientFilter()
+      rf:AddAllPlayers()
+      players = rf:GetPlayers()
+      for i = 1, #players do
+         local colDefault = Color(255,255,255,255)
+         players[i]:GetViewModel():SetColor(colDefault)
+         players[i]:SetColor(colDefault)
+      end
+   end
+end)
+
 
 SWEP.Base = "weapon_tttbase"
 
@@ -130,10 +143,7 @@ function SWEP:SetupDataTables()
    self:NetworkVar( "Int", 0, "WeaponState" )
 end   
 
-function SWEP:Deploy()
-   self:SetIronsights(false)
-   return true
-end
+
 
 function SWEP:Initialize()
    self:SetDeploySpeed( 0.8 )
@@ -192,16 +202,24 @@ function SWEP:SecondaryAttack()
       local effectdata = EffectData()
 		effectdata:SetOrigin( self.Owner:GetPos() )
 		effectdata:SetNormal( self.Owner:GetPos() )
-		effectdata:SetMagnitude( 10 )
-		effectdata:SetScale( 10 )
+		effectdata:SetMagnitude( 0.5 )
+		effectdata:SetScale( 0.5 )
 	   util.Effect( "VortDispel", effectdata)
       self:EmitSound("weapons/kriss/on.wav")
       self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
+      local colGreen = Color(0,255,0,255)
+      self:SetColor(colGreen)
+      self:GetOwner():GetViewModel():SetColor(colGreen)
+      self:GetOwner():SetColor(colGreen)
    elseif (self.StateValue == 1) then
       if SERVER then
          self.StateValue = 0
       end
       self:EmitSound("weapons/kriss/off.wav")
+      local colDefault = Color(255,255,255,255)
+      self:SetColor(colDefault)
+      self:GetOwner():GetViewModel():SetColor(colDefault)
+      self:GetOwner():SetColor(colDefault)
       self.Primary.Cone = self.Primary.ConeSaved
    end
 end
@@ -222,7 +240,6 @@ function SWEP:Think()
 end
 
 function SWEP:PreDrop()
-
    if SERVER and IsValid(self:GetOwner()) and self.Primary.Ammo != "none" then
       local ammo = self:Ammo1()
 
@@ -239,4 +256,31 @@ function SWEP:PreDrop()
          self:GetOwner():RemoveAmmo(ammo, self.Primary.Ammo)
       end
    end
+   
+end
+
+DEFINE_BASECLASS( SWEP.Base )
+function SWEP:Holster(...)
+   if (self.StateValue == 1) then
+      local colDefault = Color(255,255,255,255)
+      if IsValid(self:GetOwner()) then
+         self:GetOwner():GetViewModel():SetColor(colDefault)
+         self:GetOwner():SetColor(colDefault)
+      end
+      self.Primary.Cone = self.Primary.ConeSaved
+   end
+   return BaseClass.Holster(self, ...)
+end
+
+
+function SWEP:Deploy()
+   self:SetIronsights(false)
+   if (self.StateValue == 1) then
+      local colGreen = Color(0,255,0,255)
+      self:SetColor(colGreen)
+      self:GetOwner():GetViewModel():SetColor(colGreen)
+      self:GetOwner():SetColor(colGreen)
+      self.Primary.Cone = self.Primary.ConeSaved
+   end
+   return true
 end

@@ -27,6 +27,7 @@ end
 	SWEP.HoldType		= "pistol"
 	SWEP.ViewModel  = "models/weapons/cstrike/c_pist_fiveseven.mdl"
 	SWEP.WorldModel = "models/weapons/w_pist_fiveseven.mdl"
+	SWEP.ViewModelFlip = false
 	SWEP.Kind = 42
 	SWEP.CanBuy = { ROLE_TRAITOR }
 	SWEP.AutoSpawnable = false

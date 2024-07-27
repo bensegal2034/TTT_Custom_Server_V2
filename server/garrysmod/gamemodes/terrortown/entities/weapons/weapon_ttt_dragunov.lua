@@ -338,6 +338,11 @@ hook.Add("PreDrawEffects", "DrawThroughSmoke", function()
 		if !IsValid(ply) or not(ply) or ply == LocalPlayer() or !ply:Alive() then
 			continue
 		end
+
+		-- Skip the player being spectated first person
+		if LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and LocalPlayer():GetObserverTarget() == ply then
+			continue
+		end
 		
 		-- Create a clientside only copy of the player model to make yellow
 		local entity = ClientsideModel(ply:GetModel())

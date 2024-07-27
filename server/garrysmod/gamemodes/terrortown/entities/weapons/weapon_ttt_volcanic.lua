@@ -167,41 +167,6 @@ local fireSoundTable = {
 	sound = "path/to/sound"
 }
 
-local function addFireSound(name, snd, volume, soundLevel, channel, pitchStart, pitchEnd, noDirection)
-	-- use defaults if no args are provided
-	volume = volume or 1
-	soundLevel = soundLevel or 97
-	channel = channel or CHAN_WEAPON
-	pitchStart = pitchStart or 92
-	pitchEnd = pitchEnd or 112
-	
-	fireSoundTable.name = name
-	fireSoundTable.sound = snd
-	
-	fireSoundTable.channel = channel
-	fireSoundTable.volume = volume
-	fireSoundTable.level = soundLevel
-	fireSoundTable.pitchstart = pitchStart
-	fireSoundTable.pitchend = pitchEnd
-	
-	sound.Add(fireSoundTable)
-	
-	-- precache the registered sounds
-	
-	if type(fireSoundTable.sound) == "table" then
-		for k, v in pairs(fireSoundTable.sound) do
-			util.PrecacheSound(v)
-		end
-	else
-		util.PrecacheSound(snd)
-	end
-end
-
-addFireSound("Weapon_TFRE_Volcanic.Single", {
-    "weapons/tfre/volcanic/volcanic_single2.wav",},
-    1, SNDLVL_GUNFIRE, CHAN_WEAPON, 88, 93
-)
-
 sound.Add({
 	name = 			"Weapon_TFRE_Volcanic.Lever",
 	channel = 		CHAN_USER_BASE+10,

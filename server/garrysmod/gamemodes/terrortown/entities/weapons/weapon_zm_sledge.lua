@@ -7,7 +7,6 @@ if CLIENT then
    SWEP.Slot               = 2
 
    SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 54
 
    SWEP.Icon               = "vgui/ttt/icon_m249"
    SWEP.IconLetter         = "z"
@@ -33,11 +32,11 @@ SWEP.Primary.Recoil        = 2.2
 SWEP.Primary.Sound         = Sound("Weapon_m249.Single")
 SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
 SWEP.DamageType            = "Impact"
-SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_mach_m249para.mdl"
+
+SWEP.ViewModel             = "models/weapons/v_mach_m249para.mdl"
 SWEP.WorldModel            = "models/weapons/w_mach_m249para.mdl"
 
 SWEP.HeadshotMultiplier    = 2
 
-SWEP.IronSightsPos         = Vector(-5.96, -5.119, 2.349)
+SWEP.IronSightsPos         = Vector( -4.4, -3, 2 )
 SWEP.IronSightsAng         = Vector(0, 0, 0)

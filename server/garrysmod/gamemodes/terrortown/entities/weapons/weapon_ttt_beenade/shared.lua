@@ -56,6 +56,7 @@ SWEP.NoSights = true
 
 SWEP.ViewModel			= "models/weapons/v_eq_flashbang.mdl"
 SWEP.WorldModel			= "models/lucian/props/stupid_bee.mdl"
+SWEP.ViewModelFlip      = true
 SWEP.Weight				= 5
 SWEP.AutoSpawnable      = false
 -- really the only difference between grenade weapons: the model and the thrown

@@ -6,8 +6,6 @@ if CLIENT then
    SWEP.PrintName          = "Glock"
    SWEP.Slot               = 1
 
-   SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 54
 
    SWEP.Icon               = "vgui/ttt/icon_glock"
    SWEP.IconLetter         = "c"
@@ -36,7 +34,8 @@ SWEP.WeaponID              = AMMO_GLOCK
 SWEP.HeadshotMultiplier    = 2
 
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_pist_glock18.mdl"
+SWEP.ViewModelFlip         = true
+SWEP.ViewModel             = "models/weapons/v_pist_glock18.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_glock18.mdl"
 
-SWEP.IronSightsPos         = Vector( -5.79, -3.9982, 2.8289 )
+SWEP.IronSightsPos         = Vector( 4.33, -4.0, 2.9 )

@@ -11,8 +11,9 @@ SWEP.Primary.Recoil = 0
 SWEP.Primary.Automatic = false
 SWEP.Primary.Damage = 0
 SWEP.Primary.Cone = 0.001
-SWEP.DrawAmmo = false;
+SWEP.DrawAmmo = true
 SWEP.Secondary.Ammo = ""
+SWEP.Primary.Ammo = "Charges"
 SWEP.InLoadoutFor = nil
 SWEP.AllowDrop = false
 SWEP.IsSilent = false
@@ -23,6 +24,10 @@ SWEP.LimitedStock = true
 SWEP.ViewModel = "models/weapons/gamefreak/v_buddyfinder.mdl"
 SWEP.WorldModel = ""
 SWEP.Weight = 5
+
+SWEP.Primary.ClipSize = 2
+SWEP.Primary.ClipMax = 2
+SWEP.Primary.DefaultClip = 2
 
 local ActivePings = {} -- server side, {owner: tracked}
 local LastPing = 0 -- server side, last time tracked players pung their tracker
@@ -83,6 +88,7 @@ if SERVER then
 			net.WriteEntity(ply)
 			net.WriteBool(false)
 			net.Send(ActivePings[ply])
+			ply:GetActiveWeapon():TakePrimaryAmmo( 1 )
 		end
 
 		local enableTrack = net.ReadBool()
@@ -158,25 +164,25 @@ function SWEP:PrimaryAttack()
 	if not IsFirstTimePredicted() then return end
 
 	self:DoSATMAnimation(true)
+	if self:Clip1() > 0 then
+		if CLIENT then
+			self:FixIndex()
+			net.Start("Deimos_SetTrack")
 
-	if CLIENT then
-		self:FixIndex()
-		net.Start("Deimos_SetTrack")
-
-		-- disable track
-		if self.activeIndex == self.hoverIndex then
-			net.WriteBool(false)
+			-- disable track
+			if self.activeIndex == self.hoverIndex then
+				net.WriteBool(false)
+				net.SendToServer()
+				self.activeIndex = nil
+				return
+			end
+			-- track player
+			net.WriteBool(true)
+			local ent = self.hoverArray[self.hoverIndex]
+			net.WriteEntity(ent)
 			net.SendToServer()
-			self.activeIndex = nil
-			return
+			self.activeIndex = self.hoverIndex
 		end
-
-		-- track player
-		net.WriteBool(true)
-		local ent = self.hoverArray[self.hoverIndex]
-		net.WriteEntity(ent)
-		net.SendToServer()
-		self.activeIndex = self.hoverIndex
 	end
 end
 
@@ -199,9 +205,6 @@ function SWEP:DoSATMAnimation(switchweapon)
 	timer.Simple(0.3, function()
 		if IsValid(self) then
 			self:SendWeaponAnim(ACT_VM_IDLE)
-			if switchweapon && CLIENT && IsValid(self.Owner) && self.Owner == LocalPlayer() && self.Owner:Alive() then
-				RunConsoleCommand("lastinv")
-			end
 		end
 	end)
 end

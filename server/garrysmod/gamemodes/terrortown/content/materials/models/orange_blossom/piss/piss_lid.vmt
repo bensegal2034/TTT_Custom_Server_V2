@@ -1,0 +1,5 @@
+VertexlitGeneric
+{
+	$basetexture "models/orange_blossom/piss/piss"
+	$nocull 1
+}

@@ -40,7 +40,7 @@ SWEP.PrintName				= "Karambit"
 SWEP.Icon = "vgui/ttt/icon_karambit"
 SWEP.Slot				= 1			
 SWEP.Kind = WEAPON_PISTOL
-SWEP.AutoSpawnable = true			
+SWEP.AutoSpawnable = false			
 SWEP.DrawAmmo				= false	
 SWEP.DrawWeaponInfoBox			= false		
 SWEP.BounceWeaponIcon   		= 	false	
@@ -316,4 +316,4 @@ local function hop( ent )
 		end
 	end
 end
-hook.Add("CreateMove", "Hop", hop)
+hook.Add("CreateMove", "KarambitHop", hop)

@@ -7,9 +7,6 @@ if CLIENT then
    SWEP.Slot               = 6
    SWEP.SlotPos            = 0
 
-   SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 54
-
    SWEP.EquipMenuData = {
       type = "item_weapon",
       desc = "sipistol_desc"
@@ -40,10 +37,10 @@ SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 SWEP.IsSilent              = true
 SWEP.HeadshotMultiplier    = 2
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_pist_usp.mdl"
+SWEP.ViewModel             = "models/weapons/v_pist_usp.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_usp_silencer.mdl"
 
-SWEP.IronSightsPos         = Vector( -5.91, -4, 2.84 )
+SWEP.IronSightsPos         = Vector( 4.48, -4.34, 2.75)
 SWEP.IronSightsAng         = Vector(-0.5, 0, 0)
 
 SWEP.PrimaryAnim           = ACT_VM_PRIMARYATTACK_SILENCED

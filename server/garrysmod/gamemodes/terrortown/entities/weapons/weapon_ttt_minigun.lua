@@ -195,7 +195,26 @@ function SWEP:Initialize()
 	end	
 	if ( CLIENT ) then
 	self:SetWeaponHoldType( "physgun" )
-	end	
+	end
+end
+
+function SWEP:OnDrop()
+	if SERVER then
+		local mins, maxs = self:GetModelBounds()
+		mins:Mul(0.5)
+		maxs:Mul(0.5)
+		
+		local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
+		print(result)
+		--[[
+		local phys = self:GetPhysicsObject()
+		phys:Wake()
+		print(phys)
+		print("their malevolent nasty angles: " .. tostring(phys:GetAngles()) .. "\nour beautiful perfect angles: " .. tostring(self:GetAngles()))
+		phys:SetAngles(self:GetAngles())
+		print("their malevolent nasty angles (changed): " .. tostring(phys:GetAngles()) .. "\nour beautiful perfect angles: " .. tostring(self:GetAngles()))
+		]]--
+	end
 end
 
 function SWEP:PrimaryAttack()

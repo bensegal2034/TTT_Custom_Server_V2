@@ -95,9 +95,8 @@ hook.Add("TTTPrepareRound", "ResetVectorColor", function()
       players = rf:GetPlayers()
       for i = 1, #players do
          local colDefault = Color(255,255,255,255)
-         self:SetColor(colDefault)
-         self:GetOwner():GetViewModel():SetColor(colDefault)
-         self:GetOwner():SetColor(colDefault)
+         players[i]:GetViewModel():SetColor(colDefault)
+         players[i]:SetColor(colDefault)
       end
    end
 end)

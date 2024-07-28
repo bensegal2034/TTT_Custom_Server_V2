@@ -54,6 +54,7 @@ SWEP.UseHands = true
 
 SWEP.PushForceSelf = 30
 
+SWEP.RevSlow = .65
 
 if CLIENT then
 	killicon.Add("weapon_mini_gun_v3", "HUD/killicons/minigun_swep", Color( 255, 80, 0, 255 ));
@@ -98,6 +99,17 @@ SWEP.Secondary.ClipSize = -1
 
 SWEP.HeadshotMultiplier = 2
 
+hook.Add("TTTPrepareRound", "ResetMinigunSpeed", function()
+	if SERVER then
+	   local rf = RecipientFilter()
+	   rf:AddAllPlayers()
+	   players = rf:GetPlayers()
+	   for i = 1, #players do
+		  players[i]:SetWalkSpeed(220)
+	   end
+	end
+ end)
+
 function SWEP:Think()
 
 	self:SetWeaponHoldType( self.HoldType )
@@ -109,8 +121,7 @@ function SWEP:Think()
 	    self:SetNextPrimaryFire(CurTime() + 0.7)
 		self:SetNextSecondaryFire(CurTime() + 0.7)
 		self.Weapon:EmitSound(Sound("Minigun.Start"))
-		self.Owner:ConCommand( "+walk" )
-		self.Owner:ConCommand( "-speed" )
+		self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
 		if CLIENT then return end
 	end
 	
@@ -119,8 +130,8 @@ function SWEP:Think()
 		local vm = self.Owner:GetViewModel()	
 		self.Weapon:StopSound( "weapons/minigun1/New3/minigunspin.wav" )
 		self.Weapon:EmitSound(Sound("Minigun.Stop"))
-		timer.Simple( 0.1, function() self.Owner:ConCommand( "-walk" ) end );
-		if CLIENT then return end
+		self.Owner:SetWalkSpeed(220)
+
 	end
 	
 	
@@ -251,16 +262,18 @@ function SWEP:PrimaryAttack()
 		local forward = self.Owner:GetForward()
   
 		self.Owner:SetVelocity(Vector(forward.r * ((self.PushForceSelf) * -1),forward.y * ((self.PushForceSelf) * -1),angles.p))
-		self.Owner:ConCommand( "-speed" )
-		self.Owner:ConCommand( "+walk" )
+		self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
 		
 end
 
 function SWEP:Holster()
-		self.Owner:ConCommand( "-speed" )
-		self.Owner:ConCommand( "-walk" )
-		self.Weapon:StopSound( "weapons/minigun1/New3/minigunshoot.wav" )
+	self.Owner:SetWalkSpeed(220)
+	self.Weapon:StopSound( "weapons/minigun1/New3/minigunshoot.wav" )
 			return true
+end
+
+function SWEP:OnRemove()
+	self:Holster()
 end
 
 function SWEP:Reload()
@@ -270,9 +283,7 @@ function SWEP:Reload()
 	
 		self:DefaultReload( ACT_VM_RELOAD )
 				
-				self.Owner:ConCommand( "-attack" )
-				self.Owner:ConCommand( "-speed" )
-				self.Owner:ConCommand( "-walk" )
+				self.Owner:SetWalkSpeed(220)
 				self.Weapon:EmitSound(Sound("Minigun.Reload"))
 				self.Weapon:StopSound( "weapons/minigun1/New3/minigunshoot.wav" )
                 local AnimationTime = self.Owner:GetViewModel():SequenceDuration()

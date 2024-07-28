@@ -27,7 +27,7 @@ SWEP.Primary.DefaultClip = 100
 SWEP.Primary.Sound = Sound( "Weapon_P90.Single" )
 SWEP.Secondary.Sound = Sound( "Default.Zoom" )
 SWEP.HeadshotMultiplier = 2
-SWEP.SpeedBoost = 55
+SWEP.SpeedBoost = 1.25
 SWEP.Reloaded = false
 SWEP.SpeedBoostRemoved = false
 SWEP.DamageType            = "Impact"
@@ -97,7 +97,7 @@ function SWEP:Reload()
    if self.Owner:GetWalkSpeed() == 220 then
       self.Reloaded = true
       timer.Simple(2,function()
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() + self.SpeedBoost)
+         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
       end)
       timer.Simple(5,function()
          self.Reloaded = false
@@ -109,7 +109,7 @@ end
 function SWEP:Holster()
    if IsValid(self.Owner) and self.Owner:IsPlayer() then
       if self.SpeedBoostRemoved == false then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() - self.SpeedBoost)
+         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
       end
    end
    return true
@@ -130,7 +130,7 @@ function SWEP:Deploy()
       end
 
       if (self:Clip1() >= 1) then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() + self.SpeedBoost)
+         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
       end
    end
 end
@@ -138,7 +138,7 @@ end
 function SWEP:Think()
    if ((self:Clip1() <= 1) and self.Reloaded == false) then
       if self.SpeedBoostRemoved == false then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() - self.SpeedBoost)
+         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
          self.SpeedBoostRemoved = true
       end
    end

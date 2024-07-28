@@ -73,6 +73,7 @@ SWEP.Primary.DefaultClip = 20
 SWEP.Primary.MaxClip = 40
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "Pistol"
+SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 SWEP.Primary.Damage = 17
 SWEP.Primary.Spread = 0.04
 SWEP.Primary.TakeAmmo = 1

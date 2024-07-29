@@ -101,7 +101,7 @@ end
 
 function SWEP:Deploy()
 	self:SetWeaponHoldType(self.HoldType)
-	self.Weapon:SendWeaponAnim(ACT_VM_DRAW)
+	self:SendWeaponAnim(ACT_VM_DRAW)
 	self:SetNextPrimaryFire(CurTime() + 0.5)
 	self:SetNextSecondaryFire(CurTime() + 0.5)
 	self.Reloading = 0
@@ -124,20 +124,20 @@ function SWEP:Holster()
 end
 
 function SWEP:PrimaryAttack()
-	if self.Weapon:Clip1() <= 0 and self.Weapon:Ammo1() <= 0 then
-		self.Weapon:EmitSound("Weapon_Pistol.ClipEmpty")
+	if self:Clip1() <= 0 and self:Ammo1() <= 0 then
+		self:EmitSound("Weapon_Pistol.ClipEmpty")
 		self:SetNextPrimaryFire(CurTime() + 0.2)
 		self:SetNextSecondaryFire(CurTime() + 0.2)
 	end
 
 	if self.FiresUnderwater == false and self.Owner:WaterLevel() == 3 then
-		self.Weapon:EmitSound("Weapon_Pistol.ClipEmpty")
+		self:EmitSound("Weapon_Pistol.ClipEmpty")
 		self:SetNextPrimaryFire(CurTime() + 0.2)
 		self:SetNextSecondaryFire(CurTime() + 0.2)
 	end
 
-	if self.Weapon:Clip1() <= 0 then self:Reload() end
-	if self.Weapon:Clip1() <= 0 then return end
+	if self:Clip1() <= 0 then self:Reload() end
+	if self:Clip1() <= 0 then return end
 	if self.FiresUnderwater == false and self.Owner:WaterLevel() == 3 then return end
 	local bullet = {}
 	bullet.Num = self.Primary.NumberofShots
@@ -150,7 +150,7 @@ function SWEP:PrimaryAttack()
 	bullet.AmmoType = self.Primary.Ammo
 	self.Owner:FireBullets(bullet)
 	if SERVER then self.Owner:EmitSound(self.Primary.Sound, SNDLVL_94dB, 100, 1, CHAN_WEAPON) end
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 	self.Owner:SetAnimation(PLAYER_ATTACK1)
 	self.Owner:MuzzleFlash()
 	self:TakePrimaryAmmo(self.Primary.TakeAmmo)
@@ -164,8 +164,8 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Reload()
-	if self.Reloading == 0 and self.Weapon:Clip1() < self.Primary.ClipSize and self.Weapon:Ammo1() > 0 then
-		self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
+	if self.Reloading == 0 and self:Clip1() < self.Primary.ClipSize and self:Ammo1() > 0 then
+		self:SendWeaponAnim(ACT_VM_RELOAD)
 		self.Owner:SetAnimation(PLAYER_RELOAD)
 		self:SetNextPrimaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
 		self:SetNextSecondaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
@@ -178,13 +178,13 @@ end
 
 function SWEP:Think()
 	if self.Reloading == 1 and self.ReloadingTimer <= CurTime() then
-		if self.Weapon:Ammo1() > (self.Primary.ClipSize - self.Weapon:Clip1()) then
-			self.Owner:SetAmmo(self.Weapon:Ammo1() - self.Primary.ClipSize + self.Weapon:Clip1(), self.Primary.Ammo)
-			self.Weapon:SetClip1(self.Primary.ClipSize)
+		if self:Ammo1() > (self.Primary.ClipSize - self:Clip1()) then
+			self.Owner:SetAmmo(self:Ammo1() - self.Primary.ClipSize + self:Clip1(), self.Primary.Ammo)
+			self:SetClip1(self.Primary.ClipSize)
 		end
 
-		if (self.Weapon:Ammo1() - self.Primary.ClipSize + self.Weapon:Clip1()) + self.Weapon:Clip1() < self.Primary.ClipSize then
-			self.Weapon:SetClip1(self.Weapon:Clip1() + self.Weapon:Ammo1())
+		if (self:Ammo1() - self.Primary.ClipSize + self:Clip1()) + self:Clip1() < self.Primary.ClipSize then
+			self:SetClip1(self:Clip1() + self:Ammo1())
 			self.Owner:SetAmmo(0, self.Primary.Ammo)
 		end
 
@@ -192,9 +192,9 @@ function SWEP:Think()
 	end
 
 	if self.Idle == 0 and self.IdleTimer <= CurTime() then
-		if SERVER then self.Weapon:SendWeaponAnim(ACT_VM_IDLE) end
+		if SERVER then self:SendWeaponAnim(ACT_VM_IDLE) end
 		self.Idle = 1
 	end
 
-	if self.Weapon:Ammo1() > self.Primary.MaxClip then self.Owner:SetAmmo(self.Primary.MaxClip, self.Primary.Ammo) end
+	if self:Ammo1() > self.Primary.MaxClip then self.Owner:SetAmmo(self.Primary.MaxClip, self.Primary.Ammo) end
 end

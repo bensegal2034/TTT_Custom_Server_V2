@@ -117,7 +117,9 @@ function SWEP:Holster()
 	self.ReloadingTimer = CurTime()
 	self.Idle = 0
 	self.IdleTimer = CurTime()
-	self.Owner:SetJumpPower(self.Owner:GetJumpPower() / self.JumpBoost)
+	if IsValid(self.Owner) and self.Owner:IsPlayer() then
+		self.Owner:SetJumpPower(self.Owner:GetJumpPower() / self.JumpBoost)
+	end
 	return true
 end
 

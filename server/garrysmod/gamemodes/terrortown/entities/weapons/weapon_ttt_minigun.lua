@@ -267,9 +267,11 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:Holster()
-	self.Owner:SetWalkSpeed(220)
+	if IsValid(self.Owner) and self.Owner:IsPlayer() then
+		self.Owner:SetWalkSpeed(220)
+	end
 	self.Weapon:StopSound( "weapons/minigun1/New3/minigunshoot.wav" )
-			return true
+	return true
 end
 
 function SWEP:OnRemove()

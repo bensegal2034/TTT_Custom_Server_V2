@@ -207,6 +207,15 @@ function SWEP:Initialize()
 	if ( CLIENT ) then
 	self:SetWeaponHoldType( "physgun" )
 	end
+
+	if SERVER then
+		local mins, maxs = self:GetModelBounds()
+		mins:Mul(0.5)
+		maxs:Mul(0.5)
+		
+		local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
+		print(result)
+	end
 end
 
 function SWEP:OnDrop()

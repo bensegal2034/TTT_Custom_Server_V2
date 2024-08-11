@@ -2,15 +2,15 @@
 {
 	"0"
 	{
-		"path"		"D:\\SteamCMD"
+		"path"		"D:\\TTT_Custom_Server_V2"
 		"label"		""
 		"contentid"		"-7967088241567147997"
-		"totalsize"		"0"
-		"update_clean_bytes_tally"		"55265945"
+		"totalsize"		"8001545039872"
+		"update_clean_bytes_tally"		"3898237870"
 		"time_last_update_corruption"		"0"
 		"apps"
 		{
-			"4020"		"3994733592"
+			"4020"		"0"
 		}
 	}
 }

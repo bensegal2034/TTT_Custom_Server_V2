@@ -7,33 +7,6 @@ debugCvar = CreateConVar(
     1
 )
 
-local function debugPrintSwepTables()
-    print("---------------------- HEAVY ----------------------")
-    local heavyNames = ""
-    for name, _ in pairs(HEAVY) do
-        heavyNames = heavyNames .. name .. ", "
-    end
-    print(heavyNames)
-    print("---------------------- PISTOL ----------------------")
-    local pistolNames = ""
-    for name, _ in pairs(PISTOL) do
-        pistolNames = pistolNames .. name .. ", "
-    end
-    print(pistolNames)
-    print("---------------------- NADE ----------------------")
-    local nadeNames = ""
-    for name, _ in pairs(NADE) do
-        nadeNames = nadeNames .. name .. ", "
-    end
-    print(nadeNames)
-    print("---------------------- BUYABLE ----------------------")
-    local buyableNames = ""
-    for name, _ in pairs(BUYABLE) do
-        buyableNames = buyableNames .. name .. ", "
-    end
-    print(buyableNames)
-end
-
 local function buildSwepTables()
     local allWeps = weapons.GetList()
     for _, wep in ipairs(allWeps) do
@@ -44,8 +17,17 @@ local function buildSwepTables()
         -- we have a bunch of junk that we don't want to mix up the stats with
         if wepTbl.Kind == WEAPON_HEAVY and wepTbl.AutoSpawnable then
             HEAVY[wepClassName] = wepTbl
+            --while building the SWEP tables, we use INSERT to create values for each floor gun, 
+            --INSERT checks to see if a dataset corresponding to the "PrimaryKey Value" (in our case "Name") already exists, and does nothing in the event it does
+            --this allows the server to automatically check for new guns, and add them to the tracker if found
+            sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'HEAVY', '0', '0', '0', '0') ")
+            result = sql.Query("SELECT Name WHERE Name = '"..wepClassName.."' ")
+    
         elseif wepTbl.Kind == WEAPON_PISTOL and wepTbl.AutoSpawnable then
             PISTOL[wepClassName] = wepTbl
+            sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'PISTOL', '0', '0', '0', '0') ")
+            result = sql.Query("SELECT Name WHERE Name = '"..wepClassName.."' ")
+    
         elseif wepTbl.Kind == WEAPON_NADE and wepTbl.AutoSpawnable then
             NADE[wepClassName] = wepTbl
         else
@@ -54,7 +36,6 @@ local function buildSwepTables()
             end
         end
     end
-    if debugCvar:GetBool() then debugPrintSwepTables() end
 end
 
 -- handling for auto reload
@@ -78,6 +59,7 @@ end
 totalHeadshots = totalHeadshots or {}
 totalDamage = totalDamage or {}
 totalUsage = totalUsage or {}
+totalKills = totalKills or {}
 roundTimestamp = roundTimestamp or nil --os.time()
 roundWinners = roundWinners or nil -- ""
 roundLength = roundLength or nil
@@ -175,8 +157,8 @@ hook.Add("PostGamemodeLoaded", "BuildSWEPTablesInitialLoad", function()
     buildSwepTables()
 end)
 
+--this hook is not called when a player is killed. this is preventing us from accurately tracking the amount of damage dealt
 hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dmg, took)
-    print("---CALLED------CALLED------CALLED------CALLED------CALLED---")
     -- ensure we should be tracking stats right now
     if not(isTrackingOk(dmg, entTakingDamage)) then return end
     local wepName = dmg:GetAttacker():GetActiveWeapon():GetClass()
@@ -198,7 +180,6 @@ hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dm
             ["damage"] = math.Round(damageDealt)
         }
     end
-    if debugCvar:GetBool() then PrintTable(totalDamage) end
 
     if totalHeadshots[wepName] == nil then
         totalHeadshots[wepName] = {
@@ -211,7 +192,16 @@ hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dm
     else
         totalHeadshots[wepName]["body"] = totalHeadshots[wepName]["body"] + 1
     end
-    if debugCvar:GetBool() then PrintTable(totalHeadshots) end
+end)
+
+hook.Add("DoPlayerDeath", "TrackSWEPKills", function(victim, attacker, dmginfo)
+    if not IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker():IsPlayer() or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then return end
+    local wepName = dmginfo:GetAttacker():GetActiveWeapon():GetClass()
+    if totalKills[wepName] == nil then
+        totalKills[wepName] = 1
+    else
+        totalKills[wepName] = totalKills[wepName] + 1
+    end
 end)
 
 --[[
@@ -237,6 +227,7 @@ hook.Add("ScalePlayerDamage", "TrackSWEPHeadshots", function(ply, hitgroup, dmg)
 end)
 ]]--
 
+--this hook also seems to be creating problems, example: holymackerel can never track usage as it never fires bullets. i have no idea how to fix this
 hook.Add("EntityFireBullets", "TrackSWEPUsageBullets", function(entity, data)
     -- ensure we should be tracking stats right now
     if not(isTrackingOk(nil, entity)) then return end
@@ -245,13 +236,20 @@ hook.Add("EntityFireBullets", "TrackSWEPUsageBullets", function(entity, data)
     if not(checkValidWeapon(wepName)) then return end
 
     if totalUsage[wepName] == nil then
-        totalUsage[wepName] = true
+        --i swear to god i was smelling toast working with this table
+        totalUsage[wepName] = wepName
     end
-    if debugCvar:GetBool() then PrintTable(totalUsage) end
 end)
 
 hook.Add("TTTBeginRound", "RoundStartTracker", function()
     roundStart = CurTime()
+    --emptying tables at start of round prevents events during post-round and pre-round from being tracked, as we only record them at the end of the round and TTTBeginRound is called when roles are selected
+    table.Empty(totalDamage)
+    table.Empty(totalKills)
+    table.Empty(totalHeadshots)
+    table.Empty(totalUsage)
+    roundTimestamp = nil
+    roundLength = nil
 end)
 
 hook.Add("TTTEndRound", "WriteStats", function()
@@ -269,14 +267,51 @@ hook.Add("TTTEndRound", "WriteStats", function()
     else
         roundWinners = "INVALID" -- REALLY shouldn't happen
     end
-    if debugCvar:GetBool() then 
-        print("Round length: " .. roundLength)
-        print("Round winners: " .. roundWinners)
-    end
+    for k, _ in pairs(totalUsage) do
+        wepName = totalUsage[k] 
+        --SELECT is used to search for values inside a table, and WHERE is how select is told what specifically to search for
+        --temp vals are used for the 1 round table, updated vals are used for the cumulative table
+        currentUsage = (sql.QueryValue("SELECT Usage FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        if currentUsage == nil then
+            currentUsage = 0
+        end
+        updatedUsage = currentUsage + 1
 
-    table.Empty(totalDamage)
-    table.Empty(totalHeadshots)
-    table.Empty(totalUsage)
-    roundTimestamp = nil
-    roundLength = nil
+        currentDamage = (sql.QueryValue("SELECT Damage FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        tempDamage = totalDamage[wepName]["damage"]
+        updatedDamage = currentDamage + tempDamage
+
+        currentHeadshots = (sql.QueryValue("SELECT Headshots FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        tempHeadshots = totalHeadshots[wepName]["head"]
+        updatedHeadshots = currentHeadshots + tempHeadshots
+
+        currentKills = (sql.QueryValue("SELECT Kills FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        if totalKills[wepName] == nil then
+            tempKills = 0
+            updatedKills = 0
+        else
+            tempKills = totalKills[wepName]
+            updatedKills = currentKills + tempKills
+        end
+
+        --UPDATE can only be used on a table that already exists, and you can modify any amount of values for a dataset, we do all of this at once during endround because it is nice and pretty
+        sql.Query("UPDATE WeaponStats SET Damage = "..updatedDamage..", Kills = "..updatedKills..", Headshots = "..updatedHeadshots..", Usage = "..updatedUsage.." WHERE Name = '"..wepName.."'")
+        
+        --DELETE FROM without specifying any indicators of what to delete will clear the entire table
+        sql.Query("DELETE FROM TempStats")
+
+        --This is where all of the values are inserted into TempStats, creating our 1 round only list of only the things that were used
+        local allWeps = weapons.GetList()
+        for _, wep in ipairs(allWeps) do
+            local wepClassName = wep["ClassName"]
+            local wepTbl = weapons.GetStored(wepClassName)
+            if wepTbl.Kind == WEAPON_HEAVY and wepTbl.AutoSpawnable and wepClassName == wepName then
+                print("FOUND HEAVY")
+                sql.Query(("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'HEAVY', '"..tempDamage.."', '"..tempKills.."', '"..tempHeadshots.."', '1') "))
+            elseif wepTbl.Kind == WEAPON_PISTOL and wepClassName == wepName then
+                print("FOUND PISTOL")
+                sql.Query(("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'PISTOL', '"..tempDamage.."', '"..tempKills.."', '"..tempHeadshots.."', '1') "))
+            end
+        end
+    end
 end)

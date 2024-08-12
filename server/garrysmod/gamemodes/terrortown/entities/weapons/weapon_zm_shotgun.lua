@@ -21,8 +21,8 @@ SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_SHOTGUN
 
 SWEP.Primary.Ammo          = "Buckshot"
-SWEP.Primary.Damage        = 7
-SWEP.Primary.Cone          = 0.075
+SWEP.Primary.Damage        = 6
+SWEP.Primary.Cone          = 0.15
 SWEP.Primary.Delay         = 0.4
 SWEP.Primary.ClipSize      = 8
 SWEP.Primary.ClipMax       = 24
@@ -179,7 +179,7 @@ function SWEP:GetHeadshotMultiplier(victim, dmginfo)
    if d > 250 then
       return(1.5)
    elseif d < 250 then
-      return(2.1)
+      return(1.8)
    end
 end
 
@@ -195,7 +195,7 @@ end
 
 function SWEP:PrimaryAttack()
    self.Primary.Sound    = Sound( "Weapon_XM1014.Single" )
-   self.Primary.Cone     = 0.075
+   self.Primary.Cone     = 0.15
    self.Primary.NumShots = 8
    self.Primary.Damage   = 9
    self.DamageType       = "Impact"

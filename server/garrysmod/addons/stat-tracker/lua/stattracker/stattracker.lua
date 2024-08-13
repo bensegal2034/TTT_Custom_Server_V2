@@ -8,6 +8,16 @@ debugCvar = CreateConVar(
 )
 
 local function buildSwepTables()
+    if sql.TableExists("WeaponStats") then
+
+    else
+        sql.Query("CREATE TABLE WeaponStats(Name TEXT, Type TEXT, Damage NUMBER, Kills NUMBER, Headshots NUMBER, Usage NUMBER)")
+    end
+    if sql.TableExists("TempStats") then
+
+    else
+        sql.Query("CREATE TABLE TempStats(Name TEXT, Type TEXT, Damage NUMBER, Kills NUMBER, Headshots NUMBER, Usage NUMBER)")
+    end
     local allWeps = weapons.GetList()
     for _, wep in ipairs(allWeps) do
         local wepClassName = wep["ClassName"]

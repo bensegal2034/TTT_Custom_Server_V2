@@ -42,8 +42,8 @@ hook.Add("KeyPress", "dronestwo_exit", function(ply, key)
 	end
 end)
 
---CreateConVar("dr2_fuelconsumption", 1, FCVAR_ARCHIVE, FCVAR_CHEAT, FCVAR_NOTIFY)
---CreateConVar("dr2_ammoconsumption", 1, FCVAR_ARCHIVE, FCVAR_CHEAT, FCVAR_NOTIFY)
+CreateConVar("dr2_fuelconsumption", 1, FCVAR_ARCHIVE)
+CreateConVar("dr2_ammoconsumption", 1, FCVAR_ARCHIVE)
 
 if CLIENT then
 	--game.AddParticles("particles/flame.pcf")
@@ -132,29 +132,31 @@ if CLIENT then
 		local ply = LocalPlayer()
 		local drone = ply:GetNWEntity("dronestwo_")
 		if drone:IsValid() then
-				--[[local borderpct = 0
-																		local rheight = ScrH() *(1-2*borderpct)
-																		local rwidth = ScrW() *(1-2*borderpct)
-																		cam.Start2D()
-																		ply:DrawShadow(false)
-																		surface.SetDrawColor(Color(0, 0, 0))
-																		surface.DrawRect(ScrW()*borderpct, ScrH() *borderpct,rwidth, rheight)
-																		--surface.SetDrawColor(color_white)
-																		local cdata = {}
-																		cdata.origin = drone:GetPos() - drone:GetUp() * drone.cam_up--ent:GetPos() + ent:GetAngles():Forward() * 3 + ent:GetAngles():Right() * -1
-																		cdata.angles = ply:EyeAngles()+drone:GetAngles()
-																		cdata.x = ScrW()*borderpct+1
-																		cdata.y = ScrH()*borderpct+1
-																		cdata.w = rwidth-2
-																		cdata.h =  rheight-2
-																		cdata.fov = 90
-																		cdata.znear = .1
-																		render.RenderView(cdata)
-																		cam.End2D()
-																		surface.SetDrawColor(Color(255, 255, 255, 3))
-																		surface.SetMaterial( Material("tttcamera/cameranoise"))
-																		surface.DrawTexturedRect(ScrW() *borderpct, ScrH() *borderpct, rwidth, rheight)
-								]]
+			local borderpct = 0
+			local rheight = ScrH() *(1-2*borderpct)
+			local rwidth = ScrW() *(1-2*borderpct)
+			cam.Start2D()
+			ply:DrawShadow(false)
+			surface.SetDrawColor(Color(0, 0, 0))
+			surface.DrawRect(ScrW()*borderpct, ScrH() *borderpct,rwidth, rheight)
+			surface.SetDrawColor(color_white)
+			local cdata = {}
+			cdata.origin = drone:GetPos() - drone:GetUp() * drone.cam_up--ent:GetPos() + ent:GetAngles():Forward() * 3 + ent:GetAngles():Right() * -1
+			cdata.angles = ply:EyeAngles()+drone:GetAngles()
+			cdata.x = ScrW()*borderpct+1
+			cdata.y = ScrH()*borderpct+1
+			cdata.w = rwidth-2
+			cdata.h =  rheight-2
+			cdata.fov = 90
+			cdata.znear = .1
+			render.RenderView(cdata)
+			cam.End2D()
+			surface.SetDrawColor(Color(0, 0, 0, 3))
+			if not drone:HasFuel() then
+				surface.SetDrawColor(Color(0, 0, 0, 255))
+			end
+			surface.SetMaterial( Material("tttcamera/cameranoise"))
+			surface.DrawTexturedRect(ScrW() *borderpct, ScrH() *borderpct, rwidth, rheight)
 
 
 
@@ -172,6 +174,15 @@ if CLIENT then
 			local cam_forward = drone.cam_forward or 1
 			local pos = (drone:GetPos() + drone:GetForward() * 10 - drone:GetUp() * cam_up + drone:GetForward() * cam_forward):ToScreen()
 			
+			if not drone.donoisesound then
+				if not drone:HasFuel() then
+					drone.donoisesound = true
+					surface.PlaySound("ambient/energy/spark" .. math.random(1, 4) .. ".wav")
+					surface.PlaySound("ambient/energy/zap" .. math.random(1, 5) .. ".wav")
+				end
+			end
+
+
 			if drone:IsDroneDestroyed() then
 				x, y = x / 2, y / 2
 					
@@ -251,6 +262,7 @@ if CLIENT then
 						draw.SimpleText("[" .. drone.Ammo .. " / " .. drone.MaxAmmo .. "]", "Trebuchet18", pos.x - 270, pos.y + 79, textColor, TEXT_ALIGN_RIGHT)
 					end
 
+					
 					if drawAmmo2 then
 						surface.SetDrawColor(hudColor)
 						surface.DrawOutlinedRect(pos.x - 260, pos.y + 105, 200, 15)
@@ -259,6 +271,14 @@ if CLIENT then
 
 						draw.SimpleText("[" .. drone.Ammo2 .. " / " .. drone.MaxAmmo2 .. "]", "Trebuchet18", pos.x - 270, pos.y + 129, textColor, TEXT_ALIGN_RIGHT)
 					end
+
+					surface.SetDrawColor(hudColor)
+					surface.DrawOutlinedRect(pos.x - 260, pos.y + 105, 200, 15)
+					surface.DrawRect(pos.x - 255, pos.y + 110, drone.Fuel / drone.MaxFuel * 190, 5)
+					draw.SimpleText("Fuel " .. math.floor(drone.Fuel / drone.MaxFuel * 100) .. "%", "Trebuchet24", pos.x - 270, pos.y + 100, textColor, TEXT_ALIGN_RIGHT)
+
+					draw.SimpleText("[" .. drone.Fuel .. " / " .. drone.MaxFuel .. "]", "Trebuchet18", pos.x - 270, pos.y + 129, textColor, TEXT_ALIGN_RIGHT)
+
 				end
 
 				--HP

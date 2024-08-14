@@ -33,6 +33,7 @@ SWEP.Secondary.Ammo			= "none"
 SWEP.ViewModel = "models/weapons/v_wiimote_meow.mdl"
 SWEP.WorldModel = "models/weapons/w_wiimote_meow.mdl"
 
+SWEP.DroneFuel = 100
 
 SWEP.Weight                = 5
 SWEP.AutoSwitchTo        = true
@@ -95,6 +96,7 @@ function SWEP:SecondaryAttack()
 		if drone:IsDroneDestroyed() then 
 			ply:SendLua("surface.PlaySound('buttons/combine_button_locked.wav')")
 		return end
+
 		drone:SetDriver(ply)
 	end
 end
@@ -145,6 +147,7 @@ end
 function SWEP:PrimaryAttack()
 	
 	if CLIENT then return end
+
 	if not self:GetNWEntity("target", nil):IsValid() then
 		self:SetNextPrimaryFire(CurTime() + 0.5)
 
@@ -155,6 +158,7 @@ function SWEP:PrimaryAttack()
 		    local vThrowPos = self.Owner:EyePos() + self.Owner:GetRight() * 8
 		    drone:SetPos( self:CheckSpace(vThrowPos) or ( vThrowPos + self.Owner:GetForward() * 30) )
 		    drone:Spawn()
+			drone.Fuel = self.DroneFuel
 		    local phys = drone:GetPhysicsObject()
 		    phys:SetVelocity(self.Owner:GetAimVector() * 60 + Vector(0,0,200) )
 		    drone:SetAngles(drone:GetAngles()+Angle(0,-90,0))
@@ -169,8 +173,9 @@ function SWEP:PrimaryAttack()
 			maxs = Vector(10, 10, 10)
 		}	
 		local drone = tr.Entity
-		if drone:IsValid() and drone.IS_DRONE and drone == self:GetNWEntity("target", nil) then
+		if drone:IsValid() and drone.IS_DRONE and drone == self:GetNWEntity("target", nil) and drone:HasFuel() then
 			drone:Remove()
+			self.DroneFuel = drone.Fuel
 			self:SetNextPrimaryFire(CurTime() + 0.5)
 			self:SetNextSecondaryFire(CurTime() + 0.5)
 		end

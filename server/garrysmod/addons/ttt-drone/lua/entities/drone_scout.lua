@@ -2,7 +2,7 @@ AddCSLuaFile()
 if SERVER then util.AddNetworkString( "playrocketonlocalply" ) end
 
 
-local rescalecc = 0.6
+local rescalecc = 0.9
 
 ENT.Base = "drone_two_entity"
 ENT.PrintName		= "Scout Drone"
@@ -11,23 +11,22 @@ ENT.Spawnable = true
 
 ENT.Speed = 2000
 ENT.RotateSpeed = 1100
-ENT.armor = 40
+ENT.armor = 50
 
 ENT.forward = 60
 ENT.up = 5*rescalecc
 ENT.cam_up = 13*rescalecc
 
-ENT.Ammo = 5
-ENT.MaxAmmo = 5
+ENT.Ammo = 20
+ENT.MaxAmmo = 20
 ENT.AmmoBox = 0
 ENT.AmmoType = "item_ammo_pistol"
 ENT.UseAmmo = true
-ENT.shouldConsumeFuel =  false
+ENT.shouldConsumeFuel =  true
 ENT.DrawEffects = false
 
 function ENT:Initialize()
 	self:_Initialize("models/props_c17/pulleywheels_small01.mdl", 100)
-
 	if CLIENT then
 		self:SetElements({
 			["steel"] = { type = "Model", model = "models/mechanics/solid_steel/plank_4.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(0, -3.04, 3.161)*rescalecc, angle = Angle(0, 0, 45), size = Vector(0.043, 0.203, 0.43)*rescalecc, color = Color(255, 255, 255, 255), surpresslightning = false, material = "models/props_combine/combinethumper002", skin = 0, bodygroup = {} },
@@ -66,7 +65,7 @@ function ENT:Initialize()
 			end
 			if user:KeyDown(IN_ATTACK) and self:HasAmmo() then
 				if CurTime() > self.nextshoot then
---[[					local bullet = {}
+					local bullet = {}
 					bullet.Num = 1
 					bullet.Src = self:GetPos() - self:GetUp() * self.cam_up + self.gun:GetForward() * 8  --8 so we dont hit ourselves
 					bullet.Dir = self:GetDriverDirection()
@@ -86,13 +85,13 @@ function ENT:Initialize()
 														 			
 														        end
 														    end
-					--self.gun:EmitSound("weapons/pistol/pistol_fire2.wav", 100, 100)
+					self.gun:EmitSound("weapons/pistol/pistol_fire2.wav", 100, 100)
 					sound.Play( "weapons/pistol/pistol_fire2.wav", bullet.Src )
 					
 
-					self.gun:FireBullets( bullet )]]
+					self.gun:FireBullets( bullet )
 
-
+					--[[
 					self.gun:EmitSound("Weapon_RPG.Single")
 
 					if ( SERVER ) then
@@ -110,12 +109,12 @@ function ENT:Initialize()
 			                        phys:SetVelocity( self:GetDriverDirection()* 1500 )
 			                end
 			        end
-
+					--]]
 					self:SetAmmo(self.Ammo - 1)
 
-					self.nextshoot = CurTime() + 0.75
-					self.mostrecentammo =  CurTime() + 1.6
-
+					self.nextshoot = CurTime() + 0.15
+					self.mostrecentammo =  CurTime() + 0.2
+					
 
 		
 				end

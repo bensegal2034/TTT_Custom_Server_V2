@@ -38,7 +38,7 @@ ENT.UseNightVision = true
 ENT.Fuel = 100
 ENT.MaxFuel = 100
 
-ENT.shouldConsumeFuel = false
+ENT.shouldConsumeFuel = true
 ENT.shouldConsumeAmmo = true
 
 ENT.EnableParticles = false
@@ -118,6 +118,7 @@ if CLIENT then
 
 		self.WElements = table.FullCopy(tab)
 		self:CreateModels(self.WElements)
+
 	end
 else
 	function ENT:SetArm(n)
@@ -349,13 +350,13 @@ function ENT:_Initialize(mdl, mass)
 	if CLIENT then return end
 
 	mdl = mdl or "models/props_phx/construct/metal_plate2x2.mdl"
+	
 	mass = mass or 200
 
 	self:DrawShadow(false)
 	self:SetModel(mdl)
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
-	self:SetModelScale( self:GetModelScale() * 1.25, 1 )
 	self:SetSolid(SOLID_VPHYSICS)
 	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then phys:SetMass(mass) end
@@ -374,6 +375,8 @@ function ENT:Initialize()
 	self.gun:Spawn()
 	self.gun:SetSolid(SOLID_NONE)
 	self.gun:SetParent(self)
+	self:EnableMatrix("RenderMultiply", mat)
+
 	self.gun._Think = function()
 		--Minigun and savers
 		local user = self:GetDriver()
@@ -543,10 +546,11 @@ function ENT:_Think()
 	if SERVER and (not self:IsDroneDestroyed() ) then
 		if  self.mostrecentregen < CurTime() - 1 then
 			self.mostrecentregen = CurTime()
-
+			self.CurrentFuel = self.Fuel - 1
+			self:SetFuel(math.max(0, self.CurrentFuel))
 			self:SetArm(self.armor+1)
 		end 
-		if  self.mostrecentammo < CurTime() - 1.6 then
+		if  self.mostrecentammo < CurTime() - 0.4 then
 			self.mostrecentammo = CurTime()
 
 			self:SetAmmo(self.Ammo +1) 
@@ -598,7 +602,7 @@ end
 -- 
 
 local FLY_CONST = 438
-local FUEL_REDUCTION = 0.002
+local FUEL_REDUCTION = 1.5
 ENT.curSpeed = 1
 function ENT:PhysicsSimulate(phys, delta)
 	--Fly physics

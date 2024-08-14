@@ -157,7 +157,7 @@ function SWEP:Initialize()
 	if ROUND_WAIT then
 		if player.GetCount() < 5 then
 			self.StackCount = 20
-			self:SetStackCount(20)
+			self:SetStackCount(10)
 		end
 	end
 	self.StackCount = self:GetStackCount()
@@ -378,7 +378,7 @@ function SWEP:Think()
 		if GetRoundState() == ROUND_WAIT then
 			self.PreRoundCheck = 1
 			self.StackTimer = self.StackTimer + 1
-			if self.StackTimer % 300 == 0 then
+			if self.StackTimer % 900 == 0 then
 				self.StackCount = self.StackCount + 1
 				self:SetStackCount(self.StackCount)
 			end
@@ -386,7 +386,7 @@ function SWEP:Think()
 			if GetRoundState() != ROUND_PREP then
 			self.PreRoundCheck = 1
 				self.StackTimer = self.StackTimer + 1
-				if self.StackTimer % 300 == 0 then
+				if self.StackTimer % 900 == 0 then
 					self.StackCount = self.StackCount + 1
 					self:SetStackCount(self.StackCount)
 				end
@@ -434,14 +434,14 @@ if SERVER then
 				if attacker:GetTraitor() then
 					if victim:GetTraitor() == false then 
 						if victim:GetDetective() == true then
-							weapon:SetStackCount(weapon:GetStackCount() + 15)
+							weapon:SetStackCount(weapon:GetStackCount() + 10)
 						else
 							weapon:SetStackCount(weapon:GetStackCount() + 5)
 						end
 					end
 				else
 					if victim:GetTraitor() then
-						weapon:SetStackCount(weapon:GetStackCount() + 15)
+						weapon:SetStackCount(weapon:GetStackCount() + 10)
 					end
 				end
 			end
@@ -449,3 +449,18 @@ if SERVER then
 	end)
 end
  
+hook.Add("ScalePlayerDamage", "AugStackOnHit", function(target, hitgroup, dmginfo)
+	if
+	   not IsValid(dmginfo:GetAttacker())
+	   or not dmginfo:GetAttacker():IsPlayer()
+	   or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+	then
+	   return
+	end
+ 
+	local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+	
+	if weapon:GetClass() == "weapon_ttt_aug" then
+		weapon:SetStackCount(weapon:GetStackCount() + 1)
+	end
+end)

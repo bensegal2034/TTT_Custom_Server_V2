@@ -45,27 +45,30 @@ SWEP.Kind = WEAPON_GUNGUN
 SWEP.LimitedStock = true
 SWEP.NoSights = true
 
+
 function SWEP:PrimaryAttack()
     if (self:CanPrimaryAttack()) then
         self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
         self:EmitSound( "weapons/ar2/ar2_altfire.wav" )
         self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
         if SERVER then
-            local gun = ents.Create("weapon_ttt_gungun_ent")
-            local vec = Vector( 0, 0, 8 )
-            local rand = math.random( 1, 21 )
-            gun:SetModel( gun.GunModels[rand][1] )
-            gun.GunSound = gun.GunModels[rand][2]
-            gun.Damage = gun.GunModels[rand][3]
-            if self.Owner:Crouching() then vec = Vector(0,0,4) end
-            gun:SetPos( ( self.Owner:EyePos() - vec ) + ( self.Owner:GetForward() * 25 ) )
-            gun:SetAngles( self.Owner:EyeAngles() )
-            gun:Spawn()
-            local gunphys = gun:GetPhysicsObject()
-            gunphys:EnableGravity( false )
-            gunphys:Wake()
-            gunphys:ApplyForceCenter(self.Owner:GetAimVector():GetNormalized() * 1000 )
+            for guncount = 1, 10 do
+                local gun = ents.Create("weapon_ttt_gungun_ent")
+                local vec = Vector( 0, 0, math.random(4,8))
+                local rand = math.random( 1, 21 )
+                gun:SetModel( gun.GunModels[rand][1] )
+                gun.GunSound = gun.GunModels[rand][2]
+                gun.Damage = gun.GunModels[rand][3]
+                if self.Owner:Crouching() then vec = Vector(0,0,4) end
+                gun:SetPos( ( self.Owner:EyePos() - vec ) + ( self.Owner:GetForward() * 25 ) )
+                gun:SetAngles( self.Owner:EyeAngles() )
+                gun:Spawn()
+                local gunphys = gun:GetPhysicsObject()
+                gunphys:EnableGravity( false )
+                gunphys:Wake()
+                gunphys:ApplyForceCenter(self.Owner:GetAimVector():GetNormalized() * 1000 )
+            end
         end
-        self:TakePrimaryAmmo(1)
+        self:TakePrimaryAmmo(10)
     end
 end

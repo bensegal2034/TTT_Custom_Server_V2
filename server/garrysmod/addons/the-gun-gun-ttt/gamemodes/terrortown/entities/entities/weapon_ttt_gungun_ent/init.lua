@@ -4,28 +4,39 @@ AddCSLuaFile( "shared.lua" )
 include( "shared.lua" )
 
 ENT.GunModels = {
-	{"models/weapons/w_pist_elite_single.mdl", "weapons/elite/elite-1.wav", 38}, 
+	--{"models/weapons/w_pist_elite_single.mdl", "weapons/elite/elite-1.wav", 38}, 
 	{"models/weapons/w_mach_m249para.mdl", "weapons/m249/m249-1.wav", 32},
 	{"models/weapons/w_pist_deagle.mdl", "weapons/deagle/deagle-1.wav", 50},
 	{"models/weapons/w_pist_fiveseven.mdl", "weapons/fiveseven/fiveseven-1.wav", 24},
 	{"models/weapons/w_pist_glock18.mdl", "weapons/glock/glock18-1.wav", 30},
-	{"models/weapons/w_pist_p228.mdl", "weapons/p228/p228-1.wav", 38},
-	{"models/weapons/w_pist_usp.mdl", "weapons/usp/usp_unsil-1.wav", 32},
+	--{"models/weapons/w_pist_p228.mdl", "weapons/p228/p228-1.wav", 38},
+	{"models/halo1/w_magnum.mdl", "sound/halo1/pistol_fire.ogg", 22},
 	{"models/weapons/w_rif_ak47.mdl", "weapons/ak47/ak47-1.wav", 36},
-	{"models/weapons/w_rif_aug.mdl", "weapons/aug/aug-1.wav", 28},
-	{"models/weapons/w_rif_famas.mdl", "weapons/famas/famas-1.wav", 30},
-	{"models/weapons/w_rif_galil.mdl", "weapons/galil/galil-1.wav", 29},
+	{"models/weapons/w_auga3.mdl", "sound/weapons/auga3/aug-1.wav", 28},
+	{"models/weapons/w_tct_famas.mdl", "weapons/fokku_tc_famas/shot-1.wav", 30},
 	{"models/weapons/w_rif_m4a1.mdl", "weapons/m4a1/m4a1_unsil-1.wav", 32},
-	{"models/weapons/w_rif_sg552.mdl", "weapons/sg552/sg552-1.wav", 32},
 	{"models/weapons/w_smg_mac10.mdl", "weapons/mac10/mac10-1.wav", 29},
-	{"models/weapons/w_smg_mp5.mdl", "weapons/mp5navy/mp5-1.wav", 32},
+	--{"models/weapons/w_smg_mp5.mdl", "weapons/mp5navy/mp5-1.wav", 32},
 	{"models/weapons/w_smg_p90.mdl", "weapons/p90/p90-1.wav", 26},
-	{"models/weapons/w_smg_ump45.mdl", "weapons/ump45/ump45-1.wav", 35},
+	--{"models/weapons/w_smg_ump45.mdl", "weapons/ump45/ump45-1.wav", 35},
 	{"models/weapons/w_snip_awp.mdl", "weapons/awp/awp1.wav", 115},
-	{"models/weapons/w_snip_g3sg1.mdl", "weapons/g3sg1/g3sg1-1.wav", 80},
-	{"models/weapons/w_snip_scout.mdl", "weapons/scout/scout_fire-1.wav", 74},
-	{"models/weapons/w_snip_sg550.mdl", "weapons/sg550/sg550-1.wav", 69}
+	{"models/weapons/w_snip_scout.mdl", "weapons/scout/scout_fire-1.wav", 80},
+	--{"models/weapons/w_snip_sg550.mdl", "weapons/sg550/sg550-1.wav", 69}
+	{"models/weapons/w_intratec_tec9.mdl", "sound/weapons/tec9/ump45-1.wav", 36},
+	{"models/weapons/w_kriss_vector.mdl", "sound/weapons/kriss/ump45-1.wav", 32},
+	{"models/weapons/intervention/w_snip_int.mdl", "weapons/scout/scout_fire-1.wav", 70},
+	{"models/weapons/gamefreak/w_pist_glock66.mdl", "weapons/gamefreak/glock/glock18-1.wav", 38},
+	{"models/weapons/w_dragunov_svu.mdl", "sound/weapons/svd/g3sg1-1.wav", 50},
+	{"models/weapons/w_rif_kiw.mdl", "sound/weapons/g36/shoot.wav", 38},
+	{"models/weapons/w_taurus_raging_bull.mdl", "weapons/r_bull/r-bull-1.wav", 42},
+	{"models/weapons/w_nach_m249para.mdl", "sound/weapons/negev/m249-1.wav", 22},
+	{"models/weapons/w_remington_7615p.mdl", "sound/weapons/7615p/scout_fire-1.wav", 66},
+	{"models/weapons/w_fn_scar_h.mdl", "sound/weapons/scarh/aug-1.wav", 32},
+	{"models/weapons/w_tommy_gun.mdl", "weapons/tmg/tmg_1.wav", 28},
+	{"models/weapons/w_remington_7615p.mdl", "sound/weapons/7615p/scout_fire-1.wav", 66},
+	{"models/weapons/w_models/w_winger_pistol.mdl", "sound/weapons/pistol_shoot.wav", 20},
 }
+
 
 function ENT:Initialize()
 	self:SetMoveType( MOVETYPE_VPHYSICS )

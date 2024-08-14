@@ -8,15 +8,11 @@ debugCvar = CreateConVar(
 )
 
 local function buildSwepTables()
-    if sql.TableExists("WeaponStats") then
-
-    else
-        sql.Query("CREATE TABLE WeaponStats(Name TEXT, Type TEXT, Damage NUMBER, Kills NUMBER, Headshots NUMBER, Usage NUMBER)")
+    if not sql.TableExists("WeaponStats") then
+        sql.Query("CREATE TABLE WeaponStats(Name TEXT PRIMARY KEY NOT NULL, Type TEXT, Damage NUMBER, Kills NUMBER, Headshots NUMBER, Usage NUMBER)")
     end
-    if sql.TableExists("TempStats") then
-
-    else
-        sql.Query("CREATE TABLE TempStats(Name TEXT, Type TEXT, Damage NUMBER, Kills NUMBER, Headshots NUMBER, Usage NUMBER)")
+    if not sql.TableExists("TempStats") then
+        sql.Query("CREATE TABLE TempStats(Name TEXT PRIMARY KEY NOT NULL, Type TEXT, Damage NUMBER, Kills NUMBER, Headshots NUMBER, Usage NUMBER)")
     end
     local allWeps = weapons.GetList()
     for _, wep in ipairs(allWeps) do
@@ -30,14 +26,17 @@ local function buildSwepTables()
             --while building the SWEP tables, we use INSERT to create values for each floor gun, 
             --INSERT checks to see if a dataset corresponding to the "PrimaryKey Value" (in our case "Name") already exists, and does nothing in the event it does
             --this allows the server to automatically check for new guns, and add them to the tracker if found
-            sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'HEAVY', '0', '0', '0', '0') ")
+            
             result = sql.Query("SELECT Name WHERE Name = '"..wepClassName.."' ")
-    
+            if result == false then
+                sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'HEAVY', '0', '0', '0', '0') ")
+            end
         elseif wepTbl.Kind == WEAPON_PISTOL and wepTbl.AutoSpawnable then
             PISTOL[wepClassName] = wepTbl
-            sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'PISTOL', '0', '0', '0', '0') ")
             result = sql.Query("SELECT Name WHERE Name = '"..wepClassName.."' ")
-    
+            if result == false then
+                sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'PISTOL', '0', '0', '0', '0') ")
+            end
         elseif wepTbl.Kind == WEAPON_NADE and wepTbl.AutoSpawnable then
             NADE[wepClassName] = wepTbl
         else
@@ -166,7 +165,6 @@ end
 hook.Add("PostGamemodeLoaded", "BuildSWEPTablesInitialLoad", function()
     buildSwepTables()
 end)
-
 --this hook is not called when a player is killed. this is preventing us from accurately tracking the amount of damage dealt
 hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dmg, took)
     -- ensure we should be tracking stats right now
@@ -207,21 +205,61 @@ end)
 hook.Add("DoPlayerDeath", "TrackSWEPKills", function(victim, attacker, dmginfo)
     if not IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker():IsPlayer() or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then return end
     local wepName = dmginfo:GetAttacker():GetActiveWeapon():GetClass()
+
+    local damageDealt = dmginfo:GetDamage()
+    if not(totalDamage[wepName] == nil) then
+        totalDamage[wepName]["damage"] = totalDamage[wepName]["damage"] + math.Round(damageDealt)
+    else
+        totalDamage[wepName] = {
+            ["damage"] = math.Round(damageDealt)
+        }
+    end
+
     if totalKills[wepName] == nil then
         totalKills[wepName] = 1
     else
         totalKills[wepName] = totalKills[wepName] + 1
     end
+
+    if totalHeadshots[wepName] == nil then
+        totalHeadshots[wepName] = {
+            ["head"] = 0,
+            ["body"] = 0
+        }
+    end
+
+    if victim:LastHitGroup() == HITGROUP_HEAD then
+        totalHeadshots[wepName]["head"] = totalHeadshots[wepName]["head"] + 1
+    else
+        totalHeadshots[wepName]["body"] = totalHeadshots[wepName]["body"] + 1
+    end
+
 end)
 
 --[[
 hook.Add("ScalePlayerDamage", "TrackSWEPHeadshots", function(ply, hitgroup, dmg)
     -- ensure we should be tracking stats right now
-    if not(isTrackingOk(dmg)) then return end
+    if not(isTrackingOk(dmg, ply)) then return end
     local wepName = dmg:GetAttacker():GetActiveWeapon():GetClass()
     -- ensure the weapon is present in our list of valid weapons
     if not(checkValidWeapon(wepName)) then return end
-    
+    -- ensure we're not shooting ourselves (don't want to track self damage)
+    if dmg:GetAttacker() == ply then return end
+    -- this next line WAS necessary to prevent the damage from being added twice
+    -- but now it is not
+    -- i do not understand but i fear the day this bug returns again. 
+    -- we are safe for now.
+    --if not(took) then return end
+
+    local damageDealt = dmg:GetDamage()
+    if not(totalDamage[wepName] == nil) then
+        totalDamage[wepName]["damage"] = totalDamage[wepName]["damage"] + math.Round(damageDealt)
+    else
+        totalDamage[wepName] = {
+            ["damage"] = math.Round(damageDealt)
+        }
+    end
+
     if totalHeadshots[wepName] == nil then
         totalHeadshots[wepName] = {
             ["head"] = 0,
@@ -233,9 +271,9 @@ hook.Add("ScalePlayerDamage", "TrackSWEPHeadshots", function(ply, hitgroup, dmg)
     else
         totalHeadshots[wepName]["body"] = totalHeadshots[wepName]["body"] + 1
     end
-    if debugCvar:GetBool() then PrintTable(totalHeadshots) end
 end)
 ]]--
+
 
 --this hook also seems to be creating problems, example: holymackerel can never track usage as it never fires bullets. i have no idea how to fix this
 hook.Add("EntityFireBullets", "TrackSWEPUsageBullets", function(entity, data)

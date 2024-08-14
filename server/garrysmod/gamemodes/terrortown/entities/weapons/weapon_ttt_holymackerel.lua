@@ -580,6 +580,15 @@ function SWEP:PrimaryAttack()
 	self.AttackTimer = CurTime() + 0.2
 	self.Idle = 0
 	self.IdleTimer = CurTime() + self.Owner:GetViewModel():SequenceDuration()
+
+	--This is a fake bullet. it doesn't do anything, it's sole purpose is to track the weapon's usage for our stattracker. Foul.
+	local bullet = {}
+	bullet.Num    = numbul
+	bullet.Spread = Vector( cone, cone, 0 )
+	bullet.Tracer = 0
+	bullet.Force  = 10
+	bullet.Damage = 0
+	self:GetOwner():FireBullets( bullet )
 end
 
 function SWEP:SecondaryAttack()

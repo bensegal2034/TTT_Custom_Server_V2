@@ -354,10 +354,8 @@ hook.Add("TTTEndRound", "WriteStats", function()
             local wepClassName = wep["ClassName"]
             local wepTbl = weapons.GetStored(wepClassName)
             if wepTbl.Kind == WEAPON_HEAVY and wepTbl.AutoSpawnable and wepClassName == wepName then
-                print("FOUND HEAVY")
                 sql.Query(("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'HEAVY', '"..tempDamage.."', '"..tempKills.."', '"..tempHeadshots.."', '1') "))
             elseif wepTbl.Kind == WEAPON_PISTOL and wepClassName == wepName then
-                print("FOUND PISTOL")
                 sql.Query(("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'PISTOL', '"..tempDamage.."', '"..tempKills.."', '"..tempHeadshots.."', '1') "))
             end
         end

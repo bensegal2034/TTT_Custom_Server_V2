@@ -91,7 +91,7 @@ sound.Add({
 hook.Add("TTTPrepareRound", "ResetVectorColor", function()
    for _, ply in ipairs(player.GetAll())do
       local colDefault = Color(255,255,255,255)
-      if IsValid(ply) then
+      if IsValid(ply) and ply:Alive() and not ply:IsBot() then
          ply:GetViewModel():SetColor(colDefault)
          ply:SetColor(colDefault)
       end

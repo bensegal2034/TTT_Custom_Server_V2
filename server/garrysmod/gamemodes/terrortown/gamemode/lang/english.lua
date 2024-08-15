@@ -533,7 +533,7 @@ L.tele_no_mark    = "No location marked. Mark a destination before teleporting."
 L.tele_no_mark_ground = "Cannot mark a teleport location unless standing on solid ground!"
 L.tele_no_mark_crouch = "Cannot mark a teleport location while crouched!"
 
-L.tele_help_pri   = "{primaryfire} teleports to marked location."
+L.tele_help_pri   = "{primaryfire} teleports to marked location. RELOAD teleports target to marked location."
 L.tele_help_sec   = "{secondaryfire} marks current location."
 
 L.tele_desc       = [[

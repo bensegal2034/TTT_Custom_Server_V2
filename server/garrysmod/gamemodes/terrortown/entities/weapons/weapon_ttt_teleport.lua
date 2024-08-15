@@ -32,6 +32,8 @@ SWEP.Primary.ClipMax       = 16
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "GaussEnergy"
 SWEP.Primary.Delay         = 0.5
+SWEP.ReloadDelay = false
+SWEP.ReloadTimer = 0
 
 SWEP.Secondary.Automatic   = false
 SWEP.Secondary.Ammo        = "none"
@@ -44,10 +46,14 @@ SWEP.WeaponID              = AMMO_TELEPORT
 SWEP.AllowDrop             = true
 SWEP.NoSights              = true
 
-local delay_beamup = 1
-local delay_beamdown = 1
+local delay_beamup = 0.5
+local delay_beamdown = 0.5
 
 local ttt_telefrags = CreateConVar("ttt_teleport_telefrags", "1")
+
+function SWEP:SetupDataTables()
+	self:NetworkVar( "Bool", 0, "ReloadDelay" )
+end
 
 function SWEP:SetTeleportMark(pos, ang)
    self.teleport = {pos = pos, ang = ang}
@@ -58,6 +64,10 @@ function SWEP:GetTeleportMark() return self.teleport end
 function SWEP:PrimaryAttack()
    self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
+   if self.ReloadDelay == true then
+      return
+   end
+   self.ReloadDelay = true
    if self:Clip1() <= 0 then
       self:DryFire(self.SetNextSecondaryFire)
       return
@@ -68,7 +78,7 @@ function SWEP:PrimaryAttack()
    if GetRoundState() == ROUND_POST then return end
 
    if SERVER then
-      self:TeleportRecall()
+      self:TeleportRecall(self:GetOwner())
    else
       surface.PlaySound("buttons/combine_button7.wav")
    end
@@ -243,8 +253,8 @@ local function StartTeleport(ply, teleport, weapon)
    ang = Angle(0, ang.y, ang.r) -- deep copy
    edata_up:SetAngles(ang)
    edata_up:SetEntity(ply)
-   edata_up:SetMagnitude(delay_beamup)
-   edata_up:SetRadius(delay_beamdown)
+   edata_up:SetMagnitude(1)
+   edata_up:SetRadius(1)
 
    util.Effect("teleport_beamup", edata_up)
 
@@ -253,14 +263,14 @@ local function StartTeleport(ply, teleport, weapon)
    ang = Angle(0, ang.y, ang.r) -- deep copy
    edata_dn:SetAngles(ang)
    edata_dn:SetEntity(ply)
-   edata_dn:SetMagnitude(delay_beamup)
-   edata_dn:SetRadius(delay_beamdown)
+   edata_dn:SetMagnitude(1)
+   edata_dn:SetRadius(1)
 
    util.Effect("teleport_beamdown", edata_dn)
 end
 
-function SWEP:TeleportRecall()
-   local ply = self:GetOwner()
+function SWEP:TeleportRecall(ent)
+   local ply = ent
    if IsValid(ply) and ply:IsTerror() then
       local mark = self:GetTeleportMark()
       if mark then
@@ -317,6 +327,31 @@ end
 
 
 function SWEP:Reload()
+   if self.ReloadDelay == true then return false end
+   
+   if self:Clip1() <= 0 then return false end
+
+   if GetRoundState() == ROUND_POST then return end
+
+   self:SetNextPrimaryFire( CurTime() + 5 )
+
+   local tr = util.TraceHull({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
+   local spos = self:GetOwner():GetShootPos()
+   local sdest = spos + (self:GetOwner():GetAimVector() * 100)
+   -- Hull might hit environment stuff that line does not hit
+   if not IsValid(tr.Entity) then
+      tr = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
+   end
+   local hitEnt = tr.Entity
+   if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
+      self.ReloadDelay = true
+
+      if SERVER then
+         self:TeleportRecall(hitEnt)
+      else
+         surface.PlaySound("buttons/combine_button7.wav")
+      end
+   end
    return false
 end
 
@@ -338,3 +373,48 @@ function SWEP:Deploy()
 end
 
 function SWEP:ShootEffects() end
+
+function SWEP:Think()
+   if SERVER then
+      if self.ReloadDelay == true then
+         self.ReloadTimer = self.ReloadTimer + 1
+         self:SetReloadDelay(true)
+         if self.ReloadTimer > 300 then
+            self.ReloadDelay = false
+            self.ReloadTimer = 0
+            self:SetReloadDelay(false)
+         end
+      end
+   end
+   if CLIENT then
+      self.ReloadDelay = self:GetReloadDelay()
+   end
+end
+
+if CLIENT then
+   local T = LANG.GetTranslation
+   function SWEP:DrawHUD()
+      local tr = self:GetOwner():GetEyeTrace(MASK_SHOT)
+      if tr.HitNonWorld and IsValid(tr.Entity) and tr.Entity:IsPlayer() then
+         local distance = tr.Entity:GetPos():Distance(self:GetPos())
+         if self.ReloadDelay == false and distance <= 100 then
+	         local x = ScrW() / 2.0
+            local y = ScrH() / 2.0
+
+            surface.SetDrawColor(255, 0, 0, 255)
+
+            local outer = 20
+            local inner = 10
+            surface.DrawLine(x - outer, y - outer, x - inner, y - inner)
+            surface.DrawLine(x + outer, y + outer, x + inner, y + inner)
+
+            surface.DrawLine(x - outer, y + outer, x - inner, y + inner)
+            surface.DrawLine(x + outer, y - outer, x + inner, y - inner)
+
+            draw.SimpleText(("CAN TELEPORT"), "TabLarge", x, y - 30, COLOR_RED, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+	end
+      end
+
+      return self.BaseClass.DrawHUD(self)
+   end
+end

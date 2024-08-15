@@ -89,14 +89,11 @@ sound.Add({
 })
 
 hook.Add("TTTPrepareRound", "ResetVectorColor", function()
-   if SERVER then
-      local rf = RecipientFilter()
-      rf:AddAllPlayers()
-      players = rf:GetPlayers()
-      for i = 1, #players do
-         local colDefault = Color(255,255,255,255)
-         players[i]:GetViewModel():SetColor(colDefault)
-         players[i]:SetColor(colDefault)
+   for _, ply in ipairs(player.GetAll())do
+      local colDefault = Color(255,255,255,255)
+      if IsValid(ply) then
+         ply:GetViewModel():SetColor(colDefault)
+         ply:SetColor(colDefault)
       end
    end
 end)
@@ -108,6 +105,7 @@ SWEP.Kind = WEAPON_HEAVY
 
 SWEP.Primary.Damage      = 10
 SWEP.Primary.RageDamage  = 16
+SWEP.MissingHealthDamage = 10
 SWEP.Primary.Delay       = 0.09
 SWEP.Primary.RageDelay   = 0.06
 SWEP.Primary.Cone        = 0.05
@@ -180,8 +178,7 @@ function SWEP:PrimaryAttack(worldsnd)
          TakeDamage(owner, 2, owner, self)
       end
    else
-      
-      self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+      self:ShootBullet( self.MissingHealthDamage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
       self:SetNextPrimaryFire( CurTime() + delay )
    end
    self:TakePrimaryAmmo( 1 )
@@ -237,6 +234,10 @@ function SWEP:Think()
       self:SetWeaponState(self.StateValue)
    end
    self.StateValue = self:GetWeaponState()
+   if IsValid(self:GetOwner()) then
+      self.DamageBoost = (math.Round(math.abs(self.Owner:Health() - 100)/10))
+      self.MissingHealthDamage = self.Primary.Damage + self.DamageBoost
+   end
 end
 
 function SWEP:PreDrop()

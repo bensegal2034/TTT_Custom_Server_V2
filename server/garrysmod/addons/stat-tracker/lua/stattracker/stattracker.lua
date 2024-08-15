@@ -326,12 +326,22 @@ hook.Add("TTTEndRound", "WriteStats", function()
         updatedUsage = currentUsage + 1
 
         currentDamage = (sql.QueryValue("SELECT Damage FROM WeaponStats WHERE Name = '"..wepName.."'"))
-        tempDamage = totalDamage[wepName]["damage"]
-        updatedDamage = currentDamage + tempDamage
+        if totalDamage[wepName]["damage"] == nil then
+            tempDamage = 0
+            updatedDamage = 0
+        else
+            tempDamage = totalDamage[wepName]["damage"]
+            updatedDamage = currentDamage + tempDamage
+        end
 
         currentHeadshots = (sql.QueryValue("SELECT Headshots FROM WeaponStats WHERE Name = '"..wepName.."'"))
-        tempHeadshots = totalHeadshots[wepName]["head"]
-        updatedHeadshots = currentHeadshots + tempHeadshots
+        if totalHeadshots[wepName] == nil then
+            tempHeadshots = 0
+            updatedHeadshots = 0
+        else
+            tempHeadshots = totalHeadshots[wepName]["head"]
+            updatedHeadshots = currentHeadshots + tempHeadshots
+        end
 
         currentKills = (sql.QueryValue("SELECT Kills FROM WeaponStats WHERE Name = '"..wepName.."'"))
         if totalKills[wepName] == nil then

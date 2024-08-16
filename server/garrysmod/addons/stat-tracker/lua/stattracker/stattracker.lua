@@ -1,5 +1,5 @@
 debugCvar = CreateConVar(
-    "debug_stattrack", 
+    "debug_stattrack",
     "1",
     {FCVAR_LUA_SERVER},
     "Enable debug prints for Stat Tracker addon",
@@ -26,16 +26,16 @@ local function buildSwepTables()
             --while building the SWEP tables, we use INSERT to create values for each floor gun, 
             --INSERT checks to see if a dataset corresponding to the "PrimaryKey Value" (in our case "Name") already exists, and does nothing in the event it does
             --this allows the server to automatically check for new guns, and add them to the tracker if found
-            
-            result = sql.Query("SELECT Name WHERE Name = '"..wepClassName.."' ")
+
+            result = sql.Query("SELECT Name WHERE Name = '" .. wepClassName .. "' ")
             if result == false then
-                sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'HEAVY', '0', '0', '0', '0') ")
+                sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('" .. wepClassName .. "', 'HEAVY', '0', '0', '0', '0') ")
             end
         elseif wepTbl.Kind == WEAPON_PISTOL and wepTbl.AutoSpawnable then
             PISTOL[wepClassName] = wepTbl
-            result = sql.Query("SELECT Name WHERE Name = '"..wepClassName.."' ")
+            result = sql.Query("SELECT Name WHERE Name = '" .. wepClassName .. "' ")
             if result == false then
-                sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'PISTOL', '0', '0', '0', '0') ")
+                sql.Query("INSERT INTO WeaponStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('" .. wepClassName .. "', 'PISTOL', '0', '0', '0', '0') ")
             end
         elseif wepTbl.Kind == WEAPON_NADE and wepTbl.AutoSpawnable then
             NADE[wepClassName] = wepTbl
@@ -72,7 +72,7 @@ totalKills = totalKills or {}
 roundTimestamp = roundTimestamp or nil --os.time()
 roundWinners = roundWinners or nil -- ""
 roundLength = roundLength or nil
-roundStart = roundStart or nil 
+roundStart = roundStart or nil
 roundEnd = roundEnd or nil
 
 --[[
@@ -105,10 +105,10 @@ exampleUsage = {
 ]]--
 
 local function checkValidWeapon(wepClassName)
-    if not(HEAVY[wepClassName] == nil) then return true end
-    if not(PISTOL[wepClassName] == nil) then return true end
-    if not(NADE[wepClassName] == nil) then return true end
-    if not(BUYABLE[wepClassName] == nil) then return true end
+    if HEAVY[wepClassName] ~= nil then return true end
+    if PISTOL[wepClassName] ~= nil then return true end
+    if NADE[wepClassName] ~= nil then return true end
+    if BUYABLE[wepClassName] ~= nil then return true end
     if table.HasValue(MISC, wepClassName) then return true end
     return false
 end
@@ -119,8 +119,8 @@ local function isTrackingOk(dmg, ply)
 
     -- ensure we don't take into account a CTakeDamageInfo obj
     -- if there was not one provided with the func call
-    if not(dmg == 0) then
-        if not(IsValid(dmg:GetAttacker())) then 
+    if dmg ~= 0 then
+        if not(IsValid(dmg:GetAttacker())) then
             return false
         end
         if not(dmg:GetAttacker():IsPlayer()) then
@@ -135,7 +135,7 @@ local function isTrackingOk(dmg, ply)
     end
     -- if a player is provided to evaluate, make sure it's
     -- valid, is a player, and it has a valid weapon
-    if not(ply == 0) then
+    if ply ~= 0 then
         if not(IsValid(ply)) then
             return false
         end
@@ -150,7 +150,7 @@ local function isTrackingOk(dmg, ply)
         end
     end
     -- we don't want to count stats from prep or rounds done in test mode
-    if GetRoundState() != ROUND_ACTIVE or GetConVar("ttt_debug_preventwin"):GetBool() then
+    if GetRoundState() ~= ROUND_ACTIVE or GetConVar("ttt_debug_preventwin"):GetBool() then
         -- disregard if debug is enabled for testing the addon specifically
         if debugCvar:GetBool() then
             return true
@@ -181,7 +181,7 @@ hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dm
     --if not(took) then return end
 
     local damageDealt = dmg:GetDamage()
-    if not(totalDamage[wepName] == nil) then
+    if totalDamage[wepName] ~= nil then
         totalDamage[wepName]["damage"] = totalDamage[wepName]["damage"] + math.Round(damageDealt)
     else
         totalDamage[wepName] = {
@@ -207,7 +207,7 @@ hook.Add("DoPlayerDeath", "TrackSWEPKills", function(victim, attacker, dmginfo)
     local wepName = dmginfo:GetAttacker():GetActiveWeapon():GetClass()
 
     local damageDealt = dmginfo:GetDamage()
-    if not(totalDamage[wepName] == nil) then
+    if totalDamage[wepName] ~= nil then
         totalDamage[wepName]["damage"] = totalDamage[wepName]["damage"] + math.Round(damageDealt)
     else
         totalDamage[wepName] = {
@@ -316,16 +316,16 @@ hook.Add("TTTEndRound", "WriteStats", function()
         roundWinners = "INVALID" -- REALLY shouldn't happen
     end
     for k, _ in pairs(totalUsage) do
-        wepName = totalUsage[k] 
+        wepName = totalUsage[k]
         --SELECT is used to search for values inside a table, and WHERE is how select is told what specifically to search for
         --temp vals are used for the 1 round table, updated vals are used for the cumulative table
-        currentUsage = (sql.QueryValue("SELECT Usage FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        currentUsage = (sql.QueryValue("SELECT Usage FROM WeaponStats WHERE Name = '" .. wepName .. "'"))
         if currentUsage == nil then
             currentUsage = 0
         end
         updatedUsage = currentUsage + 1
 
-        currentDamage = (sql.QueryValue("SELECT Damage FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        currentDamage = (sql.QueryValue("SELECT Damage FROM WeaponStats WHERE Name = '" .. wepName .. "'"))
         if totalDamage[wepName]["damage"] == nil then
             tempDamage = 0
             updatedDamage = 0
@@ -334,7 +334,7 @@ hook.Add("TTTEndRound", "WriteStats", function()
             updatedDamage = currentDamage + tempDamage
         end
 
-        currentHeadshots = (sql.QueryValue("SELECT Headshots FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        currentHeadshots = (sql.QueryValue("SELECT Headshots FROM WeaponStats WHERE Name = '" .. wepName .. "'"))
         if totalHeadshots[wepName] == nil then
             tempHeadshots = 0
             updatedHeadshots = 0
@@ -343,7 +343,7 @@ hook.Add("TTTEndRound", "WriteStats", function()
             updatedHeadshots = currentHeadshots + tempHeadshots
         end
 
-        currentKills = (sql.QueryValue("SELECT Kills FROM WeaponStats WHERE Name = '"..wepName.."'"))
+        currentKills = (sql.QueryValue("SELECT Kills FROM WeaponStats WHERE Name = '" .. wepName .. "'"))
         if totalKills[wepName] == nil then
             tempKills = 0
             updatedKills = 0
@@ -353,8 +353,8 @@ hook.Add("TTTEndRound", "WriteStats", function()
         end
 
         --UPDATE can only be used on a table that already exists, and you can modify any amount of values for a dataset, we do all of this at once during endround because it is nice and pretty
-        sql.Query("UPDATE WeaponStats SET Damage = "..updatedDamage..", Kills = "..updatedKills..", Headshots = "..updatedHeadshots..", Usage = "..updatedUsage.." WHERE Name = '"..wepName.."'")
-        
+        sql.Query("UPDATE WeaponStats SET Damage = " .. updatedDamage .. ", Kills = " .. updatedKills .. ", Headshots = " .. updatedHeadshots .. ", Usage = " .. updatedUsage .. " WHERE Name = '" .. wepName .. "'")
+
         --DELETE FROM without specifying any indicators of what to delete will clear the entire table
         sql.Query("DELETE FROM TempStats")
 
@@ -364,9 +364,9 @@ hook.Add("TTTEndRound", "WriteStats", function()
             local wepClassName = wep["ClassName"]
             local wepTbl = weapons.GetStored(wepClassName)
             if wepTbl.Kind == WEAPON_HEAVY and wepTbl.AutoSpawnable and wepClassName == wepName then
-                sql.Query(("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'HEAVY', '"..tempDamage.."', '"..tempKills.."', '"..tempHeadshots.."', '1') "))
+                sql.Query("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('" .. wepClassName .. "', 'HEAVY', '" .. tempDamage .. "', '" .. tempKills .. "', '" .. tempHeadshots .. "', '1') ")
             elseif wepTbl.Kind == WEAPON_PISTOL and wepClassName == wepName then
-                sql.Query(("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('"..wepClassName.."', 'PISTOL', '"..tempDamage.."', '"..tempKills.."', '"..tempHeadshots.."', '1') "))
+                sql.Query("INSERT INTO TempStats (`Name`,`Type`,`Damage`,`Kills`,`Headshots`,`Usage`)VALUES ('" .. wepClassName .. "', 'PISTOL', '" .. tempDamage .. "', '" .. tempKills .. "', '" .. tempHeadshots .. "', '1') ")
             end
         end
     end

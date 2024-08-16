@@ -387,11 +387,9 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
    
 	// -- Damage multiplier 
 	local fDamageMulti = 0.8
-   
-	local damagedice = math.Rand(.85,1.3)
-	local newdamage = self.Primary.Damage * damagedice
+	print(tr.HitEnt)
 
-
+	print(trace.HitEnt)
 	// -- Fire bullet from the exit point using the original trajectory
 	local penetratedbullet = {}
 	penetratedbullet.Num            = 1
@@ -401,7 +399,7 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
 	penetratedbullet.Tracer = 2
 	penetratedbullet.TracerName     = "m9k_effect_mad_ricochet_trace"
 	penetratedbullet.Force          = 5
-	penetratedbullet.IgnoreEntity   = tr.HitEnt
+	penetratedbullet.IgnoreEntity   = trace.HitEnt, tr.HitEnt
 	penetratedbullet.Damage = dmginfo:GetDamage() * fDamageMulti
 	penetratedbullet.Callback       = function(a, b, c) if (self.Ricochet) then    
 	local impactnum

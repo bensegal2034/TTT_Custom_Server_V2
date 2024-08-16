@@ -2,6 +2,7 @@ AddCSLuaFile()
 
 if SERVER then
    resource.AddFile("materials/VGUI/ttt/icon_tracker.vmt")
+   resource.AddFile("sound/trackerping.mp3")
 end
 
 SWEP.HoldType              = "pistol"
@@ -30,10 +31,10 @@ SWEP.Primary.Damage        = 25
 SWEP.DamageType            = "Puncture"
 SWEP.Primary.Delay         = 0.56
 SWEP.Primary.Cone          = 0.02
-SWEP.Primary.ClipSize      = 2
+SWEP.Primary.ClipSize      = 4
 SWEP.Primary.Automatic     = true
-SWEP.Primary.DefaultClip   = 2
-SWEP.Primary.ClipMax       = 2
+SWEP.Primary.DefaultClip   = 4
+SWEP.Primary.ClipMax       = 4
 SWEP.Primary.Ammo          = "AlyxGun"
 SWEP.Tracer = "GaussTracer"
 SWEP.Kind                  = WEAPON_SIPISTOL
@@ -47,13 +48,22 @@ SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_pist_usp.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_usp_silencer.mdl"
 
+SWEP.TrackerSound          = Sound("Weapon_Tracker.Ping")
+
 SWEP.IronSightsPos         = Vector( -5.91, -4, 2.84 )
 SWEP.IronSightsAng         = Vector(-0.5, 0, 0)
 
 SWEP.PrimaryAnim           = ACT_VM_PRIMARYATTACK_SILENCED
 SWEP.ReloadAnim            = ACT_VM_RELOAD_SILENCED
 
-local Duration = 15
+local Duration = 10
+
+sound.Add({
+	name = 			"Weapon_Tracker.Ping",
+	channel = 		CHAN_ITEM,
+	volume = 		1.0,
+	sound = 			"sound/trackerping.mp3" 
+})
 
 function SWEP:Deploy()
    self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
@@ -259,6 +269,7 @@ function SWEP:PrimaryAttack()
 	for j, tgt in ipairs(Targets) do
       if tgt.entity == entity then return end
 	end
+   EmitSound("trackerping.mp3", Vector(0, 0, 0), -2, 1, 1, SNDLVL_NONE, 0, 100, 0, entity)
 
    table.insert(Targets, {entity=entity})
 

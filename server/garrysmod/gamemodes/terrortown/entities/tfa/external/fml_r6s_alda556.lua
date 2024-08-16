@@ -1,0 +1,12 @@
+TFA.AddFireSound("Weapon_FML_ALDA556.Pew", { "weapons/mw19_m249/m249_fp.wav" } )
+TFA.AddFireSound("Weapon_FML_ALDA556.Pew2", { "weapons/mw19_m249/m249_suppressed_tp.wav" } )
+
+TFA.AddWeaponSound("Weapon_FML_ALDA.Bolt1", "weapons/mw19_m249/rpk_boltback.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.Bolt2", "weapons/mw19_m249/rpk_boltrelease.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.Foley1", "weapons/mw19_m249/m249_armmovement_01.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.Foley2", "weapons/mw19_m249/m249_armmovement_02.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.Open", "weapons/mw19_m249/m249_coveropen.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.Close", "weapons/mw19_m249/m249_coverclose.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.Out", "weapons/mw19_m249/m249_magout.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.In", "weapons/mw19_m249/m249_magin.wav" )
+TFA.AddWeaponSound("Weapon_FML_ALDA.Belt", "weapons/mw19_m249/m249_beltpullout.wav" )

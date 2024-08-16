@@ -1,0 +1,35 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/auditor/r6s/stuff/amelie/W_SMG_Alda_mag_col"
+	"$bumpmap" "models/auditor/r6s/stuff/amelie/W_SMG_Alda_mag_nml"
+	//"$color2" "[0.0 0.0 0.0]"
+	//"$blendTintByBaseAlpha"	"1"
+	//"$additive" "1"
+	//$translucent 1
+	//$ambientocclusion 0
+	//$no_draw 0
+	//"$selfillum" "1"
+	//"$selfillummaskscale" "15"
+	//"$selfillummask" "models/auditor/r6s/stuff/amelie/dempsey_primis"
+
+	$nocull 0
+	$normalmapalphaenvmapmask 1 	
+
+	//"$envmap" "models/auditor/mkx/raiden/Shared/metal_generic_002"					
+	"$envmaptint" "[0.04 0.04 0.04]"				
+
+	//ReflectionsDir
+
+	"$phong" "1"						
+	"$phongboost"	"1" 		
+	//"$phongexponent" "2"	
+	"$phongexponenttexture" "models/auditor/r6s/stuff/amelie/W_SMG_Alda_mag_mask" 
+		
+	//"$phongwarptexture"		"models/auditor/r6s/stuff/amelie/Shared/phongwarp2"		
+	$lightwarptexture "models/auditor/r6s/stuff/amelie/Shared/lightwarp_soft"
+	
+	"$phongfresnelranges"	"[0.2 3.25 4.75]"		
+	//"$phongtint" 			"[1 1 1.1]"			
+	//"$PhongAlbedoTint" "1"
+
+}

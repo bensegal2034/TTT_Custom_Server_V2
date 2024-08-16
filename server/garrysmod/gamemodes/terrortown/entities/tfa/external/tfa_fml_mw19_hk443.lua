@@ -1,0 +1,11 @@
+TFA.AddFireSound("Weapon_MW_FML_SCARH.Pew", { "weapons/mw19_hk443_sd_fml/scar1.wav", "weapons/mw19_hk443_sd_fml/scar2.wav" } )
+TFA.AddFireSound("Weapon_MW_FML_HK443SD.Pew", { "weapons/mw19_hk443_sd_fml/scarsd.wav" } )
+
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.Raise", "weapons/mw19_hk443_sd_fml/raise.wav" )
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.Mag", "weapons/mw19_hk443_sd_fml/mag.wav" )
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.Out", "weapons/mw19_hk443_sd_fml/out.wav" )
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.In", "weapons/mw19_hk443_sd_fml/in.wav" )
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.Bolt1", "weapons/mw19_hk443_sd_fml/back.wav" )
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.Bolt2", "weapons/mw19_hk443_sd_fml/forward.wav" )
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.Draw", "weapons/mw19_hk443_sd_fml/draw.wav" )
+TFA.AddWeaponSound("Weapon_MW_FML_HK443.Close", "weapons/mw19_hk443_sd_fml/close.wav" )

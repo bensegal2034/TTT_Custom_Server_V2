@@ -83,8 +83,8 @@ function SWEP:PrimaryAttack(worldsnd)
    self.ModulationRecoil = math.max(0.2, self.ModulationRecoil * 0.96)
    self.ModulationCone = math.max(0.01, self.ModulationCone * 0.97)
    self.ModulationSpeed = math.max(0.1, self.ModulationSpeed * 0.96)
-   self.ModulationDMG = self.ModulationDMG * 1.007
-   dmg = math.min(34, modulatedDMG)
+   self.ModulationDMG = self.ModulationDMG * 1.01
+   dmg = math.min(40, modulatedDMG)
 
    self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
    self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )

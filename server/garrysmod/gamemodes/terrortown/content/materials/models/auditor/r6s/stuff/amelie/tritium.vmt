@@ -1,0 +1,9 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/auditor/r6s/stuff/amelie/shared/generic_white"
+	//"$bumpmap" "models/auditor/r6s/stuff/amelie/W_SMG_Alda_body_nml"
+
+	"$selfillum" "1"
+
+
+}

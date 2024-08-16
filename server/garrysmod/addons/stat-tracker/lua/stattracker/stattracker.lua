@@ -1,12 +1,3 @@
-debugCvar = CreateConVar(
-    "debug_stattrack",
-    "1",
-    {FCVAR_LUA_SERVER},
-    "Enable debug prints for Stat Tracker addon",
-    0,
-    1
-)
-
 local function buildSwepTables()
     if not sql.TableExists("WeaponStats") then
         sql.Query("CREATE TABLE WeaponStats(Name TEXT PRIMARY KEY NOT NULL, Type TEXT, Damage NUMBER, Kills NUMBER, Headshots NUMBER, Usage NUMBER)")
@@ -151,12 +142,7 @@ local function isTrackingOk(dmg, ply)
     end
     -- we don't want to count stats from prep or rounds done in test mode
     if GetRoundState() ~= ROUND_ACTIVE or GetConVar("ttt_debug_preventwin"):GetBool() then
-        -- disregard if debug is enabled for testing the addon specifically
-        if debugCvar:GetBool() then
-            return true
-        else
-            return false
-        end
+        return false
     end
     -- all checks passed, we are ok to track stats
     return true

@@ -23,24 +23,25 @@ firstLoad = firstLoad or true
 if not(table.IsEmpty(weaponDefaults)) then buildWeaponDefaultTable() end
 
 local function handleWeapon(wepName, currentCvarState)
+    local recheckTime = 0.1
     if not(LocalPlayer().GetWeapon) then
-        timer.Simple(0.5, function()
+        timer.Simple(recheckTime, function()
             handleWeapon(wepName, currentCvarState)
         end)
         return
     end
     local wep = LocalPlayer():GetWeapon(wepName)
     if not(IsValid(wep)) then
-        timer.Simple(0.5, function()
+        timer.Simple(recheckTime, function()
             handleWeapon(wepName, currentCvarState)
         end)
         return
     end
-    local doLeftHand = not(currentCvarState)
+    local doLeftHand = not currentCvarState
     local default = weaponDefaults[wepName]
     --print("Runnning for " .. wepName .. ", default " .. tostring(default))
     if doLeftHand then
-        wep.ViewModelFlip = not(default)
+        wep.ViewModelFlip = not default
     else
         wep.ViewModelFlip = default
     end

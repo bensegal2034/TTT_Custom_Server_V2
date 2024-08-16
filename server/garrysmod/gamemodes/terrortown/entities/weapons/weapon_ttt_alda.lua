@@ -110,6 +110,13 @@ SWEP.Kind 				= WEAPON_HEAVY
 SWEP.ShowViewModel = true
 SWEP.ShowWorldModel = true
 
+SWEP.AutoSpawnable = true
+SWEP.Spawnable             = true
+SWEP.InLoadoutFor = { nil }
+SWEP.CanBuy = {}
+SWEP.AmmoEnt = "item_ammo_smg1_ttt"
+SWEP.IsSilent = false
+
 SWEP.WElements = {
 	["Model"] = { type = "Model", model = "models/weapons/fml/siege/c_alda_556.mdl", bone = "ValveBiped.Bip01_R_Hand", pos = Vector(-3.5, 3.5, -5), angle = Angle(-10, 0, 180), size = Vector(1, 1, 1), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {[1] = 1} }
 }
@@ -119,11 +126,8 @@ SWEP.ViewModelBoneMods = {
 	["Weapon_Muzzle"] = { scale = Vector(1, 1, 1), pos = Vector(3, -2.7, -7), angle = Angle(180, 180, 0) },	
 }
 
-
 SWEP.IronSightsPos = Vector(-2.37, -5, 0.004)
 SWEP.IronSightsAng = Vector(0, 0, 0)
-
-
 SWEP.VMPos = Vector(0.5, 5, -0.75)
 SWEP.VMAng = Vector(0,0,0)
 SWEP.VMPos_Additive = false --Set to false for an easier time using VMPos. If true, VMPos will act as a constant delta ON TOP OF ironsights, run, whateverelse

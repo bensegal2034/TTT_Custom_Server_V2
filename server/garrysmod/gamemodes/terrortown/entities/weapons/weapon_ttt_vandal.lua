@@ -79,7 +79,7 @@ SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.HeadshotMultiplier    = 4.3
 SWEP.FirstShotAccuracy = true
-SWEP.FirstShotDelay = 1.5
+SWEP.FirstShotDelay = 0.2
 SWEP.AccuracyTimer = 0
 SWEP.DamageType            = "Puncture"
 
@@ -148,6 +148,8 @@ if CLIENT then
 end
 
 function SWEP:Think()
+   --default speed 220
+   self:GetOwner():SetWalkSpeed(210)
    if CLIENT then
       if self.KillEffectBuffer == true then
          if self.KillCount == 1 then
@@ -187,14 +189,24 @@ function SWEP:Think()
    
    if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
       self:SetPrimaryCone(0.001)
-      self.Primary.Cone = self:GetPrimaryCone()
    elseif self.FirstShotAccuracy != true then
-      self:SetPrimaryCone(math.min(0 + (self:GetFirstShotAccuracyBullets() / 10), 1))
-      self.Primary.Cone = self:GetPrimaryCone()
+      if self:GetFirstShotAccuracyBullets() < 4 then
+         if self.MovementInaccuracy then
+            self:SetPrimaryCone(self:GetFirstShotAccuracyBullets() / 30 + self:GetMovementCone())
+         else
+            self:SetPrimaryCone(self:GetFirstShotAccuracyBullets() / 30)
+         end
+      else
+         if self.MovementInaccuracy then
+            self:SetPrimaryCone(math.min(0 + (self:GetFirstShotAccuracyBullets() / 20) + self:GetMovementCone(), 1))
+         else
+            self:SetPrimaryCone(math.min(0 + (self:GetFirstShotAccuracyBullets() / 20), 1))
+         end
+      end
       -- ((((self.AccuracyTimer - CurTime()) - 0) * 100) / (1.5 - 0)) / 100
       -- formula for making accuracy start out at fully inaccurate and slowly decay over time
    else
-      self.Primary.Cone = self:GetMovementCone()
+      self:SetPrimaryCone(self:GetMovementCone())
    end
 
    if CurTime() > self.AccuracyTimer then
@@ -207,7 +219,7 @@ function SWEP:PrimaryAttack(worldsnd)
    if self.InPulloutAnim then
       return
    end
-   self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
+   self.BaseClass.PrimaryAttack(self, worldsnd)
    if self:Clip1() > 0 and ((CLIENT and IsFirstTimePredicted()) or SERVER) then
       if self.KillEffectBuffer then
          self.FirstShotAccuracy = true
@@ -215,7 +227,7 @@ function SWEP:PrimaryAttack(worldsnd)
          self.FirstShotAccuracy = false
          self:SetFirstShotAccuracyBullets(self:GetFirstShotAccuracyBullets() + 1)
       end
-      self.AccuracyTimer = CurTime() + self.FirstShotDelay
+      self.AccuracyTimer = CurTime() + math.min(self.FirstShotDelay + (self:GetFirstShotAccuracyBullets() / 20), 0.8)
    end
    self:SetNextSecondaryFire( CurTime() + 0.1 )
 end
@@ -286,7 +298,8 @@ function SWEP:CanPrimaryAttack()
       return false
    end
    if self:Clip1() <= 0 then
-      EmitSound(Sound("weapons/afterglow/noammo_unk.wav"), self:GetOwner():GetPos(), self:GetOwner():EntIndex(), CHAN_STATIC, 0.3, SNDLEVEL_STATIC, SND_NOFLAGS, 100, 0)self:SetNextPrimaryFire( CurTime() + 0.3 )
+      EmitSound(Sound("weapons/afterglow/noammo_unk.wav"), self:GetOwner():GetPos(), self:GetOwner():EntIndex(), CHAN_STATIC, 0.3, SNDLEVEL_STATIC, SND_NOFLAGS, 100, 0)
+      self:SetNextPrimaryFire( CurTime() + 0.3 )
       return false
    end
    return true

@@ -342,7 +342,7 @@ function SWEP:GetPrimaryCone()
 end
  
 function SWEP:AutoReload()
-	if IsValid(self.Owner) then
+	if IsValid(self.Owner) and ply:Alive() then
 		if self.Owner:GetActiveWeapon():GetClass() != "weapon_ttt_alda" then 
 			self.TempClip = self:GetMaxClip1() - self:Clip1()
 			print(self.TempClip)

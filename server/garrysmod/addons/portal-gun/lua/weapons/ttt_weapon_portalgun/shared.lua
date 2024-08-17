@@ -44,7 +44,7 @@ end
 ----------------------------Shit Used for TTT-------------------------
 SWEP.Base 				= "weapon_tttbase"
 SWEP.Kind 				= WEAPON_EQUIP2
-SWEP.CanBuy 				= { ROLE_DETECTIVE }
+SWEP.CanBuy 				= {}
 SWEP.Gun      			= ("ttt_weapon_portalgun")
 SWEP.InLoadoutFor 			= nil
 SWEP.LimitedStock 			= false

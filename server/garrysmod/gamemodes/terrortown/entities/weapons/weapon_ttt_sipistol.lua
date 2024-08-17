@@ -37,6 +37,7 @@ SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 SWEP.IsSilent              = true
 SWEP.HeadshotMultiplier    = 2
 SWEP.UseHands              = true
+SWEP.ViewModelFlip         = true
 SWEP.ViewModel             = "models/weapons/v_pist_usp.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_usp_silencer.mdl"
 

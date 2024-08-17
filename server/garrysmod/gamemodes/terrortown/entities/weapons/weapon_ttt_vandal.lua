@@ -79,16 +79,13 @@ SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.HeadshotMultiplier    = 4.3
 SWEP.FirstShotAccuracy = true
-SWEP.FirstShotAccuracyBullets = 0
 SWEP.FirstShotDelay = 1.5
 SWEP.AccuracyTimer = 0
 SWEP.DamageType            = "Puncture"
 
-SWEP.Primary.MovementCone = 0.001
 SWEP.MovementAccuracyTimer = 0
 SWEP.AccuracyDelay = 0.2
 SWEP.MovementInaccuracy = false
-
 
 -- Model settings
 SWEP.UseHands = true
@@ -117,7 +114,16 @@ SWEP.DrawKillBanner = false
 SWEP.KillBannerDelayTimer = 0
 SWEP.KillBannerDelay = 2.5
 
+function SWEP:SetupDataTables()
+   self:NetworkVar("Float", 0, "PrimaryCone")
+   self:NetworkVar("Float", 1, "MovementCone")
+   self:NetworkVar("Int", 0, "FirstShotAccuracyBullets")
+end
+
 function SWEP:Initialize()
+   self:SetPrimaryCone(0.001)
+   self:SetMovementCone(0.001)
+   self:SetFirstShotAccuracyBullets(0)
    self.KillCount = 0
    self.KillEffectBuffer = false
    self.DrawKillBanner = false
@@ -169,42 +175,32 @@ function SWEP:Think()
       end
    end
 
-   if self.Owner:KeyDown(IN_FORWARD) then
+   if self.Owner:KeyDown(IN_FORWARD) or self.Owner:KeyDown(IN_BACK) or self.Owner:KeyDown(IN_MOVELEFT) or self.Owner:KeyDown(IN_MOVERIGHT) then
       self.MovementInaccuracy = true
-      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
+      self:SetMovementCone((self.Owner:GetVelocity():Length()) / 3000)
       self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
-   elseif self.Owner:KeyDown(IN_BACK) then
-      self.MovementInaccuracy = true
-      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
-      self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
-   elseif self.Owner:KeyDown(IN_MOVELEFT) then
-      self.MovementInaccuracy = true
-      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
-      self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
-   elseif self.Owner:KeyDown(IN_MOVERIGHT) then
-      self.MovementInaccuracy = true
-      self.Primary.MovementCone = ((self.Owner:GetVelocity():Length()) / 3000)
-      self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
-   elseif CurTime() > self.MovementAccuracyTimer then
-      self.Primary.MovementCone = 0.001
+   end
+   if CurTime() > self.MovementAccuracyTimer then
+      self:SetMovementCone(0.001)
       self.MovementInaccuracy = false
    end
    
    if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
-      self.Primary.Cone = 0.001
+      self:SetPrimaryCone(0.001)
+      self.Primary.Cone = self:GetPrimaryCone()
    elseif self.FirstShotAccuracy != true then
-      self.Primary.Cone = 0 + (self.FirstShotAccuracyBullets / 10)
+      self:SetPrimaryCone(math.min(0 + (self:GetFirstShotAccuracyBullets() / 10), 1))
+      self.Primary.Cone = self:GetPrimaryCone()
       -- ((((self.AccuracyTimer - CurTime()) - 0) * 100) / (1.5 - 0)) / 100
       -- formula for making accuracy start out at fully inaccurate and slowly decay over time
    else
-      self.Primary.Cone = self.Primary.MovementCone
+      self.Primary.Cone = self:GetMovementCone()
    end
 
    if CurTime() > self.AccuracyTimer then
       self.FirstShotAccuracy = true
-      self.FirstShotAccuracyBullets = 0
+      self:SetFirstShotAccuracyBullets(0)
    end
-
 end
 
 function SWEP:PrimaryAttack(worldsnd)
@@ -212,12 +208,12 @@ function SWEP:PrimaryAttack(worldsnd)
       return
    end
    self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
-   if self:Clip1() > 0 and IsFirstTimePredicted() == false then
+   if self:Clip1() > 0 and ((CLIENT and IsFirstTimePredicted()) or SERVER) then
       if self.KillEffectBuffer then
          self.FirstShotAccuracy = true
       else
          self.FirstShotAccuracy = false
-         self.FirstShotAccuracyBullets = self.FirstShotAccuracyBullets + 1
+         self:SetFirstShotAccuracyBullets(self:GetFirstShotAccuracyBullets() + 1)
       end
       self.AccuracyTimer = CurTime() + self.FirstShotDelay
    end

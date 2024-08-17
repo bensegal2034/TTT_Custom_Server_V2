@@ -140,8 +140,11 @@ local function isTrackingOk(dmg, ply)
             return false
         end
     end
-    -- we don't want to count stats from prep or rounds done in test mode
-    if GetRoundState() ~= ROUND_ACTIVE or GetConVar("ttt_debug_preventwin"):GetBool() then
+    -- we don't want to count stats from prep, or rounds done in test mode, or rounds with a player count less than the minimum players convar, or rounds with bots in them
+    if GetRoundState() ~= ROUND_ACTIVE or
+    GetConVar("ttt_debug_preventwin"):GetBool() or
+    player.GetCount() < GetConVar("ttt_minimum_players"):GetInt() or
+    #player.GetBots() > 0 then
         return false
     end
     -- all checks passed, we are ok to track stats

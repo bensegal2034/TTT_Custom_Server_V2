@@ -78,6 +78,7 @@ if SERVER then
 	resource.AddFile("materials/models/weapons/tfa_ins2/upgrades/weapon_w_carryhandle_nm.vtf")
 	resource.AddFile("materials/models/drgorgon/glass_n.vtf")
 	resource.AddFile("materials/entities/r6s_meatball.png")
+	resource.AddFile("materials/vgui/ttt/icon_alda.vmt")
 	resource.AddFile("models/weapons/fml/siege/c_alda_556.mdl")
 	resource.AddWorkshop("2798983509")
 end
@@ -89,6 +90,7 @@ SWEP.Contact = ""
 SWEP.Purpose = "lol fuck off"
 SWEP.Instructions = ""
 
+SWEP.Icon = "VGUI/ttt/icon_alda"
 SWEP.Category = "TFA Rainbow Six Siege"
 
 SWEP.Spawnable= true

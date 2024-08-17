@@ -14,6 +14,7 @@ if SERVER then
 	resource.AddFile("sound/weapons/minigun1/new3/minigunshoot.wav")
 	resource.AddFile("sound/weapons/minigun1/new3/minigunstart.wav")
 	resource.AddFile("sound/weapons/minigun1/new3/minigunstop.wav")
+	resource.AddFile("materials/vgui/ttt/icon_minigun.vmt")
 	resource.AddWorkshop("338915940")
 end
 
@@ -41,6 +42,7 @@ SWEP.Spawnable = true;
 SWEP.AutoSpawnable = true;
 SWEP.AdminSpawnable = true;
 
+SWEP.Icon = "VGUI/ttt/icon_minigun"
 SWEP.ReloadSound = Sound("weapons/minigun1/New3/minigunreload.wav");
 
 SWEP.Instructions = "well i dunno";

@@ -1,5 +1,7 @@
 AddCSLuaFile()
 
+resource.AddFile("materials/vgui/ttt/icon_ak47.vmt")
+
 if CLIENT then
    SWEP.PrintName = "AK47"
    SWEP.Slot = 2
@@ -12,6 +14,7 @@ SWEP.Base = "weapon_tttbase"
 -- Standard GMod values
 SWEP.HoldType = "ar2"
 
+SWEP.Icon = "VGUI/ttt/icon_ak47"
 SWEP.Primary.Ammo = "pistol"
 SWEP.Primary.Delay = 0.095
 SWEP.Primary.Recoil = 1.7

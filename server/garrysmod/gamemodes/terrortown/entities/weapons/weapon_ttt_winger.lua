@@ -21,6 +21,7 @@ if SERVER then
 	resource.AddFile("sound/weapons/metal_hit_hand1.wav")
 	resource.AddFile("sound/weapons/pistol_reload_scout.wav")
 	resource.AddFile("sound/weapons/pistol_shoot.wav")
+	resource.AddFile("materials/vgui/ttt/icon_winger.vmt")
 	resource.AddWorkshop("947417471")
 end
 
@@ -82,6 +83,8 @@ SWEP.Secondary.Automatic = true
 SWEP.Secondary.Ammo = "none"
 SWEP.JumpBoost = 1.6
 SWEP.AutoSpawnable = true
+SWEP.Icon = "VGUI/ttt/icon_winger"
+
 hook.Add("TTTPrepareRound", "ResetWingerJumpEVIL", function()
 	if SERVER then
 		local rf = RecipientFilter()

@@ -25,6 +25,7 @@ if SERVER then
 	resource.AddFile( "materials/models/weapons/v_models/raging_bull/uvmap.vmt" )
 	resource.AddFile( "materials/models/weapons/v_models/raging_bull/uvmap.vtf" )
 	resource.AddFile( "materials/models/weapons/v_models/raging_bull/uvmapref.vtf" )
+	resource.AddFile("materials/vgui/ttt/icon_hk.vmt")
 end
 
 SWEP.HoldType			= "revolver"
@@ -44,6 +45,7 @@ SWEP.Base				= "weapon_tttbase"
 SWEP.Spawnable = true
 SWEP.Kind = WEAPON_PISTOL
 
+SWEP.Icon = "VGUI/ttt/icon_hk"
 SWEP.Primary.Ammo       = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil			= 4
 SWEP.Primary.Damage = 34

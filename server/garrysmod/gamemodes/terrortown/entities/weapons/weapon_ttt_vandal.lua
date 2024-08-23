@@ -8,11 +8,11 @@ if SERVER then
    resource.AddFile("sound/weapons/afterglow/grab.wav")
    resource.AddFile("sound/weapons/afterglow/fire_ambient.wav")
    resource.AddFile("sound/weapons/afterglow/vandal_fire.wav")
-   resource.AddFile("sound/weapons/afterglow/killsound1.wav")
-   resource.AddFile("sound/weapons/afterglow/killsound2.wav")
-   resource.AddFile("sound/weapons/afterglow/killsound3.wav")
-   resource.AddFile("sound/weapons/afterglow/killsound4.wav")
-   resource.AddFile("sound/weapons/afterglow/killsound5.wav")
+   resource.AddFile("sound/weapons/afterglow/killsoundn1.wav")
+   resource.AddFile("sound/weapons/afterglow/killsoundn2.wav")
+   resource.AddFile("sound/weapons/afterglow/killsoundn3.wav")
+   resource.AddFile("sound/weapons/afterglow/killsoundn4.wav")
+   resource.AddFile("sound/weapons/afterglow/killsoundn5.wav")
    resource.AddFile("sound/weapons/afterglow/reload_whiz.wav")
    resource.AddFile("sound/weapons/afterglow/reload_gunsound.wav")
    resource.AddFile("sound/weapons/afterglow/noammo_unk.wav")
@@ -24,40 +24,11 @@ if SERVER then
    resource.AddFile("materials/vgui/ttt/icon_vandal.vtf")
 	resource.AddFile("materials/vgui/ttt/icon_vandal.vmt")
    resource.AddWorkshop("2892783240")
-   
-   util.AddNetworkString("PlayerDeathVandal")
 end
 
 if CLIENT then
    SWEP.PrintName = "Vandal"
    SWEP.Slot = 2
-
-   net.Receive("PlayerDeathVandal", function()
-      weapon = net.ReadEntity()
-      if IsValid(weapon) then
-         weapon.KillCount = weapon.KillCount + 1
-         weapon.KillEffectBuffer = true
-         weapon.FirstShotAccuracy = true
-      else
-         print("An error occurred while handling incoming Vandal death event!")
-      end
-   end)
-end
-
-if SERVER then
-   hook.Add("PlayerDeath", "PlayerDeathVandal", function(victim, inflictor, attacker)
-      if not IsValid(inflictor) or inflictor == nil then return end
-
-      if inflictor:GetClass() == "weapon_ttt_vandal" then
-         inflictor.KillCount = inflictor.KillCount + 1
-         inflictor.KillEffectBuffer = true
-         inflictor.FirstShotAccuracy = true
-
-         net.Start("PlayerDeathVandal")
-            net.WriteEntity(inflictor)
-         net.Broadcast()
-      end
-   end)
 end
 -- Always derive from weapon_tttbase
 SWEP.Base = "weapon_tttbase"
@@ -108,74 +79,84 @@ SWEP.IsSilent = false
 SWEP.NoSights = false
 
 -- Kill banner settings
-SWEP.KillCount = 0
-SWEP.KillEffectBuffer = false
 SWEP.DrawKillBanner = false
 SWEP.KillBannerDelayTimer = 0
 SWEP.KillBannerDelay = 2.5
+
+util.PrecacheSound("weapons/afterglow/killsoundn1.wav")
+util.PrecacheSound("weapons/afterglow/killsoundn2.wav")
+util.PrecacheSound("weapons/afterglow/killsoundn3.wav")
+util.PrecacheSound("weapons/afterglow/killsoundn4.wav")
+util.PrecacheSound("weapons/afterglow/killsoundn5.wav")
 
 function SWEP:SetupDataTables()
    self:NetworkVar("Float", 0, "PrimaryCone")
    self:NetworkVar("Float", 1, "MovementCone")
    self:NetworkVar("Int", 0, "FirstShotAccuracyBullets")
+
+   self:NetworkVar("Int", 1, "ShowKillEffect")
+   self:NetworkVar("Int", 2, "KillCount")
 end
 
 function SWEP:Initialize()
    self:SetPrimaryCone(0.001)
    self:SetMovementCone(0.001)
    self:SetFirstShotAccuracyBullets(0)
-   self.KillCount = 0
-   self.KillEffectBuffer = false
    self.DrawKillBanner = false
    self.KillBannerDelayTimer = 0
 end
 
+if SERVER then
+   hook.Add("DoPlayerDeath", "PlayerDeathVandal", function(victim, attacker, dmginfo)
+      if not IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker():IsPlayer() or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then return end
+      local wep = dmginfo:GetAttacker():GetActiveWeapon()
+
+      if wep:GetClass() == "weapon_ttt_vandal" then
+         wep:SetShowKillEffect(wep:GetShowKillEffect() + 1)
+      end
+   end)
+end
+
 if CLIENT then
    local killBanner = Material("vgui/killicons/killbanner.png", "noclamp smooth")
-   
+
    function SWEP:DrawHUD()
       local scrW = ScrW()
       local scrH = ScrH()
-
       if self.DrawKillBanner then
          surface.SetMaterial(killBanner)
          surface.SetDrawColor(255, 255, 255, 255)
          surface.DrawTexturedRect(scrW * 0.4485, scrH * 0.65, 200, 256)
       end
-
       self.BaseClass.DrawHUD(self)
    end
 end
 
 function SWEP:Think()
+   if self:GetShowKillEffect() > 0 then
+      self.DrawKillBanner = true
+      self.KillBannerDelayTimer = CurTime() + self.KillBannerDelay
+      self:SetKillCount(self:GetKillCount() + 1)
+      if self:GetKillCount() == 1 then
+         EmitSound(Sound("weapons/afterglow/killsoundn1.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
+      elseif self:GetKillCount() == 2 then
+         EmitSound(Sound("weapons/afterglow/killsoundn2.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
+      elseif self:GetKillCount() == 3 then
+         EmitSound(Sound("weapons/afterglow/killsoundn3.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
+      elseif self:GetKillCount() == 4 then
+         EmitSound(Sound("weapons/afterglow/killsoundn4.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
+      elseif self:GetKillCount() >= 5 then
+         EmitSound(Sound("weapons/afterglow/killsoundn5.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
+      end
+      self:SetShowKillEffect(math.abs(self:GetShowKillEffect() - 1))
+   end
+
+   if self.DrawKillBanner and CurTime() > self.KillBannerDelayTimer then
+      self.DrawKillBanner = false
+      self.KillBannerDelayTimer = 0
+   end
    --default speed 220
    self:GetOwner():SetWalkSpeed(210)
-   if CLIENT then
-      if self.KillEffectBuffer == true then
-         if self.KillCount == 1 then
-            EmitSound(Sound("weapons/afterglow/killsound1.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
-         elseif self.KillCount == 2 then
-            EmitSound(Sound("weapons/afterglow/killsound2.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
-         elseif self.KillCount == 3 then
-            EmitSound(Sound("weapons/afterglow/killsound3.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
-         elseif self.KillCount == 4 then
-            EmitSound(Sound("weapons/afterglow/killsound4.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
-         elseif self.KillCount >= 5 then
-            EmitSound(Sound("weapons/afterglow/killsound5.wav"), self:GetOwner():GetPos(), -2, CHAN_STATIC, 1, SNDLVL_STATIC, SND_NOFLAGS, 100, 0)
-         end
-         self.DrawKillBanner = true
-         self.KillBannerDelayTimer = CurTime() + self.KillBannerDelay
-
-         self.KillEffectBuffer = false
-      end
-
-      if self.DrawKillBanner then
-         if CurTime() > self.KillBannerDelayTimer then
-            self.DrawKillBanner = false
-            self.KillBannerDelayTimer = 0
-         end
-      end
-   end
 
    if self.Owner:KeyDown(IN_FORWARD) or self.Owner:KeyDown(IN_BACK) or self.Owner:KeyDown(IN_MOVELEFT) or self.Owner:KeyDown(IN_MOVERIGHT) then
       self.MovementInaccuracy = true
@@ -186,7 +167,7 @@ function SWEP:Think()
       self:SetMovementCone(0.001)
       self.MovementInaccuracy = false
    end
-   
+
    if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
       self:SetPrimaryCone(0.001)
    elseif self.FirstShotAccuracy != true then
@@ -221,15 +202,11 @@ function SWEP:PrimaryAttack(worldsnd)
    end
    self.BaseClass.PrimaryAttack(self, worldsnd)
    if self:Clip1() > 0 and ((CLIENT and IsFirstTimePredicted()) or SERVER) then
-      if self.KillEffectBuffer then
-         self.FirstShotAccuracy = true
-      else
-         self.FirstShotAccuracy = false
-         self:SetFirstShotAccuracyBullets(self:GetFirstShotAccuracyBullets() + 1)
-      end
+      self.FirstShotAccuracy = false
+      self:SetFirstShotAccuracyBullets(self:GetFirstShotAccuracyBullets() + 1)
       self.AccuracyTimer = CurTime() + math.min(self.FirstShotDelay + (self:GetFirstShotAccuracyBullets() / 20), 0.8)
+      self:SetNextSecondaryFire( CurTime() + 0.1 )
    end
-   self:SetNextSecondaryFire( CurTime() + 0.1 )
 end
 
 function SWEP:Reload()
@@ -306,8 +283,5 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:OwnerChanged()
-   if self.KillEffectBuffer then
-      self.KillEffectBuffer = false
-      self.KillCount = 0
-   end
+   return
 end

@@ -26,6 +26,7 @@ if SERVER then
 	resource.AddFile("sound/weapons/37/insert3.wav")
 	resource.AddFile("sound/weapons/37/insert4.wav")
 	resource.AddFile("sound/weapons/37/pump.wav")
+	resource.AddFile("materials/vgui/ttt/icon_pump.vmt")
 	resource.AddWorkshop("1088359186")
 end
 
@@ -47,6 +48,7 @@ SWEP.HoldType 				= "ar2"	-- how others view you carrying the weapon
 -- normal melee melee2 fist knife smg ar2 pistol rpg physgun grenade shotgun crossbow slam passive 
 -- you're mostly going to use ar2, smg, shotgun or pistol. rpg and crossbow make for good sniper rifles
 
+SWEP.Icon = "VGUI/ttt/icon_pump"
 SWEP.ViewModelFOV			= 70
 SWEP.ViewModelFlip			= false
 SWEP.ViewModel				= "models/weapons/v_notmic_icarus.mdl"	-- Weapon view model

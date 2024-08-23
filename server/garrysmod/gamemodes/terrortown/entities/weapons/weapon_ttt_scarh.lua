@@ -1,6 +1,7 @@
 if SERVER then
    AddCSLuaFile( "weapon_ttt_scarh.lua" )
    resource.AddFile( "materials/vgui/ttt/scarh-icon.vmt" )
+   resource.AddFile("materials/vgui/ttt/icon_scarh.vmt")
    resource.AddFile( "materials/models/weapons/v_models/fnscarh/bull/tan/mag_bump.vtf" )
    resource.AddFile( "materials/models/weapons/v_models/fnscarh/bull/tan/mag_diff.vtf" )
    resource.AddFile( "materials/models/weapons/v_models/fnscarh/bull/tan/mag_exponent.vtf" )
@@ -44,7 +45,7 @@ end
 if CLIENT then
    SWEP.PrintName			= "SCAR-H"
    SWEP.Slot				= 2
-   SWEP.Icon = "vgui/ttt/scarh-icon"
+   SWEP.Icon = "vgui/ttt/icon_scarh"
    
    local scope = surface.GetTextureID("sprites/scope")
 end
@@ -113,6 +114,7 @@ SWEP.ViewModelFOV		= 64
 --SWEP.ViewModel			= "models/weapons/v_fnscarh.mdl"
 SWEP.ViewModel			= "models/weapons/v_rif_p4s.mdl"
 SWEP.WorldModel			= "models/weapons/w_fn_scar_h.mdl"
+
 
 SWEP.data 				= {}				--The starting firemode
 SWEP.data.ironsights			= 1

@@ -34,6 +34,8 @@ if SERVER then
 	resource.AddFile("sound/weapons/svd/g3sg1_slide.mp3")
 	resource.AddFile("sound/weapons/svd/g3sg1-1.wav")
 
+	resource.AddFile("materials/vgui/ttt/icon_dragunov.vmt")
+
 	resource.AddWorkshop("128091208")
 end
 
@@ -68,6 +70,7 @@ SWEP.HoldType 				= "rpg"		-- how others view you carrying the weapon
 -- normal melee melee2 fist knife smg ar2 pistol rpg physgun grenade shotgun crossbow slam passive 
 -- you're mostly going to use ar2, smg, shotgun or pistol. rpg and crossbow make for good sniper rifles
 
+SWEP.Icon = "VGUI/ttt/icon_dragunov"
 SWEP.ViewModelFOV			= 65
 SWEP.ViewModelFlip			= false
 SWEP.ViewModel				= "models/weapons/v_sniper_svu.mdl"	-- Weapon view model

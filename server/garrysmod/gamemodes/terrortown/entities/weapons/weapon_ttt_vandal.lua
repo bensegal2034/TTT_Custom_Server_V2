@@ -30,6 +30,18 @@ if CLIENT then
    SWEP.PrintName = "Vandal"
    SWEP.Slot = 2
 end
+
+hook.Add("TTTPrepareRound", "ResetVandalSpeed", function()
+   if SERVER then
+      local rf = RecipientFilter()
+      rf:AddAllPlayers()
+      players = rf:GetPlayers()
+      for i = 1, #players do
+         players[i]:SetWalkSpeed(220)
+      end
+   end
+end)
+
 -- Always derive from weapon_tttbase
 SWEP.Base = "weapon_tttbase"
 
@@ -77,6 +89,7 @@ SWEP.LimitedStock = true
 SWEP.AllowDrop = true
 SWEP.IsSilent = false
 SWEP.NoSights = false
+SWEP.SpeedBoost = 0.955
 
 -- Kill banner settings
 SWEP.DrawKillBanner = false
@@ -268,6 +281,7 @@ function SWEP:Deploy()
          end
       end)
    end
+   self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
 end
 
 function SWEP:CanPrimaryAttack()
@@ -284,4 +298,22 @@ end
 
 function SWEP:OwnerChanged()
    return
+end
+
+function SWEP:Holster()
+   if IsValid(self.Owner) and self.Owner:IsPlayer() then
+      if self.SpeedBoostRemoved == false then
+         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
+      end
+   end
+   return true
+end
+
+function SWEP:Holster()
+   if IsValid(self.Owner) and self.Owner:IsPlayer() then
+      if self.SpeedBoostRemoved == false then
+         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
+      end
+   end
+   return true
 end

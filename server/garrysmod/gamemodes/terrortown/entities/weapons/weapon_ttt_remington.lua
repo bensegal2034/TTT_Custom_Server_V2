@@ -29,6 +29,7 @@ if SERVER then
 	resource.AddFile("sound/weapons/7615p/scout_fire-1.wav")
 	resource.AddFile("sound/weapons/7615p/sg550_clipin.mp3")
 	resource.AddFile("sound/weapons/7615p/sg550_clipout.mp3")
+	resource.AddFile("materials/vgui/ttt/icon_remington.vmt")
 	resource.AddWorkshop("128091208")
 end
 
@@ -64,7 +65,7 @@ SWEP.HoldType 				= "ar2"		-- how others view you carrying the weapon
 -- you're mostly going to use ar2, smg, shotgun or pistol. rpg and crossbow make for good sniper rifles
 SWEP.HeadshotMultiplier = 3
 
-
+SWEP.Icon = "VGUI/ttt/icon_remington"
 SWEP.ViewModelFOV			= 70
 SWEP.ViewModelFlip			= true
 SWEP.Base 				= "weapon_tttbase"

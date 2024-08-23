@@ -1,3 +1,7 @@
+if SERVER then
+	resource.AddFile("materials/vgui/ttt/icon_holymackerel.vmt")
+end
+
 
 SWEP.PrintName = "Holy Mackerel"
     
@@ -45,6 +49,7 @@ SWEP.ReloadSound = ""
 
 SWEP.Base = "weapon_tttbase"
 
+SWEP.Icon = "VGUI/ttt/icon_holymackerel"
 SWEP.Primary.Sound = Sound( "Weapon_FireAxe.Miss" )
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1

@@ -308,12 +308,3 @@ function SWEP:Holster()
    end
    return true
 end
-
-function SWEP:Holster()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() then
-      if self.SpeedBoostRemoved == false then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
-      end
-   end
-   return true
-end

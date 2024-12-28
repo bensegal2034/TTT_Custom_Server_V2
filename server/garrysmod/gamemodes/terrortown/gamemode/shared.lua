@@ -45,53 +45,6 @@ WEAPON_CARRY  = 5
 WEAPON_EQUIP1 = 6
 WEAPON_EQUIP2 = 7
 WEAPON_ROLE   = 8
-WEAPON_SIPISTOL   = 9
-WEAPON_KNIFE = 10
-WEAPON_DOOHICKEY = 11
-WEAPON_FLARE = 12
-WEAPON_HEALTHSTATION = 13
-WEAPON_RADIO = 14
-WEAPON_RAILGUN = 15
-WEAPON_KGUN = 16
-WEAPON_DECOY = 17
-WEAPON_GDEAGLE = 18
-WEAPON_ESWORD = 19
-WEAPON_NEEDLER = 20
-WEAPON_SAWP = 21
-WEAPON_BINO = 22
-WEAPON_C4 = 23
-WEAPON_CSE = 24
-WEAPON_DEFUSER = 25
-WEAPON_STUNGUN = 26
-WEAPON_TPORT = 27
-WEAPON_NEWTON = 28
-WEAPON_POLTER = 29
-WEAPON_WHIPLASH = 30
-WEAPON_BASS = 31
-WEAPON_MUTER = 32
-WEAPON_BAZINGA = 33
-WEAPON_PORTALGUN = 34
-WEAPON_DISGUISER = 35
-WEAPON_BEE = 36
-WEAPON_DOORBUSTER = 37
-WEAPON_SATM = 38
-WEAPON_TRIPMINE = 39
-WEAPON_TURRET = 40
-WEAPON_TURTLE = 41
-WEAPON_GENKIDAMA = 42
-WEAPON_TCHIP = 43
-WEAPON_KAMEHAMEHA = 44
-WEAPON_MOLOTOV = 45
-WEAPON_HEADCRAB = 46
-WEAPON_PROPEXPLODER = 47
-WEAPON_EMERGENCYMEETING = 48
-WEAPON_AWP = 49
-WEAPON_FAMAS = 50
-WEAPON_PREGNANCY = 51
-WEAPON_SHOCKWAVE = 52
-WEAPON_DRONE = 53
-WEAPON_CAMERA = 54
-WEAPON_GUNGUN = 55
 
 WEAPON_EQUIP = WEAPON_EQUIP1
 WEAPON_UNARMED = -1
@@ -186,9 +139,9 @@ local ttt_playercolors = {
    }
 };
 
-CreateConVar("ttt_playercolor_mode", "1")
+local playercolor_mode = CreateConVar("ttt_playercolor_mode", "1")
 function GM:TTTPlayerColor(model)
-   local mode = GetConVarNumber("ttt_playercolor_mode") or 0
+   local mode = playercolor_mode:GetInt()
    if mode == 1 then
       return table.Random(ttt_playercolors.serious)
    elseif mode == 2 then
@@ -243,6 +196,7 @@ DefaultEquipment = {
       "weapon_ttt_sipistol",
       "weapon_ttt_teleport",
       "weapon_ttt_decoy",
+      EQUIP_ARMOR,
       EQUIP_RADAR,
       EQUIP_DISGUISE
    },

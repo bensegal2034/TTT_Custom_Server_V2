@@ -1,7 +1,7 @@
 -- common code for all types of grenade
 
 AddCSLuaFile()
-resource.AddFile("shock.mp3")
+
 DEFINE_BASECLASS "weapon_tttbase"
 
 SWEP.HoldReady             = "grenade"
@@ -40,14 +40,10 @@ SWEP.Secondary.Ammo        = "none"
 
 SWEP.Kind                  = WEAPON_NADE
 SWEP.IsGrenade             = true
-SWEP.NoCook = false
 
 SWEP.was_thrown            = false
 SWEP.detonate_timer        = 5
 SWEP.DeploySpeed           = 1.5
-
-SWEP.LastPinState          = false
-SWEP.InitDetTimeDelta      = 0
 
 AccessorFunc(SWEP, "det_time", "DetTime")
 
@@ -107,9 +103,6 @@ function SWEP:Think()
             self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
          end
       else
-         if self.NoCook == true then
-            self:SetDetTime(CurTime() + self.detonate_timer)
-         end
          -- still cooking it, see if our time is up
          if SERVER and self:GetDetTime() < CurTime() then
             self:BlowInFace()
@@ -120,39 +113,6 @@ function SWEP:Think()
    end
 end
 
-DEFINE_BASECLASS(SWEP.Base)
-function SWEP:DrawHUD(...)
-   if CLIENT then
-      local x = math.floor(ScrW() / 2.0)
-      local y = math.floor(ScrH() / 2.0)
-      local barLength = 100
-      local yOffset = 35
-      local yOffsetText = 3
-      local shadowOffset = 2
-
-      if self:GetPin() and not self.NoCook and LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
-         local pinPullTime = self:GetDetTime() - self.detonate_timer
-         local secondsSincePinPulled = CurTime() - pinPullTime
-         local pinPercentage = (1 - secondsSincePinPulled / self.detonate_timer) * barLength
-         local detTimeDelta = math.Clamp(math.abs(math.Truncate(self:GetDetTime() - CurTime(), 1)), 0, self.detonate_timer)
-         
-
-         draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
-         draw.RoundedBox(10, x - (pinPercentage / 2), y + yOffset, pinPercentage, 30, Color(255, 0, 0, 200))
-
-         local textW, textH = surface.GetTextSize(tostring(detTimeDelta))
-         surface.SetFont("HealthAmmo")
-         surface.SetTextColor(0, 0, 0, 255)
-         surface.SetTextPos(x - (textW / 2) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
-         surface.DrawText(tostring(detTimeDelta))
-         surface.SetTextColor(255, 255, 255)
-         surface.SetTextPos(x - (textW / 2), y + yOffset + yOffsetText)
-         surface.DrawText(tostring(detTimeDelta))
-      end
-      self.LastPinState = self:GetPin()
-   end
-   return BaseClass.DrawHUD(self, ...)
-end
 
 function SWEP:BlowInFace()
    local ply = self:GetOwner()

@@ -20,20 +20,20 @@ end
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_STUNGUN
+SWEP.Kind                  = WEAPON_EQUIP
 SWEP.WeaponID              = AMMO_STUN
 SWEP.CanBuy                = {ROLE_DETECTIVE}
 SWEP.LimitedStock          = false
 SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
-SWEP.Tracer = "AR2Tracer"
-SWEP.Primary.Damage        = 16
+
+SWEP.Primary.Damage        = 9
 SWEP.Primary.Delay         = 0.1
 SWEP.Primary.Cone          = 0.02
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.ClipMax       = 60
-SWEP.Primary.DefaultClip   = 90
+SWEP.Primary.DefaultClip   = 30
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "AlyxGun"
+SWEP.Primary.Ammo          = "SMG1"
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Sound         = Sound( "Weapon_UMP45.Single" )
 
@@ -44,24 +44,8 @@ SWEP.WorldModel            = "models/weapons/w_smg_ump45.mdl"
 SWEP.IronSightsPos         = Vector(-8.735, -10, 4.039)
 SWEP.IronSightsAng         = Vector(-1.201, -0.201, -2)
 
-SWEP.HeadshotMultiplier    = 3 -- brain fizz
+SWEP.HeadshotMultiplier    = 4.5 -- brain fizz
 --SWEP.DeploySpeed = 3
-
-function SWEP:Shake()
-	if SERVER then
-		local shake = ents.Create( "env_shake" )
-			shake:SetOwner( self.Owner )
-			shake:SetPos( self:GetPos() )
-			shake:SetKeyValue( "amplitude", "100" )
-			shake:SetKeyValue( "radius", "64" )
-			shake:SetKeyValue( "duration", "1.5" )
-			shake:SetKeyValue( "frequency", "255" )
-			shake:SetKeyValue( "spawnflags", "4" )
-			shake:Spawn()
-			shake:Activate()
-			shake:Fire( "StartShake", "", 0 )
-	end
-end
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    local sights = self:GetIronsights()
@@ -77,40 +61,33 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Src    = self:GetOwner():GetShootPos()
    bullet.Dir    = self:GetOwner():GetAimVector()
    bullet.Spread = Vector( cone, cone, 0 )
-   bullet.Tracer = 1
-   bullet.TracerName = self.Tracer
+   bullet.Tracer = 4
    bullet.Force  = 5
    bullet.Damage = dmg
 
    bullet.Callback = function(att, tr, dmginfo)
-      if SERVER or (CLIENT and IsFirstTimePredicted()) then
-      local ent = tr.Entity
-         if (not tr.HitWorld) and IsValid(ent) then
-            local edata = EffectData()
+                        if SERVER or (CLIENT and IsFirstTimePredicted()) then
+                           local ent = tr.Entity
+                           if (not tr.HitWorld) and IsValid(ent) then
+                              local edata = EffectData()
 
-            edata:SetEntity(ent)
-            edata:SetMagnitude(3)
-            edata:SetScale(2)
+                              edata:SetEntity(ent)
+                              edata:SetMagnitude(3)
+                              edata:SetScale(2)
 
-            util.Effect("TeslaHitBoxes", edata)
-            self:Shake()
-            if SERVER and ent:IsPlayer() then
-               local eyeang = ent:EyeAngles()
+                              util.Effect("TeslaHitBoxes", edata)
 
-               local j = 10
-               eyeang.pitch = math.Clamp(eyeang.pitch + math.Rand(-j, j), -90, 90)
-               eyeang.yaw = math.Clamp(eyeang.yaw + math.Rand(-j, j), -90, 90)
-               ent:SetEyeAngles(eyeang)
-               local eyeang = ent:EyeAngles()
+                              if SERVER and ent:IsPlayer() then
+                                 local eyeang = ent:EyeAngles()
 
-               local j = 10
-               eyeang.pitch = math.Clamp(eyeang.pitch + math.Rand(-j, j), -90, 90)
-               eyeang.yaw = math.Clamp(eyeang.yaw + math.Rand(-j, j), -90, 90)
-               self.Owner:SetEyeAngles(eyeang)
-            end
-         end
-      end
-   end
+                                 local j = 10
+                                 eyeang.pitch = math.Clamp(eyeang.pitch + math.Rand(-j, j), -90, 90)
+                                 eyeang.yaw = math.Clamp(eyeang.yaw + math.Rand(-j, j), -90, 90)
+                                 ent:SetEyeAngles(eyeang)
+                              end
+                           end
+                        end
+                     end
 
 
    self:GetOwner():FireBullets( bullet )

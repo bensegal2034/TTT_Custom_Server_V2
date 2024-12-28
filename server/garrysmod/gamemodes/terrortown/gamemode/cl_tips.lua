@@ -209,9 +209,6 @@ function PANEL:Paint()
 end
 
 function PANEL:Think()
-   if IsValid(LocalPlayer()) then 
-      self:SetVisible(not LocalPlayer():SteamID64() == "")
-   end 
    if self.NextSwitch < CurTime() then
       self:NextTip(true)
    end

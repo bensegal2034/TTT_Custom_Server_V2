@@ -13,10 +13,6 @@ if CLIENT then
    SWEP.IconLetter      = "P"
 end
 
-
---All grenades inherently use this value to determine fuse time, default ttt grenades don't set it and use a default value of 5
-SWEP.detonate_timer      = 3
-
 SWEP.Base               = "weapon_tttbasegrenade"
 
 SWEP.Kind               = WEAPON_NADE

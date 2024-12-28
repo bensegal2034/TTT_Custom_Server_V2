@@ -20,6 +20,6 @@ def start():
         '+map',
         random.choice(maps),
         '+sv_setsteamaccount',
-        '7F69B937699BB050BE2036DE3448EC17'
+        '01C99DF1D13962497668C20380AAC52F'
     ])
     #os.system(f"start cmd.exe /k srcds.exe -console +maxplayers 7 -allowlocalhttp +gamemode terrortown +map {random.choice(maps)} +sv_setsteamaccount 7F69B937699BB050BE2036DE3448EC17")

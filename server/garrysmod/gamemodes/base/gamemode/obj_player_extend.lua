@@ -211,12 +211,3 @@ function meta:GetEyeTraceNoCursor()
 
 	return tr
 end
-
-local oldGetAimVector = meta.GetAimVector
-
-function meta:GetAimVector()
-	if IsValid(self:GetActiveWeapon()) and self:GetActiveWeapon():GetClass() == "weapon_ttt_scarh" then
-		return self:GetActiveWeapon():CalcAimVector(self)
-	end
-	return oldGetAimVector(self)
-end

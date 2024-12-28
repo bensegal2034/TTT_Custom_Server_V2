@@ -2,14 +2,6 @@
 
 AddCSLuaFile()
 
-if SERVER then
-   resource.AddFile( "materials/vgui/damagetype/puncture.png" )
-   resource.AddFile( "materials/vgui/damagetype/impact2.png" )
-   -- "impact2" we love overwriting files!!!!!!!!
-   resource.AddFile( "materials/vgui/damagetype/elemental2.png" )
-end
-
-
 ---- TTT SPECIAL EQUIPMENT FIELDS
 
 -- This must be set to one of the WEAPON_ types in TTT weapons for weapon
@@ -145,44 +137,8 @@ if CLIENT then
       if self.HUDHelp then
          self:DrawHelp()
       end
-      local puncture = Material("vgui/damagetype/puncture.png", "mips noclamp smooth")
-      local impact = Material("vgui/damagetype/impact2.png", "mips noclamp smooth")
-      local elemental = Material("vgui/damagetype/elemental2.png", "mips noclamp smooth")
-      local punctureshad = Material("vgui/damagetype/puncture.png", "mips noclamp smooth")
-      local impactshad = Material("vgui/damagetype/impact2.png", "mips noclamp smooth")
-      local elementalshad = Material("vgui/damagetype/elemental2.png", "mips noclamp smooth")
+
       local client = LocalPlayer()
-      if client:GetObserverMode() == OBS_MODE_NONE then
-         if self.DamageType == "Puncture" then
-            surface.SetMaterial(punctureshad)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
-
-            surface.SetMaterial(puncture)
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.DrawTexturedRect(24, ScrH() - 58, 28, 34)
-         end
-         if self.DamageType == "Impact" then
-            surface.SetMaterial(impactshad)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
-
-            surface.SetMaterial(impact)
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 24)
-         end
-         if self.DamageType == "True" then
-            surface.SetMaterial(elementalshad)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
-
-            surface.SetMaterial(elemental)
-            surface.SetDrawColor(255, 255, 255, 255)
-            surface.DrawTexturedRect(24, ScrH() - 54, 24, 22)
-         end
-      end
-
-      
       if disable_crosshair:GetBool() or (not IsValid(client)) then return end
 
       local sights = (not self.NoSights) and self:GetIronsights()
@@ -217,7 +173,6 @@ if CLIENT then
       surface.DrawLine( x + length, y, x + gap, y )
       surface.DrawLine( x, y - length, x, y - gap )
       surface.DrawLine( x, y + length, x, y + gap )
-      
    end
 
    local GetPTranslation = LANG.GetParamTranslation
@@ -348,7 +303,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Src    = self:GetOwner():GetShootPos()
    bullet.Dir    = self:GetOwner():GetAimVector()
    bullet.Spread = Vector( cone, cone, 0 )
-   bullet.Tracer = 1
+   bullet.Tracer = 4
    bullet.TracerName = self.Tracer or "Tracer"
    bullet.Force  = 10
    bullet.Damage = dmg
@@ -359,7 +314,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    self:GetOwner():FireBullets( bullet )
 
    -- Owner can die after firebullets
-   if (not IsValid(self:GetOwner())) or (not self:GetOwner():Alive()) or self:GetOwner():IsNPC() then return end
+   if (not IsValid(self:GetOwner())) or self:GetOwner():IsNPC() or (not self:GetOwner():Alive()) then return end
 
    if ((game.SinglePlayer() and SERVER) or
        ((not game.SinglePlayer()) and CLIENT and IsFirstTimePredicted())) then
@@ -505,9 +460,9 @@ end
 --- Dummy functions that will be replaced when SetupDataTables runs. These are
 --- here for when that does not happen (due to e.g. stacking base classes)
 function SWEP:GetIronsightsTime() return -1 end
-function SWEP:SetIronsightsTime() end
+function SWEP:SetIronsightsTime( time ) end
 function SWEP:GetIronsightsPredicted() return false end
-function SWEP:SetIronsightsPredicted() end
+function SWEP:SetIronsightsPredicted( bool ) end
 
 -- Set up ironsights dt bool. Weapons using their own DT vars will have to make
 -- sure they call this.

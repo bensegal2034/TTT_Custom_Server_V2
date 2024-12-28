@@ -19,9 +19,6 @@ SWEP.Base               = "weapon_tttbasegrenade"
 SWEP.WeaponID           = AMMO_DISCOMB
 SWEP.Kind               = WEAPON_NADE
 
---All grenades inherently use this value to determine fuse time, default ttt grenades don't set it and use a default value of 5
-SWEP.detonate_timer      = 2
-
 SWEP.Spawnable          = true
 SWEP.AutoSpawnable      = true
 
@@ -33,8 +30,6 @@ SWEP.Weight             = 5
 
 -- really the only difference between grenade weapons: the model and the thrown
 -- ent.
-
-
 
 function SWEP:GetGrenadeName()
    return "ttt_confgrenade_proj"

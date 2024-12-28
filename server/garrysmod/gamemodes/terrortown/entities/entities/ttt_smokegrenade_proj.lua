@@ -4,21 +4,13 @@ AddCSLuaFile()
 ENT.Type = "anim"
 ENT.Base = "ttt_basegrenade_proj"
 ENT.Model = Model("models/weapons/w_eq_smokegrenade_thrown.mdl")
-ENT.Funny = 0
+
 
 AccessorFunc( ENT, "radius", "Radius", FORCE_NUMBER )
 
-function ENT:SetupDataTables()
-   self:NetworkVar( "Int", 1, "Funny" )
-   return self.BaseClass.SetupDataTables(self)
-end
-
 function ENT:Initialize()
    if not self:GetRadius() then self:SetRadius(20) end
-   if SERVER then
-      self:SetFunny(math.random(1,100))
-   end
-   self.Funny = self:GetFunny()
+
    return self.BaseClass.Initialize(self)
 end
 
@@ -30,34 +22,27 @@ if CLIENT then
    };
 
    function ENT:CreateSmoke(center)
-      local em = ParticleEmitter(center, true)
+      local em = ParticleEmitter(center)
 
       local r = self:GetRadius()
-      for i=1, 400 do
+      for i=1, 20 do
          local prpos = VectorRand() * r
          prpos.z = prpos.z + 32
          local p = em:Add(table.Random(smokeparticles), center + prpos)
          if p then
-            if self:GetFunny() == 1 then
-               local r = math.random(0,255)
-               local g = math.random(0,255)
-               local b = math.random(0,255)
-               p:SetColor(r, g, b)
-            else
-               local gray = 155
-               p:SetColor(gray, gray, gray)
-            end
+            local gray = math.random(75, 200)
+            p:SetColor(gray, gray, gray)
             p:SetStartAlpha(255)
-            p:SetEndAlpha(255)
+            p:SetEndAlpha(200)
             p:SetVelocity(VectorRand() * math.Rand(900, 1300))
             p:SetLifeTime(0)
             
-            p:SetDieTime(60)
+            p:SetDieTime(math.Rand(50, 70))
 
-            p:SetStartSize(100)
-            p:SetEndSize(100)
-            p:SetAngles( Angle( math.Rand( -160, 160 ), math.Rand( -160, 160 ), math.Rand( -160, 160 ) ) )
-
+            p:SetStartSize(math.random(140, 150))
+            p:SetEndSize(math.random(1, 40))
+            p:SetRoll(math.random(-180, 180))
+            p:SetRollDelta(math.Rand(-0.1, 0.1))
             p:SetAirResistance(600)
 
             p:SetCollide(true)
@@ -69,11 +54,6 @@ if CLIENT then
 
       em:Finish()
    end
-end
-function ENT:PhysicsCollide()
-   local spos = self:GetPos()
-   local tr = util.TraceLine({start=spos, endpos=spos + Vector(0,0,-32), mask=MASK_SHOT_HULL, filter=self.thrower})
-   self:SetDetonateExact(CurTime())
 end
 
 function ENT:Explode(tr)

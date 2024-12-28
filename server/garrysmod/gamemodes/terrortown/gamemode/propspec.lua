@@ -42,7 +42,6 @@ function PROPSPEC.Target(ply, ent)
    -- normally only specific whitelisted ent classes can be possessed, but
    -- custom ents can mark themselves possessable as well
    if (not ent.AllowPropspec) and (not IsWhitelistedClass(ent:GetClass())) then return end
-   if ent:GetModel() == "models/props_c17/oildrum001_explosive.mdl" then return end
 
    PROPSPEC.Start(ply, ent)
 end

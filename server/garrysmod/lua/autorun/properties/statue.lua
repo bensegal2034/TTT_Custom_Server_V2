@@ -100,13 +100,13 @@ properties.Add( "statue", {
 
 		for bone = 1, bones - 1 do
 
-			local constr = constraint.Weld( ent, ent, 0, bone, 0 )
+			local constraint = constraint.Weld( ent, ent, 0, bone, 0 )
 
-			if ( constr ) then
+			if ( constraint ) then
 
-				ent.StatueInfo[ bone ] = constr
-				ply:AddCleanup( "constraints", constr )
-				undo.AddEntity( constr )
+				ent.StatueInfo[ bone ] = constraint
+				ply:AddCleanup( "constraints", constraint )
+				undo.AddEntity( constraint )
 
 			end
 

@@ -11,30 +11,27 @@ function GWEN.CreateTextureBorder( _xo, _yo, _wo, _ho, l, t, r, b, material_over
 	return function( x, y, w, h, col )
 
 		local tex = mat:GetTexture( "$basetexture" )
-		local texW, texH = tex:Width(), tex:Height()
-
-		local _x = _xo / texW
-		local _y = _yo / texH
-		local _w = _wo / texW
-		local _h = _ho / texH
+		local _x = _xo / tex:Width()
+		local _y = _yo / tex:Height()
+		local _w = _wo / tex:Width()
+		local _h = _ho / tex:Height()
 
 		surface.SetMaterial( mat )
 		if ( col ) then
-			surface.SetDrawColor( col.r, col.g, col.b, col.a )
+			surface.SetDrawColor( col )
 		else
 			surface.SetDrawColor( 255, 255, 255, 255 )
 		end
 
-		local halfW, halfH = w / 2, h / 2
-		local left = math.min( l, math.ceil( halfW ) )
-		local right = math.min( r, math.floor( halfW ) )
-		local top = math.min( t, math.ceil( halfH ) )
-		local bottom = math.min( b, math.floor( halfH ) )
+		local left = math.min( l, math.ceil( w / 2 ) )
+		local right = math.min( r, math.floor( w / 2 ) )
+		local top = math.min( t, math.ceil( h / 2 ) )
+		local bottom = math.min( b, math.floor( h / 2 ) )
 
-		local _l = left / texW
-		local _t = top / texH
-		local _r = right / texW
-		local _b = bottom / texH
+		local _l = left / tex:Width()
+		local _t = top / tex:Height()
+		local _r = right / tex:Width()
+		local _b = bottom / tex:Height()
 
 		-- top
 		surface.DrawTexturedRectUV( x, y, left, top, _x, _y, _x + _l, _y + _t )
@@ -63,17 +60,15 @@ function GWEN.CreateTextureNormal( _xo, _yo, _wo, _ho, material_override )
 	return function( x, y, w, h, col )
 
 		local tex = mat:GetTexture( "$basetexture" )
-		local texW, texH = tex:Width(), tex:Height()
-
-		local _x = _xo / texW
-		local _y = _yo / texH
-		local _w = _wo / texW
-		local _h = _ho / texH
+		local _x = _xo / tex:Width()
+		local _y = _yo / tex:Height()
+		local _w = _wo / tex:Width()
+		local _h = _ho / tex:Height()
 
 		surface.SetMaterial( mat )
 
 		if ( col ) then
-			surface.SetDrawColor( col.r, col.g, col.b, col.a )
+			surface.SetDrawColor( col )
 		else
 			surface.SetDrawColor( 255, 255, 255, 255 )
 		end
@@ -92,12 +87,10 @@ function GWEN.CreateTextureCentered( _xo, _yo, _wo, _ho, material_override )
 	return function( x, y, w, h, col )
 
 		local tex = mat:GetTexture( "$basetexture" )
-		local texW, texH = tex:Width(), tex:Height()
-
-		local _x = _xo / texW
-		local _y = _yo / texH
-		local _w = _wo / texW
-		local _h = _ho / texH
+		local _x = _xo / tex:Width()
+		local _y = _yo / tex:Height()
+		local _w = _wo / tex:Width()
+		local _h = _ho / tex:Height()
 
 		x = x + ( w - _wo ) * 0.5
 		y = y + ( h - _ho ) * 0.5
@@ -107,7 +100,7 @@ function GWEN.CreateTextureCentered( _xo, _yo, _wo, _ho, material_override )
 		surface.SetMaterial( mat )
 
 		if ( col ) then
-			surface.SetDrawColor( col.r, col.g, col.b, col.a )
+			surface.SetDrawColor( col )
 		else
 			surface.SetDrawColor( 255, 255, 255, 255 )
 		end
@@ -132,7 +125,7 @@ end
 --
 function meta:LoadGWENFile( filename, path )
 
-	local contents = file.Read( filename, path || "GAME" )
+	local contents = file.Read( filename, path or "GAME" )
 	if ( !contents ) then return end
 
 	self:LoadGWENString( contents )
@@ -211,7 +204,7 @@ function meta:GWEN_SetText( tbl ) self:SetText( tbl ) end
 function meta:GWEN_SetControlName( tbl ) self:SetName( tbl ) end
 function meta:GWEN_SetMargin( tbl ) self:DockMargin( tbl.left, tbl.top, tbl.right, tbl.bottom ) end
 function meta:GWEN_SetMin( min ) self:SetMin( tonumber( min ) ) end
-function meta:GWEN_SetMax( max ) self:SetMax( tonumber( max ) ) end
+function meta:GWEN_SetMax( min ) self:SetMax( tonumber( max ) ) end
 function meta:GWEN_SetHorizontalAlign( txt )
 	if ( txt == "Right" ) then self:SetContentAlignment( 6 ) end
 	if ( txt == "Center" ) then self:SetContentAlignment( 5 ) end

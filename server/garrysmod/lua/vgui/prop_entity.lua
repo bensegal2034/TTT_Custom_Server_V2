@@ -45,11 +45,11 @@ function PANEL:Setup( vars )
 	end
 
 	-- Enabled/disabled support
-	self.IsEnabled = function( slf )
+	self.IsEnabled = function( self )
 		return btn:IsEnabled()
 	end
 	local oldSetEnabled = self.SetEnabled
-	self.SetEnabled = function( slf, b )
+	self.SetEnabled = function( self, b )
 		btn:SetEnabled( b )
 		oldSetEnabled( b ) -- Also handle the text entry
 	end

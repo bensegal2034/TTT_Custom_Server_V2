@@ -1,13 +1,16 @@
-AddCSLuaFile()
+if SERVER then
+   AddCSLuaFile()
+   resource.AddFile("models/weapons/w_knife_ct_real_not_fake.mdl")
+   resource.AddFile("materials/w_knife_ct_real_not_fake/w_knife_ct_real_not_fake.vtf")
+end
 
 SWEP.HoldType               = "knife"
 
 if CLIENT then
    SWEP.PrintName           = "knife_name"
    SWEP.Slot                = 6
-
+   SWEP.SlotPos             = 1
    SWEP.ViewModelFlip       = false
-   SWEP.ViewModelFOV        = 54
    SWEP.DrawCrosshair       = false
 
    SWEP.EquipMenuData = {
@@ -22,23 +25,23 @@ end
 SWEP.Base                   = "weapon_tttbase"
 
 SWEP.UseHands               = true
-SWEP.ViewModel              = "models/weapons/cstrike/c_knife_t.mdl"
-SWEP.WorldModel             = "models/weapons/w_knife_t.mdl"
+SWEP.ViewModel              = "models/weapons/v_knife_t.mdl"
+SWEP.WorldModel             = "models/weapons/w_knife_ct_real_not_fake.mdl"
 
-SWEP.Primary.Damage         = 50
+SWEP.Primary.Damage         = 100
 SWEP.Primary.ClipSize       = -1
 SWEP.Primary.DefaultClip    = -1
 SWEP.Primary.Automatic      = true
 SWEP.Primary.Delay          = 1.1
 SWEP.Primary.Ammo           = "none"
-
+SWEP.DamageType            = "True"
 SWEP.Secondary.ClipSize     = -1
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Automatic    = true
 SWEP.Secondary.Ammo         = "none"
 SWEP.Secondary.Delay        = 1.4
 
-SWEP.Kind                   = WEAPON_EQUIP
+SWEP.Kind                   = WEAPON_KNIFE
 SWEP.CanBuy                 = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.LimitedStock           = true -- only buyable once
 SWEP.WeaponID               = AMMO_KNIFE
@@ -49,8 +52,8 @@ SWEP.IsSilent               = true
 SWEP.DeploySpeed            = 2
 
 function SWEP:PrimaryAttack()
-   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-   self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+   self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+   self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
 
    if not IsValid(self:GetOwner()) then return end
 
@@ -73,7 +76,7 @@ function SWEP:PrimaryAttack()
 
    -- effects
    if IsValid(hitEnt) then
-      self:SendWeaponAnim( ACT_VM_HITCENTER )
+      self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
 
       local edata = EffectData()
       edata:SetStart(spos)
@@ -85,7 +88,7 @@ function SWEP:PrimaryAttack()
          util.Effect("BloodImpact", edata)
       end
    else
-      self:SendWeaponAnim( ACT_VM_MISSCENTER )
+      self.Weapon:SendWeaponAnim( ACT_VM_MISSCENTER )
    end
 
    if SERVER then
@@ -105,7 +108,7 @@ function SWEP:PrimaryAttack()
             local dmg = DamageInfo()
             dmg:SetDamage(self.Primary.Damage)
             dmg:SetAttacker(self:GetOwner())
-            dmg:SetInflictor(self)
+            dmg:SetInflictor(self.Weapon or self)
             dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
             dmg:SetDamagePosition(self:GetOwner():GetPos())
             dmg:SetDamageType(DMG_SLASH)
@@ -124,7 +127,7 @@ function SWEP:StabKill(tr, spos, sdest)
    local dmg = DamageInfo()
    dmg:SetDamage(2000)
    dmg:SetAttacker(self:GetOwner())
-   dmg:SetInflictor(self)
+   dmg:SetInflictor(self.Weapon or self)
    dmg:SetDamageForce(self:GetOwner():GetAimVector())
    dmg:SetDamagePosition(self:GetOwner():GetPos())
    dmg:SetDamageType(DMG_SLASH)
@@ -198,11 +201,11 @@ function SWEP:StabKill(tr, spos, sdest)
 end
 
 function SWEP:SecondaryAttack()
-   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-   self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+   self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+   self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
 
 
-   self:SendWeaponAnim( ACT_VM_MISSCENTER )
+   self.Weapon:SendWeaponAnim( ACT_VM_MISSCENTER )
 
    if SERVER then
       local ply = self:GetOwner()
@@ -256,8 +259,8 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Equip()
-   self:SetNextPrimaryFire( CurTime() + (self.Primary.Delay * 1.5) )
-   self:SetNextSecondaryFire( CurTime() + (self.Secondary.Delay * 1.5) )
+   self.Weapon:SetNextPrimaryFire( CurTime() + (self.Primary.Delay * 1.5) )
+   self.Weapon:SetNextSecondaryFire( CurTime() + (self.Secondary.Delay * 1.5) )
 end
 
 function SWEP:PreDrop()

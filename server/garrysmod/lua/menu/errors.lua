@@ -46,32 +46,16 @@ hook.Add( "OnLuaError", "MenuErrorHandler", function( str, realm, stack, addonti
 		times	= 1,
 		title	= addontitle,
 		x		= 32,
-		text	= text,
-		iserr   = true
+		text	= text
 	}
 
 	Errors[ addonid ] = error
 
 end )
 
-hook.Add( "OnPauseMenuBlockedTooManyTimes", "TellAboutShiftEsc", function()
-
-	Errors[ "internal_shift+esc" ] = {
-		first	= SysTime(),
-		last	= SysTime(),
-		times	= 1,
-		title	= "",
-		x		= 32,
-		text	= "#permission.main_menu_blocked",
-		iserr   = false
-	}
-
-end )
-
 local matAlert = Material( "icon16/error.png" )
-local matInfo = Material( "icon16/information.png" )
 
-local cl_drawhud = GetConVar( "cl_drawhud" )
+local cl_drawhud = GetConVar("cl_drawhud")
 
 hook.Add( "DrawOverlay", "MenuDrawLuaErrors", function()
 
@@ -94,11 +78,7 @@ hook.Add( "DrawOverlay", "MenuDrawLuaErrors", function()
 
 		if ( v.last > Recent ) then
 
-			if v.iserr then
-				draw.RoundedBox( 2, v.x, v.y, v.w, height, Color( 255, 200, 0, ( v.last - Recent ) * 510 ) )
-			else
-				draw.RoundedBox( 2, v.x, v.y, v.w, height, Color( 0, 200, 255, ( v.last - Recent ) * 510 ) )
-			end
+			draw.RoundedBox( 2, v.x, v.y, v.w, height, Color( 255, 200, 0, ( v.last - Recent ) * 510 ) )
 
 		end
 
@@ -107,11 +87,7 @@ hook.Add( "DrawOverlay", "MenuDrawLuaErrors", function()
 		surface.DrawText( v.text )
 
 		surface.SetDrawColor( 255, 255, 255, 150 + math.sin( v.y + SysTime() * 30 ) * 100 )
-		if ( v.iserr ) then
-			surface.SetMaterial( matAlert )
-		else
-			surface.SetMaterial( matInfo )
-		end
+		surface.SetMaterial( matAlert )
 		surface.DrawTexturedRect( v.x + 6, v.y + 6, 16, 16 )
 
 		v.y = idealy

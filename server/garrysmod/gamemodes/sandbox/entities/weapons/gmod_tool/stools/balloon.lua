@@ -75,7 +75,7 @@ function TOOL:LeftClick( trace, attach )
 	--
 	-- Hit the balloon limit, bail
 	--
-	if ( !self:GetWeapon():CheckLimit( "balloons" ) ) then return false end
+	if ( !self:GetSWEP():CheckLimit( "balloons" ) ) then return false end
 
 	local balloon = MakeBalloon( ply, r, g, b, force, { Pos = trace.HitPos, Model = modeltable.model, Skin = modeltable.skin } )
 	if ( !IsValid( balloon ) ) then return false end
@@ -104,7 +104,7 @@ function TOOL:LeftClick( trace, attach )
 
 			end
 
-			local constr, rope = constraint.Rope( balloon, trace.Entity, 0, trace.PhysicsBone, LPos1, LPos2, 0, length, 0, 0.5, material )
+			local constr, rope = constraint.Rope( balloon, trace.Entity, 0, trace.PhysicsBone, LPos1, LPos2, 0, length, 0, 0.5, material, nil )
 			if ( IsValid( constr ) ) then
 				undo.AddEntity( constr )
 				ply:AddCleanup( "balloons", constr )
@@ -132,12 +132,12 @@ end
 
 if ( SERVER ) then
 
-	function MakeBalloon( ply, r, g, b, force, Data )
+	function MakeBalloon( pl, r, g, b, force, Data )
 
-		if ( IsValid( ply ) && !ply:CheckLimit( "balloons" ) ) then return NULL end
+		if ( IsValid( pl ) && !pl:CheckLimit( "balloons" ) ) then return end
 
 		local balloon = ents.Create( "gmod_balloon" )
-		if ( !IsValid( balloon ) ) then return NULL end
+		if ( !IsValid( balloon ) ) then return end
 
 		duplicator.DoGeneric( balloon, Data )
 
@@ -145,23 +145,23 @@ if ( SERVER ) then
 
 		DoPropSpawnedEffect( balloon )
 
-		duplicator.DoGenericPhysics( balloon, ply, Data )
+		duplicator.DoGenericPhysics( balloon, pl, Data )
 
 		force = math.Clamp( force, -1E34, 1E34 )
 
 		balloon:SetColor( Color( r, g, b, 255 ) )
 		balloon:SetForce( force )
-		balloon:SetPlayer( ply )
+		balloon:SetPlayer( pl )
 
-		balloon.Player = ply
+		balloon.Player = pl
 		balloon.r = r
 		balloon.g = g
 		balloon.b = b
 		balloon.force = force
 
-		if ( IsValid( ply ) ) then
-			ply:AddCount( "balloons", balloon )
-			ply:AddCleanup( "balloons", balloon )
+		if ( IsValid( pl ) ) then
+			pl:AddCount( "balloons", balloon )
+			pl:AddCleanup( "balloons", balloon )
 		end
 
 		return balloon

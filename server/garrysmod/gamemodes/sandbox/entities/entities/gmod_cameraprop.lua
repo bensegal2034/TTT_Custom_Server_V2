@@ -2,7 +2,7 @@
 AddCSLuaFile()
 
 if ( CLIENT ) then
-	CreateConVar( "cl_drawcameras", "1", 0, "Should Sandbox cameras be visible?" )
+	CreateConVar( "cl_drawcameras", "1", 0, "Should the cameras be visible?" )
 end
 
 ENT.Type = "anim"
@@ -33,13 +33,18 @@ function ENT:Initialize()
 
 		self:SetModel( CAMERA_MODEL )
 		self:PhysicsInit( SOLID_VPHYSICS )
+		self:SetMoveType( MOVETYPE_VPHYSICS )
+		self:SetSolid( SOLID_VPHYSICS )
 		self:DrawShadow( false )
 
 		-- Don't collide with the player
 		self:SetCollisionGroup( COLLISION_GROUP_WEAPON )
 
 		local phys = self:GetPhysicsObject()
-		if ( IsValid( phys ) ) then phys:Sleep() end
+
+		if ( IsValid( phys ) ) then
+			phys:Sleep()
+		end
 
 	end
 
@@ -104,53 +109,53 @@ end
 
 if ( SERVER ) then
 
-	numpad.Register( "Camera_On", function( ply, ent )
+	numpad.Register( "Camera_On", function( pl, ent )
 
 		if ( !IsValid( ent ) ) then return false end
-		if ( !IsValid( ply ) ) then return false end
+		if ( !IsValid( pl ) ) then return false end
 
-		ply:SetViewEntity( ent )
-		ply.UsingCamera = ent
-		ent.UsingPlayer = ply
+		pl:SetViewEntity( ent )
+		pl.UsingCamera = ent
+		ent.UsingPlayer = pl
 
 	end )
 
-	numpad.Register( "Camera_Toggle", function( ply, ent, idx, buttoned )
+	numpad.Register( "Camera_Toggle", function( pl, ent, idx, buttoned )
 
 		-- The camera was deleted or something - return false to remove this entry
 		if ( !IsValid( ent ) ) then return false end
-		if ( !IsValid( ply ) ) then return false end
+		if ( !IsValid( pl ) ) then return false end
 
 		-- Something else changed players view entity
-		if ( ply.UsingCamera and ply.UsingCamera == ent and ply:GetViewEntity() != ent ) then
-			ply.UsingCamera = nil
+		if ( pl.UsingCamera && pl.UsingCamera == ent && pl:GetViewEntity() != ent ) then
+			pl.UsingCamera = nil
 			ent.UsingPlayer = nil
 		end
 
-		if ( ply.UsingCamera and ply.UsingCamera == ent ) then
+		if ( pl.UsingCamera && pl.UsingCamera == ent ) then
 
-			ply:SetViewEntity( ply )
-			ply.UsingCamera = nil
+			pl:SetViewEntity( pl )
+			pl.UsingCamera = nil
 			ent.UsingPlayer = nil
 
 		else
 
-			ply:SetViewEntity( ent )
-			ply.UsingCamera = ent
-			ent.UsingPlayer = ply
+			pl:SetViewEntity( ent )
+			pl.UsingCamera = ent
+			ent.UsingPlayer = pl
 
 		end
 
 	end )
 
-	numpad.Register( "Camera_Off", function( ply, ent )
+	numpad.Register( "Camera_Off", function( pl, ent )
 
 		if ( !IsValid( ent ) ) then return false end
-		if ( !IsValid( ply ) ) then return false end
+		if ( !IsValid( pl ) ) then return false end
 
-		if ( ply.UsingCamera and ply.UsingCamera == ent ) then
-			ply:SetViewEntity( ply )
-			ply.UsingCamera = nil
+		if ( pl.UsingCamera && pl.UsingCamera == ent ) then
+			pl:SetViewEntity( pl )
+			pl.UsingCamera = nil
 			ent.UsingPlayer = nil
 		end
 

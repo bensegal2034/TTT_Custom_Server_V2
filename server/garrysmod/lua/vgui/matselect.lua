@@ -11,10 +11,9 @@ local border_w = 8
 local matHover = Material( "gui/ps_hover.png", "nocull" )
 local boxHover = GWEN.CreateTextureBorder( border, border, 64 - border * 2, 64 - border * 2, border_w, border_w, border_w, border_w, matHover )
 
--- This function is used as the paint function for selected buttons
-function PANEL:SelectedItemPaintOver( w, h )
+-- This function is used as the paint function for selected buttons.
+local function HighlightedButtonPaint( self, w, h )
 
-	-- self in this context would be the selected item!
 	boxHover( 0, 0, w, h, color_white )
 
 end
@@ -48,106 +47,30 @@ end
 
 function PANEL:AddMaterial( label, value )
 
+	-- Creeate a spawnicon and set the model
 	local Mat = vgui.Create( "DImageButton", self )
 	Mat:SetOnViewMaterial( value, "models/wireframe" )
-	Mat:SetTooltip( label )
 	Mat.AutoSize = false
 	Mat.Value = value
-	self:SetItemSize( Mat )
+	Mat:SetSize( self.ItemWidth, self.ItemHeight )
+	Mat:SetTooltip( label )
 
+	-- Run a console command when the Icon is clicked
 	Mat.DoClick = function( button )
-		-- Select the material
-		self:SelectMaterial( button )
-
-		self:OnSelect( button.Value, button )
-
-		-- Update the convar
-		if ( self:ConVar() ) then RunConsoleCommand( self:ConVar(), value ) end
+		RunConsoleCommand( self:ConVar(), value )
 	end
 
 	Mat.DoRightClick = function( button )
-		self:OnRightClick( button )
+		local menu = DermaMenu()
+		menu:AddOption( "#spawnmenu.menu.copy", function() SetClipboardText( value ) end ):SetIcon( "icon16/page_copy.png" )
+		menu:Open()
 	end
 
-	-- Add the icon to ourselves
+	-- Add the Icon us
 	self.List:AddItem( Mat )
 	table.insert( self.Controls, Mat )
 
 	self:InvalidateLayout()
-
-	return Mat
-
-end
-
-function PANEL:AddMaterialEx( label, material, value, convars )
-
-	local Mat = vgui.Create( "DImageButton", self )
-	Mat:SetImage( material )
-	Mat:SetTooltip( label )
-	Mat.AutoSize = false
-	Mat.Value = value
-	Mat.ConVars = convars
-	self:SetItemSize( Mat )
-
-	Mat.DoClick = function ( button )
-		-- Can't do this due to faceposer
-		-- self:SelectMaterial( button )
-
-		self:OnSelect( button.Value, button )
-
-		-- Update the convars
-		for cvar, val in pairs( convars ) do RunConsoleCommand( cvar, val ) end
-	end
-
-	Mat.DoRightClick = function( button )
-		self:OnRightClick( button )
-	end
-
-	-- Add the icon to ourselves
-	self.List:AddItem( Mat )
-	table.insert( self.Controls, Mat )
-
-	self:InvalidateLayout()
-
-	return Mat
-
-end
-
-function PANEL:SelectMaterial( mat )
-
-	-- Restore the current overlay
-	if ( self.SelectedMaterial ) then
-		self.SelectedMaterial.PaintOver = self.OldSelectedPaintOver
-	end
-
-	-- Add the overlay to this button
-	self.OldSelectedPaintOver = mat.PaintOver
-	mat.PaintOver = self.SelectedItemPaintOver
-
-	-- Set our selected values
-	self.SelectedMaterial = mat
-	self.CurrentValue = mat.Value
-
-end
-
-function PANEL:Clear()
-
-	for k, Mat in pairs( self.Controls ) do
-		Mat:Remove()
-		self.Controls[k] = nil
-	end
-
-	self.List:CleanList()
-	self.SelectedMaterial = nil
-	self.OldSelectedPaintOver = nil
-
-end
-
-function PANEL:FindMaterialByValue( value )
-
-	for k, Mat in pairs( self.Controls ) do
-		if ( Mat.Value == value ) then return Mat end
-	end
 
 end
 
@@ -169,6 +92,32 @@ function PANEL:SetItemSize( pnl )
 	end
 
 	pnl:SetSize( w, h )
+
+end
+
+function PANEL:AddMaterialEx( label, material, value, convars )
+
+	-- Creeate a spawnicon and set the model
+	local Mat = vgui.Create( "DImageButton", self )
+	Mat:SetImage( material )
+	Mat.AutoSize = false
+	Mat.Value = value
+	Mat.ConVars = convars
+	self:SetItemSize( Mat )
+	Mat:SetTooltip( label )
+
+	-- Run a console command when the Icon is clicked
+	Mat.DoClick = function ( button )
+
+		for k, v in pairs( convars ) do RunConsoleCommand( k, v ) end
+
+	end
+
+	-- Add the Icon us
+	self.List:AddItem( Mat )
+	table.insert( self.Controls, Mat )
+
+	self:InvalidateLayout()
 
 end
 
@@ -232,13 +181,27 @@ function PANEL:PerformLayout()
 
 end
 
-function PANEL:FindAndSelectMaterial( value )
+function PANEL:FindAndSelectMaterial( Value )
 
-	self.CurrentValue = value
-	local mat = self:FindMaterialByValue( value )
-	if ( !mat ) then return end
+	self.CurrentValue = Value
 
-	self:SelectMaterial( mat )
+	for k, Mat in pairs( self.Controls ) do
+
+		if ( Mat.Value == Value ) then
+
+			-- Remove the old overlay
+			if ( self.SelectedMaterial ) then
+				self.SelectedMaterial.PaintOver = self.OldSelectedPaintOver
+			end
+
+			-- Add the overlay to this button
+			self.OldSelectedPaintOver = Mat.PaintOver
+			Mat.PaintOver = HighlightedButtonPaint
+			self.SelectedMaterial = Mat
+
+		end
+
+	end
 
 end
 
@@ -247,28 +210,11 @@ function PANEL:TestForChanges()
 	local cvar = self:ConVar()
 	if ( !cvar ) then return end
 
-	local value = GetConVarString( cvar )
-	if ( value == self.CurrentValue ) then return end
+	local Value = GetConVarString( cvar )
+	if ( Value == self.CurrentValue ) then return end
 
-	self:FindAndSelectMaterial( value )
-
-end
-
-function PANEL:OnSelect( material, pnl )
-
-	-- For override
+	self:FindAndSelectMaterial( Value )
 
 end
-
-function PANEL:OnRightClick( button )
-
-	-- For override
-
-	local menu = DermaMenu()
-	menu:AddOption( "#spawnmenu.menu.copy", function() SetClipboardText( button.Value ) end ):SetIcon( "icon16/page_copy.png" )
-	menu:Open()
-
-end
-
 
 vgui.Register( "MatSelect", PANEL, "ContextBase" )

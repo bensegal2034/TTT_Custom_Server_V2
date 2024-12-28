@@ -93,7 +93,7 @@ function ToolObj:GetNormal( i )
 			norm = self.Objects[i].Ent:LocalToWorld( self.Objects[i].Normal )
 		end
 
-		return norm - self:GetPos( i )
+		return norm - self:GetPos(i)
 	end
 end
 
@@ -101,7 +101,7 @@ end
 function ToolObj:GetPhys( i )
 
 	if ( self.Objects[i].Phys == nil ) then
-		return self:GetEnt( i ):GetPhysicsObject()
+		return self:GetEnt(i):GetPhysicsObject()
 	end
 
 	return self.Objects[i].Phys
@@ -138,7 +138,9 @@ function ToolObj:SetObject( i, ent, pos, phys, bone, norm )
 
 	end
 
-	-- TODO: Make sure the client got the same info
+	if ( SERVER ) then
+		-- Todo: Make sure the client got the same info
+	end
 
 end
 

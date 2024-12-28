@@ -26,9 +26,7 @@ local function SetEyeTarget( ply, ent, data )
 	end
 
 end
-if ( SERVER ) then
-	duplicator.RegisterEntityModifier( "eyetarget", SetEyeTarget )
-end
+duplicator.RegisterEntityModifier( "eyetarget", SetEyeTarget )
 
 local function ConvertRelativeToEyesAttachment( ent, pos )
 
@@ -84,7 +82,7 @@ function TOOL:SetSelectedEntity( ent )
 
 	if ( !IsValid( ent ) ) then self:SetOperation( 0 ) end
 
-	if ( IsValid( ent ) and ent:GetClass() == "prop_effect" ) then ent = ent.AttachedEntity end
+	if ( IsValid( ent ) && ent:GetClass() == "prop_effect" ) then ent = ent.AttachedEntity end
 	return self:GetWeapon():SetNWEntity( "eyeposer_ent", ent )
 end
 
@@ -160,7 +158,7 @@ function TOOL:MakeLookAtMe( trace )
 	self:SetOperation( 0 )
 
 	local ent = trace.Entity
-	if ( IsValid( ent ) and ent:GetClass() == "prop_effect" ) then ent = ent.AttachedEntity end
+	if ( IsValid( ent ) && ent:GetClass() == "prop_effect" ) then ent = ent.AttachedEntity end
 	if ( !IsValid( ent ) ) then return false end
 
 	if ( CLIENT ) then return true end
@@ -183,7 +181,7 @@ function TOOL:Reload( trace )
 	self:SetOperation( 0 )
 
 	local ent = trace.Entity
-	if ( IsValid( ent ) and ent:GetClass() == "prop_effect" ) then ent = ent.AttachedEntity end
+	if ( IsValid( ent ) && ent:GetClass() == "prop_effect" ) then ent = ent.AttachedEntity end
 	if ( !IsValid( ent ) ) then return false end
 
 	if ( CLIENT ) then return true end
@@ -210,7 +208,7 @@ function TOOL:Think()
 	end
 
 	if ( !IsValid( ent ) ) then self:SetOperation( 0 ) return end
-
+	
 	if ( self:GetOperation() != 2 ) then return end
 
 	-- On the server we continually set the eye position
@@ -278,6 +276,8 @@ function TOOL:DrawHUD()
 
 		-- Clientside preview
 		--selected:SetEyeTarget( self:CalculateEyeTarget() )
+
+		local pos = selected:GetPos()
 
 		-- Work out the side distance to give a rough headsize box..
 		local player_eyes = LocalPlayer():EyeAngles()

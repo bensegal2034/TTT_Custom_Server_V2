@@ -33,13 +33,13 @@ function PANEL:PaintDifferentColours( cola, colb, colc, cold, size )
 	local w, h = self:GetSize()
 
 	surface.SetTexture( InnerCorner8 )
-	surface.SetDrawColor( cola.r, cola.g, cola.b, cola.a )
+	surface.SetDrawColor( cola )
 	surface.DrawTexturedRectRotated( size * 0.5, size * 0.5, size, size, 0 )
-	surface.SetDrawColor( colb.r, colb.g, colb.b, colb.a )
+	surface.SetDrawColor( colb )
 	surface.DrawTexturedRectRotated( w - size * 0.5, size * 0.5, size, size, -90 )
-	surface.SetDrawColor( colc.r, colc.g, colc.b, colc.a )
+	surface.SetDrawColor( colc )
 	surface.DrawTexturedRectRotated( w - size * 0.5, h - size * 0.5, size, size, 180 )
-	surface.SetDrawColor( cold.r, cold.g, cold.b, cold.a )
+	surface.SetDrawColor( cold )
 	surface.DrawTexturedRectRotated( size * 0.5, h - size * 0.5, size, size, 90 )
 
 end

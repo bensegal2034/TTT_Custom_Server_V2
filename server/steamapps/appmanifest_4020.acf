@@ -2,22 +2,21 @@
 {
 	"appid"		"4020"
 	"Universe"		"1"
-	"LauncherPath"		"D:\\TTT_Custom_Server_V2\\steamcmd.exe"
+	"LauncherPath"		"D:\\SteamCMD\\steamcmd.exe"
 	"name"		"Garry's Mod Dedicated Server"
 	"StateFlags"		"4"
 	"installdir"		"GarrysModDS"
-	"LastUpdated"		"1735358196"
-	"LastPlayed"		"0"
-	"SizeOnDisk"		"3922839074"
+	"LastUpdated"		"1707084851"
+	"SizeOnDisk"		"3992981871"
 	"StagingSize"		"0"
-	"buildid"		"16682005"
+	"buildid"		"13251633"
 	"LastOwner"		"76561201609877878"
 	"UpdateResult"		"0"
-	"BytesToDownload"		"2210058336"
-	"BytesDownloaded"		"2210058336"
-	"BytesToStage"		"3922817220"
-	"BytesStaged"		"3927011524"
-	"TargetBuildID"		"16682005"
+	"BytesToDownload"		"16539632"
+	"BytesDownloaded"		"16539632"
+	"BytesToStage"		"55265945"
+	"BytesStaged"		"55265945"
+	"TargetBuildID"		"13251633"
 	"AutoUpdateBehavior"		"0"
 	"AllowOtherDownloadsWhileRunning"		"0"
 	"ScheduledAutoUpdate"		"0"
@@ -25,18 +24,18 @@
 	{
 		"1004"
 		{
-			"manifest"		"7747775778018907449"
-			"size"		"46727128"
+			"manifest"		"1923798258558304932"
+			"size"		"44194776"
 		}
 		"4021"
 		{
-			"manifest"		"7875986024096193408"
-			"size"		"3817737514"
+			"manifest"		"7918776424147734184"
+			"size"		"3739576134"
 		}
 		"4022"
 		{
-			"manifest"		"8547922790199332392"
-			"size"		"58374432"
+			"manifest"		"1521075637962442477"
+			"size"		"209210961"
 		}
 	}
 	"UserConfig"

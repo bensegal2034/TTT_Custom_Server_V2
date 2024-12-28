@@ -29,9 +29,7 @@ local function SetMaterial( Player, Entity, Data )
 	return true
 
 end
-if ( SERVER ) then
-	duplicator.RegisterEntityModifier( "material", SetMaterial )
-end
+duplicator.RegisterEntityModifier( "material", SetMaterial )
 
 -- Left click applies the current material
 function TOOL:LeftClick( trace )

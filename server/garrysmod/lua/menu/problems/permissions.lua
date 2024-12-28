@@ -71,6 +71,7 @@ vgui.Register( "Permission", PANEL, "Panel" )
 local PANEL = {}
 
 local arrowMat = Material( "gui/point.png" )
+local collapsedCache = {}
 
 function PANEL:Init()
 
@@ -97,8 +98,8 @@ function PANEL:Paint( w, h )
 	draw.SimpleText( self.Title, "DermaLarge", 4, 2, white, draw.TEXT_ALIGN_LEFT, draw.TEXT_ALIGN_TOP )
 
 	surface.SetMaterial( arrowMat )
-	surface.SetDrawColor( 255, 255, 255, white.a )
-	surface.DrawTexturedRectRotated( w - 20, 20, 20, 20, self.Collapsed and 180 or 0 )
+	surface.SetDrawColor( white )
+	surface.DrawTexturedRectRotated( w - 20, 20, 20, 20, self.Collapsed && 180 || 0 )
 
 end
 
@@ -106,6 +107,8 @@ function PANEL:OnMousePressed()
 
 	self.Collapsed = !self.Collapsed
 	self:InvalidateLayout()
+
+	collapsedCache[ self.Title ] = self.Collapsed
 
 end
 
@@ -208,9 +211,9 @@ end
 
 function PANEL:Think()
 
-	if ( self:GetCanvas():ChildCount() < 1 and !IsValid( self.NoPermissionsLabel ) ) then
+	if ( self:GetCanvas():ChildCount() < 1 && !IsValid( self.NoPermissionsLabel ) ) then
 		self.NoPermissionsLabel = self.ParentFrame:AddEmptyWarning( "#permissions.none", self )
-	elseif ( self:GetCanvas():ChildCount() > 1 and IsValid( self.NoPermissionsLabel ) ) then
+	elseif ( self:GetCanvas():ChildCount() > 1 && IsValid( self.NoPermissionsLabel ) ) then
 		self.NoPermissionsLabel:Remove()
 	end
 

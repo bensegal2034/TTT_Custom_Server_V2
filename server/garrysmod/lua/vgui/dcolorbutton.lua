@@ -30,12 +30,12 @@ end
 function PANEL:SetColor( color, hideTooltip )
 
 	if ( !hideTooltip ) then
-
+		
 		local colorStr = "R: " .. color.r .. "\nG: " .. color.g .. "\nB: " .. color.b .. "\nA: " .. color.a
 		self:SetTooltip( colorStr )
-
+		
 	end
-
+	
 	self.m_Color = color
 
 end
@@ -52,10 +52,8 @@ function PANEL:Paint( w, h )
 		surface.DrawTexturedRect( x, y , size, size )
 
 	end
-	
-	local panelColor = self:GetColor()
-	
-	surface.SetDrawColor( panelColor.r, panelColor.g, panelColor.b, panelColor.a )
+
+	surface.SetDrawColor( self:GetColor() )
 	self:DrawFilledRect()
 
 	surface.SetDrawColor( 0, 0, 0, 200 )

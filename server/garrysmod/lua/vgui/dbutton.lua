@@ -104,10 +104,9 @@ function PANEL:PerformLayout( w, h )
 
 		local targetSize = math.min( self:GetWide() - 4, self:GetTall() - 4 )
 
-		local imgW, imgH = self.m_Image.ActualWidth, self.m_Image.ActualHeight
-		local zoom = math.min( targetSize / imgW, targetSize / imgH, 1 )
-		local newSizeX = math.ceil( imgW * zoom )
-		local newSizeY = math.ceil( imgH * zoom )
+		local zoom = math.min( targetSize / self.m_Image:GetWide(), targetSize / self.m_Image:GetTall(), 1 )
+		local newSizeX = math.ceil( self.m_Image:GetWide() * zoom )
+		local newSizeY = math.ceil( self.m_Image:GetTall() * zoom )
 
 		self.m_Image:SetWide( newSizeX )
 		self.m_Image:SetTall( newSizeY )
@@ -116,7 +115,7 @@ function PANEL:PerformLayout( w, h )
 			self.m_Image:SetPos( 4, ( self:GetTall() - self.m_Image:GetTall() ) * 0.5 )
 		else
 			self.m_Image:SetPos( 2 + ( targetSize - self.m_Image:GetWide() ) * 0.5, ( self:GetTall() - self.m_Image:GetTall() ) * 0.5 )
-		end
+		end 
 
 		self:SetTextInset( self.m_Image:GetWide() + 16, 0 )
 
@@ -128,7 +127,7 @@ end
 
 function PANEL:SetConsoleCommand( strName, strArgs )
 
-	self.DoClick = function( slf, val )
+	self.DoClick = function( self, val )
 		RunConsoleCommand( strName, strArgs )
 	end
 
@@ -155,7 +154,7 @@ PANEL = table.Copy( PANEL )
 
 function PANEL:SetActionFunction( func )
 
-	self.DoClick = function( slf, val ) func( slf, "Command", 0, 0 ) end
+	self.DoClick = function( self, val ) func( self, "Command", 0, 0 ) end
 
 end
 

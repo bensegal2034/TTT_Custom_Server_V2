@@ -63,8 +63,6 @@ function PANEL:PerformLayout()
 	local i = 0
 
 	self.m_iCols = math.floor( self.m_iCols )
-	self.m_iRowHeight = math.floor( self.m_iRowHeight )
-	self.m_iColWide = math.floor( self.m_iColWide )
 
 	for k, panel in pairs( self.Items ) do
 
@@ -85,7 +83,7 @@ end
 
 function PANEL:SortByMember( key, desc )
 
-	if ( desc == nil ) then
+	if ( desc == nil ) then 
 		desc = true
 	end
 

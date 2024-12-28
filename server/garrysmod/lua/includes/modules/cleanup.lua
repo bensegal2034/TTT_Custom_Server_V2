@@ -1,4 +1,3 @@
-
 module( "cleanup", package.seeall )
 
 local cleanup_types = {}
@@ -38,7 +37,7 @@ if ( SERVER ) then
 
 	local cleanup_list = {}
 
-	function GetList()
+	function GetList( )
 		return cleanup_list
 	end
 
@@ -123,7 +122,7 @@ if ( SERVER ) then
 
 			-- Send tooltip command to client
 			if ( count > 0 ) then
-				pl:SendLua( "hook.Run('OnCleanup','all')" )
+				pl:SendLua( 'hook.Run("OnCleanup","all")' )
 			end
 
 			return
@@ -142,7 +141,7 @@ if ( SERVER ) then
 		table.Empty( cleanup_list[id][ args[1] ] )
 
 		-- Send tooltip command to client
-		pl:SendLua( string.format( "hook.Run('OnCleanup',%q)", args[1] ) )
+		pl:SendLua( string.format( 'hook.Run("OnCleanup",%q)', args[1] ) )
 
 	end
 
@@ -168,10 +167,10 @@ if ( SERVER ) then
 
 			end
 
-			game.CleanUpMap( false, nil, function()
-				-- Send tooltip command to client
-				if ( IsValid( pl ) ) then pl:SendLua( "hook.Run('OnCleanup','all')" ) end
-			end )
+			game.CleanUpMap()
+
+			-- Send tooltip command to client
+			if ( IsValid( pl ) ) then pl:SendLua( 'hook.Run("OnCleanup","all")' ) end
 
 			return
 
@@ -183,7 +182,7 @@ if ( SERVER ) then
 
 			if ( ply[ args[ 1 ] ] != nil ) then
 
-				for id, ent in pairs( ply[ args[ 1 ] ] ) do
+				for key, ent in pairs( ply[ args[ 1 ] ] ) do
 
 					if ( IsValid( ent ) ) then ent:Remove() end
 
@@ -196,7 +195,7 @@ if ( SERVER ) then
 		end
 
 		-- Send tooltip command to client
-		if ( IsValid( pl ) ) then pl:SendLua( string.format( "hook.Run('OnCleanup',%q)", args[1] ) ) end
+		if ( IsValid( pl ) ) then pl:SendLua( string.format( 'hook.Run("OnCleanup",%q)', args[1] ) ) end
 
 	end
 
@@ -223,14 +222,14 @@ else
 			end
 		end
 
-		local AdminPanel = controlpanel.Get( "Admin_Cleanup" )
-		if ( IsValid( AdminPanel ) ) then
-			AdminPanel:Clear()
-			AdminPanel:AddControl( "Header", { Description = "#spawnmenu.utilities.cleanup.help" } )
-			AdminPanel:Button( "#CleanupAll", "gmod_admin_cleanup" )
+		local Panel = controlpanel.Get( "Admin_Cleanup" )
+		if ( IsValid( Panel ) ) then
+			Panel:Clear()
+			Panel:AddControl( "Header", { Description = "#spawnmenu.utilities.cleanup.help" } )
+			Panel:Button( "#CleanupAll", "gmod_admin_cleanup" )
 
 			for key, val in SortedPairs( cleanup_types_s ) do
-				AdminPanel:Button( key, "gmod_admin_cleanup", val )
+				Panel:Button( key, "gmod_admin_cleanup", val )
 			end
 		end
 

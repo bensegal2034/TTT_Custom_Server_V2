@@ -92,7 +92,8 @@ function PANEL:DrawModel()
 		previous = curparent
 	end
 
-	render.ClearDepth( false )
+	-- Causes issues with stencils, but only for some people?
+	-- render.ClearDepth()
 
 	render.SetScissorRect( leftx, topy, rightx, bottomy, true )
 
@@ -152,7 +153,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:RunAnimation()
-	self.Entity:FrameAdvance( --[[( RealTime() - self.LastPaint ) * self.m_fAnimSpeed]] )
+	self.Entity:FrameAdvance( ( RealTime() - self.LastPaint ) * self.m_fAnimSpeed )
 end
 
 function PANEL:StartScene( name )

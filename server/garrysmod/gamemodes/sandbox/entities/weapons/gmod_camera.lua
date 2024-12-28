@@ -14,8 +14,8 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= true
 SWEP.Secondary.Ammo			= "none"
 
+
 SWEP.PrintName	= "#GMOD_Camera"
-SWEP.Author	= "Facepunch"
 
 SWEP.Slot		= 5
 SWEP.SlotPos	= 1
@@ -26,17 +26,17 @@ SWEP.Spawnable		= true
 
 SWEP.ShootSound = Sound( "NPC_CScanner.TakePhoto" )
 
-SWEP.AutoSwitchTo	= false
-SWEP.AutoSwitchFrom	= false
-
 if ( SERVER ) then
+
+	SWEP.AutoSwitchTo		= false
+	SWEP.AutoSwitchFrom		= false
 
 	--
 	-- A concommand to quickly switch to the camera
 	--
-	concommand.Add( "gmod_camera", function( ply, cmd, args )
+	concommand.Add( "gmod_camera", function( player, command, arguments )
 
-		ply:SelectWeapon( "gmod_camera" )
+		player:SelectWeapon( "gmod_camera" )
 
 	end )
 

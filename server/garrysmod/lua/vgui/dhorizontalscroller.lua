@@ -89,8 +89,8 @@ function PANEL:SetUseLiveDrag( bool )
 	self.pnlCanvas:SetUseLiveDrag( bool )
 end
 
-function PANEL:MakeDroppable( name, allowCopy )
-	self.pnlCanvas:MakeDroppable( name, allowCopy )
+function PANEL:MakeDroppable( name )
+	self.pnlCanvas:MakeDroppable( name )
 end
 
 function PANEL:AddPanel( pnl )

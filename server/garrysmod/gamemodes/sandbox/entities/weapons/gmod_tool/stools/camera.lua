@@ -26,7 +26,7 @@ local function CheckLimit( ply, key )
 		break
 	end
 
-	if ( !found && !ply:CheckLimit( "cameras" ) ) then
+	if ( !found and !ply:CheckLimit( "cameras" ) ) then
 		return false
 	end
 
@@ -35,10 +35,10 @@ local function CheckLimit( ply, key )
 end
 
 local function MakeCamera( ply, key, locked, toggle, Data )
-	if ( IsValid( ply ) && !CheckLimit( ply, key ) ) then return NULL end
+	if ( IsValid( ply ) && !CheckLimit( ply, key ) ) then return false end
 
 	local ent = ents.Create( "gmod_cameraprop" )
-	if ( !IsValid( ent ) ) then return NULL end
+	if ( !IsValid( ent ) ) then return false end
 
 	duplicator.DoGeneric( ent, Data )
 
@@ -61,7 +61,6 @@ local function MakeCamera( ply, key, locked, toggle, Data )
 	ent:Spawn()
 
 	DoPropSpawnedEffect( ent )
-	duplicator.DoGenericPhysics( ent, ply, Data )
 
 	ent:SetTracking( NULL, Vector( 0 ) )
 	ent:SetLocked( locked )
@@ -81,10 +80,7 @@ local function MakeCamera( ply, key, locked, toggle, Data )
 	return ent
 
 end
-
-if ( SERVER ) then
-	duplicator.RegisterEntityClass( "gmod_cameraprop", MakeCamera, "controlkey", "locked", "toggle", "Data" )
-end
+duplicator.RegisterEntityClass( "gmod_cameraprop", MakeCamera, "controlkey", "locked", "toggle", "Data" )
 
 function TOOL:LeftClick( trace )
 

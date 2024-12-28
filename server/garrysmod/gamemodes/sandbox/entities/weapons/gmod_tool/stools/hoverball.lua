@@ -73,7 +73,7 @@ function TOOL:LeftClick( trace )
 	end
 
 	if ( !util.IsValidModel( model ) || !util.IsValidProp( model ) || !IsValidHoverballModel( model ) ) then return false end
-	if ( !self:GetWeapon():CheckLimit( "hoverballs" ) ) then return false end
+	if ( !self:GetSWEP():CheckLimit( "hoverballs" ) ) then return false end
 
 	local ball = MakeHoverBall( ply, trace.HitPos, key_d, key_u, speed, resistance, strength, model, nil, nil, nil, nil, key_o )
 	if ( !IsValid( ball ) ) then return false end
@@ -114,22 +114,17 @@ end
 
 if ( SERVER ) then
 
-	function MakeHoverBall( ply, pos, key_d, key_u, speed, resistance, strength, model, nocollide, key_o, Data )
+	function MakeHoverBall( ply, Pos, key_d, key_u, speed, resistance, strength, model, Vel, aVel, frozen, nocollide, key_o )
 
-		if ( IsValid( ply ) && !ply:CheckLimit( "hoverballs" ) ) then return NULL end
-		if ( !IsValidHoverballModel( model ) ) then return NULL end
+		if ( IsValid( ply ) && !ply:CheckLimit( "hoverballs" ) ) then return false end
+		if ( !IsValidHoverballModel( model ) ) then return false end
 
 		local ball = ents.Create( "gmod_hoverball" )
-		if ( !IsValid( ball ) ) then return NULL end
+		if ( !IsValid( ball ) ) then return false end
 
-		duplicator.DoGeneric( ball, Data )
-		ball:SetPos( pos ) -- Backwards compatible for addons directly calling this function
-		ball:SetModel( model )
+		ball:SetPos( Pos )
+		ball:SetModel( Model( model ) )
 		ball:Spawn()
-
-		DoPropSpawnedEffect( ball )
-		duplicator.DoGenericPhysics( ball, ply, Data )
-
 		ball:SetSpeed( speed )
 		ball:SetAirResistance( resistance )
 		ball:SetStrength( strength )
@@ -170,10 +165,12 @@ if ( SERVER ) then
 			ply:AddCleanup( "hoverballs", ball )
 		end
 
+		DoPropSpawnedEffect( ball )
+
 		return ball
 
 	end
-	duplicator.RegisterEntityClass( "gmod_hoverball", MakeHoverBall, "Pos", "key_d", "key_u", "speed", "resistance", "strength", "model", "nocollide", "key_o", "Data" )
+	duplicator.RegisterEntityClass( "gmod_hoverball", MakeHoverBall, "Pos", "key_d", "key_u", "speed", "resistance", "strength", "model", "Vel", "aVel", "frozen", "nocollide", "key_o" )
 
 end
 

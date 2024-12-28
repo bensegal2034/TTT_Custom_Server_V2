@@ -1,5 +1,5 @@
 
-local effects_freeze = CreateClientConVar( "effects_freeze", "1", true, false, "Whether to display Physics Gun freeze effects?" )
+local effects_freeze = CreateClientConVar( "effects_freeze", "1", true, false )
 
 function EFFECT:Init( data )
 

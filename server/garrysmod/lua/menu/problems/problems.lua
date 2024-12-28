@@ -4,8 +4,6 @@ include( "problems_pnl.lua" )
 local ProblemsPanel
 local ProblemsCount = 0
 local ProblemSeverity = 0
-local MenuUpdated = false
-
 Problems = Problems or {}
 ErrorLog = ErrorLog or {}
 
@@ -34,11 +32,10 @@ end
 local function CountProblem( severity )
 
 	ProblemsCount = ProblemsCount + 1
-	ProblemSeverity = math.max( ProblemSeverity, severity or 0 )
+	ProblemSeverity = math.max( ProblemSeverity, severity || 0 )
 
 	if ( IsValid( pnlMainMenu ) ) then
-		pnlMainMenu:SetProblemCount( ProblemsCount, ProblemSeverity )
-		MenuUpdated = true
+		pnlMainMenu:Call( "SetProblemCount(" .. ProblemsCount .. ", " .. ProblemSeverity .. ")" )
 	end
 
 end
@@ -50,25 +47,19 @@ local function RecountProblems()
 
 	for id, err in pairs( ErrorLog ) do
 		ProblemsCount = ProblemsCount + 1
-		ProblemSeverity = math.max( err.severity or 0, ProblemSeverity )
+		ProblemSeverity = math.max( err.severity || 0, ProblemSeverity )
 	end
 
 	for id, prob in pairs( Problems ) do
 		ProblemsCount = ProblemsCount + 1
-		ProblemSeverity = math.max( prob.severity or 0, ProblemSeverity )
+		ProblemSeverity = math.max( prob.severity || 0, ProblemSeverity )
 	end
 
 	if ( IsValid( pnlMainMenu ) ) then
-		pnlMainMenu:SetProblemCount( ProblemsCount, ProblemSeverity )
-		MenuUpdated = true
+		pnlMainMenu:Call( "SetProblemCount(" .. ProblemsCount .. ", " .. ProblemSeverity .. ")" )
 	end
+
 end
-
-timer.Create( "menu_problem_counter", 1, 0, function()
-	if ( MenuUpdated ) then timer.Remove( "menu_problem_counter" ) return end
-
-	RecountProblems()
-end )
 
 function ClearLuaErrorGroup( group_id )
 
@@ -99,7 +90,7 @@ end
 
 function FireProblem( prob )
 
-	local probID = prob.id or prob.text
+	local probID = prob.id || prob.text
 
 	if ( !Problems[ probID ] ) then
 		CountProblem( prob.severity )
@@ -124,7 +115,7 @@ local function FireError( str, realm, stack, addontitle, addonid )
 
 	local errorUniqueID = errorText .. realm
 
-	if ( !addontitle or addontitle == "" ) then addontitle = "Other" end
+	if ( !addontitle || addontitle == "" ) then addontitle = "Other" end
 
 	if ( !ErrorLog[ errorUniqueID ] ) then
 		local newErr = {
@@ -188,10 +179,7 @@ end
 function FireProblemFromEngine( id, severity, params )
 	if ( id == "menu_cleanupgmas" ) then
 		local text = language.GetPhrase( "problem." .. id ) .. "\n\n" .. params:Replace( ";", "\n" )
-		FireProblem( { id = id, text = text, severity = severity, type = "addons", fix = function() RunConsoleCommand( "menu_cleanupgmas" ) ClearProblem( id ) end } )
-	elseif ( id == "readonly_file" ) then
-		local text = params
-		FireProblem( { id = id .. params, text = text, severity = severity, type = "config" } )
+		FireProblem( { id = id, text = text, type = "addons", fix = function() RunConsoleCommand( "menu_cleanupgmas" ) ClearProblem( id ) end } )
 	else
 		-- missing_addon_file
 		-- addon_download_failed = title;reason
@@ -205,7 +193,7 @@ end
 timer.Create( "menu_check_for_problems", 1, 0, function()
 
 	if ( math.floor( GetConVarNumber( "mat_hdr_level" ) ) != 2 ) then
-		FireProblem( { id = "mat_hdr_level", text = "#problem.mat_hdr_level", type = "config", fix = function() RunConsoleCommand( "mat_hdr_level", "2" ) end, severity = 1 } )
+		FireProblem( { id = "mat_hdr_level", text = "#problem.mat_hdr_level", type = "config", fix = function() RunConsoleCommand( "mat_hdr_level", "2" ) end } )
 	else
 		ClearProblem( "mat_hdr_level" )
 	end
@@ -229,25 +217,19 @@ timer.Create( "menu_check_for_problems", 1, 0, function()
 	end
 
 	if ( math.abs( GetConVarNumber( "voice_fadeouttime" ) - 0.1 ) > 0.001 ) then
-		FireProblem( { id = "voice_fadeouttime", text = "#problem.voice_fadeouttime", type = "config", fix = function() RunConsoleCommand( "voice_fadeouttime", "0.1" ) ClearProblem( "voice_fadeouttime" ) end } )
+		FireProblem( { id = "voice_fadeouttime", text = "#problem.voice_fadeouttime", type = "config", fix = function() RunConsoleCommand( "voice_fadeouttime", "0.1" ) end } )
 	else
 		ClearProblem( "voice_fadeouttime" )
 	end
 
-	if ( GetConVarNumber( "mat_viewportscale" ) < 0.1 ) then
-		FireProblem( { id = "mat_viewportscale", text = "#problem.mat_viewportscale", type = "config", fix = function() RunConsoleCommand( "mat_viewportscale", "1" ) ClearProblem( "mat_viewportscale" ) end } )
-	else
-		ClearProblem( "mat_viewportscale" )
-	end
-
-	if ( ScrW() < 1000 or ScrH() < 700 ) then
+	if ( ScrW() < 1000 || ScrH() < 700 ) then
 		FireProblem( { id = "screen_res", text = "#problem.screen_res", type = "config" } )
 	else
 		ClearProblem( "screen_res" )
 	end
 
 	-- These are not saved, but still affect gameplay
-	if ( GetConVarNumber( "cl_forwardspeed" ) != 10000 or GetConVarNumber( "cl_sidespeed" ) != 10000 or GetConVarNumber( "cl_backspeed" ) != 10000 ) then
+	if ( GetConVarNumber( "cl_forwardspeed" ) != 10000 || GetConVarNumber( "cl_sidespeed" ) != 10000 || GetConVarNumber( "cl_backspeed" ) != 10000 ) then
 		FireProblem( { id = "cl_speeds", text = "#problem.cl_speeds", type = "config", fix = function()
 			RunConsoleCommand( "cl_forwardspeed", "10000" )
 			RunConsoleCommand( "cl_sidespeed", "10000" )
@@ -257,7 +239,7 @@ timer.Create( "menu_check_for_problems", 1, 0, function()
 		ClearProblem( "cl_speeds" )
 	end
 
-	if ( render.GetDXLevel() != 95 and render.GetDXLevel() != 90 ) then
+	if ( render.GetDXLevel() != 95 && render.GetDXLevel() != 90 ) then
 		FireProblem( { id = "mat_dxlevel", text = language.GetPhrase( "problem.mat_dxlevel" ):format( render.GetDXLevel() ), type = "config" } )
 	else
 		ClearProblem( "mat_dxlevel" )
@@ -308,7 +290,7 @@ hook.Add( "OnNotifyAddonConflict", "AddonConflictNotification", function( addon1
 
 	end
 
-	AddonConflicts[ id ].files[ fileName ] = true
+	table.insert( AddonConflicts[ id ].files, fileName )
 
 	RefreshAddonConflicts()
 
@@ -323,7 +305,7 @@ function FireAddonConflicts()
 	for id, tbl in pairs( AddonConflicts ) do
 
 		local files = ""
-		for file, _ in pairs( tbl.files ) do
+		for _, file in ipairs( tbl.files ) do
 			files = files .. file .. "\n"
 		end
 

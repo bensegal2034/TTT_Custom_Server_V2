@@ -34,9 +34,7 @@ local function SetColour( ply, ent, data )
 	end
 
 end
-if ( SERVER ) then
-	duplicator.RegisterEntityModifier( "colour", SetColour )
-end
+duplicator.RegisterEntityModifier( "colour", SetColour )
 
 function TOOL:LeftClick( trace )
 

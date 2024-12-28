@@ -123,7 +123,7 @@ function PANEL:FillViaTable( Table )
 	--
 	if ( Table.ControlPanelBuildFunction ) then
 
-		Table.ControlPanelBuildFunction( self )
+		self:FillViaFunction( Table.ControlPanelBuildFunction )
 
 	end
 

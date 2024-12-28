@@ -5,7 +5,7 @@ DEFINE_BASECLASS( "base_gmodentity" )
 ENT.PrintName = "Thruster"
 
 if ( CLIENT ) then
-	CreateConVar( "cl_drawthrusterseffects", "1", 0, "Should Sandbox Thruster effects be visible?" )
+	CreateConVar( "cl_drawthrusterseffects", "1" )
 end
 
 function ENT:SetEffect( name )
@@ -40,16 +40,20 @@ function ENT:Initialize()
 
 		-- Make the render bounds a bigger so the effect doesn't get snipped off
 		local mx, mn = self:GetRenderBounds()
-		self:SetRenderBounds( mn + Vector( 0, 0, 128 ), mx )
+		self:SetRenderBounds( mn + Vector( 0, 0, 128 ), mx, 0 )
 
 		self.Seed = math.Rand( 0, 10000 )
 
 	else
 
 		self:PhysicsInit( SOLID_VPHYSICS )
+		self:SetMoveType( MOVETYPE_VPHYSICS )
+		self:SetSolid( SOLID_VPHYSICS )
 
 		local phys = self:GetPhysicsObject()
-		if ( IsValid( phys ) ) then phys:Wake() end
+		if ( IsValid( phys ) ) then
+			phys:Wake()
+		end
 
 		local max = self:OBBMaxs()
 		local min = self:OBBMins()
@@ -80,10 +84,10 @@ if ( CLIENT ) then
 		if ( !self:IsOn() ) then return	end
 		if ( self.ShouldDraw == false ) then return end
 
-		if ( self:GetEffect() == "" or self:GetEffect() == "none" ) then return end
+		if ( self:GetEffect() == "" || self:GetEffect() == "none" ) then return end
 
 		for id, t in pairs( list.GetForEdit( "ThrusterEffects" ) ) do
-			if ( t.thruster_effect != self:GetEffect() or !t.effectDraw ) then continue end
+			if ( t.thruster_effect != self:GetEffect() || !t.effectDraw ) then continue end
 
 			t.effectDraw( self )
 
@@ -92,7 +96,7 @@ if ( CLIENT ) then
 
 	end
 
-	ENT.WantsTranslucency = true -- If model is opaque, still call DrawTranslucent
+	ENT.RenderGroup = RENDERGROUP_BOTH
 	function ENT:DrawTranslucent( flags )
 
 		BaseClass.DrawTranslucent( self, flags )
@@ -106,7 +110,7 @@ function ENT:Think()
 
 	BaseClass.Think( self )
 
-	if ( SERVER and self.SwitchOffTime and self.SwitchOffTime < CurTime() ) then
+	if ( SERVER && self.SwitchOffTime && self.SwitchOffTime < CurTime() ) then
 		self.SwitchOffTime = nil
 		self:Switch( false )
 	end
@@ -119,10 +123,10 @@ function ENT:Think()
 		self.OnStart = self.OnStart or CurTime()
 
 		if ( self.ShouldDraw == false ) then return end
-		if ( self:GetEffect() == "" or self:GetEffect() == "none" ) then return end
+		if ( self:GetEffect() == "" || self:GetEffect() == "none" ) then return end
 
 		for id, t in pairs( list.GetForEdit( "ThrusterEffects" ) ) do
-			if ( t.thruster_effect != self:GetEffect() or !t.effectThink ) then continue end
+			if ( t.thruster_effect != self:GetEffect() || !t.effectThink ) then continue end
 
 			t.effectThink( self )
 
@@ -140,8 +144,10 @@ if ( CLIENT ) then
 	-----------------------------------------------------------]]
 	function ENT:GetEmitter( Pos, b3D )
 
-		if ( self.Emitter and self.EmitterIs3D == b3D and self.EmitterTime > CurTime() ) then
-			return self.Emitter
+		if ( self.Emitter ) then
+			if ( self.EmitterIs3D == b3D && self.EmitterTime > CurTime() ) then
+				return self.Emitter
+			end
 		end
 
 		if ( IsValid( self.Emitter ) ) then
@@ -200,8 +206,8 @@ if ( SERVER ) then
 			self:SetOffset( self.ThrustOffsetR )
 		end
 
-		self:SetNWVector( "1", self.ForceAngle )
-		self:SetNWVector( "2", self.ForceLinear )
+		self:SetNWVector( 1, self.ForceAngle )
+		self:SetNWVector( 2, self.ForceLinear )
 
 		self:SetOverlayText( "Force: " .. math.floor( self.force ) )
 
@@ -272,7 +278,9 @@ if ( SERVER ) then
 		end
 
 		local phys = self:GetPhysicsObject()
-		if ( IsValid( phys ) ) then phys:Wake() end
+		if ( IsValid( phys ) ) then
+			phys:Wake()
+		end
 
 		return true
 
@@ -301,7 +309,7 @@ if ( SERVER ) then
 	-- Starts the looping sound
 	function ENT:StartThrustSound()
 
-		if ( !self.SoundName or self.SoundName == "" ) then return end
+		if ( !self.SoundName || self.SoundName == "" ) then return end
 
 		local valid = false
 		for _, v in pairs( list.Get( "ThrusterSounds" ) ) do
@@ -314,7 +322,7 @@ if ( SERVER ) then
 			 -- Make sure the fadeout gets to every player!
 			local filter = RecipientFilter()
 			filter:AddPAS( self:GetPos() )
-			self.Sound = CreateSound( self, self.SoundName, filter )
+			self.Sound = CreateSound( self.Entity, self.SoundName, filter )
 		end
 
 		self.Sound:PlayEx( 0.5, 100 )
@@ -340,7 +348,7 @@ if ( SERVER ) then
 		return self.Toggle
 	end
 
-	numpad.Register( "Thruster_On", function( ply, ent, mul )
+	numpad.Register( "Thruster_On", function ( pl, ent, mul )
 
 		if ( !IsValid( ent ) ) then return false end
 
@@ -349,7 +357,7 @@ if ( SERVER ) then
 
 	end )
 
-	numpad.Register( "Thruster_Off", function( ply, ent, mul )
+	numpad.Register( "Thruster_Off", function ( pl, ent, mul )
 
 		if ( !IsValid( ent ) ) then return false end
 
@@ -403,7 +411,7 @@ list.Set( "ThrusterEffects", "#thrustereffect.flames", {
 		scroll = scroll * 1.3
 		render.SetMaterial( matFire )
 		render.StartBeam( 3 )
-			render.AddBeam( vOffset, size * Scale, scroll, Color( 0, 0, 255, 128 ) )
+			render.AddBeam( vOffset, size * Scale, scroll, Color( 0, 0, 255, 128) )
 			render.AddBeam( vOffset + vNormal * 60 * Scale, 16 * Scale, scroll + 1, Color( 255, 255, 255, 128 ) )
 			render.AddBeam( vOffset + vNormal * 148 * Scale, 16 * Scale, scroll + 3, Color( 255, 255, 255, 0 ) )
 		render.EndBeam()

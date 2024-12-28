@@ -1,42 +1,4 @@
 
--- Temporary, DELETE ME after an update after May 2024
-if ( CLIENT and !vgui.GetAll ) then function vgui.GetAll() return {} end end
-
-if ( !RegisterMetaTable ) then
-    local metas = {}
-
-    local oldFindMetaTable = FindMetaTable
-    FindMetaTable = function( name )
-        local f = oldFindMetaTable( name )
-        if ( f ) then return f end
-
-        return metas[ name ]
-    end
-
-    function RegisterMetaTable( key, value )
-        metas[ key ] = value
-    end
-end
-
---
--- Hack for debug.getregistry
---
-local meta = {}
-function meta.__index( self, key )
-	return FindMetaTable( key )
-end
-function meta.__newindex( self, key, value )
-	rawset( self, key, value )
-
-	if ( isstring( key ) and istable( value ) ) then
-		RegisterMetaTable( key, value )
-	end
-end
-
-local tbl = {}
-setmetatable( tbl, meta )
-function debug.getregistry() return tbl end
-
 --
 -- Seed the rand!
 --
@@ -102,7 +64,7 @@ function PrintTable( t, indent, done )
 	local keys = table.GetKeys( t )
 
 	table.sort( keys, function( a, b )
-		if ( isnumber( a ) and isnumber( b ) ) then return a < b end
+		if ( isnumber( a ) && isnumber( b ) ) then return a < b end
 		return tostring( a ) < tostring( b )
 	end )
 
@@ -111,10 +73,9 @@ function PrintTable( t, indent, done )
 	for i = 1, #keys do
 		local key = keys[ i ]
 		local value = t[ key ]
-		key = ( type( key ) == "string" ) and "[\"" .. key .. "\"]" || "[" .. tostring( key ) .. "]"
 		Msg( string.rep( "\t", indent ) )
 
-		if  ( istable( value ) and !done[ value ] ) then
+		if  ( istable( value ) && !done[ value ] ) then
 
 			done[ value ] = true
 			Msg( key, ":\n" )
@@ -201,7 +162,7 @@ function IncludeCS( filename )
 	if ( SERVER ) then
 		AddCSLuaFile( filename )
 	end
-
+	
 	return include( filename )
 end
 
@@ -323,7 +284,7 @@ local UselessModels = {
 
 function IsUselessModel( modelname )
 
-	modelname = modelname:lower()
+	local modelname = modelname:lower()
 
 	if ( !modelname:find( ".mdl", 1, true ) ) then return true end
 
@@ -356,14 +317,14 @@ end
 	From Simple Gamemode Base (Rambo_9)
 -----------------------------------------------------------]]
 function TimedSin( freq, min, max, offset )
-	return math.sin( freq * math.tau * CurTime() + offset ) * ( max - min ) * 0.5 + min
+	return math.sin( freq * math.pi * 2 * CurTime() + offset ) * ( max - min ) * 0.5 + min
 end
 
 --[[---------------------------------------------------------
 	From Simple Gamemode Base (Rambo_9)
 -----------------------------------------------------------]]
 function TimedCos( freq, min, max, offset )
-	return math.cos( freq * math.tau * CurTime() + offset ) * ( max - min ) * 0.5 + min
+	return math.cos( freq * math.pi * 2 * CurTime() + offset ) * ( max - min ) * 0.5 + min
 end
 
 --[[---------------------------------------------------------
@@ -415,10 +376,6 @@ end
 -----------------------------------------------------------]]
 function IsMounted( name )
 
-	if ( name == "episodic" || name == "ep2" || name == "lostcoast" ) then
-		name = "hl2"
-	end
-
 	local games = engine.GetGames()
 
 	for k, v in pairs( games ) do
@@ -468,10 +425,10 @@ if ( CLIENT ) then
 
 	function RememberCursorPosition()
 
-		local x, y = input.GetCursorPos()
+		local x, y = gui.MousePos()
 
 		-- If the cursor isn't visible it will return 0,0 ignore it.
-		if ( x == 0 and y == 0 ) then return end
+		if ( x == 0 && y == 0 ) then return end
 
 		StoredCursorPos.x, StoredCursorPos.y = x, y
 
@@ -513,9 +470,9 @@ local ConVarCache = {}
 
 function GetConVar( name )
 	local c = ConVarCache[ name ]
-	if ( !c ) then
+	if not c then
 		c = GetConVar_Internal( name )
-		if ( !c ) then
+		if not c then
 			return
 		end
 

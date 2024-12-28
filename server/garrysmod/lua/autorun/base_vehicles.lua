@@ -10,7 +10,7 @@ local Category = "Half-Life 2"
 
 AddVehicle( {
 	-- Required information
-	Name = "#spawnmenu.vehicle.jeep",
+	Name = "Jeep",
 	Model = "models/buggy.mdl",
 	Class = "prop_vehicle_jeep_old",
 	Category = Category,
@@ -25,7 +25,7 @@ AddVehicle( {
 }, "Jeep" )
 
 AddVehicle( {
-	Name = "#spawnmenu.vehicle.airboat",
+	Name = "Airboat",
 	Model = "models/airboat.mdl",
 	Class = "prop_vehicle_airboat",
 	Category = Category,
@@ -39,13 +39,13 @@ AddVehicle( {
 }, "Airboat" )
 
 AddVehicle( {
-	Name = "#spawnmenu.vehicle.prisoner_pod",
+	Name = "Pod",
 	Model = "models/vehicles/prisoner_pod_inner.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
 
 	Author = "VALVe",
-	Information = "The prisoner pod",
+	Information = "The Prisoner Pod",
 
 	KeyValues = {
 		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
@@ -53,9 +53,9 @@ AddVehicle( {
 	}
 }, "Pod" )
 
-if ( IsMounted( "ep2" ) ) then
+if ( IsMounted( "ep2" ) ) then 
 	AddVehicle( {
-		Name = "#spawnmenu.vehicle.jalopy",
+		Name = "Jalopy",
 		Model = "models/vehicle.mdl",
 		Class = "prop_vehicle_jeep",
 		Category = Category,
@@ -69,20 +69,20 @@ if ( IsMounted( "ep2" ) ) then
 	}, "Jalopy" )
 end
 
-Category = "Chairs"
+local Category = "Chairs"
 
 local function HandleRollercoasterAnimation( vehicle, player )
-	return player:SelectWeightedSequence( ACT_GMOD_SIT_ROLLERCOASTER )
+	return player:SelectWeightedSequence( ACT_GMOD_SIT_ROLLERCOASTER ) 
 end
 
 AddVehicle( {
-	Name = "#spawnmenu.chair.wooden",
+	Name = "Wooden Chair",
 	Model = "models/nova/chair_wood01.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
 
 	Author = "VALVe",
-	Information = "A wooden chair",
+	Information = "A Wooden Chair",
 
 	KeyValues = {
 		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
@@ -94,13 +94,13 @@ AddVehicle( {
 }, "Chair_Wood" )
 
 AddVehicle( {
-	Name = "#spawnmenu.chair.plastic",
+	Name = "Chair",
 	Model = "models/nova/chair_plastic01.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
 
 	Author = "VALVe",
-	Information = "A plastic chair",
+	Information = "A Plastic Chair",
 
 	KeyValues = {
 		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
@@ -112,49 +112,13 @@ AddVehicle( {
 }, "Chair_Plastic" )
 
 AddVehicle( {
-	Name = "#spawnmenu.chair.office",
-	Model = "models/nova/chair_office01.mdl",
-	Class = "prop_vehicle_prisoner_pod",
-	Category = Category,
-
-	Author = "VALVe",
-	Information = "A small office chair",
-
-	KeyValues = {
-		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
-		limitview = "0"
-	},
-	Members = {
-		HandleAnimation = HandleRollercoasterAnimation,
-	}
-}, "Chair_Office1" )
-
-AddVehicle( {
-	Name = "#spawnmenu.chair.office_big",
-	Model = "models/nova/chair_office02.mdl",
-	Class = "prop_vehicle_prisoner_pod",
-	Category = Category,
-
-	Author = "VALVe",
-	Information = "A big office chair",
-
-	KeyValues = {
-		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
-		limitview = "0"
-	},
-	Members = {
-		HandleAnimation = HandleRollercoasterAnimation,
-	}
-}, "Chair_Office2" )
-
-AddVehicle( {
-	Name = "#spawnmenu.seat.jeep",
+	Name = "Jeep Seat",
 	Model = "models/nova/jeep_seat.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
 
 	Author = "VALVe",
-	Information = "A seat from VALVe's Jeep",
+	Information = "A Seat from VALVe's Jeep",
 
 	KeyValues = {
 		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
@@ -166,13 +130,13 @@ AddVehicle( {
 }, "Seat_Jeep" )
 
 AddVehicle( {
-	Name = "#spawnmenu.seat.airboat",
+	Name = "Airboat Seat",
 	Model = "models/nova/airboat_seat.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
 
 	Author = "VALVe",
-	Information = "A seat from VALVe's Airboat",
+	Information = "A Seat from VALVe's Airboat",
 
 	KeyValues = {
 		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
@@ -183,15 +147,51 @@ AddVehicle( {
 	}
 }, "Seat_Airboat" )
 
-if ( IsMounted( "ep2" ) ) then
+AddVehicle( {
+	Name = "Office Chair",
+	Model = "models/nova/chair_office01.mdl",
+	Class = "prop_vehicle_prisoner_pod",
+	Category = Category,
+
+	Author = "VALVe",
+	Information = "A Small Office Chair",
+
+	KeyValues = {
+		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
+		limitview = "0"
+	},
+	Members = {
+		HandleAnimation = HandleRollercoasterAnimation,
+	}
+}, "Chair_Office1" )
+
+AddVehicle( {
+	Name = "Big Office Chair",
+	Model = "models/nova/chair_office02.mdl",
+	Class = "prop_vehicle_prisoner_pod",
+	Category = Category,
+
+	Author = "VALVe",
+	Information = "A Big Office Chair",
+
+	KeyValues = {
+		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
+		limitview = "0"
+	},
+	Members = {
+		HandleAnimation = HandleRollercoasterAnimation,
+	}
+}, "Chair_Office2" )
+
+if ( IsMounted( "ep2" ) ) then 
 	AddVehicle( {
-		Name = "#spawnmenu.seat.jalopy",
+		Name = "Jalopy Seat",
 		Model = "models/nova/jalopy_seat.mdl",
 		Class = "prop_vehicle_prisoner_pod",
 		Category = Category,
 
 		Author = "VALVe",
-		Information = "A seat from VALVe's Jalopy",
+		Information = "A Seat from VALVe's Jalopy",
 
 		KeyValues = {
 			vehiclescript = "scripts/vehicles/prisoner_pod.txt",
@@ -200,23 +200,24 @@ if ( IsMounted( "ep2" ) ) then
 		Members = {
 			HandleAnimation = HandleRollercoasterAnimation,
 		}
-	}, "Seat_Jalopy" )
+	} , "Seat_Jalopy" )
 end
 
 -- PhoeniX-Storms Vehicles
 
 local function HandlePHXSeatAnimation( vehicle, player )
-	return player:SelectWeightedSequence( ACT_HL2MP_SIT )
+	return player:SelectWeightedSequence( ACT_HL2MP_SIT ) 
 end
+
 local function HandlePHXVehicleAnimation( vehicle, ply )
-	return ply:SelectWeightedSequence( ACT_DRIVE_JEEP )
+	return ply:SelectWeightedSequence( ACT_DRIVE_JEEP ) 
 end
 local function HandlePHXAirboatAnimation( vehicle, ply )
-	return ply:SelectWeightedSequence( ACT_DRIVE_AIRBOAT )
+	return ply:SelectWeightedSequence( ACT_DRIVE_AIRBOAT ) 
 end
 
 AddVehicle( {
-	Name = "#spawnmenu.seat.simple_sit",
+	Name = "Car Seat",
 	Model = "models/props_phx/carseat2.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
@@ -235,7 +236,7 @@ AddVehicle( {
 }, "phx_seat" )
 
 AddVehicle( {
-	Name = "#spawnmenu.seat.simple_jeep",
+	Name = "Car Seat 2",
 	Model = "models/props_phx/carseat3.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
@@ -254,7 +255,7 @@ AddVehicle( {
 }, "phx_seat2" )
 
 AddVehicle( {
-	Name = "#spawnmenu.seat.simple_airboat",
+	Name = "Car Seat 3",
 	Model = "models/props_phx/carseat2.mdl",
 	Class = "prop_vehicle_prisoner_pod",
 	Category = Category,
@@ -271,3 +272,22 @@ AddVehicle( {
 		HandleAnimation = HandlePHXAirboatAnimation,
 	}
 }, "phx_seat3" )
+
+-- Not adding this, because exit animation leaves you stuck in the middle
+--[[AddVehicle( {
+	Name = "FSD Overrun",
+	Model = "models/props_phx/trains/fsd-overrun2.mdl",
+	Class = "prop_vehicle_prisoner_pod",
+	Category = Category,
+
+	Author = "PhoeniX-Storms",
+	Information = "FSD Overrun Monorail",
+
+	KeyValues = {
+		vehiclescript = "scripts/vehicles/prisoner_pod.txt",
+		limitview = "0"
+	},
+	Members = {
+		HandleAnimation = HandlePHXVehicleAnimation,
+	}
+}, "phx_train" )]]

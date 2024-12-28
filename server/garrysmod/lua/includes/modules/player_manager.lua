@@ -311,10 +311,10 @@ local function LookupPlayerClass( ply )
 	--
 	-- Check the cache
 	--
-	local plyClass = ply.m_CurrentPlayerClass
-	if ( plyClass && plyClass.Player == ply ) then
-		if ( plyClass.ClassID == id && plyClass.Func ) then return plyClass end -- current class is still good, behave normally
-		if ( plyClass.ClassChanged ) then plyClass:ClassChanged() end -- the class id changed, remove the old class
+	local method = ply.m_CurrentPlayerClass
+	if ( method && method.Player == ply ) then
+		if ( method.ClassID == id && method.Func ) then return method end -- current class is still good, behave normally
+		if ( method.ClassChanged ) then method:ClassChanged() end -- the class id changed, remove the old class
 	end
 
 	--
@@ -329,27 +329,26 @@ local function LookupPlayerClass( ply )
 	local t = Type[ classname ]
 	if ( !t ) then return end
 
-	local newClass = {
-		Player = ply,
-		ClassID = id,
-		Func = function() end
-	}
+	local method = {}
+	method.Player	= ply
+	method.ClassID	= id
+	method.Func		= function() end
 
-	setmetatable( newClass, { __index = t } )
+	setmetatable( method, { __index = t } )
 
-	ply.m_CurrentPlayerClass = newClass
+	ply.m_CurrentPlayerClass = method
 
 	-- TODO: We probably want to reset previous DTVar stuff on the player
-	newClass.Player:InstallDataTable()
-	newClass:SetupDataTables()
-	newClass:Init()
-	return newClass
+	method.Player:InstallDataTable()
+	method:SetupDataTables()
+	method:Init()
+	return method
 
 end
 
-function RegisterClass( name, tab, base )
+function RegisterClass( name, table, base )
 
-	Type[ name ] = tab
+	Type[ name ] = table
 
 	--
 	-- If we have a base method then hook
@@ -376,6 +375,7 @@ end
 
 function SetPlayerClass( ply, classname )
 
+	local t = Type[ classname ]
 	if ( !Type[ classname ] ) then ErrorNoHalt( "SetPlayerClass - attempt to use unknown player class " .. classname .. "!\n" ) end
 
 	local id = util.NetworkStringToID( classname )
@@ -393,18 +393,6 @@ function GetPlayerClass( ply )
 	if ( id == 0 ) then return end
 
 	return util.NetworkIDToString( id )
-
-end
-
-function GetPlayerClassTable( ply )
-
-	local id = ply:GetClassID()
-	if ( id == 0 ) then return end
-
-	local ct = Type[ util.NetworkIDToString( id ) ]
-	if ( !ct ) then return end
-
-	return table.Copy( ct )
 
 end
 
@@ -447,7 +435,7 @@ function OnPlayerSpawn( ply, transiton )
 	ply:SetNoCollideWithTeammates( class.TeammateNoCollide )
 	ply:SetAvoidPlayers( class.AvoidPlayers )
 
-	if ( !transiton ) then
+	if ( !transiton ) then 
 		ply:SetMaxHealth( class.MaxHealth )
 		ply:SetMaxArmor( class.MaxArmor )
 		ply:SetHealth( class.StartHealth )

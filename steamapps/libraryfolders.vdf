@@ -6,11 +6,11 @@
 		"label"		""
 		"contentid"		"-7967088241567147997"
 		"totalsize"		"8001545039872"
-		"update_clean_bytes_tally"		"0"
-		"time_last_update_verified"		"0"
+		"update_clean_bytes_tally"		"3898237870"
+		"time_last_update_corruption"		"0"
 		"apps"
 		{
-			"4020"		"3922839074"
+			"4020"		"0"
 		}
 	}
 }

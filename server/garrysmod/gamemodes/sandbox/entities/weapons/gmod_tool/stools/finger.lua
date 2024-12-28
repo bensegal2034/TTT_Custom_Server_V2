@@ -21,6 +21,11 @@ local function HasP2Hands( pEntity )
 	return pEntity:LookupBone( "wrist_A_L" ) != nil || pEntity:LookupBone( "index_1_L" ) != nil
 end
 
+-- Returns true if it has Zeno Clash hands
+local function HasZenoHands( pEntity )
+	return pEntity:LookupBone( "Bip01_L_Hand" ) != nil
+end
+
 local TranslateTable_TF2 = {}
 TranslateTable_TF2[ "ValveBiped.Bip01_L_Finger0" ] = "bip_thumb_0_L"
 TranslateTable_TF2[ "ValveBiped.Bip01_L_Finger01" ] = "bip_thumb_1_L"
@@ -250,8 +255,8 @@ local function GetFingerBone( self, fingernum, part, hand )
 	if ( hand == 1 ) then Name = "ValveBiped.Bip01_R_Finger" .. fingernum end
 	if ( part != 0 ) then Name = Name .. part end
 
-	local boneid = self:LookupBone( Name )
-	if ( boneid ) then return boneid end
+	local bone = self:LookupBone( Name )
+	if ( bone ) then return bone end
 	---- END HL2 BONE LOOKUP ----------------------------------
 
 	---- START TF BONE LOOKUP ----------------------------------
@@ -263,7 +268,7 @@ local function GetFingerBone( self, fingernum, part, hand )
 	---- END TF BONE LOOKUP ----------------------------------
 
 	---- START Zeno BONE LOOKUP ----------------------------------
-	TranslatedName = TranslateTable_Zeno[ Name ]
+	local TranslatedName = TranslateTable_Zeno[ Name ]
 	if ( TranslatedName ) then
 		local bone = self:LookupBone( TranslatedName )
 		if ( bone ) then return bone end
@@ -271,7 +276,7 @@ local function GetFingerBone( self, fingernum, part, hand )
 	---- END Zeno BONE LOOKUP ----------------------------------
 
 	---- START DOG BONE LOOKUP ----------------------------------
-	TranslatedName = TranslateTable_DOG[ Name ]
+	local TranslatedName = TranslateTable_DOG[ Name ]
 	if ( TranslatedName ) then
 		local bone = self:LookupBone( TranslatedName )
 		if ( bone ) then return bone end
@@ -279,7 +284,7 @@ local function GetFingerBone( self, fingernum, part, hand )
 	---- END DOG BONE LOOKUP ----------------------------------
 
 	---- START VORT BONE LOOKUP ----------------------------------
-	TranslatedName = TranslateTable_VORT[ Name ]
+	local TranslatedName = TranslateTable_VORT[ Name ]
 	if ( TranslatedName ) then
 		local bone = self:LookupBone( TranslatedName )
 		if ( bone ) then return bone end
@@ -287,7 +292,7 @@ local function GetFingerBone( self, fingernum, part, hand )
 	---- END VORT BONE LOOKUP ----------------------------------
 
 	---- START Chell BONE LOOKUP ----------------------------------
-	TranslatedName = TranslateTable_Chell[ Name ]
+	local TranslatedName = TranslateTable_Chell[ Name ]
 	if ( TranslatedName ) then
 		local bone = self:LookupBone( TranslatedName )
 		if ( bone ) then return bone end
@@ -295,7 +300,7 @@ local function GetFingerBone( self, fingernum, part, hand )
 	---- END Chell BONE LOOKUP ----------------------------------
 
 	---- START EggBot ( Portal 2 ) BONE LOOKUP ----------------------------------
-	TranslatedName = TranslateTable_EggBot[ Name ]
+	local TranslatedName = TranslateTable_EggBot[ Name ]
 	if ( TranslatedName ) then
 		local bone = self:LookupBone( TranslatedName )
 		if ( bone ) then return bone end
@@ -303,7 +308,7 @@ local function GetFingerBone( self, fingernum, part, hand )
 	---- END EggBot BONE LOOKUP ----------------------------------
 
 	---- START Portal 2 ( Ball Bot ) BONE LOOKUP ----------------------------------
-	TranslatedName = TranslateTable_Poral2[ Name ]
+	local TranslatedName = TranslateTable_Poral2[ Name ]
 	if ( TranslatedName ) then
 		local bone = self:LookupBone( TranslatedName )
 		if ( bone ) then return bone end
@@ -311,7 +316,7 @@ local function GetFingerBone( self, fingernum, part, hand )
 	---- END Portal 2 BONE LOOKUP ----------------------------------
 
 	---- START Ins BONE LOOKUP ----------------------------------
-	TranslatedName = TranslateTable_INS[ Name ]
+	local TranslatedName = TranslateTable_INS[ Name ]
 	if ( TranslatedName ) then
 		local bone = self:LookupBone( TranslatedName )
 		if ( bone ) then return bone end
@@ -416,11 +421,11 @@ function TOOL:GetHandPositions( pEntity )
 
 	if ( !LeftHand || !RightHand ) then return false end
 
-	local LeftHandMatrix = pEntity:GetBoneMatrix( LeftHand )
-	local RightHandMatrix = pEntity:GetBoneMatrix( RightHand )
-	if ( !LeftHandMatrix || !RightHandMatrix ) then return false end
+	local LeftHand = pEntity:GetBoneMatrix( LeftHand )
+	local RightHand = pEntity:GetBoneMatrix( RightHand )
+	if ( !LeftHand || !RightHand ) then return false end
 
-	return LeftHandMatrix, RightHandMatrix
+	return LeftHand, RightHand
 
 end
 
@@ -430,13 +435,13 @@ function TOOL:LeftClick( trace )
 	if ( IsValid( trace.Entity ) && trace.Entity:IsPlayer() ) then return false end
 	--if ( trace.Entity:GetClass() != "prop_ragdoll" && !trace.Entity:IsNPC() ) then return false end
 
-	local LeftHandMatrix, RightHandMatrix = self:GetHandPositions( trace.Entity )
+	local LeftHand, RightHand = self:GetHandPositions( trace.Entity )
 
-	if ( !LeftHandMatrix ) then return false end
+	if ( !LeftHand ) then return false end
 	if ( CLIENT ) then return true end
 
-	local LeftHand = ( LeftHandMatrix:GetTranslation() - trace.HitPos ):Length()
-	local RightHand = ( RightHandMatrix:GetTranslation() - trace.HitPos ):Length()
+	local LeftHand = ( LeftHand:GetTranslation() - trace.HitPos ):Length()
+	local RightHand = ( RightHand:GetTranslation() - trace.HitPos ):Length()
 
 	if ( LeftHand < RightHand ) then
 
@@ -463,11 +468,11 @@ function TOOL:RightClick( trace )
 
 	if ( CLIENT ) then return false end
 
-	local LeftHandMatrix, RightHandMatrix = self:GetHandPositions( ent )
-	if ( !LeftHandMatrix ) then return false end
+	local LeftHand, RightHand = self:GetHandPositions( ent )
+	if ( !LeftHand ) then return false end
 
-	local LeftHand = ( LeftHandMatrix:GetTranslation() - trace.HitPos ):Length()
-	local RightHand = ( RightHandMatrix:GetTranslation() - trace.HitPos ):Length()
+	local LeftHand = ( LeftHand:GetTranslation() - trace.HitPos ):Length()
+	local RightHand = ( RightHand:GetTranslation() - trace.HitPos ):Length()
 
 	local Hand = 0
 	if ( LeftHand < RightHand ) then
@@ -528,7 +533,6 @@ end
 
 local OldHand = nil
 local OldEntity = nil
-local OldEntityValid = false
 
 --[[
 	Updates the selected entity with the values from the convars
@@ -542,13 +546,16 @@ function TOOL:Think()
 
 	if ( self.NextUpdate && self.NextUpdate > CurTime() ) then return end
 
-	if ( CLIENT && ( OldHand != hand || OldEntity != selected || IsValid( selected ) != OldEntityValid ) ) then
+	if ( CLIENT ) then
 
-		OldHand = hand
-		OldEntity = selected
-		OldEntityValid = IsValid( selected )
+		if ( OldHand != hand || OldEntity != selected ) then
 
-		self:RebuildControlPanel( self:HandEntity(), self:HandNum() )
+			OldHand = hand
+			OldEntity = selected
+
+			self:RebuildControlPanel( hand )
+
+		end
 
 	end
 
@@ -565,6 +572,18 @@ if ( SERVER ) then return end
 
 for i = 0, VarsOnHand do
 	TOOL.ClientConVar[ "" .. i ] = "0 0"
+end
+
+-- Rebuilds the context menu based on the current selected entity/hand
+function TOOL:RebuildControlPanel( hand )
+
+	-- We've selected a new entity - rebuild the controls list
+	local CPanel = controlpanel.Get( "finger" )
+	if ( !CPanel ) then return end
+
+	CPanel:ClearControls()
+	self.BuildCPanel( CPanel, self:HandEntity(), self:HandNum() )
+
 end
 
 local ConVarsDefault = TOOL:BuildConVarList()

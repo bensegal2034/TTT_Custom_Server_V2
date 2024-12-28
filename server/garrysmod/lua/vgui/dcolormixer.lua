@@ -45,7 +45,7 @@ function PANEL:Init()
 	self.Palette:DockMargin( 0, 8, 0, 0 )
 	self.Palette:Reset()
 	self.Palette.DoClick = function( ctrl, color, btn )
-		self:SetColor( Color( color.r, color.g, color.b, self:GetAlphaBar() and color.a or 255 ) )
+		self:SetColor( Color( color.r, color.g, color.b, self:GetAlphaBar() && color.a or 255 ) )
 	end
 	self.Palette.OnRightClickButton = function( ctrl, btn )
 		local m = DermaMenu()
@@ -137,8 +137,6 @@ function PANEL:Init()
 	self:SetSize( 256, 230 )
 	self:InvalidateLayout()
 
-	self.NextConVarCheck = 0
-
 end
 
 function PANEL:SetLabel( text )
@@ -182,49 +180,25 @@ end
 
 function PANEL:SetConVarR( cvar )
 	self.m_ConVarR = cvar
-	self:UpdateDefaultColor()
 end
 
 function PANEL:SetConVarG( cvar )
 	self.m_ConVarG = cvar
-	self:UpdateDefaultColor()
 end
 
 function PANEL:SetConVarB( cvar )
 	self.m_ConVarB = cvar
-	self:UpdateDefaultColor()
 end
 
 function PANEL:SetConVarA( cvar )
 	self.m_ConVarA = cvar
 	self:SetAlphaBar( cvar != nil )
-	self:UpdateDefaultColor()
-end
-
-function PANEL:UpdateDefaultColor()
-
-	local function GetConVarDefault( str )
-		if ( str and GetConVar( str ) ) then return tonumber( GetConVar( str ):GetDefault() ) end
-		return 255
-	end
-
-	local defRGB = Color(
-		GetConVarDefault( self.m_ConVarR ),
-		GetConVarDefault( self.m_ConVarG ),
-		GetConVarDefault( self.m_ConVarB ),
-		GetConVarDefault( self.m_ConVarA )
-	)
-
-	self.HSV:SetDefaultColor( defRGB )
-
-	-- Allow immediate read of convar values
-	self.NextConVarCheck = 0
 end
 
 function PANEL:PerformLayout( w, h )
 
-	local hue, s, v = ColorToHSV( self.HSV:GetBaseRGB() )
-	self.RGB.LastY = ( 1 - hue / 360 ) * self.RGB:GetTall()
+	local h, s, v = ColorToHSV( self.HSV:GetBaseRGB() )
+	self.RGB.LastY = ( 1 - h / 360 ) * self.RGB:GetTall()
 
 end
 
@@ -232,10 +206,13 @@ function PANEL:Paint()
 	-- Invisible background!
 end
 
+function PANEL:TranslateValues( x, y )
+end
+
 function PANEL:SetColor( color )
 
-	local hue, s, v = ColorToHSV( color )
-	self.RGB.LastY = ( 1 - hue / 360 ) * self.RGB:GetTall()
+	local h, s, v = ColorToHSV( color )
+	self.RGB.LastY = ( 1 - h / 360 ) * self.RGB:GetTall()
 
 	self.HSV:SetColor( color )
 
@@ -350,7 +327,7 @@ function PANEL:ConVarThink()
 	local a, changed_a = 255, false
 
 	if ( self.m_ConVarA ) then
-		a, changed_a = self:DoConVarThink( self.m_ConVarA )
+		a, changed_a = self:DoConVarThink( self.m_ConVarA, "a" )
 	end
 
 	if ( changed_r or changed_g or changed_b or changed_a ) then
@@ -361,11 +338,11 @@ end
 
 function PANEL:DoConVarThink( convar )
 
-	if ( !convar ) then return 255, false end
+	if ( !convar ) then return end
 
 	local fValue = GetConVarNumber( convar )
 	local fOldValue = self[ "ConVarOld" .. convar ]
-	if ( fOldValue and fValue == fOldValue ) then return fOldValue, false end
+	if ( fOldValue && fValue == fOldValue ) then return fOldValue, false end
 
 	self[ "ConVarOld" .. convar ] = fValue
 

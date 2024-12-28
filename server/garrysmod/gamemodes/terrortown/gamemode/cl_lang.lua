@@ -8,7 +8,7 @@
 
 LANG.Strings = {}
 
-local ttt_language = CreateConVar("ttt_language", "auto", FCVAR_ARCHIVE)
+CreateConVar("ttt_language", "auto", FCVAR_ARCHIVE)
 
 LANG.DefaultLanguage = "english"
 LANG.ActiveLanguage  = LANG.DefaultLanguage
@@ -156,7 +156,7 @@ function LANG.SetActiveLanguage(lang_name)
 end
 
 function LANG.Init()
-   local lang_name = ttt_language:GetString()
+   local lang_name = GetConVarString("ttt_language")
 
    -- if we want to use the server language, we'll be switching to it as soon as
    -- we hear from the server which one it is, for now use default

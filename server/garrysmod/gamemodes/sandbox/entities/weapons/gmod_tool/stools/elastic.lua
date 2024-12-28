@@ -33,14 +33,10 @@ function TOOL:LeftClick( trace )
 	if ( iNum > 0 ) then
 
 		if ( CLIENT ) then
+
 			self:ClearObjects()
 			return true
-		end
 
-		local ply = self:GetOwner()
-		if ( !ply:CheckLimit( "ropeconstraints" ) ) then
-			self:ClearObjects()
-			return false
 		end
 
 		-- Get client's CVars
@@ -60,19 +56,20 @@ function TOOL:LeftClick( trace )
 		local LPos1, LPos2 = self:GetLocalPos( 1 ),	self:GetLocalPos( 2 )
 
 		-- Create the constraint
-		local constr, rope = constraint.Elastic( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, constant, damping, rdamping, material, width, stretchonly, Color( colorR, colorG, colorB ) )
+		local constr, rope = constraint.Elastic( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, constant, damping, rdamping, material, width, stretchonly, Color( colorR, colorG, colorB, 255 ) )
 
 		-- Create an undo if the constraint was created
 		if ( IsValid( constr ) ) then
 			undo.Create( "Elastic" )
 				undo.AddEntity( constr )
-				if ( IsValid( rope ) ) then undo.AddEntity( rope ) end
-				undo.SetPlayer( ply )
-			undo.Finish()
+				self:GetOwner():AddCleanup( "ropeconstraints", constr )
 
-			ply:AddCount( "ropeconstraints", constr )
-			ply:AddCleanup( "ropeconstraints", constr )
-			if ( IsValid( rope ) ) then ply:AddCleanup( "ropeconstraints", rope ) end
+				if ( IsValid( rope ) ) then
+					undo.AddEntity( rope )
+					self:GetOwner():AddCleanup( "ropeconstraints", rope )
+				end
+				undo.SetPlayer( self:GetOwner() )
+			undo.Finish()
 		end
 
 		-- Clear the objects so we're ready to go again

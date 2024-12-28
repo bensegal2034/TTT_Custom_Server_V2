@@ -471,7 +471,7 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"tabPosition"		"0"
-		"labelText"		"#GameUI_SoundFXVolume"
+		"labelText"		"Sound effect volume"
 		"textAlignment"		"west"
 		"associate"		"GModSFXSlider"
 		"dulltext"		"0"

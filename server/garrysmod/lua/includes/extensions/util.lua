@@ -14,7 +14,7 @@ end
 function util.IsValidPhysicsObject( ent, num )
 
 	-- Make sure the entity is valid
-	if ( !ent or ( !ent:IsValid() and !ent:IsWorld() ) ) then return false end
+	if ( !ent || ( !ent:IsValid() && !ent:IsWorld() ) ) then return false end
 
 	-- This is to stop attaching to walking NPCs.
 	-- Although this is possible and `works', it can severly reduce the
@@ -22,7 +22,7 @@ function util.IsValidPhysicsObject( ent, num )
 	-- anyway - so we're not really losing anything.
 
 	local MoveType = ent:GetMoveType()
-	if ( !ent:IsWorld() and MoveType != MOVETYPE_VPHYSICS and !( ent:GetModel() and ent:GetModel():StartsWith( "*" ) ) ) then return false end
+	if ( !ent:IsWorld() && MoveType != MOVETYPE_VPHYSICS && !( ent:GetModel() && ent:GetModel():StartWith( "*" ) ) ) then return false end
 
 	local Phys = ent:GetPhysicsObjectNum( num )
 	return IsValid( Phys )
@@ -114,9 +114,9 @@ function util.StringToType( str, typename )
 
 	if ( typename == "vector" )	then return Vector( str ) end
 	if ( typename == "angle" )	then return Angle( str ) end
-	if ( typename == "float" || typename == "number" )	then return tonumber( str ) end
-	if ( typename == "int" )	then local v = tonumber( str ) return v and math.Round( v ) or nil end
-	if ( typename == "bool" || typename == "boolean" )	then return tobool( str ) end
+	if ( typename == "float" )	then return tonumber( str ) end
+	if ( typename == "int" )	then return math.Round( tonumber( str ) ) end
+	if ( typename == "bool" )	then return tobool( str ) end
 	if ( typename == "string" )	then return tostring( str ) end
 	if ( typename == "entity" )	then return Entity( str ) end
 
@@ -177,7 +177,6 @@ local T =
 	--
 	Reset = function( self )
 
-		self.starttime = CurTime() - self.starttime
 		self.endtime = nil
 
 	end,
@@ -187,8 +186,7 @@ local T =
 	--
 	Start = function( self, time )
 
-		self.starttime = CurTime()
-		self.endtime = CurTime() + ( time or 0 )
+		self.endtime = CurTime() + time
 
 	end,
 
@@ -206,16 +204,7 @@ local T =
 	--
 	Elapsed = function( self )
 
-		return self.endtime == nil or self.endtime <= CurTime()
-
-	end,
-
-	--
-	-- Returns the amount of time that has passed since the Timer was started
-	--
-	GetElaspedTime = function( self )
-
-		return self:Started() and CurTime() - self.starttime or self.starttime
+		return self.endtime == nil || self.endtime <= CurTime()
 
 	end
 }
@@ -227,12 +216,15 @@ T.__index = T
 --
 function util.Timer( startdelay )
 
+	startdelay = startdelay or 0
+
 	local t = {}
 	setmetatable( t, T )
-	t:Start( startdelay or 0 )
+	t.endtime = CurTime() + startdelay
 	return t
 
 end
+
 
 local function PopStack( self, num )
 
@@ -247,7 +239,7 @@ local function PopStack( self, num )
 	local len = self[ 0 ]
 
 	if ( num > len ) then
-		error( string.format( "attempted to pop %u element%s in stack of length %u", num, num == 1 and "" or "s", len ), 3 )
+		error( string.format( "attempted to pop %u element%s in stack of length %u", num, num == 1 && "" || "s", len ), 3 )
 	end
 
 	return num, len
@@ -344,17 +336,9 @@ end
 -----------------------------------------------------------]]
 function util.GetPData( steamid, name, default )
 
-	-- First try looking up using the new key
-	local key = Format( "%s[%s]", util.SteamIDTo64( steamid ), name )
-	local val = sql.QueryValue( "SELECT value FROM playerpdata WHERE infoid = " .. SQLStr( key ) .. " LIMIT 1" )
-	if ( val == nil ) then
-
-		-- Not found? Look using the old key
-		local oldkey = Format( "%s[%s]", GetUniqueID( steamid ), name )
-		val = sql.QueryValue( "SELECT value FROM playerpdata WHERE infoid = " .. SQLStr( oldkey ) .. " LIMIT 1" )
-		if ( val == nil ) then return default end
-
-	end
+	name = Format( "%s[%s]", GetUniqueID( steamid ), name )
+	local val = sql.QueryValue( "SELECT value FROM playerpdata WHERE infoid = " .. SQLStr( name ) .. " LIMIT 1" )
+	if ( val == nil ) then return default end
 
 	return val
 
@@ -366,8 +350,8 @@ end
 -----------------------------------------------------------]]
 function util.SetPData( steamid, name, value )
 
-	local key = Format( "%s[%s]", util.SteamIDTo64( steamid ), name )
-	sql.Query( "REPLACE INTO playerpdata ( infoid, value ) VALUES ( " .. SQLStr( key ) .. ", " .. SQLStr( value ) .. " )" )
+	name = Format( "%s[%s]", GetUniqueID( steamid ), name )
+	sql.Query( "REPLACE INTO playerpdata ( infoid, value ) VALUES ( " .. SQLStr( name ) .. ", " .. SQLStr( value ) .. " )" )
 
 end
 
@@ -377,13 +361,8 @@ end
 -----------------------------------------------------------]]
 function util.RemovePData( steamid, name )
 
-	-- First the old key
-	local oldkey = Format( "%s[%s]", GetUniqueID( steamid ), name )
-	sql.Query( "DELETE FROM playerpdata WHERE infoid = " .. SQLStr( oldkey ) )
-
-	-- Then the new key. util.SteamIDTo64 is not ideal, but nothing we can do about it now
-	local key = Format( "%s[%s]", util.SteamIDTo64( steamid ), name )
-	sql.Query( "DELETE FROM playerpdata WHERE infoid = " .. SQLStr( key ) )
+	name = Format( "%s[%s]", GetUniqueID( steamid ), name )
+	sql.Query( "DELETE FROM playerpdata WHERE infoid = " .. SQLStr( name ) )
 
 end
 
@@ -391,13 +370,13 @@ end
 	Name: IsBinaryModuleInstalled( name )
 	Desc: Returns whether a binary module with the given name is present on disk
 -----------------------------------------------------------]]
-local suffix = ( { "osx64", "osx", "linux64", "linux", "win64", "win32" } )[
-	( system.IsWindows() and 4 or 0 )
-	+ ( system.IsLinux() and 2 or 0 )
-	+ ( jit.arch == "x86" and 1 or 0 )
+local suffix = ({"osx64","osx","linux64","linux","win64","win32"})[
+	( system.IsWindows() && 4 || 0 )
+	+ ( system.IsLinux() && 2 || 0 )
+	+ ( jit.arch == "x86" && 1 || 0 )
 	+ 1
 ]
-local fmt = "lua/bin/gm" .. ( ( CLIENT and !MENU_DLL ) and "cl" or "sv" ) .. "_%s_%s.dll"
+local fmt = "lua/bin/gm" .. ((CLIENT && !MENU_DLL) && "cl" || "sv") .. "_%s_%s.dll"
 function util.IsBinaryModuleInstalled( name )
 	if ( !isstring( name ) ) then
 		error( "bad argument #1 to 'IsBinaryModuleInstalled' (string expected, got " .. type( name ) .. ")" )
@@ -405,13 +384,13 @@ function util.IsBinaryModuleInstalled( name )
 		error( "bad argument #1 to 'IsBinaryModuleInstalled' (string cannot be empty)" )
 	end
 
-	if ( file.Exists( string.format( fmt, name, suffix ), "MOD" ) ) then
+	if ( file.Exists( string.format( fmt, name, suffix ), "GAME" ) ) then
 		return true
 	end
 
 	-- Edge case - on Linux 32-bit x86-64 branch, linux32 is also supported as a suffix
-	if ( jit.versionnum != 20004 and jit.arch == "x86" and system.IsLinux() ) then
-		return file.Exists( string.format( fmt, name, "linux32" ), "MOD" )
+	if ( jit.versionnum != 20004 && jit.arch == "x86" && system.IsLinux() ) then
+		return file.Exists( string.format( fmt, name, "linux32" ), "GAME" )
 	end
 
 	return false

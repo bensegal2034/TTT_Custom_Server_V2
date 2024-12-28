@@ -7,6 +7,7 @@ ENT.Author			= ""
 ENT.Contact			= ""
 ENT.Purpose			= ""
 ENT.Instructions	= ""
+ENT.RenderGroup		= RENDERGROUP_OPAQUE
 
 ENT.Type = "nextbot"
 

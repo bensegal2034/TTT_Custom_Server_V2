@@ -41,7 +41,7 @@ local PhysicsObject =
 
 	Load = function( data, phys )
 
-		if ( isvector( data.Pos ) and isangle( data.Angle ) ) then
+		if ( isvector( data.Pos ) && isangle( data.Angle ) ) then
 
 			local pos, ang = LocalToWorld( data.Pos, data.Angle, LocalPos, LocalAng )
 			phys:SetPos( pos )
@@ -148,16 +148,13 @@ local EntitySaver =
 		data.ColGroup			= ent:GetCollisionGroup()
 		data.Name				= ent:GetName()
 		data.WorkshopID			= ent:GetWorkshopID()
-		data.CurHealth			= ent:Health()
-		data.MaxHealth			= ent:GetMaxHealth()
-		data.Persistent			= ent:GetPersistent()
 
 		data.Pos, data.Angle	= WorldToLocal( data.Pos, data.Angle, LocalPos, LocalAng )
 
 		data.ModelScale			= ent:GetModelScale()
 		if ( data.ModelScale == 1 ) then data.ModelScale = nil end
 
-		-- This is useful for addons to determine if the entity was map spawned or not
+		-- We have no reason to keep the creation ID anymore - but we will
 		if ( ent:CreatedByMap() ) then
 			data.MapCreationID = ent:MapCreationID()
 		end
@@ -286,7 +283,7 @@ local EntitySaver =
 
 		-- We do the second check for models because apparently setting the model on an NPC causes some position changes
 		-- And to prevent NPCs going into T-pose briefly upon duplicating
-		if ( data.Model and data.Model != ent:GetModel() ) then ent:SetModel( data.Model ) end
+		if ( data.Model && data.Model != ent:GetModel() ) then ent:SetModel( data.Model ) end
 		if ( data.Angle ) then ent:SetAngles( data.Angle ) end
 		if ( data.Pos ) then ent:SetPos( data.Pos ) end
 		if ( data.Skin ) then ent:SetSkin( data.Skin ) end
@@ -295,7 +292,6 @@ local EntitySaver =
 		if ( data.ModelScale ) then ent:SetModelScale( data.ModelScale, 0 ) end
 		if ( data.ColGroup ) then ent:SetCollisionGroup( data.ColGroup ) end
 		if ( data.Name ) then ent:SetName( data.Name ) end
-		if ( data.Persistent ) then ent:SetPersistent( data.Persistent ) end
 		if ( data._DuplicatedColor ) then ent:SetColor( data._DuplicatedColor ) end
 		if ( data._DuplicatedMaterial ) then ent:SetMaterial( data._DuplicatedMaterial ) end
 
@@ -368,7 +364,7 @@ function SetLocalAng( v ) LocalAng = v * 1 end
 --[[---------------------------------------------------------
 	Register a constraint to be duplicated
 -----------------------------------------------------------]]
-function RegisterConstraint( _name_, _function_, ... )
+function RegisterConstraint( _name_ , _function_, ... )
 
 	ConstraintType[ _name_ ] = {}
 
@@ -382,7 +378,7 @@ EntityClasses = EntityClasses or {}
 --[[---------------------------------------------------------
 	Register an entity's class, to allow it to be duplicated
 -----------------------------------------------------------]]
-function RegisterEntityClass( _name_, _function_, ... )
+function RegisterEntityClass( _name_ , _function_, ... )
 
 	EntityClasses[ _name_ ] = {}
 
@@ -415,7 +411,7 @@ function RegisterEntityModifier( _name_, _function_ ) EntityModifiers[ _name_ ] 
 function FigureOutRequiredAddons( Dupe )
 
 	local addons = {}
-	for _, ent in pairs( Dupe.Entities ) do
+	for id, ent in pairs( Dupe.Entities ) do
 		for id, addon in pairs( engine.GetAddons() ) do
 			-- Model
 			if ( ent.Model and file.Exists( ent.Model, addon.title ) ) then
@@ -483,7 +479,7 @@ function GenericDuplicatorFunction( Player, data )
 	--
 	-- Is this entity 'admin only'?
 	--
-	if ( IsValid( Player ) and !Player:IsAdmin() ) then
+	if ( IsValid( Player ) && !Player:IsAdmin() ) then
 
 		if ( !scripted_ents.GetMember( data.Class, "Spawnable" ) ) then return end
 		if ( scripted_ents.GetMember( data.Class, "AdminOnly" ) ) then return end
@@ -546,7 +542,7 @@ function StoreBoneModifier( Entity, BoneID, Type, Data )
 
 	-- Copy the data
 	NewData = {}
-	table.Merge( NewData, Data )
+	table.Merge( NewData , Data )
 
 	-- Add it to the entity
 	Entity.BoneMods = Entity.BoneMods or {}
@@ -667,14 +663,10 @@ end
 -----------------------------------------------------------]]
 function CreateEntityFromTable( Player, EntTable )
 
-	-- Get rid of stored outputs, they are being abused
-	-- Do it here, so that entities can store new ones on creation
-	EntTable.m_tOutputs = nil
-
 	--
 	-- Convert position/angle to `local`
 	--
-	if ( EntTable.Pos and EntTable.Angle ) then
+	if ( EntTable.Pos && EntTable.Angle ) then
 
 		EntTable.Pos, EntTable.Angle = LocalToWorld( EntTable.Pos, EntTable.Angle, LocalPos, LocalAng )
 
@@ -723,70 +715,46 @@ end
 --[[---------------------------------------------------------
   Make a constraint from a constraint table
 -----------------------------------------------------------]]
-function CreateConstraintFromTable( Constraint, EntityList, ply )
+function CreateConstraintFromTable( Constraint, EntityList, Player )
 
 	local Factory = ConstraintType[ Constraint.Type ]
 	if ( !Factory ) then return end
 
-	-- Unfortunately we cannot distinguish here if this is a ropeconstraint or not
-	if ( ply and !ply:CheckLimit( "constraints" ) ) then return end
-	if ( ply and !ply:CheckLimit( "ropeconstraints" ) ) then return end
+	local Args = {}
+	for k, Key in pairs( Factory.Args ) do
 
-	local args = {}
-	for k, key in pairs( Factory.Args ) do
-
-		local val = Constraint[ key ]
+		local Val = Constraint[ Key ]
 
 		for i = 1, 6 do
 
 			if ( Constraint.Entity[ i ] ) then
 
-				if ( key == "Ent" .. i ) then
-					val = EntityList[ Constraint.Entity[ i ].Index ]
+				if ( Key == "Ent" .. i ) then
+					Val = EntityList[ Constraint.Entity[ i ].Index ]
 					if ( Constraint.Entity[ i ].World ) then
-						val = game.GetWorld()
+						Val = game.GetWorld()
 					end
 				end
 
-				if ( key == "Bone" .. i ) then val = Constraint.Entity[ i ].Bone or 0 end
-				if ( key == "LPos" .. i ) then val = Constraint.Entity[ i ].LPos end
-				if ( key == "WPos" .. i ) then val = Constraint.Entity[ i ].WPos end
-				if ( key == "Length" .. i ) then val = Constraint.Entity[ i ].Length or 0 end
+				if ( Key == "Bone" .. i ) then Val = Constraint.Entity[ i ].Bone or 0 end
+				if ( Key == "LPos" .. i ) then Val = Constraint.Entity[ i ].LPos end
+				if ( Key == "WPos" .. i ) then Val = Constraint.Entity[ i ].WPos end
+				if ( Key == "Length" .. i ) then Val = Constraint.Entity[ i ].Length or 0 end
 
 			end
 		end
 
 		-- A little hack to give the duped constraints the correct player object
-		if ( key:lower() == "pl" or key:lower() == "ply" or key:lower() == "player" ) then val = ply end
+		if ( Key:lower() == "pl" || Key:lower() == "ply" || Key:lower() == "player" ) then Val = Player end
 
 		-- If there's a missing argument then unpack will stop sending at that argument
-		if ( val == nil ) then val = false end
+		if ( Val == nil ) then Val = false end
 
-		table.insert( args, val )
+		table.insert( Args, Val )
 
 	end
 
-	-- Pulley, Hydraulic can return up to 4 ents
-	local const1, const2, const3, const4 = Factory.Func( unpack( args ) )
-
-	-- Hacky way to determine if the constraint is a rope one, since we have no better way
-	local function IsRopeConstraint( ent ) return ent and ent:GetClass() == "keyframe_rope" end
-	local isRope = IsRopeConstraint( const1 ) || IsRopeConstraint( const2 ) || IsRopeConstraint( const3 ) || IsRopeConstraint( const4 )
-	local constraintType = isRope and "ropeconstraints" or "constraints"
-
-	-- If in Sandbox, keep track of this.
-	if ( ply and ply.AddCleanup and IsValid( const1 ) ) then
-		ply:AddCount( constraintType, const1 )
-
-		-- Hack: special case for nocollide
-		if ( const1:GetClass() == "logic_collision_pair" ) then constraintType = "nocollide" end
-		ply:AddCleanup( constraintType, const1 )
-		ply:AddCleanup( constraintType, const2 )
-		ply:AddCleanup( constraintType, const3 )
-		ply:AddCleanup( constraintType, const4 )
-	end
-
-	return const1, const2, const3, const4
+	return Factory.Func( unpack( Args ) )
 
 end
 
@@ -794,7 +762,7 @@ end
    Given entity list and constranit list, create all entities
    and return their tables
 -----------------------------------------------------------]]
-function Paste( Player, entityList, constraintList )
+function Paste( Player, EntityList, ConstraintList )
 
 	--
 	-- Store the player
@@ -805,8 +773,8 @@ function Paste( Player, entityList, constraintList )
 	--
 	-- Copy the table - because we're gonna be changing some stuff on it.
 	--
-	local EntityList = table.Copy( entityList )
-	local ConstraintList = table.Copy( constraintList )
+	local EntityList = table.Copy( EntityList )
+	local ConstraintList = table.Copy( ConstraintList )
 
 	local CreatedEntities = {}
 
@@ -859,7 +827,7 @@ function Paste( Player, entityList, constraintList )
 		ApplyBoneModifiers( Player, Ent )
 
 		if ( Ent.PostEntityPaste ) then
-			Ent:PostEntityPaste( Player or NULL, Ent, CreatedEntities )
+			Ent:PostEntityPaste( Player || NULL, Ent, CreatedEntities )
 		end
 
 	end
@@ -948,14 +916,14 @@ end
 --
 function GetAllConstrainedEntitiesAndConstraints( ent, EntTable, ConstraintTable )
 
-	if ( !IsValid( ent ) and !ent:IsWorld() ) then return end
+	if ( !IsValid( ent ) && !ent:IsWorld() ) then return end
 
 	-- Translate the class name
 	local classname = ent:GetClass()
 	if ( ent.ClassOverride ) then classname = ent.ClassOverride end
 
 	-- Is the entity in the dupe whitelist?
-	if ( !IsAllowed( classname ) and !ent:IsWorld() ) then
+	if ( !IsAllowed( classname ) && !ent:IsWorld() ) then
 		-- MsgN( "duplicator: ", classname, " isn't allowed to be duplicated!" )
 		return
 	end
@@ -1022,7 +990,7 @@ function RemoveMapCreatedEntities()
 
 	for k, v in ipairs( ents.GetAll() ) do
 
-		if ( v:CreatedByMap() and ShouldMapEntityBeRemoved( v, v:GetClass() ) ) then
+		if ( v:CreatedByMap() && ShouldMapEntityBeRemoved( v, v:GetClass() ) ) then
 			v:Remove()
 		end
 

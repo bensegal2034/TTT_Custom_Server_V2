@@ -4,7 +4,7 @@ local PANEL = {}
 function PANEL:Init()
 
 	self:EnableVerticalScrollbar()
-	self:SetHeight( 2 )
+	self:SetTall( 66 * 2 + 2 )
 
 end
 
@@ -14,9 +14,9 @@ function PANEL:SetHeight( numHeight )
 
 end
 
-function PANEL:SetModelList( modelList, conVar, dontSort, dontCallListConVars )
+function PANEL:SetModelList( ModelList, strConVar, bDontSort, bDontCallListConVars )
 
-	for model, v in pairs( modelList ) do
+	for model, v in pairs( ModelList ) do
 
 		local icon = vgui.Create( "SpawnIcon" )
 		icon:SetModel( model )
@@ -29,20 +29,20 @@ function PANEL:SetModelList( modelList, conVar, dontSort, dontCallListConVars )
 
 		-- some model lists, like from wheels, have extra convars in the ModelList
 		-- we'll need to add those too
-		if ( !dontCallListConVars && istable( v ) ) then
+		if ( !bDontCallListConVars && istable( v ) ) then
 			table.Merge( convars, v ) -- copy them in to new list
 		end
 
 		-- make strConVar optional so we can have everything in the ModelList instead, if we want to
-		if ( conVar ) then
-			convars[ conVar ] = model
+		if ( strConVar ) then
+			convars[strConVar] = model
 		end
 
 		self:AddPanel( icon, convars )
 
 	end
 
-	if ( !dontSort ) then
+	if ( !bDontSort ) then
 		self:SortByMember( "Model", false )
 	end
 

@@ -44,7 +44,7 @@ function TOOL:RightClick( trace, worldweld )
 
 	-- Check the model's validity
 	if ( !util.IsValidModel( model ) || !util.IsValidProp( model ) || !IsValidButtonModel( model ) ) then return false end
-	if ( !self:GetWeapon():CheckLimit( "buttons" ) ) then return false end
+	if ( !self:GetSWEP():CheckLimit( "buttons" ) ) then return false end
 
 	local Ang = trace.HitNormal:Angle()
 	Ang.pitch = Ang.pitch + 90
@@ -85,24 +85,20 @@ end
 
 if ( SERVER ) then
 
-	function MakeButton( ply, model, ang, pos, key, description, toggle, nocollide, Data )
+	function MakeButton( pl, model, ang, pos, key, description, toggle, nocollide )
 
-		if ( IsValid( ply ) && !ply:CheckLimit( "buttons" ) ) then return NULL end
-		if ( !IsValidButtonModel( model ) ) then return NULL end
+		if ( IsValid( pl ) && !pl:CheckLimit( "buttons" ) ) then return false end
+		if ( !IsValidButtonModel( model ) ) then return false end
 
 		local button = ents.Create( "gmod_button" )
-		if ( !IsValid( button ) ) then return NULL end
-
-		duplicator.DoGeneric( button, Data )
-		button:SetModel( model ) -- Backwards compatible for addons directly calling this function
+		if ( !IsValid( button ) ) then return false end
+	
+		button:SetModel( model )
 		button:SetAngles( ang )
 		button:SetPos( pos )
 		button:Spawn()
 
-		DoPropSpawnedEffect( button )
-		duplicator.DoGenericPhysics( button, ply, Data )
-
-		button:SetPlayer( ply )
+		button:SetPlayer( pl )
 		button:SetKey( key )
 		button:SetLabel( description )
 		button:SetIsToggle( toggle )
@@ -114,22 +110,24 @@ if ( SERVER ) then
 
 		table.Merge( button:GetTable(), {
 			key = key,
-			pl = ply,
+			pl = pl,
 			toggle = toggle,
 			nocollide = nocollide,
 			description = description
 		} )
 
-		if ( IsValid( ply ) ) then
-			ply:AddCount( "buttons", button )
-			ply:AddCleanup( "buttons", button )
+		if ( IsValid( pl ) ) then
+			pl:AddCount( "buttons", button )
+			pl:AddCleanup( "buttons", button )
 		end
+
+		DoPropSpawnedEffect( button )
 
 		return button
 
 	end
 
-	duplicator.RegisterEntityClass( "gmod_button", MakeButton, "Model", "Ang", "Pos", "key", "description", "toggle", "nocollide", "Data" )
+	duplicator.RegisterEntityClass( "gmod_button", MakeButton, "Model", "Ang", "Pos", "key", "description", "toggle", "nocollide" )
 
 end
 

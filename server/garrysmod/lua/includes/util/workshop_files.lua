@@ -1,6 +1,7 @@
 
 local PreviewCache = {}
 local InfoCache = {}
+local VoteCache = {}
 local ListCache = {}
 
 function WorkshopFileBase( namespace, requiredtags )
@@ -31,13 +32,13 @@ function WorkshopFileBase( namespace, requiredtags )
 
 		local cachename = type .. "-" .. table.concat( tags, "/" ) .. offset .. "-" .. perpage .. "-" .. userid
 
-		if ( type != "favorite" && ListCache[ cachename ] ) then
+		if ( ListCache[ cachename ] ) then
 			self:FillFileInfo( ListCache[ cachename ] )
 			return
 		end
 
 		steamworks.GetList( type, tags, offset, perpage, 0, userid, function( data )
-			if ( type != "favorite" ) then ListCache[ cachename ] = data end
+			ListCache[ cachename ] = data
 			self:FillFileInfo( data )
 		end )
 
@@ -87,21 +88,21 @@ function WorkshopFileBase( namespace, requiredtags )
 
 			-- Search for tags
 			local found = true
-			for _, tag in pairs( tags ) do
+			for id, tag in pairs( tags ) do
 				if ( !item.tags:lower():find( tag, 1, true ) ) then found = false end
 			end
 			if ( !found ) then continue end
 
 			-- Search for searchText
-			if ( searchText:Trim() != "" && !item.title:lower():find( searchText:lower(), 1, true ) ) then
-				continue
+			if ( searchText:Trim() != "" ) then
+				if ( !item.title:lower():find( searchText:lower(), 1, true ) ) then continue end
 			end
 
-			if ( filter && filter == "enabledonly" && !steamworks.ShouldMountAddon( item.wsid ) ) then
-				continue
+			if ( filter && filter == "enabledonly" ) then
+				if ( !steamworks.ShouldMountAddon( item.wsid ) ) then continue end
 			end
-			if ( filter && filter == "disabledonly" && steamworks.ShouldMountAddon( item.wsid ) ) then
-				continue
+			if ( filter && filter == "disabledonly" ) then
+				if ( steamworks.ShouldMountAddon( item.wsid ) ) then continue end
 			end
 
 			searchedItems[ #searchedItems + 1 ] = item
@@ -124,17 +125,17 @@ function WorkshopFileBase( namespace, requiredtags )
 		end
 
 		-- Add the actual results for the requested range
-		local p = 0
-		while ( p < perpage ) do
+		local i = 0
+		while ( i < perpage ) do
 
-			if ( searchedItems[ offset + p + 1 ] ) then
+			if ( searchedItems[ offset + i + 1 ] ) then
 
-				local res = table.insert( data.results, searchedItems[ offset + p + 1 ].wsid )
-				data.extraresults[ res ] = searchedItems[ offset + p + 1 ]
+				local res = table.insert( data.results, searchedItems[ offset + i + 1 ].wsid )
+				data.extraresults[ res ] = searchedItems[ offset + i + 1 ]
 
 			end
 
-			p = p + 1
+			i = i + 1
 
 		end
 
@@ -191,9 +192,9 @@ function WorkshopFileBase( namespace, requiredtags )
 				extra.description = "Non workshop .gma addon. (" .. extra.file .. ")"
 				extra.floating = true
 
-				local jsonExtra = util.TableToJSON( extra, false )
+				local json = util.TableToJSON( extra, false )
 
-				self.HTML:Call( namespace .. ".ReceiveFileInfo( \"" .. v .. "\", " .. jsonExtra .. " )" )
+				self.HTML:Call( namespace .. ".ReceiveFileInfo( \"" .. v .. "\", " .. json .. " )" )
 				self.HTML:Call( namespace .. ".ReceiveImage( \"" .. v .. "\", \"html/img/localaddon.png\" )" )
 
 				-- Do not try to get votes for this one
@@ -202,16 +203,6 @@ function WorkshopFileBase( namespace, requiredtags )
 			elseif ( InfoCache[ v ] ) then
 
 				self.HTML:Call( namespace .. ".ReceiveFileInfo( \"" .. v .. "\", " .. InfoCache[ v ] .. " )" )
-
-				if ( MENU_DLL ) then
-					-- This could've changed..
-					steamworks.FileUserInfo( v, function( info )
-						if ( info.error ) then return end
-
-						local localUI = util.TableToJSON( info, false )
-						self.HTML:Call( namespace .. ".ReceiveFileUserInfo( \"" .. v .. "\", " .. localUI .. " )" )
-					end )
-				end
 
 			else
 
@@ -224,8 +215,8 @@ function WorkshopFileBase( namespace, requiredtags )
 							if ( tonumber( v ) == tonumber( t.wsid ) ) then title = t.title break end
 						end
 
-						local jsonErr = util.TableToJSON( { title = title, description = "Failed to get addon info, error code " .. ( result && result.error || "unknown" ) }, false )
-						self.HTML:Call( namespace .. ".ReceiveFileInfo( \"" .. v .. "\", " .. jsonErr .. " )" )
+						local json = util.TableToJSON( { title = title, description = "Failed to get addon info, error code " .. ( result && result.error || "unknown" ) }, false )
+						self.HTML:Call( namespace .. ".ReceiveFileInfo( \"" .. v .. "\", " .. json .. " )" )
 						return
 					end
 
@@ -239,14 +230,14 @@ function WorkshopFileBase( namespace, requiredtags )
 						self:RetrieveUserName( result.owner, function( name )
 							result.ownername = name
 
-							local jsonUN = util.TableToJSON( result, false )
-							InfoCache[ v ] = jsonUN
+							local json = util.TableToJSON( result, false )
+							InfoCache[ v ] = json
 						end )
 					end
 
-					local jsonFI = util.TableToJSON( result, false )
-					InfoCache[ v ] = jsonFI
-					self.HTML:Call( namespace .. ".ReceiveFileInfo( \"" .. v .. "\", " .. jsonFI .. " )" )
+					local json = util.TableToJSON( result, false )
+					InfoCache[ v ] = json
+					self.HTML:Call( namespace .. ".ReceiveFileInfo( \"" .. v .. "\", " .. json .. " )" )
 
 					--
 					-- Now we have the preview id - get the preview image!
@@ -263,15 +254,6 @@ function WorkshopFileBase( namespace, requiredtags )
 
 						end )
 
-					end
-
-					if ( MENU_DLL ) then
-						steamworks.FileUserInfo( v, function( info )
-							if ( info.error ) then return end
-
-							local localUI = util.TableToJSON( info, false )
-							self.HTML:Call( namespace .. ".ReceiveFileUserInfo( \"" .. v .. "\", " .. localUI .. " )" )
-						end )
 					end
 
 				end )

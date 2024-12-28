@@ -45,7 +45,7 @@ end
 
 function GM:NetworkIDValidated( name, steamid )
    -- edge case where player authed after initspawn
-   for _, p in player.Iterator() do
+   for _, p in ipairs(player.GetAll()) do
       if IsValid(p) and p:SteamID() == steamid and p.delay_karma_recall then
          KARMA.LateRecallAndSet(p)
          return
@@ -509,8 +509,8 @@ local function CheckCreditAward(victim, attacker)
 
    -- DETECTIVE AWARD
    if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActiveDetective() and victim:IsTraitor() then
-      local amt = GetConVar("ttt_det_credits_traitordead"):GetInt()
-      for _, ply in player.Iterator() do
+      local amt = GetConVarNumber("ttt_det_credits_traitordead") or 1
+      for _, ply in ipairs(player.GetAll()) do
          if ply:IsActiveDetective() then
             ply:AddCredits(amt)
          end
@@ -526,7 +526,7 @@ local function CheckCreditAward(victim, attacker)
       local inno_dead = 0
       local inno_total = 0
 
-      for _, ply in player.Iterator() do
+      for _, ply in ipairs(player.GetAll()) do
          if not ply:GetTraitor() then
             if ply:IsTerror() then
                inno_alive = inno_alive + 1
@@ -548,15 +548,15 @@ local function CheckCreditAward(victim, attacker)
       end
 
       local pct = inno_dead / inno_total
-      if pct >= GetConVar("ttt_credits_award_pct"):GetFloat() then
+      if pct >= GetConVarNumber("ttt_credits_award_pct") then
          -- Traitors have killed sufficient people to get an award
-         local amt = GetConVar("ttt_credits_award_size"):GetInt()
+         local amt = GetConVarNumber("ttt_credits_award_size")
 
          -- If size is 0, awards are off
          if amt > 0 then
             LANG.Msg(GetTraitorFilter(true), "credit_tr_all", {num = amt})
 
-            for _, ply in player.Iterator() do
+            for _, ply in ipairs(player.GetAll()) do
                if ply:IsActiveTraitor() then
                   ply:AddCredits(amt)
                end
@@ -570,25 +570,33 @@ local function CheckCreditAward(victim, attacker)
 end
 
 function GM:DoPlayerDeath(ply, attacker, dmginfo)
-   if ply:IsSpec() or IsValid(ply.dying_wep) then return end
+   if ply:IsSpec() then
+      print("\n\n==========================\nDoPlayerDeath called on a spectator, maybe a body is missing or a hat is flying?\n==========================\n")
+      return
+   end
 
    -- Experimental: Fire a last shot if ironsighting and not headshot
    if GetConVar("ttt_dyingshot"):GetBool() then
       local wep = ply:GetActiveWeapon()
       if IsValid(wep) and wep.DyingShot and not ply.was_headshot and dmginfo:IsBulletDamage() then
-         wep:DyingShot()
+         local fired = wep:DyingShot()
+         if fired then
+            return
+         end
       end
 
       -- Note that funny things can happen here because we fire a gun while the
-      -- player is dead. Specifically, this DoPlayerDeath can run twice for
-      -- him. This is ugly, and we have to return if ply.dying_wep is set
-      -- to prevent crazy shit.
+      -- player is dead. Specifically, this DoPlayerDeath is run twice for
+      -- him. This is ugly, and we have to return the first one to prevent crazy
+      -- shit.
    end
 
    -- Drop all weapons
    for k, wep in ipairs(ply:GetWeapons()) do
       WEPS.DropNotifiedWeapon(ply, wep, true) -- with ammo in them
-      wep:DampenDrop()
+      if IsValid(wep:DampenDrop()) then
+         wep:DampenDrop()
+      end
    end
 
    if IsValid(ply.hat) then
@@ -643,9 +651,9 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
    if IsValid(attacker) and attacker:IsPlayer() then
       local reward = 0
       if attacker:IsActiveTraitor() and ply:GetDetective() then
-         reward = GetConVar("ttt_credits_detectivekill"):GetInt()
+         reward = math.ceil(GetConVarNumber("ttt_credits_detectivekill"))
       elseif attacker:IsActiveDetective() and ply:GetTraitor() then
-         reward = GetConVar("ttt_det_credits_traitorkill"):GetInt()
+         reward = math.ceil(GetConVarNumber("ttt_det_credits_traitorkill"))
       end
 
       if reward > 0 then
@@ -757,7 +765,10 @@ end
 function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
    if dmginfo:IsBulletDamage() and ply:HasEquipmentItem(EQUIP_ARMOR) then
       -- Body armor nets you a damage reduction.
-      dmginfo:ScaleDamage(0.7)
+      local wep = util.WeaponFromDamage(dmginfo)
+      if wep.DamageType == "Impact" then
+         dmginfo:ScaleDamage(0.7)
+      end
    end
 
    ply.was_headshot = false
@@ -772,13 +783,6 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
          local s = wep:GetHeadshotMultiplier(ply, dmginfo) or 2
          dmginfo:ScaleDamage(s)
       end
-   elseif (hitgroup == HITGROUP_LEFTARM or
-           hitgroup == HITGROUP_RIGHTARM or
-           hitgroup == HITGROUP_LEFTLEG or
-           hitgroup == HITGROUP_RIGHTLEG or
-           hitgroup == HITGROUP_GEAR ) then
-
-      dmginfo:ScaleDamage(0.55)
    end
 
    -- Keep ignite-burn damage etc on old levels
@@ -1035,10 +1039,10 @@ function GM:PlayerTakeDamage(ent, infl, att, amount, dmginfo)
 
    -- general actions for pvp damage
    if ent != att and IsValid(att) and att:IsPlayer() and GetRoundState() == ROUND_ACTIVE and math.floor(dmginfo:GetDamage()) > 0 then
-
+      local wep = dmginfo:GetAttacker():GetActiveWeapon()
       -- scale everything to karma damage factor except the knife, because it
       -- assumes a kill
-      if not dmginfo:IsDamageType(DMG_SLASH) then
+      if (wep.DamageType == "Puncture" or wep.DamageType == "Impact") then
          dmginfo:ScaleDamage(att:GetDamageFactor())
       end
 
@@ -1055,9 +1059,13 @@ function GM:OnNPCKilled() end
 
 -- Drowning and such
 local tm = nil
+local ply = nil
+local plys = nil
 function GM:Tick()
    -- three cheers for micro-optimizations
-   for _, ply in player.Iterator() do
+   plys = player.GetAll()
+   for i= 1, #plys do
+      ply = plys[i]
       tm = ply:Team()
       if tm == TEAM_TERROR and ply:Alive() then
          -- Drowning

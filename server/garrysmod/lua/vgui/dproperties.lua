@@ -55,11 +55,11 @@ local tblRow = vgui.RegisterTable( {
 		self.Inner:SetEnabled( self:IsEnabled() )
 
 		-- Then override our methods so they affect Inner element instead
-		self.IsEnabled = function( slf )
-			return slf.Inner:IsEnabled()
+		self.IsEnabled = function( self )
+			return self.Inner:IsEnabled()
 		end
-		self.SetEnabled = function( slf, b )
-			slf.Inner:SetEnabled( b )
+		self.SetEnabled = function( self, b )
+			self.Inner:SetEnabled( b )
 		end
 
 		-- If the field is read only, disable it
@@ -92,14 +92,10 @@ local tblRow = vgui.RegisterTable( {
 		local disabled = !self.Inner:IsEnabled() || !self:IsEnabled()
 
 		if ( disabled ) then
-			local skinColor = Skin.Colours.Properties.Column_Disabled
-		
-			surface.SetDrawColor( skinColor.r, skinColor.g, skinColor.b, skinColor.a )
+			surface.SetDrawColor( Skin.Colours.Properties.Column_Disabled )
 			surface.DrawRect( w * 0.45, 0, w, h )
 		elseif ( editing ) then
-			local skinColor = Skin.Colours.Properties.Column_Disabled
-			
-			surface.SetDrawColor( skinColor.r, skinColor.g, skinColor.b, skinColor.a )
+			surface.SetDrawColor( Skin.Colours.Properties.Column_Selected )
 			surface.DrawRect( 0, 0, w * 0.45, h )
 		end
 
@@ -155,7 +151,7 @@ local tblCategory = vgui.RegisterTable( {
 		self.Container:Dock( TOP )
 		self.Container:DockMargin( 16, 0, 0, 0 )
 		self.Container.Paint = function( pnl, w, h )
-			surface.SetDrawColor( 255, 255, 255 )
+			surface.SetDrawColor( color_white )
 			surface.DrawRect( 0, 0, w, h )
 		end
 
@@ -189,8 +185,8 @@ local tblCategory = vgui.RegisterTable( {
 
 	Paint = function( self, w, h )
 
-		local skinColor = self:GetSkin().Colours.Properties.Border
-		surface.SetDrawColor( skinColor.r, skinColor.g, skinColor.b, skinColor.a )
+		local Skin = self:GetSkin()
+		surface.SetDrawColor( Skin.Colours.Properties.Border )
 		surface.DrawRect( 0, 0, w, h )
 
 	end

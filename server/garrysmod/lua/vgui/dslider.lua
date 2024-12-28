@@ -1,6 +1,7 @@
 
 local PANEL = {}
 
+
 AccessorFunc( PANEL, "m_fSlideX", "SlideX" )
 AccessorFunc( PANEL, "m_fSlideY", "SlideY" )
 
@@ -25,14 +26,15 @@ function PANEL:Init()
 	self.Knob:NoClipping( true )
 	self.Knob.Paint = function( panel, w, h ) derma.SkinHook( "Paint", "SliderKnob", panel, w, h ) end
 	self.Knob.OnCursorMoved = function( panel, x, y )
-		x, y = panel:LocalToScreen( x, y )
+		local x, y = panel:LocalToScreen( x, y )
 		x, y = self:ScreenToLocal( x, y )
 		self:OnCursorMoved( x, y )
 	end
 
 	self.Knob.OnMousePressed = function( panel, mcode )
 		if ( mcode == MOUSE_MIDDLE ) then
-			self:ResetToDefaultValue()
+			self:SetSlideX( 0.5 )
+			self:SetSlideY( 0.5 )
 			return
 		end
 
@@ -50,15 +52,6 @@ end
 function PANEL:IsEditing()
 
 	return self.Dragging || self.Knob.Depressed
-
-end
-
-function PANEL:ResetToDefaultValue()
-
-	-- Override me
-	local x, y = self:TranslateValues( 0.5, 0.5 )
-	self:SetSlideX( x )
-	self:SetSlideY( y )
 
 end
 

@@ -26,20 +26,16 @@ function TOOL:LeftClick( trace )
 	if ( iNum > 0 ) then
 
 		if ( CLIENT ) then
+
 			self:ClearObjects()
 			return true
-		end
 
-		local ply = self:GetOwner()
-		if ( !ply:CheckLimit( "constraints" ) ) then
-			self:ClearObjects()
-			return false
 		end
 
 		-- Get client's CVars
 		local nocollide = self:GetClientNumber( "nocollide", 0 )
 		local forcelimit = self:GetClientNumber( "forcelimit", 0 )
-
+		
 		-- Force this to 0 for now, it does not do anything, and if we fix it in the future, this way existing contraptions won't break
 		local torquelimit = 0 --self:GetClientNumber( "torquelimit", 0 )
 
@@ -52,11 +48,10 @@ function TOOL:LeftClick( trace )
 		if ( IsValid( constr ) ) then
 			undo.Create( "BallSocket" )
 				undo.AddEntity( constr )
-				undo.SetPlayer( ply )
+				undo.SetPlayer( self:GetOwner() )
 			undo.Finish()
 
-			ply:AddCount( "constraints", constr )
-			ply:AddCleanup( "constraints", constr )
+			self:GetOwner():AddCleanup( "constraints", constr )
 		end
 
 		-- Clear the objects so we're ready to go again

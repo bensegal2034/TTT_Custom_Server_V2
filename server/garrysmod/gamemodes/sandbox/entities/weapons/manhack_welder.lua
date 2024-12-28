@@ -2,7 +2,6 @@
 -- Variables that are used on both client and server
 
 SWEP.Instructions	= "Shoot a prop to attach a Manhack.\nRight click to attach a rollermine."
-SWEP.Author			= "Facepunch"
 
 SWEP.Spawnable			= true
 SWEP.AdminOnly			= true
@@ -68,7 +67,7 @@ function SWEP:PrimaryAttack()
 
 	self:EmitSound( ShootSound )
 
-	self:ShootEffects()
+	self:ShootEffects( self )
 
 	-- The rest is only done on the server
 	if ( CLIENT ) then return end
@@ -98,6 +97,7 @@ function SWEP:PrimaryAttack()
 	if ( owner:IsPlayer() ) then
 		undo.Create( "Manhack" )
 			undo.AddEntity( weld )
+			undo.AddEntity( nocl )
 			undo.AddEntity( ent )
 			undo.SetPlayer( owner )
 		undo.Finish()
@@ -116,7 +116,7 @@ function SWEP:SecondaryAttack()
 	--if ( tr.HitWorld ) then return end
 
 	self:EmitSound( ShootSound )
-	self:ShootEffects()
+	self:ShootEffects( self )
 
 	if ( IsFirstTimePredicted() ) then
 		local effectdata = EffectData()
@@ -152,6 +152,7 @@ function SWEP:SecondaryAttack()
 	if ( owner:IsPlayer() ) then
 		undo.Create( "Rollermine" )
 			undo.AddEntity( weld )
+			undo.AddEntity( nocl )
 			undo.AddEntity( ent )
 			undo.SetPlayer( owner )
 		undo.Finish()

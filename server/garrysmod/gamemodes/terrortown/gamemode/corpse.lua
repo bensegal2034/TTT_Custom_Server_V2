@@ -78,7 +78,7 @@ local function IdentifyBody(ply, rag)
    -- Register find
    if not CORPSE.GetFound(rag, false) then
       -- will return either false or a valid ply
-      local deadply = player.GetBySteamID64(rag.sid64)
+      local deadply = player.GetBySteamID(rag.sid)
       if deadply then
          deadply:SetNWBool("body_found", true)
 
@@ -93,9 +93,9 @@ local function IdentifyBody(ply, rag)
    end
 
    -- Handle kill list
-   for k, vicsid64 in ipairs(rag.kills) do
+   for k, vicsid in pairs(rag.kills) do
       -- filter out disconnected
-      local vic = player.GetBySteamID64(vicsid64)
+      local vic = player.GetBySteamID(vicsid)
 
       -- is this an unconfirmed dead?
       if IsValid(vic) and (not vic:GetNWBool("body_found", false)) then
@@ -173,8 +173,6 @@ local function bitsRequired(num)
    return bits
 end
 
-local plyBits = bitsRequired(game.MaxPlayers()) -- first game.MaxPlayers() of entities are for players.
-
 function GM:TTTCanSearchCorpse(ply, corpse, is_covert, is_long_range, was_traitor)
    -- return true to allow corpse search, false to disallow.
    return true
@@ -198,15 +196,15 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
    local traitor = (rag.was_role == ROLE_TRAITOR)
    local role  = rag.was_role
    local eq    = rag.equipment or EQUIP_NONE
-   local c4    = rag.bomb_wire or 0
+   local c4    = rag.bomb_wire or -1
    local dmg   = rag.dmgtype or DMG_GENERIC
    local wep   = rag.dmgwep or ""
    local words = rag.last_words or ""
    local hshot = rag.was_headshot or false
    local dtime = rag.time or 0
 
-   local owner = player.GetBySteamID64(rag.sid64)
-   owner = IsValid(owner) and owner:EntIndex() or 0
+   local owner = player.GetBySteamID(rag.sid)
+   owner = IsValid(owner) and owner:EntIndex() or -1
 
    -- basic sanity check
    if nick == nil or eq == nil or role == nil then return end
@@ -242,47 +240,48 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
 
    -- build list of people this traitor killed
    local kill_entids = {}
-   for k, vicsid64 in ipairs(rag.kills) do
+   for k, vicsid in pairs(rag.kills) do
       -- also send disconnected players as a marker
-      local vic = player.GetBySteamID64(vicsid64)
-      table.insert(kill_entids, IsValid(vic) and vic:EntIndex() or 0)
+      local vic = player.GetBySteamID(vicsid)
+      table.insert(kill_entids, IsValid(vic) and vic:EntIndex() or -1)
    end
 
-   local lastid = 0
+   local lastid = -1
    if rag.lastid and ply:IsActiveDetective() then
-      -- if the person this victim last id'd has since disconnected, send 0 to
+      -- if the person this victim last id'd has since disconnected, send -1 to
       -- indicate this
-      lastid = IsValid(rag.lastid.ent) and rag.lastid.ent:EntIndex() or 0
+      lastid = IsValid(rag.lastid.ent) and rag.lastid.ent:EntIndex() or -1
    end
 
    -- Send a message with basic info
    net.Start("TTT_RagdollSearch")
       net.WriteUInt(rag:EntIndex(), 16) -- 16 bits
-      net.WriteUInt(owner, plyBits) -- 128 max players. ( 8 bits )
+      net.WriteUInt(owner, 8) -- 128 max players. ( 8 bits )
       net.WriteString(nick)
-      net.WriteUInt(eq, bitsRequired(EQUIP_MAX)) -- Equipment ( default: 3 bits )
+      net.WriteUInt(eq, 16) -- Equipment ( 16 = max. )
       net.WriteUInt(role, 2) -- ( 2 bits )
-      net.WriteUInt(c4, bitsRequired(C4_WIRE_COUNT)) -- 0 -> 2^bits ( default c4: 3 bits )
+      net.WriteInt(c4, bitsRequired(C4_WIRE_COUNT) + 1) -- -1 -> 2^bits ( default c4: 4 bits )
       net.WriteUInt(dmg, 30) -- DMG_BUCKSHOT is the highest. ( 30 bits )
       net.WriteString(wep)
-      net.WriteBool(hshot) -- ( 1 bit )
-      net.WriteUInt(dtime, 15)
-      net.WriteUInt(stime, 15)
+      net.WriteBit(hshot) -- ( 1 bit )
+      net.WriteInt(dtime, 16)
+      net.WriteInt(stime, 16)
 
       net.WriteUInt(#kill_entids, 8)
-      for k, idx in ipairs(kill_entids) do
-         net.WriteUInt(idx, plyBits)
+      for k, idx in pairs(kill_entids) do
+         net.WriteUInt(idx, 8) -- first game.MaxPlayers() of entities are for players.
       end
 
-      net.WriteUInt(lastid, plyBits)
+      net.WriteUInt(lastid, 8)
 
       -- Who found this, so if we get this from a detective we can decide not to
       -- show a window
-      net.WriteUInt(ply:EntIndex(), plyBits)
+      net.WriteUInt(ply:EntIndex(), 8)
 
       net.WriteString(words)
 
-      -- 93 + string data + plyBits * (3 + #kill_entids)
+      -- 133 + string data + #kill_entids * 8
+      -- 200
 
    -- If found by detective, send to all, else just the finder
    if ply:IsActiveDetective() then
@@ -310,14 +309,13 @@ local function GetKillerSample(victim, attacker, dmg)
    if IsValid(infl) and infl:IsNPC() then return end
 
    local dist = victim:GetPos():Distance(attacker:GetPos())
-   if dist > GetConVar("ttt_killer_dna_range"):GetFloat() then return nil end
+   if dist > GetConVarNumber("ttt_killer_dna_range") then return nil end
 
    local sample = {}
    sample.killer = attacker
-   sample.killer_sid = attacker:SteamID() -- backwards compatibility; use sample.killer_sid64 instead
-   sample.killer_sid64 = attacker:SteamID64()
+   sample.killer_sid = attacker:SteamID()
    sample.victim = victim
-   sample.t      = CurTime() + (-1 * (0.019 * dist)^2 + GetConVar("ttt_killer_dna_basetime"):GetFloat())
+   sample.t      = CurTime() + (-1 * (0.019 * dist)^2 + GetConVarNumber("ttt_killer_dna_basetime"))
 
    return sample
 end
@@ -401,10 +399,9 @@ function CORPSE.Create(ply, attacker, dmginfo)
 
    -- flag this ragdoll as being a player's
    rag.player_ragdoll = true
-   rag.sid64 = ply:SteamID64()
+   rag.sid = ply:SteamID()
 
-   rag.sid = ply:SteamID() -- backwards compatibility; use rag.sid64 instead
-   rag.uqid = ply:UniqueID() -- backwards compatibility; use rag.sid64 instead
+   rag.uqid = ply:UniqueID() -- backwards compatibility; use rag.sid instead
 
    -- network data
    CORPSE.SetPlayerNick(rag, ply)

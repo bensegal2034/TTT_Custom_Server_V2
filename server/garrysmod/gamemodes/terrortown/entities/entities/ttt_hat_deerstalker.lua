@@ -117,7 +117,7 @@ if SERVER then
          self:SetParent(ply)
          self.Wearer = ply
    
-         ply.hat = self
+         ply.hat = self.Entity
    
          self:SetBeingWorn(true)
    

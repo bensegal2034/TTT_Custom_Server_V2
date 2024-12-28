@@ -130,17 +130,17 @@ end
 
 function AddToolCategory( tab, RealName, PrintName )
 
-	local Menu = GetToolMenu( tab )
+	local tab = GetToolMenu( tab )
 
 	-- Does this category already exist?
-	for k, v in ipairs( Menu ) do
+	for k, v in ipairs( tab ) do
 
 		if ( v.Text == PrintName ) then return end
 		if ( v.ItemName == RealName ) then return end
 
 	end
 
-	table.insert( Menu, { Text = PrintName, ItemName = RealName } )
+	table.insert( tab, { Text = PrintName, ItemName = RealName } )
 
 end
 
@@ -155,7 +155,7 @@ function AddToolMenuOption( tab, category, itemname, text, command, controls, cp
 
 	-- No table found.. lets create one
 	if ( !CategoryTable ) then
-		CategoryTable = { Text = "#" .. category, ItemName = category }
+		CategoryTable = { Text = "#"..category, ItemName = category }
 		table.insert( Menu, CategoryTable )
 	end
 
@@ -241,7 +241,7 @@ function PopulateFromEngineTextFiles()
 
 	-- Reset the already loaded prop list before loading them again.
 	-- This caused the spawnlists to duplicate into crazy trees when spawnmenu_reload'ing after saving edited spawnlists
-	PropTable = {}
+	PropTable = {} 
 
 	spawnmenu_engine.PopulateFromTextFiles( function( strFilename, strName, tabContents, icon, id, parentid, needsapp )
 		PropTable[ strFilename ] = {
@@ -286,12 +286,7 @@ function AddContentType( name, func )
 	cp[ name ] = func
 end
 
-function GetContentType( name )
-
-	if ( !name ) then
-		ErrorNoHaltWithStack( "spawnmenu.GetContentType got an invalid value\n" )
-		return
-	end
+function GetContentType( name, func )
 
 	if ( !cp[ name ] ) then
 
@@ -305,7 +300,7 @@ end
 
 function CreateContentIcon( type, parent, tbl )
 
-	local ctrlpnl = GetContentType( type )
-	if ( ctrlpnl ) then return ctrlpnl( parent, tbl ) end
+	local cp = GetContentType( type )
+	if ( cp ) then return cp( parent, tbl ) end
 
 end

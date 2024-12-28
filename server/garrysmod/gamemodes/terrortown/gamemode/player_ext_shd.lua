@@ -186,12 +186,12 @@ if CLIENT then
       act_runner[a] = MakeSimpleRunner(a)
    end
 
-   local show_gestures = CreateConVar("ttt_show_gestures", "1", FCVAR_ARCHIVE)
+   CreateConVar("ttt_show_gestures", "1", FCVAR_ARCHIVE)
 
    -- Perform the gesture using the GestureRunner system. If custom_runner is
    -- non-nil, it will be used instead of the default runner for the act.
    function plymeta:AnimPerformGesture(act, custom_runner)
-      if not show_gestures:GetBool() then return end
+      if GetConVarNumber("ttt_show_gestures") == 0 then return end
 
       local runner = custom_runner or act_runner[act]
       if not runner then return false end
@@ -222,7 +222,7 @@ if CLIENT then
    function GM:GrabEarAnimation(ply) end
 
    net.Receive("TTT_PerformGesture", function()
-      local ply = net.ReadPlayer()
+      local ply = net.ReadEntity()
       local act = net.ReadUInt(16)
       if IsValid(ply) and act then
          ply:AnimPerformGesture(act)
@@ -239,7 +239,7 @@ else -- SERVER
       if not act then return end
 
       net.Start("TTT_PerformGesture")
-         net.WritePlayer(self)
+         net.WriteEntity(self)
          net.WriteUInt(act, 16)
       net.Broadcast()
    end

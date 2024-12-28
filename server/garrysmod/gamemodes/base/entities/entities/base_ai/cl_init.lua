@@ -1,6 +1,8 @@
 
 include( "shared.lua" )
 
+ENT.RenderGroup = RENDERGROUP_OPAQUE
+
 --[[---------------------------------------------------------
 	Name: Draw
 	Desc: Draw it!

@@ -49,7 +49,7 @@ function ENT:Explode(tr)
 
       util.BlastDamage(self, self:GetThrower(), pos, self:GetRadius(), self:GetDmg())
 
-      StartFires(pos, tr, 10, 20, false, self:GetThrower())
+      StartFires(pos, tr, 20, 20, false, self:GetThrower())
 
       self:SetDetonateExact(0)
 

@@ -8,9 +8,7 @@ AccessorFunc( PANEL, "m_Type", "Type" )
 local RenderTypes = {}
 
 function RenderTypes.Rect( pnl )
-	local pnlColor = pnl:GetColor()
-
-	surface.SetDrawColor( pnlColor.r, pnlColor.g, pnlColor.b, pnlColor.a )
+	surface.SetDrawColor( pnl:GetColor() )
 	surface.DrawRect( 0, 0, pnl:GetSize() )
 end
 

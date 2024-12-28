@@ -52,13 +52,13 @@ function plymeta:SubtractCredits(amt) self:AddCredits(-amt) end
 
 function plymeta:SetDefaultCredits()
    if self:GetTraitor() then
-      local c = GetConVar("ttt_credits_starting"):GetInt()
+      local c = GetConVarNumber("ttt_credits_starting")
       if CountTraitors() == 1 then
-         c = c + GetConVar("ttt_credits_alonebonus"):GetInt()
+         c = c + GetConVarNumber("ttt_credits_alonebonus")
       end
-      self:SetCredits(c)
+      self:SetCredits(math.ceil(c))
    elseif self:GetDetective() then
-      self:SetCredits(GetConVar("ttt_det_credits_starting"):GetInt())
+      self:SetCredits(math.ceil(GetConVarNumber("ttt_det_credits_starting")))
    else
       self:SetCredits(0)
    end
@@ -200,7 +200,7 @@ function plymeta:RecordKill(victim)
       self.kills = {}
    end
 
-   table.insert(self.kills, victim:SteamID64())
+   table.insert(self.kills, victim:SteamID())
 end
 
 
@@ -272,7 +272,10 @@ function plymeta:SpawnForRound(dead_only)
    -- (and will therefore be "alive")
    if dead_only and self:Alive() and (not self:IsSpec()) then
       -- if the player does not need respawn, make sure he has full health
-      self:SetHealth(self:GetMaxHealth())
+      -- only do this if we're not in ROUND_WAIT because of my silly little dm implementation :))
+      if GetRoundState() != ROUND_WAIT then
+         self:SetHealth(self:GetMaxHealth())
+      end
       return false
    end
 

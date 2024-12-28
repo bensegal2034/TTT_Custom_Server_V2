@@ -24,7 +24,7 @@ function GM:ShowTeam()
 			Team:SetText( TeamInfo.Name )
 			
 			if ( IsValid( LocalPlayer() ) && LocalPlayer():Team() == ID ) then
-				Team:SetEnabled( false )
+				Team:SetDisabled( true )
 			end
 			
 			y = y + 30

@@ -86,7 +86,7 @@ function PANEL:GetValue()
 
 end
 
-function PANEL:OnChange( iNum )
+function PANEL:OnChange()
 end
 
 derma.DefineControl( "DBinder", "", PANEL, "DButton" )

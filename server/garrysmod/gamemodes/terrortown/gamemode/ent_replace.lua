@@ -240,7 +240,7 @@ local dummify = {
 };
 
 for k, cls in pairs(dummify) do
-   scripted_ents.Register({Type="point", IsWeaponDummy=true}, cls)
+   scripted_ents.Register({Type="point", IsWeaponDummy=true}, cls, false)
 end
 
 -- Cache this, every ttt_random_weapon uses it in its Init
@@ -487,21 +487,14 @@ function ents.TTT.CanImportEntities(map)
    if not GetConVar("ttt_use_weapon_spawn_scripts"):GetBool() then return false end
 
    local fname = "maps/" .. map .. "_ttt.txt"
-   if file.Exists(fname, "GAME") then
-      return fname
-   end
 
-   -- Allows workshop addons to pack rearm scripts
-   fname = "data_static/" .. map .. "_ttt.txt"
-   if file.Exists(fname, "GAME") then
-      return fname
-   end
+   return file.Exists(fname, "GAME")
 end
 
 local function ImportSettings(map)
-   local fname = ents.TTT.CanImportEntities(map)
-   if not fname then return end
+   if not ents.TTT.CanImportEntities(map) then return end
 
+   local fname = "maps/" .. map .. "_ttt.txt"
    local buf = file.Read(fname, "GAME")
 
    local settings = {}
@@ -528,8 +521,9 @@ local classremap = {
 };
 
 local function ImportEntities(map)
-   local fname = ents.TTT.CanImportEntities(map)
-   if not fname then return end
+   if not ents.TTT.CanImportEntities(map) then return end
+
+   local fname = "maps/" .. map .. "_ttt.txt"
 
    local num = 0
    for k, line in ipairs(string.Explode("\n", file.Read(fname, "GAME"))) do

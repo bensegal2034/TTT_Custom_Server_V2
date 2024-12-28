@@ -53,7 +53,7 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire( CurTime() + 0.1 )
 
 	self:EmitSound( ShootSound )
-	self:ShootEffects()
+	self:ShootEffects( self )
 
 	if ( CLIENT ) then return end
 

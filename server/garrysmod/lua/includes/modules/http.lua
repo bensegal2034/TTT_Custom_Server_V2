@@ -39,8 +39,7 @@ function Fetch( url, onsuccess, onfailure, header )
 		end
 	}
 
-	local success = HTTP( request )
-	if ( !success && onfailure ) then onfailure( "HTTP failed" ) end
+	HTTP( request )
 
 end
 
@@ -69,8 +68,7 @@ function Post( url, params, onsuccess, onfailure, header )
 		end
 	}
 
-	local success = HTTP( request )
-	if ( !success && onfailure ) then onfailure( "HTTP failed" ) end
+	HTTP( request )
 
 end
 

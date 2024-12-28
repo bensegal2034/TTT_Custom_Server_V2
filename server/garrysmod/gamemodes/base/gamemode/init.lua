@@ -38,9 +38,7 @@ end
 -----------------------------------------------------------]]
 function GM:DoPlayerDeath( ply, attacker, dmginfo )
 
-	if ( !dmginfo:IsDamageType( DMG_REMOVENORAGDOLL ) ) then
-		ply:CreateRagdoll()
-	end
+	ply:CreateRagdoll()
 
 	ply:AddDeaths( 1 )
 

@@ -26,8 +26,8 @@ function PANEL:Setup( vars )
 	ctrl:SetDecimals( self:GetDecimals() )
 
 	-- Apply vars
-	ctrl:SetMin( vars.min or 0 )
-	ctrl:SetMax( vars.max or 1 )
+	ctrl:SetMin( vars.min || 0 )
+	ctrl:SetMax( vars.max || 1 )
 
 	-- The label needs mouse input so we can scratch
 	self:GetRow().Label:SetMouseInputEnabled( true )
@@ -41,25 +41,25 @@ function PANEL:Setup( vars )
 	ctrl.Slider:DockMargin( 0, 3, 8, 3 )
 
 	-- Return true if we're editing
-	self.IsEditing = function( slf )
+	self.IsEditing = function( self )
 		return ctrl:IsEditing()
 	end
 
 	-- Enabled/disabled support
-	self.IsEnabled = function( slf )
+	self.IsEnabled = function( self )
 		return ctrl:IsEnabled()
 	end
-	self.SetEnabled = function( slf, b )
+	self.SetEnabled = function( self, b )
 		ctrl:SetEnabled( b )
 	end
 
 	-- Set the value
-	self.SetValue = function( slf, val )
+	self.SetValue = function( self, val )
 		ctrl:SetValue( val )
 	end
 
 	-- Alert row that value changed
-	ctrl.OnValueChanged = function( slf, newval )
+	ctrl.OnValueChanged = function( ctrl, newval )
 
 		self:ValueChanged( newval )
 
@@ -68,7 +68,7 @@ function PANEL:Setup( vars )
 	self.Paint = function()
 
 		-- PERFORMANCE !!!
-		ctrl.Slider:SetVisible( self:IsEditing() or self:GetRow():IsChildHovered() )
+		ctrl.Slider:SetVisible( self:IsEditing() || self:GetRow():IsChildHovered() )
 
 	end
 

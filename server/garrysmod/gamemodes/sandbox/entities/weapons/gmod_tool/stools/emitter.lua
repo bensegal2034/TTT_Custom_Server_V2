@@ -54,11 +54,10 @@ function TOOL:LeftClick( trace, worldweld )
 
 	end
 
-	if ( !self:GetWeapon():CheckLimit( "emitters" ) ) then return false end
+	if ( !self:GetSWEP():CheckLimit( "emitters" ) ) then return false end
 
 	local pos = trace.HitPos
-	local shouldWeld = ( trace.Entity != NULL && ( !trace.Entity:IsWorld() or worldweld ) )
-	if ( !shouldWeld ) then
+	if ( trace.Entity != NULL && ( !trace.Entity:IsWorld() || worldweld ) ) then else
 		pos = pos + trace.HitNormal
 	end
 
@@ -72,7 +71,7 @@ function TOOL:LeftClick( trace, worldweld )
 		undo.AddEntity( emitter )
 
 		-- Don't weld to world
-		if ( shouldWeld ) then
+		if ( trace.Entity != NULL && ( !trace.Entity:IsWorld() || worldweld ) ) then
 			local weld = constraint.Weld( emitter, trace.Entity, 0, trace.PhysicsBone, 0, true, true )
 			if ( IsValid( weld ) ) then
 				ply:AddCleanup( "emitters", weld )
@@ -100,10 +99,10 @@ if ( SERVER ) then
 
 	function MakeEmitter( ply, key, delay, toggle, effect, starton, nocollide, scale, Data )
 
-		if ( IsValid( ply ) && !ply:CheckLimit( "emitters" ) ) then return NULL end
+		if ( IsValid( ply ) && !ply:CheckLimit( "emitters" ) ) then return nil end
 
 		local emitter = ents.Create( "gmod_emitter" )
-		if ( !IsValid( emitter ) ) then return NULL end
+		if ( !IsValid( emitter ) ) then return false end
 
 		duplicator.DoGeneric( emitter, Data )
 		emitter:SetEffect( effect )
@@ -116,7 +115,6 @@ if ( SERVER ) then
 		emitter:Spawn()
 
 		DoPropSpawnedEffect( emitter )
-		duplicator.DoGenericPhysics( emitter, ply, Data )
 
 		emitter.NumDown = numpad.OnDown( ply, key, "Emitter_On", emitter )
 		emitter.NumUp = numpad.OnUp( ply, key, "Emitter_Off", emitter )
@@ -151,12 +149,12 @@ if ( SERVER ) then
 
 end
 
-function TOOL:UpdateGhostEmitter( ent, ply )
+function TOOL:UpdateGhostEmitter( ent, pl )
 
 	if ( !IsValid( ent ) ) then return end
 
-	local trace = ply:GetEyeTrace()
-	if ( !trace.Hit or IsValid( trace.Entity ) && ( trace.Entity:GetClass() == "gmod_emitter" or trace.Entity:IsPlayer() ) ) then
+	local trace = pl:GetEyeTrace()
+	if ( !trace.Hit || IsValid( trace.Entity ) && ( trace.Entity:GetClass() == "gmod_emitter" || trace.Entity:IsPlayer() ) ) then
 
 		ent:SetNoDraw( true )
 		return
@@ -172,7 +170,7 @@ end
 
 function TOOL:Think()
 
-	if ( !IsValid( self.GhostEntity ) or self.GhostEntity:GetModel() != "models/props_lab/tpplug.mdl" ) then
+	if ( !IsValid( self.GhostEntity ) || self.GhostEntity:GetModel() != "models/props_lab/tpplug.mdl" ) then
 		self:MakeGhostEntity( "models/props_lab/tpplug.mdl", vector_origin, angle_zero )
 	end
 

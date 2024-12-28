@@ -7,7 +7,6 @@ if CLIENT then
    SWEP.Slot               = 2
 
    SWEP.ViewModelFlip      = false
-   SWEP.ViewModelFOV       = 54
 
    SWEP.Icon               = "vgui/ttt/icon_m249"
    SWEP.IconLetter         = "z"
@@ -21,22 +20,23 @@ SWEP.AutoSpawnable         = true
 SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_M249
 
-SWEP.Primary.Damage        = 7
-SWEP.Primary.Delay         = 0.06
-SWEP.Primary.Cone          = 0.09
-SWEP.Primary.ClipSize      = 150
-SWEP.Primary.ClipMax       = 150
-SWEP.Primary.DefaultClip   = 150
+SWEP.Primary.Damage        = 4
+SWEP.Primary.Delay         = 0
+SWEP.Primary.Cone          = 0.04
+SWEP.Primary.ClipSize      = 300
+SWEP.Primary.ClipMax       = 900
+SWEP.Primary.DefaultClip   = 600
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "AirboatGun"
-SWEP.Primary.Recoil        = 1.9
+SWEP.Primary.Ammo          = "smg1"
+SWEP.Primary.Recoil        = 2.2
 SWEP.Primary.Sound         = Sound("Weapon_m249.Single")
+SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
+SWEP.DamageType            = "Impact"
 
-SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_mach_m249para.mdl"
+SWEP.ViewModel             = "models/weapons/v_mach_m249para.mdl"
 SWEP.WorldModel            = "models/weapons/w_mach_m249para.mdl"
 
-SWEP.HeadshotMultiplier    = 2.2
+SWEP.HeadshotMultiplier    = 2
 
-SWEP.IronSightsPos         = Vector(-5.96, -5.119, 2.349)
+SWEP.IronSightsPos         = Vector( -4.4, -3, 2 )
 SWEP.IronSightsAng         = Vector(0, 0, 0)

@@ -64,11 +64,12 @@ function SWEP:PrintWeaponInfo( x, y, alpha )
 
 	if ( self.DrawWeaponInfoBox == false ) then return end
 
-	if ( self.InfoMarkup == nil ) then
+	if (self.InfoMarkup == nil ) then
+		local str
 		local title_color = "<color=230,230,230,255>"
 		local text_color = "<color=150,150,150,255>"
 
-		local str = "<font=HudSelectionText>"
+		str = "<font=HudSelectionText>"
 		if ( self.Author != "" ) then str = str .. title_color .. "Author:</color>\t" .. text_color .. self.Author .. "</color>\n" end
 		if ( self.Contact != "" ) then str = str .. title_color .. "Contact:</color>\t" .. text_color .. self.Contact .. "</color>\n\n" end
 		if ( self.Purpose != "" ) then str = str .. title_color .. "Purpose:</color>\n" .. text_color .. self.Purpose .. "</color>\n\n" end

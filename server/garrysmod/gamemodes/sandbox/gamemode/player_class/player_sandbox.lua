@@ -86,10 +86,9 @@ function PLAYER:SetModel()
 	local skin = self.Player:GetInfoNum( "cl_playerskin", 0 )
 	self.Player:SetSkin( skin )
 
-	local bodygroups = self.Player:GetInfo( "cl_playerbodygroups" )
-	if ( bodygroups == nil ) then bodygroups = "" end
-
-	local groups = string.Explode( " ", bodygroups )
+	local groups = self.Player:GetInfo( "cl_playerbodygroups" )
+	if ( groups == nil ) then groups = "" end
+	local groups = string.Explode( " ", groups )
 	for k = 0, self.Player:GetNumBodyGroups() - 1 do
 		self.Player:SetBodygroup( k, tonumber( groups[ k + 1 ] ) or 0 )
 	end
@@ -103,14 +102,14 @@ function PLAYER:Spawn()
 
 	BaseClass.Spawn( self )
 
-	local plyclr = self.Player:GetInfo( "cl_playercolor" )
-	self.Player:SetPlayerColor( Vector( plyclr ) )
+	local col = self.Player:GetInfo( "cl_playercolor" )
+	self.Player:SetPlayerColor( Vector( col ) )
 
-	local wepclr = Vector( self.Player:GetInfo( "cl_weaponcolor" ) )
-	if ( wepclr:Length() < 0.001 ) then
-		wepclr = Vector( 0.001, 0.001, 0.001 )
+	local col = Vector( self.Player:GetInfo( "cl_weaponcolor" ) )
+	if ( col:Length() < 0.001 ) then
+		col = Vector( 0.001, 0.001, 0.001 )
 	end
-	self.Player:SetWeaponColor( wepclr )
+	self.Player:SetWeaponColor( col )
 
 end
 
@@ -140,6 +139,15 @@ function PLAYER:CalcView( view )
 	if ( self.TauntCam:CalcView( view, self.Player, self.Player:IsPlayingTaunt() ) ) then return true end
 
 	-- Your stuff here
+
+end
+
+function PLAYER:GetHandsModel()
+
+	-- return { model = "models/weapons/c_arms_cstrike.mdl", skin = 1, body = "0100000" }
+
+	local cl_playermodel = self.Player:GetInfo( "cl_playermodel" )
+	return player_manager.TranslatePlayerHands( cl_playermodel )
 
 end
 
@@ -180,16 +188,16 @@ function PLAYER:FinishMove( move )
 
 		-- Clamp it to make sure they can't bunnyhop to ludicrous speed
 		if newSpeed > maxSpeed then
-			speedAddition = speedAddition - ( newSpeed - maxSpeed )
+			speedAddition = speedAddition - (newSpeed - maxSpeed)
 		end
 
 		-- Reverse it if the player is running backwards
-		if move:GetVelocity():Dot( forward ) < 0 then
+		if move:GetVelocity():Dot(forward) < 0 then
 			speedAddition = -speedAddition
 		end
 
 		-- Apply the speed boost
-		move:SetVelocity( forward * speedAddition + move:GetVelocity() )
+		move:SetVelocity(forward * speedAddition + move:GetVelocity())
 	end
 
 	JUMPING = nil

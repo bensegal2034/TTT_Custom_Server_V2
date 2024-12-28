@@ -4,7 +4,6 @@ local PANEL = {}
 AccessorFunc( PANEL, "m_pMenu", "Menu" )
 AccessorFunc( PANEL, "m_bChecked", "Checked" )
 AccessorFunc( PANEL, "m_bCheckable", "IsCheckable" )
-AccessorFunc( PANEL, "m_bRadio", "Radio" )
 
 function PANEL:Init()
 
@@ -109,26 +108,9 @@ end
 
 function PANEL:ToggleCheck()
 
-	if ( self:GetRadio() ) then
-		if ( self:GetChecked() ) then return end
-
-		local menu = self:GetMenu():GetCanvas()
-
-		for k, pnl in pairs( menu:GetChildren() ) do
-			pnl:SetChecked( false )
-		end
-	end
-
 	self:SetChecked( !self:GetChecked() )
+	self:OnChecked( self:GetChecked() )
 
-end
-
-function PANEL:SetChecked( b )
-	if ( self:GetChecked() != b ) then
-		self:OnChecked( b )
-	end
-
-	self.m_bChecked = b
 end
 
 function PANEL:OnChecked( b )
@@ -139,7 +121,7 @@ function PANEL:PerformLayout( w, h )
 	self:SizeToContents()
 	self:SetWide( self:GetWide() + 30 )
 
-	w = math.max( self:GetParent():GetWide(), self:GetWide() )
+	local w = math.max( self:GetParent():GetWide(), self:GetWide() )
 
 	self:SetSize( w, 22 )
 

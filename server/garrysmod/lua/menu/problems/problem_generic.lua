@@ -17,7 +17,7 @@ function PANEL:Init()
 
 	self.FixBtn = self:Add( "DButton" )
 	self.FixBtn.DoClick = function( btm )
-		if ( !self.Problem or !self.Problem.fix ) then return end
+		if ( !self.Problem || !self.Problem.fix ) then return end
 
 		self.Problem.fix()
 	end
@@ -96,7 +96,7 @@ function PANEL:Setup( problem )
 	self.Markup = markup.Parse( "<font=DermaDefault>" .. language.GetPhrase( self.Problem.text ) .. "</font>", self:GetWide() - self.CopyBtn:GetWide() - copyIconPad * 2 - severityOffset - textPaddingX * 2 )
 
 	self.FixBtn:SetEnabled( problem.fix != nil )
-	self.FixBtn:SetText( problem.fix and "#problems.quick_fix" or "#problems.no_quick_fix" )
+	self.FixBtn:SetText( problem.fix && "#problems.quick_fix" || "#problems.no_quick_fix" )
 	self.FixBtn:SizeToContentsX( 10 )
 
 end
@@ -110,6 +110,7 @@ vgui.Register( "GenericProblem", PANEL, "Panel" )
 local PANEL = {}
 
 local arrowMat = Material( "gui/point.png" )
+local collapsedCache = {}
 
 function PANEL:Init()
 
@@ -136,8 +137,8 @@ function PANEL:Paint( w, h )
 	draw.SimpleText( language.GetPhrase( "problem_grp." .. self.Title ), "DermaLarge", 4, 2, white, draw.TEXT_ALIGN_LEFT, draw.TEXT_ALIGN_TOP )
 
 	surface.SetMaterial( arrowMat )
-	surface.SetDrawColor( 255, 255, 255, white.a )
-	surface.DrawTexturedRectRotated( w - 20, 20, 20, 20, self.Collapsed and 180 or 0 )
+	surface.SetDrawColor( white )
+	surface.DrawTexturedRectRotated( w - 20, 20, 20, 20, self.Collapsed && 180 || 0 )
 
 end
 
@@ -145,6 +146,8 @@ function PANEL:OnMousePressed()
 
 	self.Collapsed = !self.Collapsed
 	self:InvalidateLayout()
+
+	collapsedCache[ self.Title ] = self.Collapsed
 
 end
 

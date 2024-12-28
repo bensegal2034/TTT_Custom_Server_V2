@@ -5,7 +5,8 @@ COLOR.__index = COLOR
 --[[---------------------------------------------------------
 	Register our metatable to make it accessible using FindMetaTable
 -----------------------------------------------------------]]
-RegisterMetaTable( "Color", COLOR )
+
+debug.getregistry().Color = COLOR
 
 --[[---------------------------------------------------------
 	To easily create a color table
@@ -90,12 +91,6 @@ function COLOR:Unpack()
 
 end
 
-function COLOR:Lerp( target_clr, frac )
-
-	return Color( Lerp( frac, self.r, target_clr.r ), Lerp( frac, self.g, target_clr.g ), Lerp( frac, self.b, target_clr.b ), Lerp( frac, self.a, target_clr.a ) )
-
-end
-
 function COLOR:SetUnpacked( r, g, b, a )
 
 	self.r = r or 255
@@ -109,22 +104,4 @@ function COLOR:ToTable()
 
 	return { self.r, self.g, self.b, self.a }
 
-end
-
-local imat = FindMetaTable( "IMaterial" )
-
-if ( imat.GetColor4Part ) then
-	function imat:GetColor( ... )
-		return Color( self:GetColor4Part( ... ) )
-	end
-
-else
-
-	-- For those clients that do not have the above function yet
-	-- TODO: Delete me
-	local oldGetColor = imat.GetColor
-	function imat:GetColor( ... )
-		local tbl = oldGetColor( self, ... )
-		return Color( tbl.r, tbl.g, tbl.b, tbl.a )
-	end
 end

@@ -107,7 +107,7 @@ function ENT:GetPlayer()
 
 	-- See if the player has left the server then rejoined
 	local ply = player.GetBySteamID64( self.FounderSID )
-	if ( !IsValid( ply ) ) then
+	if ( not IsValid( ply ) ) then
 
 		-- Oh well
 		return NULL

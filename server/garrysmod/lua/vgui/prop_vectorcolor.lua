@@ -45,15 +45,13 @@ function PANEL:Setup( vars )
 	btn:SetWide( 16 )
 	btn:SetText( "" )
 
-	btn.Paint = function( btn_slf, w, h )
+	btn.Paint = function( btn, w, h )
 
 		if ( self.VectorValue ) then
 			if ( isvector( self.VectorValue ) ) then
-				local vectorColor = self.VectorValue:ToColor()
-			
-				surface.SetDrawColor( vectorColor.r, vectorColor.g, vectorColor.b, vectorColor.a )
+				surface.SetDrawColor( self.VectorValue:ToColor() )
 			else
-				surface.SetDrawColor( self.VectorValue.r, self.VectorValue.g, self.VectorValue.b, self.VectorValue.a )
+				surface.SetDrawColor( self.VectorValue )
 			end
 			surface.DrawRect( 2, 2, w - 4, h - 4 )
 		end
@@ -71,7 +69,7 @@ function PANEL:Setup( vars )
 		local color = vgui.Create( "DColorCombo", self )
 		if ( istable( self.VectorValue ) ) then color.Mixer:SetAlphaBar( true ) end
 		color:SetupCloseButton( function() CloseDermaMenus() end )
-		color.OnValueChanged = function( colorCombo, newcol )
+		color.OnValueChanged = function( color, newcol )
 
 			if ( isvector( self.VectorValue ) ) then
 				-- convert color to vector
@@ -95,22 +93,22 @@ function PANEL:Setup( vars )
 	end
 
 	-- Set the value
-	self.SetValue = function( slf, val )
-		slf.VectorValue = val
+	self.SetValue = function( self, val )
+		self.VectorValue = val
 
-		if ( isvector( slf.VectorValue ) ) then
-			__SetValue( slf, val )
+		if ( isvector( self.VectorValue ) ) then
+			__SetValue( self, val )
 		else
-			__SetValue( slf, ColorToString( val ) )
+			__SetValue( self, ColorToString( val ) )
 		end
 	end
 
 	-- Enabled/disabled support
-	self.IsEnabled = function( slf )
+	self.IsEnabled = function( self )
 		return btn:IsEnabled()
 	end
 	local oldSetEnabled = self.SetEnabled
-	self.SetEnabled = function( slf, b )
+	self.SetEnabled = function( self, b )
 		btn:SetEnabled( b )
 		oldSetEnabled( b ) -- Also handle the text entry
 	end

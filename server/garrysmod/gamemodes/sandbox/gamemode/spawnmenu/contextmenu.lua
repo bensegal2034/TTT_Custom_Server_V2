@@ -152,10 +152,10 @@ function CreateContextMenu()
 	-- so feed clicks to the proper functions..
 	--
 	g_ContextMenu.OnMousePressed = function( p, code )
-		hook.Run( "GUIMousePressed", code, gui.ScreenToVector( input.GetCursorPos() ) )
+		hook.Run( "GUIMousePressed", code, gui.ScreenToVector( gui.MousePos() ) )
 	end
 	g_ContextMenu.OnMouseReleased = function( p, code )
-		hook.Run( "GUIMouseReleased", code, gui.ScreenToVector( input.GetCursorPos() ) )
+		hook.Run( "GUIMouseReleased", code, gui.ScreenToVector( gui.MousePos() ) )
 	end
 
 	hook.Run( "ContextMenuCreated", g_ContextMenu )

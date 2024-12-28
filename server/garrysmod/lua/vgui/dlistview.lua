@@ -66,7 +66,7 @@ function PANEL:AddColumn( strName, iPosition )
 			ErrorNoHaltWithStack( "Attempted to insert column at invalid position ", iPosition )
 			return
 		end
-
+	
 		if ( IsValid( self.Columns[ iPosition ] ) ) then
 			ErrorNoHaltWithStack( "Attempted to insert duplicate column." )
 			return
@@ -450,6 +450,8 @@ end
 
 function PANEL:SortByColumns( c1, d1, c2, d2, c3, d3, c4, d4 )
 
+	table.Copy( self.Sorted, self.Lines )
+
 	table.sort( self.Sorted, function( a, b )
 
 		if ( !IsValid( a ) ) then return true end
@@ -484,6 +486,8 @@ function PANEL:SortByColumns( c1, d1, c2, d2, c3, d3, c4, d4 )
 end
 
 function PANEL:SortByColumn( ColumnID, Desc )
+
+	table.Copy( self.Sorted, self.Lines )
 
 	table.sort( self.Sorted, function( a, b )
 
@@ -577,7 +581,7 @@ function PANEL:GenerateExample( ClassName, PropertySheet, Width, Height )
 
 	local ctrl = vgui.Create( ClassName )
 
-	ctrl:AddColumn( "Address" )
+	local Col1 = ctrl:AddColumn( "Address" )
 	local Col2 = ctrl:AddColumn( "Port" )
 
 	Col2:SetFixedWidth( 30 )

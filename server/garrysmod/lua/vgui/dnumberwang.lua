@@ -24,6 +24,13 @@ local function UnAnchorValue( wang, button, mcode )
 
 end
 
+-- ScrollValue function is internally used for "scrolling" the value using mouse wheel
+local function ScrollValue( wang, button, delta )
+
+	wang:SetValue( wang:GetValue() + delta )
+
+end
+
 function PANEL:Init()
 
 	self:SetDecimals( 2 )
@@ -116,6 +123,7 @@ function PANEL:SetValue( val )
 
 	if ( val == nil ) then return end
 
+	local OldValue = val
 	val = tonumber( val )
 	val = val or 0
 
@@ -127,22 +135,17 @@ function PANEL:SetValue( val )
 		val = math.max( self.m_numMin, val )
 	end
 
-	local valText
 	if ( self.m_iDecimals == 0 ) then
 
-		valText = Format( "%i", val )
+		val = Format( "%i", val )
 
 	elseif ( val != 0 ) then
 
-		valText = Format( "%." .. self.m_iDecimals .. "f", val )
+		val = Format( "%." .. self.m_iDecimals .. "f", val )
 
 		-- Trim trailing 0's and .'s 0 this gets rid of .00 etc
-		valText = string.TrimRight( valText, "0" )
-		valText = string.TrimRight( valText, "." )
-
-	else
-
-		valText = tostring( val )
+		val = string.TrimRight( val, "0" )
+		val = string.TrimRight( val, "." )
 
 	end
 
@@ -153,8 +156,8 @@ function PANEL:SetValue( val )
 	-- It causes confusion!
 	--
 	if ( !self:HasFocus() ) then
-		self:SetText( valText )
-		self:ConVarChanged( valText )
+		self:SetText( val )
+		self:ConVarChanged( val )
 	end
 
 	if ( hasChanged ) then
@@ -201,7 +204,7 @@ function PANEL:SizeToContents()
 
 	if ( self:GetDecimals() && self:GetDecimals() > 0 ) then
 
-		chars = chars + 1
+		chars = chars + 1 -- .
 		chars = chars + self:GetDecimals()
 
 	end
@@ -223,7 +226,7 @@ end
 
 function PANEL:SetFraction( val )
 
-	local Fraction = self.m_numMin + ( ( self.m_numMax - self.m_numMin ) * val )
+	local Fraction = self.m_numMin + ( (self.m_numMax - self.m_numMin) * val )
 	self:SetValue( Fraction )
 
 end

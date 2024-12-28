@@ -9,13 +9,11 @@ AccessorFunc( PANEL, "m_bDoSort", "SortItems", FORCE_BOOL )
 
 function PANEL:Init()
 
-	-- Create button
 	self.DropButton = vgui.Create( "DPanel", self )
 	self.DropButton.Paint = function( panel, w, h ) derma.SkinHook( "Paint", "ComboDownArrow", panel, w, h ) end
 	self.DropButton:SetMouseInputEnabled( false )
 	self.DropButton.ComboBox = self
 
-	-- Setup internals
 	self:SetTall( 22 )
 	self:Clear()
 
@@ -35,19 +33,22 @@ function PANEL:Clear()
 	self.Spacers = {}
 	self.selected = nil
 
-	self:CloseMenu()
+	if ( self.Menu ) then
+		self.Menu:Remove()
+		self.Menu = nil
+	end
 
 end
 
-function PANEL:GetOptionText( index )
+function PANEL:GetOptionText( id )
 
-	return self.Choices[ index ]
+	return self.Choices[ id ]
 
 end
 
-function PANEL:GetOptionData( index )
+function PANEL:GetOptionData( id )
 
-	return self.Data[ index ]
+	return self.Data[ id ]
 
 end
 
@@ -71,7 +72,7 @@ function PANEL:GetOptionTextByData( data )
 
 end
 
-function PANEL:PerformLayout( w, h )
+function PANEL:PerformLayout()
 
 	self.DropButton:SetSize( 15, 15 )
 	self.DropButton:AlignRight( 4 )
@@ -84,12 +85,15 @@ end
 
 function PANEL:ChooseOption( value, index )
 
-	self:CloseMenu()
+	if ( self.Menu ) then
+		self.Menu:Remove()
+		self.Menu = nil
+	end
+
 	self:SetText( value )
 
-	-- This should really be the here, but it is too late now and convar
-	-- changes are handled differently by different child elements
-	-- self:ConVarChanged( self.Data[ index ] )
+	-- This should really be the here, but it is too late now and convar changes are handled differently by different child elements
+	--self:ConVarChanged( self.Data[ index ] )
 
 	self.selected = index
 	self:OnSelect( index, value, self.Data[ index ] )
@@ -137,33 +141,23 @@ end
 
 function PANEL:AddChoice( value, data, select, icon )
 
-	local index = table.insert( self.Choices, value )
+	local i = table.insert( self.Choices, value )
 
 	if ( data ) then
-		self.Data[ index ] = data
+		self.Data[ i ] = data
 	end
-
+	
 	if ( icon ) then
-		self.ChoiceIcons[ index ] = icon
+		self.ChoiceIcons[ i ] = icon
 	end
 
 	if ( select ) then
 
-		self:ChooseOption( value, index )
+		self:ChooseOption( value, i )
 
 	end
 
-	return index
-
-end
-
-function PANEL:RemoveChoice( index )
-
-	if ( !isnumber( index ) ) then return end
-
-	local text = table.remove( self.Choices, index )
-	local data = table.remove( self.Data, index )
-	return text, data
+	return i
 
 end
 
@@ -184,10 +178,12 @@ function PANEL:OpenMenu( pControlOpener )
 
 	-- If the menu still exists and hasn't been deleted
 	-- then just close it and don't open a new one.
-	self:CloseMenu()
+	if ( IsValid( self.Menu ) ) then
+		self.Menu:Remove()
+		self.Menu = nil
+	end
 
-	-- If we have a modal parent at some level, we gotta parent to
-	-- that or our menu items are not gonna be selectable
+	-- If we have a modal parent at some level, we gotta parent to that or our menu items are not gonna be selectable
 	local parent = self
 	while ( IsValid( parent ) && !parent:IsModal() ) do
 		parent = parent:GetParent()
@@ -200,7 +196,7 @@ function PANEL:OpenMenu( pControlOpener )
 		local sorted = {}
 		for k, v in pairs( self.Choices ) do
 			local val = tostring( v ) --tonumber( v ) || v -- This would make nicer number sorting, but SortedPairsByMemberValue doesn't seem to like number-string mixing
-			if ( string.len( val ) > 1 && !tonumber( val ) && val:StartsWith( "#" ) ) then val = language.GetPhrase( val:sub( 2 ) ) end
+			if ( string.len( val ) > 1 && !tonumber( val ) && val:StartWith( "#" ) ) then val = language.GetPhrase( val:sub( 2 ) ) end
 			table.insert( sorted, { id = k, data = v, label = val } )
 		end
 		for k, v in SortedPairsByMemberValue( sorted, "label" ) do
@@ -238,8 +234,6 @@ function PANEL:CloseMenu()
 	if ( IsValid( self.Menu ) ) then
 		self.Menu:Remove()
 	end
-
-	self.Menu = nil
 
 end
 

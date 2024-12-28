@@ -38,7 +38,7 @@ SWEP.Secondary.Delay       = 0.5
 
 SWEP.NoSights              = true
 
-SWEP.Kind                  = WEAPON_EQUIP2
+SWEP.Kind                  = WEAPON_NEWTON
 SWEP.CanBuy                = {ROLE_TRAITOR}
 SWEP.WeaponID              = AMMO_PUSH
 
@@ -129,10 +129,10 @@ function SWEP:FirePulse(force_fwd, force_up)
 
 end
 
-local CHARGE_FORCE_FWD_MIN = 300
-local CHARGE_FORCE_FWD_MAX = 700
-local CHARGE_FORCE_UP_MIN = 100
-local CHARGE_FORCE_UP_MAX = 350
+local CHARGE_FORCE_FWD_MIN = 1000
+local CHARGE_FORCE_FWD_MAX = 3500
+local CHARGE_FORCE_UP_MIN = 1000
+local CHARGE_FORCE_UP_MAX = 3500
 function SWEP:ChargedAttack()
    local charge = math.Clamp(self:GetCharge(), 0, 1)
    

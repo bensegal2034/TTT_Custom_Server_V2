@@ -21,52 +21,11 @@ local function AddRecursive( pnl, folder, path, wildcard )
 	for k, v in ipairs( folders ) do
 
 		local added_rec = AddRecursive( pnl, folder .. v .. "/", path, wildcard )
-		added = added || added_rec
+		added = added or added_rec
 
 	end
 
 	return added
-
-end
-
-local function recurseAddFilesSpawnlist( folder, pathid, list )
-
-	local addedLabel = false
-
-	local files, folders = file.Find( folder .. "/*", pathid )
-	for id, file in pairs( files or {} ) do
-		if ( file:EndsWith( ".mdl" ) ) then
-			if ( !addedLabel ) then
-				table.insert( list, { type = "header", text = folder } )
-				addedLabel = true
-			end
-
-			table.insert( list, { type = "model", model = folder .. "/" .. file } )
-		end
-	end
-
-	for id, fold in pairs( folders or {} ) do
-		recurseAddFilesSpawnlist( folder .. "/" .. fold, pathid, list )
-	end
-
-end
-
-
-local function GenerateSpawnlistFromAddon( folder, path, name )
-
-	local contents = {}
-	recurseAddFilesSpawnlist( folder, path, contents )
-
-	AddPropsOfParent( g_SpawnMenu.CustomizableSpawnlistNode.SMContentPanel, g_SpawnMenu.CustomizableSpawnlistNode, 0, { [ folder ] = {
-		icon = "icon16/page.png",
-		id = math.random( 0, 999999 ), -- Eeehhhh
-		name = name or folder,
-		parentid = 0,
-		contents = contents
-	} } )
-
-	-- We added a new spawnlist, show the save changes button
-	hook.Run( "SpawnlistContentChanged" )
 
 end
 
@@ -79,15 +38,9 @@ local function AddonsRightClick( self )
 		steamworks.ViewFile( self.wsid )
 	end ):SetIcon( "icon16/link_go.png" )
 
-	menu:AddOption( "#spawnmenu.createautospawnlist", function()
-
-		GenerateSpawnlistFromAddon( "models", self.searchPath, self.searchPath )
-
-	end ):SetIcon( "icon16/page_add.png" )
 	menu:Open()
 
 end
-
 
 local function RefreshAddons( MyNode )
 
@@ -101,26 +54,16 @@ local function RefreshAddons( MyNode )
 		local models = MyNode:AddNode( addon.title .. " (" .. addon.models .. ")", "icon16/bricks.png" )
 		models.DoClick = function()
 
-			ViewPanel:Clear()
+			ViewPanel:Clear( true )
 
 			local anyAdded = AddRecursive( ViewPanel, "models/", addon.title, "*.mdl" )
 			if ( !anyAdded ) then
-				local text = "<font=ContentHeader>" .. language.GetPhrase( "spawnmenu.failedtofindmodels" ) .. "\n\n" ..  tostring( addon.title ) .. " (ID: " .. tostring( addon.wsid ) .. ")" .. "</font>"
+				local cp = spawnmenu.GetContentType( "header" )
+				if ( cp ) then cp( ViewPanel, { text = "#spawnmenu.failedtofindmodels" } ) end
 
-				local msg = vgui.Create( "Panel", ViewPanel )
-				msg.Paint = function( s, w, h )
-					-- Shadow. Ew.
-					local parsedShadow = markup.Parse( "<colour=0,0,0,130>" .. text .. "</colour>", s:GetParent():GetWide() )
-					parsedShadow:Draw( 2, 2 )
-
-					-- The actual text
-					local parsed = markup.Parse( text, s:GetParent():GetWide() )
-					parsed:Draw( 0, 0 )
-
-					-- Size to contents. Ew.
-					s:SetSize( parsed:GetWidth(), parsed:GetHeight() )
-				end
-				ViewPanel:Add( msg )
+				-- For debugging
+				local cp = spawnmenu.GetContentType( "header" )
+				if ( cp ) then cp( ViewPanel, { text = tostring( addon.title ) .. " (ID: " .. tostring( addon.wsid ) .. ")" } ) end
 			end
 
 			MyNode.pnlContent:SwitchPanel( ViewPanel )
@@ -128,7 +71,6 @@ local function RefreshAddons( MyNode )
 		end
 		models.DoRightClick = AddonsRightClick
 		models.wsid = addon.wsid
-		models.searchPath = addon.title
 
 	end
 
@@ -155,7 +97,7 @@ hook.Add( "GameContentChanged", "RefreshSpawnmenuAddons", function()
 
 	-- TODO: Maybe be more advaced and do not delete => recreate all the nodes, only delete nodes for addons that were removed, add only the new ones?
 	myAddonsNode:Clear()
-	myAddonsNode.ViewPanel:Clear()
+	myAddonsNode.ViewPanel:Clear( true )
 
 	RefreshAddons( myAddonsNode )
 

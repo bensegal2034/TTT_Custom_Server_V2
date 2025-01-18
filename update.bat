@@ -1,2 +1,3 @@
 @echo off
-steamcmd +runscript updategmod.txt
+steamcmd +runscript update.txt
+pause

@@ -35,6 +35,12 @@ function TOOL:LeftClick( trace )
 			return true
 		end
 
+		local ply = self:GetOwner()
+		if ( !ply:CheckLimit( "ropeconstraints" ) ) then
+			self:ClearObjects()
+			return false
+		end
+	
 		-- Get client's CVars
 		local width = self:GetClientNumber( "width", 1.5 )
 		local material = self:GetClientInfo( "material" )
@@ -48,16 +54,17 @@ function TOOL:LeftClick( trace )
 		local Bone1, Bone2 = self:GetBone( 1 ), self:GetBone( 2 )
 		local LPos1, LPos2 = self:GetLocalPos( 1 ), self:GetLocalPos( 2 )
 
-		local constr, rope = constraint.Slider( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, width, material, Color( colorR, colorG, colorB, 255 ) )
+		local constr, rope = constraint.Slider( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, width, material, Color( colorR, colorG, colorB ) )
 		if ( IsValid( constr ) ) then
 			undo.Create( "Slider" )
 				undo.AddEntity( constr )
 				if ( IsValid( rope ) ) then undo.AddEntity( rope ) end
-				undo.SetPlayer( self:GetOwner() )
+				undo.SetPlayer( ply )
 			undo.Finish()
 
-			self:GetOwner():AddCleanup( "ropeconstraints", constr )
-			if ( IsValid( rope ) ) then self:GetOwner():AddCleanup( "ropeconstraints", rope ) end
+			ply:AddCount( "ropeconstraints", constr )
+			ply:AddCleanup( "ropeconstraints", constr )
+			if ( IsValid( rope ) ) then ply:AddCleanup( "ropeconstraints", rope ) end
 		end
 
 		-- Clear the objects so we're ready to go again
@@ -80,16 +87,15 @@ function TOOL:RightClick( trace )
 	local Phys = trace.Entity:GetPhysicsObjectNum( trace.PhysicsBone )
 	self:SetObject( 1, trace.Entity, trace.HitPos, Phys, trace.PhysicsBone, trace.HitNormal )
 
-	local tr = {}
-	tr.start = trace.HitPos
-	tr.endpos = tr.start + ( trace.HitNormal * 16384 )
-	tr.filter = {}
-	tr.filter[ 1 ] = self:GetOwner()
+	local tr_new = {}
+	tr_new.start = trace.HitPos
+	tr_new.endpos = trace.HitPos + ( trace.HitNormal * 16384 )
+	tr_new.filter = { self:GetOwner() }
 	if ( IsValid( trace.Entity ) ) then
-		tr.filter[ 2 ] = trace.Entity
+		table.insert( tr_new.filter, trace.Entity )
 	end
 
-	local tr = util.TraceLine( tr )
+	local tr = util.TraceLine( tr_new )
 	if ( !tr.Hit ) then
 		self:ClearObjects()
 		return
@@ -124,6 +130,12 @@ function TOOL:RightClick( trace )
 		return true
 	end
 
+	local ply = self:GetOwner()
+	if ( !ply:CheckLimit( "ropeconstraints" ) ) then
+		self:ClearObjects()
+		return false
+	end
+
 	local width = self:GetClientNumber( "width", 1.5 )
 	local material = self:GetClientInfo( "material" )
 
@@ -136,16 +148,17 @@ function TOOL:RightClick( trace )
 	local Bone1, Bone2 = self:GetBone( 1 ), self:GetBone( 2 )
 	local LPos1, LPos2 = self:GetLocalPos( 1 ),	self:GetLocalPos( 2 )
 
-	local constr, rope = constraint.Slider( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, width, material, Color( colorR, colorG, colorB, 255 ) )
+	local constr, rope = constraint.Slider( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, width, material, Color( colorR, colorG, colorB ) )
 	if ( IsValid( constr ) ) then
 		undo.Create( "Slider" )
 			undo.AddEntity( constr )
 			if ( IsValid( rope ) ) then undo.AddEntity( rope ) end
-			undo.SetPlayer( self:GetOwner() )
+			undo.SetPlayer( ply )
 		undo.Finish()
 
-		self:GetOwner():AddCleanup( "ropeconstraints", constr )
-		if ( IsValid( rope ) ) then self:GetOwner():AddCleanup( "ropeconstraints", rope ) end
+		ply:AddCount( "ropeconstraints", constr )
+		ply:AddCleanup( "ropeconstraints", constr )
+		if ( IsValid( rope ) ) then ply:AddCleanup( "ropeconstraints", rope ) end
 	end
 
 	-- Clear the objects so we're ready to go again

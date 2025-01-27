@@ -1,8 +1,11 @@
 local HolsteredWeapon = "weapon_ttt_unarmed" -- this could be changed by TTT gamemode at any time
 
 function WasCuffed(ply)
-    return ply:Alive()
-    and ply:GetNWBool("TTT_Handcuffed")
+    if IsValid(ply) then
+        return ply:Alive() and ply:GetNWBool("TTT_Handcuffed")
+    else
+        return false
+    end
 end
 
 

@@ -265,6 +265,7 @@ function SWEP:Holster(...)
    if (self.StateValue == 1) then
       local colDefault = Color(255,255,255,255)
       if IsValid(self:GetOwner()) then
+         self:SetColor(colDefault)
          self:GetOwner():GetViewModel():SetColor(colDefault)
          self:GetOwner():SetColor(colDefault)
       end

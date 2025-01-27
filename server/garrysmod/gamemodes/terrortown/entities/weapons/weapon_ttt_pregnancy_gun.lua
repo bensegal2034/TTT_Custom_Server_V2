@@ -142,7 +142,7 @@ function SWEP:PrimaryAttack()
 			return
 		end
 
-		local gren = ents.Create("sent_molotov")
+		local gren = ents.Create("pgun_proj")
 		if not IsValid(gren) then return end
 
 		gren:SetPos(entity:EyePos())

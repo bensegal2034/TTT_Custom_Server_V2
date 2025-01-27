@@ -192,8 +192,6 @@ SWEP.TempClip = 0
 SWEP.HeadshotMultiplier  = 2
 SWEP.WeaponTimer = 0
 
-SWEP.DamageType = "Impact"
-
 SWEP.Primary.PenetrationMultiplier = 2 --Change the amount of something this gun can penetrate through
 
 SWEP.Secondary.ClipSize = 0
@@ -210,6 +208,12 @@ SWEP.InspectAng = Vector(13.536, 20.951, 13.949)
 --[[SPRINTING]]--
 SWEP.RunSightsPos = Vector(1.559, 5, -1.13)
 SWEP.RunSightsAng = Vector(-24.535, 23.375, -25.553)
+
+SWEP.SpeedBoost = .75
+SWEP.Reloaded = false
+SWEP.SpeedBoostRemoved = false
+SWEP.DamageType            = "Impact"
+SWEP.HealthBoost = 1.25
 
 sound.Add({
 	name = 			"Weapon_FML_ALDA556.Pew",
@@ -342,28 +346,60 @@ function SWEP:GetPrimaryCone()
 	-- 15% accuracy bonus when sighting
 	return self:GetIronsights() and (cone * 0.85) or cone
 end
- 
-function SWEP:AutoReload()
-	if IsValid(self.Owner) and self.Owner:Alive() then
-		if self.Owner:GetActiveWeapon():GetClass() != "weapon_ttt_alda" then 
-			self.TempClip = self:GetMaxClip1() - self:Clip1()
-			print(self.TempClip)
-			if SERVER then
-				if self:Ammo1() > (self.Primary.ClipSize - self:Clip1()) then
-					self.Owner:SetAmmo(self:Ammo1() - self.Primary.ClipSize + self:Clip1(), self.Primary.Ammo)
-					self:SetClip1(self.Primary.ClipSize)
+
+hook.Add("TTTPrepareRound", "ResetAlda", function()
+	if SERVER then
+	   local rf = RecipientFilter()
+	   rf:AddAllPlayers()
+	   players = rf:GetPlayers()
+	   for i = 1, #players do
+		  players[i]:SetWalkSpeed(220)
+		  players[i]:SetHealth(100)
+		  players[i]:SetMaxHealth(100)
+	   end
+	end
+end)
+
+function SWEP:Holster()
+	if IsValid(self.Owner) and self.Owner:IsPlayer() then
+		if self.SpeedBoostRemoved == false then
+			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
+			if self.Owner:Health() > self.HealthBoost then
+				self.Owner:SetHealth(self.Owner:Health() / self.HealthBoost)
+				if server then
+					self.Owner:SetMaxHealth(100)
 				end
-		
-				if (self:Ammo1() - self.Primary.ClipSize + self:Clip1()) + self:Clip1() < self.Primary.ClipSize then
-					self:SetClip1(self:Clip1() + self:Ammo1())
-					self.Owner:SetAmmo(0, self.Primary.Ammo)
-				end
-			end	
+			end
+		end
+	end
+	return true
+end
+
+function SWEP:Deploy()
+	if IsValid(self.Owner) and self.Owner:IsPlayer() then
+		if (self:Clip1() >= 1) then
+			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
+			if server then
+				self.Owner:SetMaxHealth(125)
+			end
+			if self.Owner:Health() > 5 then
+				self.Owner:SetHealth(self.Owner:Health() * self.HealthBoost)
+			end
 		end
 	end
 end
 
-function SWEP:Holster()
-	timer.Simple(5, function() self:AutoReload() end)
-	return true
+function SWEP:Think()
+	if ((self:Clip1() <= 1) and self.Reloaded == false) then
+		if self.SpeedBoostRemoved == false then
+			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
+			if server then
+				self.Owner:SetMaxHealth(100)
+			end
+			if self.Owner:Health() > self.HealthBoost then
+				self.Owner:SetHealth(self.Owner:Health() / self.HealthBoost)
+			end
+			self.SpeedBoostRemoved = true
+		end
+	end
 end

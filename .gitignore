@@ -23,3 +23,5 @@ server/garrysmod/data/mapvote/recentmaps.txt
 *.lst
 *.pyc
 *.bz2
+server/platform/config/DedicatedServerDialogConfig.vdf
+server/platform/config/Server.vdf

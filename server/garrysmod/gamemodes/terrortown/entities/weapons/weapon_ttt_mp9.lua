@@ -18,6 +18,7 @@ if SERVER then
 	resource.AddFile("sound/weapons/mp9/fire02.wav")
 	resource.AddFile("sound/weapons/mp9/fire03.wav")
 	resource.AddFile("sound/weapons/mp9/fire04.wav")
+	resource.AddFile("materials/vgui/ttt/icon_mp9.vmt")
 	resource.AddWorkshop("2180833718")
 end
 
@@ -60,6 +61,7 @@ end
 SWEP.Base					= "weapon_tttbase"
 SWEP.Kind					= WEAPON_HEAVY
 SWEP.Slot 					= 2
+SWEP.Icon = "VGUI/ttt/icon_mp9"
 
 SWEP.PrintName				= "MP9"
 SWEP.Category				= "CS:GO"
@@ -76,7 +78,7 @@ SWEP.HeadshotMultiplier		= 2
 SWEP.Primary.NumShots       = 1
 SWEP.Primary.Cone           = 0.07
 SWEP.Primary.Delay          = 0.09
-
+SWEP.DamageType 			= "Impact"
 
 SWEP.Primary.Ammo = "SMG1"
 SWEP.AmmoEnt = "item_ammo_smg1_ttt"
@@ -94,7 +96,7 @@ SWEP.DeploySpeed			= 1
 SWEP.Primary.Recoil = 0.8
 
 
-SWEP.IronSightsPos			= Vector( -4.73, 0, 2.65 )
+SWEP.IronSightsPos			= Vector( -4.73, 0, 0 )
 SWEP.IronSightsAng			= Vector( 1, 0.1, -1 )
 SWEP.IronSightsFov			= 60
 SWEP.IronSightsTime			= 0.25

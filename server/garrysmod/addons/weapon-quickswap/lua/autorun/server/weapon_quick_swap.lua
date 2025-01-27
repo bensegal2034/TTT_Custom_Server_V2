@@ -26,10 +26,7 @@ hook.Add("InitPostEntity", "WQS.QuickSwapInit", function()
             end
         end
 
-        canPickupWeapon = hook.Run("PlayerCanPickupWeapon")
-        print(canPickupWeapon)
-
-        if not IsValid(eWeapon) and canPickupWeapon then pPlayer:PickupWeapon(self); return end -- can carry, pick up
+        if not IsValid(eWeapon) and hook.Run("PlayerCanPickupWeapon") then pPlayer:PickupWeapon(self); return end -- can carry, pick up
 
         pPlayer.NextWeaponSwapTime = 2 + CurTime() -- add cooldown
 

@@ -28,7 +28,7 @@ SWEP.UseHands               = true
 SWEP.ViewModel              = "models/weapons/v_knife_t.mdl"
 SWEP.WorldModel             = "models/weapons/w_knife_ct_real_not_fake.mdl"
 
-SWEP.Primary.Damage         = 100
+SWEP.Primary.Damage         = 999
 SWEP.Primary.ClipSize       = -1
 SWEP.Primary.DefaultClip    = -1
 SWEP.Primary.Automatic      = true

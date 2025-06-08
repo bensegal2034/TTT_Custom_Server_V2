@@ -1,4 +1,4 @@
 import startserver, subprocess
-
-startserver.start()
-subprocess.run(["start", "cmd", "/K", "npm start --prefix ./FastDL"], shell=True)
+if __name__ == "__main__":
+    startserver.start()
+    subprocess.run(["start", "cmd", "/K", "npm start --prefix ./FastDL"], shell=True)

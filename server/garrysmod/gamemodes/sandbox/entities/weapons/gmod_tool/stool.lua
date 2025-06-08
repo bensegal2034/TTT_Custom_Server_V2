@@ -147,6 +147,11 @@ for _, val in ipairs( file.Find( SWEP.Folder .. "/stools/*.lua", "LUA" ) ) do
 
 	local _, _, toolmode = string.find( val, "([%w_]*).lua" )
 
+	-- In multiplayer, the clientside filename is always lowercase (due to the Lua datapack)
+	-- So ensure that the toolmode matches between client and server,
+	-- when the serverside name is not all lowercase
+	toolmode = toolmode:lower()
+
 	TOOL = ToolObj:Create()
 	TOOL.Mode = toolmode
 
@@ -236,7 +241,7 @@ spawnmenu.AddContentType( "tool", function( container, obj )
 	local icon = vgui.Create( "ContentIcon", container )
 	icon:SetContentType( "tool" )
 	icon:SetSpawnName( obj.spawnname )
-	icon:SetName( obj.nicename or "#tool." .. obj.spawnname .. ".name" )
+	icon:SetName( obj.nicename or ( "#tool." .. obj.spawnname .. ".name" ) )
 	icon:SetMaterial( "gui/tool.png" )
 
 	icon.DoClick = function()
@@ -247,19 +252,7 @@ spawnmenu.AddContentType( "tool", function( container, obj )
 
 	end
 
-	icon.OpenMenu = function( pnl )
-
-		-- Do not allow removal from read only panels
-		if ( IsValid( pnl:GetParent() ) and pnl:GetParent().GetReadOnly and pnl:GetParent():GetReadOnly() ) then return end
-
-		local menu = DermaMenu()
-			menu:AddOption( "#spawnmenu.menu.delete", function()
-				pnl:Remove()
-				hook.Run( "SpawnlistContentChanged" )
-			end ):SetIcon( "icon16/bin_closed.png" )
-		menu:Open()
-
-	end
+	icon.OpenMenu = icon.OpenGenericSpawnmenuRightClickMenu
 
 	if ( IsValid( container ) ) then
 		container:Add( icon )

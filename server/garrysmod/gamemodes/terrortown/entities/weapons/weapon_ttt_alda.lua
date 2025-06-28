@@ -365,7 +365,11 @@ function SWEP:Holster()
 		if self.SpeedBoostRemoved == false then
 			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
 			if self.Owner:Health() > self.HealthBoost then
-				self.Owner:SetHealth(self.Owner:Health() / self.HealthBoost)
+				if GetRoundState() != ROUND_PREP then
+					self.Owner:SetHealth(self.Owner:Health() / self.HealthBoost)
+				else
+					self.Owner:SetHealth(100)
+				end
 				if server then
 					self.Owner:SetMaxHealth(100)
 				end

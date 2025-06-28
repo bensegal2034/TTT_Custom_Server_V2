@@ -51,6 +51,16 @@ SWEP.Primary.Ammo = "none"
 SWEP.Weight = 7
 SWEP.DrawAmmo = true
 
+if SERVER then
+    hook.Add("ScalePlayerDamage", "BuffCombineSniperFuckYouGarryNewman", function(target, hitgroup, dmginfo)
+        if not IsValid(dmginfo:GetAttacker()) then return end
+
+        if dmginfo:GetAttacker():GetClass() == "npc_sniper" then
+            dmginfo:SetDamage(9999)
+        end
+    end)
+end
+
 function SWEP:PrimaryAttack(worldsnd)
     local tr = self:GetOwner():GetEyeTrace()
     local tracedata = {}

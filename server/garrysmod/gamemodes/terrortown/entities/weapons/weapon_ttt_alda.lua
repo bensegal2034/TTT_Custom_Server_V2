@@ -177,7 +177,7 @@ SWEP.CrouchAccuracyMultiplier = 0.75 --Less is more.  Accuracy * 0.5 = Twice as 
 -- Selective Fire Stuff
 
 SWEP.Primary.Sound = Sound("weapons/mw19_m249/m249_suppressed_tp.wav")
-SWEP.Primary.Damage = 12
+SWEP.Primary.Damage = 14
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 80
 SWEP.Primary.Ammo = "SMG1"
@@ -278,6 +278,8 @@ sound.Add({
 	sound = 			"weapons/mw19_m249/m249_beltpullout.wav" 
 })
 
+
+
 function SWEP:OnDrop()
 	if SERVER then
 		local mins, maxs = self:GetModelBounds()
@@ -347,29 +349,13 @@ function SWEP:GetPrimaryCone()
 	return self:GetIronsights() and (cone * 0.85) or cone
 end
 
-hook.Add("TTTPrepareRound", "ResetAlda", function()
-	if SERVER then
-	   local rf = RecipientFilter()
-	   rf:AddAllPlayers()
-	   players = rf:GetPlayers()
-	   for i = 1, #players do
-		  players[i]:SetWalkSpeed(220)
-		  players[i]:SetHealth(100)
-		  players[i]:SetMaxHealth(100)
-	   end
-	end
-end)
 
 function SWEP:Holster()
 	if IsValid(self.Owner) and self.Owner:IsPlayer() then
 		if self.SpeedBoostRemoved == false then
 			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
 			if self.Owner:Health() > self.HealthBoost then
-				if GetRoundState() != ROUND_PREP then
-					self.Owner:SetHealth(self.Owner:Health() / self.HealthBoost)
-				else
-					self.Owner:SetHealth(100)
-				end
+				self.Owner:SetHealth(self.Owner:Health() / self.HealthBoost)
 				if server then
 					self.Owner:SetMaxHealth(100)
 				end
@@ -407,3 +393,24 @@ function SWEP:Think()
 		end
 	end
 end
+
+hook.Add("TTTPrepareRound", "ResetAlda", function()
+	if SERVER then
+	   local rf = RecipientFilter()
+	   rf:AddAllPlayers()
+	   players = rf:GetPlayers()
+	   for i = 1, #players do
+		  players[i]:SetWalkSpeed(220)
+		  players[i]:SetHealth(100)
+		  players[i]:SetMaxHealth(100)
+	   end
+	end
+end)
+
+hook.Add("TTTBeginRound", "AldaStartingHealth", function()
+	for _, ply in ipairs( player.GetAll() ) do
+		if ply:GetActiveWeapon():GetClass() == "weapon_ttt_alda" then
+			ply:SetHealth(125)
+		end
+	end
+end)

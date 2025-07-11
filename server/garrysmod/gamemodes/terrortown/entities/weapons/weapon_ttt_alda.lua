@@ -409,6 +409,9 @@ end)
 
 hook.Add("TTTBeginRound", "AldaStartingHealth", function()
 	for _, ply in ipairs( player.GetAll() ) do
+		if !IsValid(ply:GetActiveWeapon()) or !IsValid(ply) then
+			continue
+      	end
 		if ply:GetActiveWeapon():GetClass() == "weapon_ttt_alda" then
 			ply:SetHealth(125)
 		end

@@ -273,10 +273,8 @@ function SWEP:SecondaryAttack()
     local bIronsights = not self:GetIronsights()
 
     self:SetIronsights( bIronsights )
-
-    if SERVER then
-        self:SetZoom(bIronsights)
-     else
+	self:SetZoom(bIronsights)
+    if CLIENT then
         self:EmitSound(self.Secondary.Sound)
     end
 
@@ -454,6 +452,7 @@ hook.Add("ScalePlayerDamage", "AugStackOnHit", function(target, hitgroup, dmginf
 	   not IsValid(dmginfo:GetAttacker())
 	   or not dmginfo:GetAttacker():IsPlayer()
 	   or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+	   or not GetRoundState() == ROUND_ACTIVE
 	then
 	   return
 	end

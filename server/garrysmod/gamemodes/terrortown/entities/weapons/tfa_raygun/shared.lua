@@ -133,6 +133,7 @@ if SERVER then
 		if not IsValid(ply) or not ply:IsPlayer() then return end
 
 		if dmginfo:GetInflictor():GetClass() == "obj_rgun_proj" and GetRoundState() == ROUND_PREP then
+			dmginfo:SetInflictor(self)
 			return true
 		end
 	end)

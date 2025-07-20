@@ -278,7 +278,9 @@ sound.Add({
 	sound = 			"weapons/mw19_m249/m249_beltpullout.wav" 
 })
 
-
+function SWEP:PreDrop()
+   return self.BaseClass.PreDrop( self )
+end
 
 function SWEP:OnDrop()
 	if SERVER then
@@ -287,7 +289,6 @@ function SWEP:OnDrop()
 		maxs:Mul(0.5)
 		
 		local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
-		print(result)
 		--[[
 		local phys = self:GetPhysicsObject()
 		phys:Wake()
@@ -417,3 +418,4 @@ hook.Add("TTTBeginRound", "AldaStartingHealth", function()
 		end
 	end
 end)
+

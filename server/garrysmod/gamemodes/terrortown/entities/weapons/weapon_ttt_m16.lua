@@ -22,7 +22,7 @@ SWEP.Primary.Delay         = 0
 SWEP.Primary.Recoil        = 1.4
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "Pistol"
-SWEP.Primary.Damage        = 35
+SWEP.Primary.Damage        = 30
 SWEP.Primary.Cone          = 0.008
 SWEP.Primary.ClipSize      = 20
 SWEP.Primary.ClipMax       = 60
@@ -74,7 +74,6 @@ function SWEP:PrimaryAttack(worldsnd)
 
    self:TakePrimaryAmmo( 1 )
    self.ClickTime = CurTime()
-   print(self.ClickTimer)
    local owner = self:GetOwner()
    if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
 
@@ -159,7 +158,7 @@ function SWEP:Think()
    if self.ClickTimer < .14 then
       self.ClickDamage = self.ClickTimer * 175
    else
-      self.ClickDamage = 35
+      self.ClickDamage = 25
    end
    self.Primary.Damage = math.min(self.ClickDamage, 35)
    self:CalcViewModel()

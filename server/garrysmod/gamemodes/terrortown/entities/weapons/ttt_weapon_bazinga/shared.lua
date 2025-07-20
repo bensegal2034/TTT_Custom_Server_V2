@@ -61,9 +61,8 @@ self.Weapon:SetNextPrimaryFire(CurTime() + 3)
 		
 	// The rest is only done on the server
 	if (SERVER) then
-		timer.Simple(2, function() self:Asplode() end )
+		timer.Simple(1.75, function() self:Asplode() end )
 		self.Owner:EmitSound( "weapons/bazinga/b1.wav" )
-		print("2")
 		wait = 200
 		self.Owner:EmitSound( "weapons/bazinga/laugh" .. math.random(1,3) .. ".wav" )
 	end
@@ -78,7 +77,7 @@ local k, v
 		ent:SetPos( self.Owner:GetPos() )
 		ent:SetOwner( self.Owner )
 		ent:Spawn()
-		ent:SetKeyValue( "iMagnitude", "250" )
+		ent:SetKeyValue( "iMagnitude", "300" )
 		ent:Fire( "Explode", 0, 0 )
 		ent:EmitSound( "explosion.wav", 100, 100 )
 		

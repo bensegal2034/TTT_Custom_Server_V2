@@ -64,7 +64,7 @@ SWEP.MagReset = false
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_revolver_ttt"
 SWEP.Primary.Sound			= "weapons/r_bull/r-bull-1.wav"
-SWEP.DamageType            = "Impact"
+SWEP.DamageType            = "Puncture"
 SWEP.UseHands			= false
 SWEP.ViewModelFlip		= true
 SWEP.ViewModelFOV		= 80
@@ -138,7 +138,7 @@ function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end
 
 	if self:Clip1() == self:GetHoldingAces() then
-		damage = damage * 3
+		damage = damage * 5
 		self.Hawkmoon = true
 	end
 		

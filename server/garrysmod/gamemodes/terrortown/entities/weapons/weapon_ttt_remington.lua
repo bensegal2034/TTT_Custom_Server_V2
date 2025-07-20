@@ -96,7 +96,7 @@ SWEP.ScopeScale 			= 0.7
 SWEP.ReticleScale 			= 0.6
 
 SWEP.Primary.NumShots	= 1		--how many bullets to shoot per trigger pull
-SWEP.Primary.Damage		= 65	--base damage per bullet
+SWEP.Primary.Damage		= 70	--base damage per bullet
 SWEP.Primary.Cone		= .3	--define from-the-hip accuracy 1 is terrible, .0001 is exact)
 
 -- enter iron sight info and bone mod info below
@@ -362,7 +362,7 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
    
 	local MaxPenetration
 
-	MaxPenetration = 90
+	MaxPenetration = 500
 
 	local DoDefaultEffect = false
 	// -- Don't go through metal, sand or player
@@ -387,10 +387,8 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
 	if (trace.StartSolid or trace.Fraction >= 1.0 or tr.Fraction <= 0.0) then return false end
    
 	// -- Damage multiplier 
-	local fDamageMulti = 0.8
-	print(tr.HitEnt)
+	local fDamageMulti = 0.5
 
-	print(trace.HitEnt)
 	// -- Fire bullet from the exit point using the original trajectory
 	local penetratedbullet = {}
 	penetratedbullet.Num            = 1
@@ -404,7 +402,6 @@ function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
 	penetratedbullet.Damage = dmginfo:GetDamage() * fDamageMulti
 	penetratedbullet.Callback       = function(a, b, c) if (self.Ricochet) then    
 	local impactnum
-	if tr.MatType == MAT_GLASS then impactnum = 0 else impactnum = 1 end
 	return self:RicochetCallback(bouncenum + impactnum, a,b,c) end end     
 		   
 	timer.Simple(0, function() if attacker != nil then attacker:FireBullets(penetratedbullet) end end)

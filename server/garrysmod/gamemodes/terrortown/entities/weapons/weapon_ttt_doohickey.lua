@@ -116,7 +116,6 @@ function SWEP:PrimaryAttack()
  
 	if ( !self:CanPrimaryAttack() ) then return end
 
-	print(self.Misfire)
 	if self:Clip1() == self.Misfire then
 		if SERVER then
 			local effectdata = EffectData()

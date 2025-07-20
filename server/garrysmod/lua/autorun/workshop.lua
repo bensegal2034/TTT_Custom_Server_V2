@@ -38,4 +38,10 @@ if SERVER then
     resource.AddWorkshop("954453521")
     resource.AddWorkshop("637848943")
     resource.AddWorkshop("3066505251")
+    resource.AddWorkshop("3415635566")
+    resource.AddWorkshop("1556444962")
+    resource.AddWorkshop("320963369")
+    resource.AddWorkshop("2004376838")
+    resource.AddWorkshop("3454674958")
+    
 end

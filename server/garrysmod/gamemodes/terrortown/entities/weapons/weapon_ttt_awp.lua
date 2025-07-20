@@ -83,9 +83,8 @@ if SERVER then
 end
 
 function SWEP:SetZoom( state )
-   if CLIENT then
-      return
-   elseif IsValid( self.Owner ) and self.Owner:IsPlayer() then
+   if IsValid( self.Owner ) and self.Owner:IsPlayer() then
+      print(state)
       if state then
          self.Owner:SetFOV( 20, 0.3 )
          self.Primary.Cone = 0.001
@@ -108,7 +107,6 @@ function SWEP:PrimaryAttack(worldsnd)
    elseif SERVER then
       sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
    end
-
    self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
 
    self:TakePrimaryAmmo( 1 )
@@ -127,10 +125,8 @@ function SWEP:SecondaryAttack()
    bIronsights = not self:GetIronsights()
 
    self:SetIronsights( bIronsights )
-
-   if SERVER then
-      self:SetZoom( bIronsights )
-   else
+   self:SetZoom( bIronsights )
+   if CLIENT then
       self:EmitSound( self.Secondary.Sound )
    end
 
@@ -145,6 +141,7 @@ end
 
 function SWEP:Reload()
    if (self.Owner:GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
+   if self:Clip1() >= self:GetMaxClip1() then return end
    self:DefaultReload( ACT_VM_RELOAD )
    self:SetIronsights( false )
    self:SetZoom( false )

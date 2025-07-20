@@ -39,7 +39,7 @@ SWEP.MaxDamage = 200
 SWEP.CloseDist = 0
 SWEP.MediumDist = 500
 SWEP.FarDist = 1500
-SWEP.MaxDist = 2750
+SWEP.MaxDist = 2500
 
 SWEP.HeadshotMultiplier = 1.5
 
@@ -77,7 +77,6 @@ function SWEP:Initialize()
 end
 
 function SWEP:SetZoom(state)
-   if CLIENT then return end
    if not (IsValid(self.Owner) and self.Owner:IsPlayer()) then return end
    if state then
       self.Owner:SetFOV(80, 0.5)
@@ -232,10 +231,7 @@ function SWEP:SecondaryAttack()
    local bIronsights = not self:GetIronsights()
 
    self:SetIronsights( bIronsights )
-
-   if SERVER then
-      self:SetZoom( bIronsights )
-   end
+   self:SetZoom( bIronsights )
 
    self:SetNextSecondaryFire( CurTime() + 0.3 )
 end

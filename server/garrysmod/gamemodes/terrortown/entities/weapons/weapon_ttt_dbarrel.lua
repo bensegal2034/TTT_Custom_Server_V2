@@ -97,7 +97,27 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.reloadtimer = 0
 
+if SERVER then
+	hook.Add("DoPlayerDeath", "DBarrelReload", function(victim, attacker, dmginfo)
+		if
+			not IsValid(dmginfo:GetAttacker())
+			or not dmginfo:GetAttacker():IsPlayer()
+			or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+		then
+			return
+		end
+		local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
+      if weapon:GetClass() == "weapon_ttt_dbarrel" then
+         timer.Simple(0.001, function() 
+            weapon:SetClip1( weapon:GetMaxClip1()) 
+         end )
+         weapon:SetNextPrimaryFire(CurTime())
+         weapon:SetNextSecondaryFire(CurTime())
+      end
+
+   end)
+end
 
 function SWEP:SetupDataTables()
    self:DTVar("Bool", 0, "reloading")

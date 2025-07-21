@@ -105,15 +105,22 @@ SWEP.DeploySpeed = 2
 SWEP.Ricochet = false
 SWEP.Penetration = true
 
-SWEP.MaxPenetrate = 2
--- enter iron sight info and bone mod info below
+--Maximum sum of wall thickness and FlatPen that can be penetrated
+SWEP.PenDistance = 100
+--FlatPen is additional cost for penetrating new walls
+SWEP.FlatPen = 0
 
+-- enter iron sight info and bone mod info below
 SWEP.IronSightsPos = Vector(3.079, -1.333, 0.437)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 SWEP.SightsPos = Vector(3.079, -1.333, 0.437)
 SWEP.SightsAng = Vector(0, 0, 0)
 SWEP.RunSightsPos = Vector (-2.3095, -3.0514, 2.3965)
 SWEP.RunSightsAng = Vector (-19.8471, -33.9181, 10)
+
+SWEP.resultpos = Vector(0,0,0)
+
+SWEP.LastShotTime = -100000
 
 sound.Add({
 	name = 			"7615p_remington.Single",
@@ -180,7 +187,7 @@ function SWEP:PrimaryAttack(worldsnd)
 	elseif SERVER then
 	   sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
 	end
- 
+	
 	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
  
 	self:TakePrimaryAmmo( 1 )
@@ -190,8 +197,24 @@ function SWEP:PrimaryAttack(worldsnd)
 	
 	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 
+	
+
 end
 
+hook.Add("PreDrawEffects", "RemingtonHitmarker", function(ply)
+	if CLIENT then
+		if !IsValid(LocalPlayer():GetActiveWeapon()) or !IsValid(LocalPlayer()) then
+			return
+		end
+		if LocalPlayer():GetActiveWeapon():GetClass() != "weapon_ttt_remington" then
+			return
+		end
+		local weapon = LocalPlayer():GetActiveWeapon()
+
+		render.SetMaterial(Material("sprites/light_ignorez"))
+		render.DrawSprite(weapon.resultpos, 20, 20, Color(0, 0, 255, 255*math.max(0, 5 - (CurTime() - weapon.LastShotTime))))
+	end
+end)
 
 function SWEP:SecondaryAttack()
 	if not self.IronSightsPos then return end
@@ -331,7 +354,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 	bullet.Force  = 10
 	bullet.Damage = dmg
 	bullet.Callback = function(ply, tr, dmginfo) 
-		return self:PenetrateCallback(0, ply, tr, dmginfo) 
+		return self:PenetrateCallback(self.PenDistance, ply, tr, dmginfo) 
 	end
 
 
@@ -352,60 +375,68 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    end
 end
 
-function SWEP:PenetrateCallback(bouncenum, attacker, tr, dmginfo)
-	   
+function SWEP:PenetrateCallback(remainingpen, attacker, tr, dmginfo)
+	
 	if not IsFirstTimePredicted() then
 	return {damage = false, effects = false}
 	end
    
-	local PenetrationChecker = false
-   
-	local MaxPenetration
+	if (tr.Entity:IsPlayer()) then return true end
 
-	MaxPenetration = 500
+	remainingpen = remainingpen - self.FlatPen
+   	local starttr = tr
+	local count = 0
+	local i = 0
+	for x = 0, remainingpen, 0.1 do
+		i = i + 0.1
+		remainingpen = remainingpen - 0.1
+		if remainingpen <= 0 then 
+			self.resultpos = starttr.HitPos + starttr.Normal * i
+			self.LastShotTime = CurTime()
+			return true
+		end
+		local pentr = util.TraceLine( {
+			start = starttr.HitPos + starttr.Normal * i,
+			endpos = starttr.HitPos + starttr.Normal * (i+1),
+			mask = MASK_SHOT
+		} )
+		if !pentr.Hit then
+			local bullet = {}
+			bullet.Num    = 1
+			bullet.Src    = starttr.HitPos + starttr.Normal * (i+1)
+			bullet.Dir    = starttr.Normal
+			bullet.Spread = Vector( 0, 0, 0 )
+			bullet.Tracer = 1
+			bullet.TracerName     = "m9k_effect_mad_ricochet_trace"
+			bullet.Force  = 10
+			bullet.Damage = self.Primary.Damage	* (remainingpen / self.PenDistance)
 
-	local DoDefaultEffect = false
-	// -- Don't go through metal, sand or player
-   
-	if (tr.MatType == MAT_FLESH and self.Ricochet == true ) then return false end
-
-	// -- Don't go through more than 3 times
-	if (bouncenum > self.MaxPenetrate) then return false end
-   
-	// -- Direction (and length) that we are going to penetrate
-	local PenetrationDirection = tr.Normal * MaxPenetration
-   	
-	local trace     = {}
-	trace.endpos    = tr.HitPos
-	trace.start     = tr.HitPos + PenetrationDirection
-	trace.mask              = MASK_SHOT
-	trace.filter    = {self.Owner}
-	   
-	local trace     = util.TraceLine(trace)
-   
-	// -- Bullet didn't penetrate.
-	if (trace.StartSolid or trace.Fraction >= 1.0 or tr.Fraction <= 0.0) then return false end
-   
-	// -- Damage multiplier 
-	local fDamageMulti = 0.5
-
-	// -- Fire bullet from the exit point using the original trajectory
-	local penetratedbullet = {}
-	penetratedbullet.Num            = 1
-	penetratedbullet.Src            = trace.HitPos
-	penetratedbullet.Dir            = tr.Normal    
-	penetratedbullet.Spread         = Vector(0, 0, 0)
-	penetratedbullet.Tracer = 2
-	penetratedbullet.TracerName     = "m9k_effect_mad_ricochet_trace"
-	penetratedbullet.Force          = 5
-	penetratedbullet.IgnoreEntity   = trace.HitEnt, tr.HitEnt
-	penetratedbullet.Damage = dmginfo:GetDamage() * fDamageMulti
-	penetratedbullet.Callback       = function(a, b, c) if (self.Ricochet) then    
-	local impactnum
-	return self:RicochetCallback(bouncenum + impactnum, a,b,c) end end     
-		   
-	timer.Simple(0, function() if attacker != nil then attacker:FireBullets(penetratedbullet) end end)
-
+			timer.Simple(0, function() 
+				if attacker != nil then 
+					attacker:FireBullets(bullet)
+				end 
+			end)
+			
+			local walltr = util.TraceLine( {
+				start = starttr.HitPos + starttr.Normal * (i+1),
+				endpos = starttr.HitPos + starttr.Normal * (i+56756),
+				mask = MASK_SHOT
+			} )
+			if walltr.HitSky or !walltr.Hit then
+				self.resultpos = walltr.StartPos
+				self.LastShotTime = CurTime()
+				return true
+			end
+			if walltr.Entity:IsPlayer() then
+				self.resultpos = walltr.HitPos
+				self.LastShotTime = CurTime()
+				return true
+			end
+			starttr = walltr
+			i = 0
+			remainingpen = remainingpen - self.FlatPen
+		end
+	end
 	return true
 end
 
@@ -420,6 +451,8 @@ function SWEP:Deploy()
 	timer.Simple(0.45, function() self:DeployFix() end)
 	return true
 end
+
+
 
 --[[
 hook.Add("HUDPaint", "DrawThroughSmoke", function()

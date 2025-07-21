@@ -25,7 +25,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 
-SWEP.Primary.DamageBase  = 19
+SWEP.Primary.DamageBase  = 22
 SWEP.Primary.Damage      = SWEP.Primary.DamageBase
 SWEP.HeadshotMultiplier  = 2
 SWEP.Primary.Delay       = 0.24
@@ -318,6 +318,7 @@ function SWEP:PrimaryAttack()
    if self.BurstInProgress then
       return
    end
+   if self.Reloading then return end
    self.BurstInProgress = true
    self.BurstDelayTimer = CurTime() + self.BurstDelay
 end

@@ -13,6 +13,7 @@ if SERVER then
 	resource.AddFile("sound/weapons/minigun1/new3/minigunreload.wav")
 	resource.AddFile("sound/weapons/minigun1/new3/minigunshoot.wav")
 	resource.AddFile("sound/weapons/minigun1/new3/minigunstart.wav")
+	resource.AddFile("sound/weapons/minigun1/new3/minigunstartloop4.wav")
 	resource.AddFile("sound/weapons/minigun1/new3/minigunstop.wav")
 	resource.AddFile("materials/vgui/ttt/icon_minigun.vmt")
 	resource.AddWorkshop("338915940")
@@ -54,9 +55,10 @@ SWEP.DrawAmmo = true;
 SWEP.PrintName = "Minigun";
 SWEP.UseHands = true
 
-SWEP.PushForceSelf = 30
+
 
 SWEP.RevSlow = .65
+SWEP.RevTimer = 0
 
 if CLIENT then
 	killicon.Add("weapon_mini_gun_v3", "HUD/killicons/minigun_swep", Color( 255, 80, 0, 255 ));
@@ -76,7 +78,7 @@ SWEP.Primary.Cone = 0.08
 SWEP.Primary.Spread = 0.5
 SWEP.Primary.ClipSize = 240
 SWEP.Primary.Force = 60
-SWEP.Primary.Damage = 8
+SWEP.Primary.Damage = 14
 SWEP.Primary.Delay = 0.06
 SWEP.Primary.Recoil = 0.07
 SWEP.Primary.ClipSize = 200
@@ -99,7 +101,13 @@ SWEP.Secondary.Sound = ""
 SWEP.Secondary.TakeAmmo = 0
 SWEP.Secondary.ClipSize = -1
 
-SWEP.HeadshotMultiplier = 2
+SWEP.HeadshotMultiplier = 1.67
+SWEP.Revving = false
+SWEP.RevTimer = 0
+SWEP.PushForceSelf = 22
+SWEP.AnimStart = 0
+
+SWEP.DamageType            = "Impact"
 
 hook.Add("TTTPrepareRound", "ResetMinigunSpeed", function()
 	if SERVER then
@@ -110,33 +118,64 @@ hook.Add("TTTPrepareRound", "ResetMinigunSpeed", function()
 		  players[i]:SetWalkSpeed(220)
 	   end
 	end
- end)
+end)
+
+function SWEP:SetupDataTables()
+	self:NetworkVar("Float", 0, "AnimTimer")
+end
 
 function SWEP:Think()
-
+	local vm = self.Owner:GetViewModel()
 	self:SetWeaponHoldType( self.HoldType )
-
-	if 	self.Owner:KeyPressed(IN_ATTACK) then 
-		
-		local vm = self.Owner:GetViewModel()
-		vm:SendViewModelMatchingSequence( vm:LookupSequence( "fire04" ) )	
-	    self:SetNextPrimaryFire(CurTime() + 0.7)
+	--Begin Firing
+	if self.Owner:IsValid() and self.Owner:KeyPressed(IN_ATTACK)then
+		--Check if weapon is already being spun up, if not begin pre-firing spinup, otherwise bypass SetNextPrimaryFire and immediately skip to firing
+		if self.Revving == false then
+			vm:SendViewModelMatchingSequence(vm:LookupSequence("fire04"))	
+			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
+			self.Weapon:EmitSound(Sound("Minigun.Start"))
+			self:SetNextPrimaryFire(CurTime() + 0.7)
+		end
+		self.Revving = false
+	--Begin spinup
+	elseif self.Owner:IsValid() and self.Owner:KeyPressed(IN_ATTACK2) then
+		if IsFirstTimePredicted() and !self.Revving then
+			vm:SendViewModelMatchingSequence(vm:LookupSequence("fire04"))
+			self.AnimStart = CurTime() + 1.8
+		end
 		self:SetNextSecondaryFire(CurTime() + 0.7)
+		self:SetNextPrimaryFire(CurTime() + 0.7)
 		self.Weapon:EmitSound(Sound("Minigun.Start"))
 		self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
-		if CLIENT then return end
-	end
-	
-
-	if self.Owner:IsValid() and	self.Owner:KeyReleased(IN_ATTACK) then
-		local vm = self.Owner:GetViewModel()	
-		self.Weapon:StopSound( "weapons/minigun1/New3/minigunspin.wav" )
+		self.Revving = true
+	--Releasing spinup key without firing 
+	elseif self.Owner:IsValid() and self.Owner:KeyReleased(IN_ATTACK2) and self.Revving then
+		self:SetNextPrimaryFire(CurTime() + 1)
+		self:SetNextSecondaryFire(CurTime() + 0.7)
+		self.Weapon:StopSound( "Minigun.Start" )
 		self.Weapon:EmitSound(Sound("Minigun.Stop"))
 		self.Owner:SetWalkSpeed(220)
-
+		self.Revving = false
 	end
-	
-	
+
+	--Animation And Sound Looping
+	if self.Owner:IsValid() and self.Owner:KeyDown(IN_ATTACK2) and !self.Owner:KeyDown(IN_ATTACK) and CurTime() >= self.AnimStart and self.Revving and IsFirstTimePredicted() then
+		self:EmitSound(Sound("Minigun.StartLoop"))
+		vm:SendViewModelMatchingSequence(vm:LookupSequence("fire04"))
+		self.AnimStart = CurTime() + 1.8
+	end
+
+	if self.Owner:IsValid() and	self.Owner:KeyReleased(IN_ATTACK)  then
+		local vm = self.Owner:GetViewModel()	
+		self:SetNextPrimaryFire(CurTime() + 0.7)
+		self:SetNextSecondaryFire(CurTime() + 0.7)
+		self.Weapon:StopSound( "Minigun.Start" )
+		self.Weapon:EmitSound(Sound("Minigun.Stop"))
+		self.Owner:SetWalkSpeed(220)
+	end
+end
+
+
 sound.Add({
 name = "Minigun.Start",
 
@@ -146,6 +185,17 @@ CompatibilityAttenuation = 1.0,
 pitch = 100,
 
 sound = "weapons/minigun1/New3/minigunstart.wav"
+})
+
+sound.Add({
+name = "Minigun.StartLoop",
+
+channel = CHAN_WEAPON,
+volume = 1.0,
+CompatibilityAttenuation = 1.0,
+pitch = 100,
+
+sound = "weapons/minigun1/New3/minigunstartloop4.wav"
 })
 
 sound.Add({
@@ -192,7 +242,6 @@ pitch = 100,
 sound = "weapons/minigun1/New3/minigunreload.wav"
 })
 
-end 
 
 
 function SWEP:Idle()
@@ -216,7 +265,6 @@ function SWEP:Initialize()
 		maxs:Mul(0.5)
 		
 		local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
-		print(result)
 	end
 end
 
@@ -227,7 +275,6 @@ function SWEP:OnDrop()
 		maxs:Mul(0.5)
 		
 		local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
-		print(result)
 		--[[
 		local phys = self:GetPhysicsObject()
 		phys:Wake()
@@ -240,9 +287,8 @@ function SWEP:OnDrop()
 end
 
 function SWEP:PrimaryAttack()
-
 	randompitch = math.Rand(90, 130)
-	
+	self.RevTimer = CurTime() + 0.7
 	if ( !self:CanPrimaryAttack() ) then return end
 	local bullet = {}
 		bullet.Num = self.Primary.NumberofShots
@@ -267,12 +313,10 @@ function SWEP:PrimaryAttack()
 		self:TakePrimaryAmmo(self.Primary.TakeAmmo)
 
 		self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-		self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 
 		local angles = self.Owner:GetAngles()
 		local forward = self.Owner:GetForward()
-  
-		self.Owner:SetVelocity(Vector(forward.r * ((self.PushForceSelf) * -1),forward.y * ((self.PushForceSelf) * -1),angles.p))
+		self.Owner:SetVelocity(Vector(forward.r * ((self.PushForceSelf) * -1),forward.y * ((self.PushForceSelf) * -1), self.PushForceSelf * angles.p / 50))
 		self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
 		
 end
@@ -304,11 +348,4 @@ function SWEP:Reload()
                 self:SetNextPrimaryFire(CurTime() + 1)
                 self:SetNextSecondaryFire(CurTime() + 1)
 	end
-	
-	
-	
 end
-
-function SWEP:SecondaryAttack()
-end
-

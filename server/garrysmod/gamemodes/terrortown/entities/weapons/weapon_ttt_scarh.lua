@@ -95,11 +95,11 @@ SWEP.Spawnable = true
 SWEP.Kind = WEAPON_HEAVY
 SWEP.WeaponID = AMMO_SCARH
 
-SWEP.Primary.Delay			= 0.135
+SWEP.Primary.Delay			= 0.12
 SWEP.Primary.Recoil			= 1
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "SMG1"
-SWEP.Primary.Damage = 21
+SWEP.Primary.Damage = 24
 SWEP.Primary.Cone = 0.025
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.ClipMax = 90

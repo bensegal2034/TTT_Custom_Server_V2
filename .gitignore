@@ -25,3 +25,5 @@ server/garrysmod/data/mapvote/recentmaps.txt
 *.bz2
 server/platform/config/DedicatedServerDialogConfig.vdf
 server/platform/config/Server.vdf
+/server/chart/node_modules
+server/chart/package-lock.json

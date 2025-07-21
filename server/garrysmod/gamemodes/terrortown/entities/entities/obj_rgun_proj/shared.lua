@@ -23,7 +23,10 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetSolidFlags(FSOLID_NOT_STANDABLE)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
-	
+	if SERVER then
+		self.Parent = self:GetOwner():GetActiveWeapon()
+	end
+
 	self:EmitSound("weapons/raygun/wpn_ray_loop.wav", 70)
 	
 	self.LifeTime = CurTime() + 8
@@ -41,7 +44,7 @@ if SERVER then
 		local dmg = DamageInfo()
 		dmg:SetDamageType(DMG_GENERIC)
 		dmg:SetAttacker(self.Owner)
-		dmg:SetInflictor(self)
+		dmg:SetInflictor(self.Parent)
 		dmg:SetDamage(self.Damage)
 		--dmg:SetDamageForce( Vector(0,0,0) )
 		if GetRoundState() != ROUND_PREP then

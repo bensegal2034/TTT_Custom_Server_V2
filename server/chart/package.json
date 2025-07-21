@@ -1,0 +1,15 @@
+{
+    "name": "ubisoftcharts",
+    "version": "",
+    "description": "",
+    "author": "Flame442",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.19.0",
+      "sqlite": "^5.1.0",
+      "sqlite3": "^5.1.0"
+    },
+    "type": "module"
+}

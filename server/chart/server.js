@@ -1,15 +1,16 @@
 import express from 'express';
 import sqlite3 from 'sqlite3';
 import {open} from 'sqlite';
+import path from 'path';
+import {fileURLToPath} from 'url';
 import fs from 'fs';
 
-const GMOD_FOLDER_LOCATION = "C:/Users/Flame/Documents/GitHub/TTT-Server/server";
 let lastRefresh = 0;
 let stats = [];
 
 // Establish database connection
 const db = await open({
-    filename: GMOD_FOLDER_LOCATION + "/garrysmod/sv.db",
+    filename: path.join(path.dirname(fileURLToPath(import.meta.url)), "..") + "/garrysmod/sv.db",
     driver: sqlite3.Database,
     mode: sqlite3.OPEN_READONLY,
 })

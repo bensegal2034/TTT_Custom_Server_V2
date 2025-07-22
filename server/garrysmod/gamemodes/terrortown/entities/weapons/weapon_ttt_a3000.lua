@@ -1,7 +1,7 @@
 //GeneralSettings\\
 SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable = true
-SWEP.AutoSpawnable = true
+SWEP.AutoSpawnable = false
 SWEP.HoldType = "pistol"
 SWEP.AdminSpawnable = true
 SWEP.AutoSwitchTo = false
@@ -47,6 +47,7 @@ SWEP.IsSilent = false
 SWEP.NoSights = false
 SWEP.UseHands = true
 SWEP.HeadshotMultiplier = 3
+
 
 //Sounds/Models\\
 SWEP.ViewModel = "models/weapons/gamefreak/v_pist_glock66.mdl"

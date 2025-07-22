@@ -46,9 +46,9 @@ SWEP.AmmoEnt = "item_ammo_smg1_ttt"
 -- Pistol, buckshot, and slam always ricochet. Use AirboatGun for a light metal peircing shotgun pellets
 
 SWEP.Primary.NumShots	= 1		-- How many bullets to shoot per trigger pull
-SWEP.Primary.Damage		= 12	-- Base damage per bullet
-SWEP.Primary.Cone		= 0.03	-- Define from-the-hip accuracy 1 is terrible, .0001 is exact)
-SWEP.Primary.HeadshotMultiplier = 2
+SWEP.Primary.Damage		= 13	-- Base damage per bullet
+SWEP.Primary.Cone		= 0.01	-- Define from-the-hip accuracy 1 is terrible, .0001 is exact)
+SWEP.HeadshotMultiplier = 2
 
 SWEP.ModulationCone			= 0.8
 SWEP.ModulationSpeed   = 220
@@ -97,8 +97,8 @@ sound.Add({
 function SWEP:PrimaryAttack(worldsnd)
 
 	self.ModulationTime = CurTime() + 0.5
-	self.ModulationCone = math.min(2, self.ModulationCone * 1.04)
-	self.ModulationSpeed = math.min(440, self.ModulationSpeed * 1.02)
+	self.ModulationCone = math.min(4.5, self.ModulationCone * 1.03)
+	self.ModulationSpeed = math.min(440, self.ModulationSpeed * 1.025)
 	dmg = self.Primary.Damage
 	recoil = self.Primary.Recoil
 	self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )

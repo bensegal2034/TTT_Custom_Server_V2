@@ -115,6 +115,17 @@ SWEP.Primary.IronAccuracy = .00012 -- ironsight accuracy, should be the same for
 SWEP.DamageType = "Impact"
 -- enter iron sight info and bone mod info below
 
+SWEP.Ricochet = false
+SWEP.Penetration = true
+
+--Maximum sum of wall thickness and FlatPen that can be penetrated
+SWEP.PenDistance = 100
+--FlatPen is additional cost for penetrating new walls
+SWEP.FlatPen = 0
+
+SWEP.resultpos = Vector(0,0,0)
+SWEP.LastShotTime = -100000
+
 SWEP.IronSightsPos = Vector(-1.241, -1.476, 0)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 SWEP.SightsPos = Vector(-1.241, -1.476, 0)
@@ -319,6 +330,129 @@ function SWEP:PreDrop()
 	self:SetIronsights(false)
 	return self.BaseClass.PreDrop(self)
 end
+
+function SWEP:ShootBullet( dmg, recoil, numbul, cone )
+
+	self:SendWeaponAnim(self.PrimaryAnim)
+ 
+	self:GetOwner():MuzzleFlash()
+	self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+ 
+	local sights = self:GetIronsights()
+ 
+	numbul = numbul or 1
+	cone   = cone   or 0.01
+
+	local bullet = {}
+	bullet.Num    = numbul
+	bullet.Src    = self:GetOwner():GetShootPos()
+	bullet.Dir    = self:GetOwner():GetAimVector()
+	bullet.Spread = Vector( cone, cone, 0 )
+	bullet.Tracer = 1
+	bullet.Force  = 10
+	bullet.Damage = dmg
+	bullet.Callback = function(ply, tr, dmginfo) 
+		return self:PenetrateCallback(self.PenDistance, ply, tr, dmginfo) 
+	end
+
+
+	self:GetOwner():FireBullets( bullet )
+ 
+	-- Owner can die after firebullets
+	if (not IsValid(self:GetOwner())) or (not self:GetOwner():Alive()) or self:GetOwner():IsNPC() then return end
+ 
+	if ((game.SinglePlayer() and SERVER) or
+       ((not game.SinglePlayer()) and CLIENT and IsFirstTimePredicted())) then
+
+      -- reduce recoil if ironsighting
+      recoil = sights and (recoil * 0.6) or recoil
+
+      local eyeang = self:GetOwner():EyeAngles()
+      eyeang.pitch = eyeang.pitch - recoil
+      self:GetOwner():SetEyeAngles( eyeang )
+   end
+end
+
+
+function SWEP:PenetrateCallback(remainingpen, attacker, tr, dmginfo)
+	
+	if not IsFirstTimePredicted() then
+	return {damage = false, effects = false}
+	end
+   
+	if (tr.Entity:IsPlayer()) then return true end
+
+	remainingpen = remainingpen - self.FlatPen
+   	local starttr = tr
+	local count = 0
+	local i = 0
+	for x = 0, remainingpen, 0.1 do
+		i = i + 0.1
+		remainingpen = remainingpen - 0.1
+		if remainingpen <= 0 then 
+			self.resultpos = starttr.HitPos + starttr.Normal * i
+			self.LastShotTime = CurTime()
+			return true
+		end
+		local pentr = util.TraceLine( {
+			start = starttr.HitPos + starttr.Normal * i,
+			endpos = starttr.HitPos + starttr.Normal * (i+1),
+			mask = MASK_SHOT
+		} )
+		if !pentr.Hit then
+			local bullet = {}
+			bullet.Num    = 1
+			bullet.Src    = starttr.HitPos + starttr.Normal * (i+1)
+			bullet.Dir    = starttr.Normal
+			bullet.Spread = Vector( 0, 0, 0 )
+			bullet.Tracer = 1
+			bullet.TracerName     = "m9k_effect_mad_penetration_trace"
+			bullet.Force  = 10
+			bullet.Damage = self.Primary.Damage	* (remainingpen / self.PenDistance)
+
+			timer.Simple(0, function() 
+				if attacker != nil then 
+					attacker:FireBullets(bullet)
+				end 
+			end)
+			
+			local walltr = util.TraceLine( {
+				start = starttr.HitPos + starttr.Normal * (i+1),
+				endpos = starttr.HitPos + starttr.Normal * (i+56756),
+				mask = MASK_SHOT
+			} )
+			if walltr.HitSky or !walltr.Hit then
+				self.resultpos = walltr.StartPos
+				self.LastShotTime = CurTime()
+				return true
+			end
+			if walltr.Entity:IsPlayer() then
+				self.resultpos = walltr.HitPos
+				self.LastShotTime = CurTime()
+				return true
+			end
+			starttr = walltr
+			i = 0
+			remainingpen = remainingpen - self.FlatPen
+		end
+	end
+	return true
+end
+
+hook.Add("PreDrawEffects", "DragunovHitmarker", function(ply)
+	if CLIENT then
+		if !IsValid(LocalPlayer():GetActiveWeapon()) or !IsValid(LocalPlayer()) then
+			return
+		end
+		if LocalPlayer():GetActiveWeapon():GetClass() != "weapon_ttt_dragunov" then
+			return
+		end
+		local weapon = LocalPlayer():GetActiveWeapon()
+
+		render.SetMaterial(Material("sprites/light_ignorez"))
+		render.DrawSprite(weapon.resultpos, 20, 20, Color(0, 0, 255, 255*math.max(0, 5 - (CurTime() - weapon.LastShotTime))))
+	end
+end)
 
 hook.Add("PreDrawEffects", "DrawThroughSmoke", function()
 	-- Only run this when aiming down sighes with the remington

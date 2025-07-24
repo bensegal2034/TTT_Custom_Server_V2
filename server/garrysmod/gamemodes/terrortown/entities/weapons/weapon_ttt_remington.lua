@@ -69,7 +69,7 @@ SWEP.Icon = "VGUI/ttt/icon_remington"
 SWEP.ViewModelFOV			= 70
 SWEP.ViewModelFlip			= true
 SWEP.Base 				= "weapon_tttbase"
-SWEP.AutoSpawnable				= true
+SWEP.AutoSpawnable				= false
 SWEP.AdminSpawnable			= true
 SWEP.ViewModel				= "models/weapons/v_remington_7615p.mdl"	-- Weapon view model
 SWEP.WorldModel				= "models/weapons/w_remington_7615p.mdl"	-- Weapon world model
@@ -110,6 +110,9 @@ SWEP.PenDistance = 100
 --FlatPen is additional cost for penetrating new walls
 SWEP.FlatPen = 0
 
+SWEP.resultpos = Vector(0,0,0)
+SWEP.LastShotTime = -100000
+
 -- enter iron sight info and bone mod info below
 SWEP.IronSightsPos = Vector(3.079, -1.333, 0.437)
 SWEP.IronSightsAng = Vector(0, 0, 0)
@@ -117,10 +120,6 @@ SWEP.SightsPos = Vector(3.079, -1.333, 0.437)
 SWEP.SightsAng = Vector(0, 0, 0)
 SWEP.RunSightsPos = Vector (-2.3095, -3.0514, 2.3965)
 SWEP.RunSightsAng = Vector (-19.8471, -33.9181, 10)
-
-SWEP.resultpos = Vector(0,0,0)
-
-SWEP.LastShotTime = -100000
 
 sound.Add({
 	name = 			"7615p_remington.Single",
@@ -407,7 +406,7 @@ function SWEP:PenetrateCallback(remainingpen, attacker, tr, dmginfo)
 			bullet.Dir    = starttr.Normal
 			bullet.Spread = Vector( 0, 0, 0 )
 			bullet.Tracer = 1
-			bullet.TracerName     = "m9k_effect_mad_ricochet_trace"
+			bullet.TracerName     = "m9k_effect_mad_penetration_trace"
 			bullet.Force  = 10
 			bullet.Damage = self.Primary.Damage	* (remainingpen / self.PenDistance)
 

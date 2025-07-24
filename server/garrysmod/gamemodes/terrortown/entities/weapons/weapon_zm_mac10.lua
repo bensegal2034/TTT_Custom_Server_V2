@@ -16,6 +16,9 @@ SWEP.Kind                = WEAPON_HEAVY
 SWEP.WeaponID            = AMMO_MAC10
 
 SWEP.Primary.Damage      = 8
+SWEP.HeadshotMultiplier = 2
+SWEP.RicochetMulti       = 1.75
+
 DAMAGE = SWEP.Primary.Damage
 SWEP.Primary.Delay       = 0.08
 SWEP.Primary.Cone        = 0.02
@@ -26,7 +29,7 @@ SWEP.Primary.Automatic   = true
 SWEP.Primary.Ammo        = "smg1"
 SWEP.Primary.Recoil      = 0
 SWEP.Primary.Sound       = Sound( "Weapon_mac10.Single" )
-SWEP.Primary.HeadshotMultiplier = 2
+
 SWEP.DamageType            = "Impact"
 SWEP.AutoSpawnable       = true
 SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
@@ -39,6 +42,7 @@ SWEP.IronSightsPos       = Vector( 6.62, -3, 2.9 )
 SWEP.IronSightsAng       =  Vector( 0.7, 5.3, 7 )
 
 SWEP.DeploySpeed         = 3
+
 
 --[[ Debug func
 function SWEP:Think()
@@ -120,14 +124,16 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
          ricochetbullet.Dir 		= dir
          ricochetbullet.Spread 	= Vector(0, 0, 0)
          ricochetbullet.Force		= dmginfo:GetDamageForce() * 2
-         ricochetbullet.Damage	= dmginfo:GetDamage() * 1.8
+         ricochetbullet.Damage	= dmginfo:GetDamage() * self.RicochetMulti
          ricochetbullet.Tracer   = 1
-         ricochetbullet.TracerName = "AR2Tracer"
+         ricochetbullet.TracerName = "m9k_effect_mad_ricochet_trace"
          ricochetbullet.Attacker = self.Owner
          ricochetbullet.Callback  	= function(a, b, c)  
             return self:RicochetCallback(bouncenum + 1, a, b, c) end
 
+            
       -- Unarmed so it doesn't have a model or an offset muzzle location or let you pick it up
+      /**
       local fakeswep = ents.Create("weapon_ttt_unarmed")
       fakeswep:SetPos(tr.HitPos)
       fakeswep:SetAngles(dir:Angle())
@@ -140,7 +146,12 @@ function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
          fakeswep:FireBullets(ricochetbullet)
          fakeswep:Remove()
       end)
-      
+      **/
+      timer.Simple(0, function() 
+         if attacker != nil then 
+            attacker:FireBullets(ricochetbullet)
+         end 
+      end)
       return {damage = true, effects = true}
    end
 end

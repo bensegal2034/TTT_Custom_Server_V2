@@ -55,7 +55,7 @@ SWEP.RunSightsAng = Vector(-4.591, -48.197, -1.721)
 SWEP.reloadtimer = 0
 
 if SERVER then
-   hook.Add("ScalePlayerDamage", "Knockback", function(ply, hitgroup, dmginfo)
+   hook.Add("ScalePlayerDamage", "SawedOffKnockback", function(ply, hitgroup, dmginfo)
       if
          not IsValid(dmginfo:GetAttacker())
          or not dmginfo:GetAttacker():IsPlayer()
@@ -68,8 +68,12 @@ if SERVER then
       if weapon:GetClass() == "weapon_ttt_sawedoff" then
          local angles = dmginfo:GetAttacker():GetAngles()
          local forward = dmginfo:GetAttacker():GetForward()
-         weapon.PushForce = dmginfo:GetDamage() * 350
-         ply:SetVelocity(Vector(forward.r * (weapon.PushForce),forward.y * (weapon.PushForce),0))
+         local pushforce = dmginfo:GetDamage() * 100
+         if ply:IsOnGround() == false then
+            ply:SetVelocity(Vector(forward.r * (pushforce),forward.y * (pushforce),angles.p * 4))
+         else
+            ply:SetVelocity(Vector(forward.r * (pushforce),forward.y * (pushforce),0))
+         end
       end
    end)
 end

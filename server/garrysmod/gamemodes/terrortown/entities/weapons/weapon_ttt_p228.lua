@@ -91,10 +91,10 @@ function SWEP:SecondaryAttack()
 	elseif SERVER then
 		sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
 	end
+	--This is done exclusively to trick the crosshair into displaying the inaccuracy of right clicking, which is reset on primary attack
 	self.Primary.Cone = self.Secondary.Cone
 
 	self:ShootBullet( self.Secondary.Damage, self.Secondary.Recoil, self.Secondary.NumShots, self.Secondary.Cone )
-	self.UsePrimaryCone = false
 	self:TakePrimaryAmmo( 1 )
 
 	local owner = self:GetOwner()
@@ -115,7 +115,7 @@ function SWEP:PrimaryAttack()
 	elseif SERVER then
 		sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
 	end
-
+	-- Resetting primary cone to what it should be before shooting
 	self.Primary.Cone = self.SavedPrimaryCone
 
 	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )

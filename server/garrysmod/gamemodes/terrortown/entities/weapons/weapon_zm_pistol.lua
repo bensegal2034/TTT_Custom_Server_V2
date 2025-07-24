@@ -27,6 +27,7 @@ SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_FiveSeven.Single" )
 SWEP.DamageType            = "Puncture"
 
+SWEP.ReloadSpeed = 0.8
 
 SWEP.AutoSpawnable         = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
@@ -40,3 +41,10 @@ SWEP.IronSightsAng         = Vector(0, 0, 0)
 
 SWEP.HeadshotMultiplier    = 2.7
 
+function SWEP:Reload()
+   if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
+   self:DefaultReload(self.ReloadAnim)
+   self:SendWeaponAnim(ACT_VM_RELOAD)
+   self:GetOwner():GetViewModel():SetPlaybackRate(self.ReloadSpeed)
+   self:SetIronsights( false )
+end

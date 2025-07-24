@@ -69,7 +69,7 @@ if SERVER then
 	AddCSLuaFile("effects/rgun_muzzleflash/init.lua")
 	AddCSLuaFile("entities/obj_rgun_proj/cl_init.lua")
 	AddCSLuaFile("entities/obj_rgun_proj/shared.lua")
-	AddCSLuaFile("weapons/tfa_raygun/shared.lua")
+	AddCSLuaFile("weapons/weapon_ttt_raygun.lua")
 	AddCSLuaFile("entities/raygun_ring_proj.lua")
 	AddCSLuaFile("entities/raygun_splash_proj.lua")
 end

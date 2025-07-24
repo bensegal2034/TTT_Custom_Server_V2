@@ -1,5 +1,5 @@
 if SERVER then
-   AddCSLuaFile("m9k_famas.lua")
+   AddCSLuaFile("weapon_ttt_famas.lua")
    AddCSLuaFile("includes/modules/cl_m9k_famas.lua")
    resource.AddFile( "materials/vgui/ttt/icon_famas2.vmt" )
    resource.AddFile( "materials/vgui/ttt/icon_famas2.vtf" )
@@ -157,7 +157,7 @@ if SERVER then
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
-      if weapon:GetClass() == "m9k_famas" then
+      if weapon:GetClass() == "weapon_ttt_famas" then
          weapon.KillClipReady = true
 
          net.Start("KillClipReady")
@@ -176,7 +176,7 @@ if SERVER then
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
-      if weapon:GetClass() == "m9k_famas" then
+      if weapon:GetClass() == "weapon_ttt_famas" then
          if hitgroup == HITGROUP_HEAD then
             if not weapon.RapidHitActive and not weapon.RapidHitReady then
                weapon.RapidHitReady = true
@@ -315,6 +315,11 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:PrimaryAttack()
+   self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+
+   if not self:CanPrimaryAttack() then return end
+
    if self.BurstInProgress then
       return
    end

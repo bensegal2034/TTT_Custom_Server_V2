@@ -248,7 +248,7 @@ hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
 
    local weapon = dmginfo:GetAttacker():GetActiveWeapon()
    
-   if weapon:GetClass() == "weapon_sp_winchester" then
+   if weapon:GetClass() == "weapon_ttt_winchester" then
       
       local att = dmginfo:GetAttacker()
    

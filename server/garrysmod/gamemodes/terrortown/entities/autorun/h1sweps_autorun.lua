@@ -265,7 +265,7 @@ local Halo1SWEPS = {
 	halo1_gravityrifle = true,
 	halo1_needler = true,
 	halo1_oddball = true,
-	halo1_pistol = true,
+	weapon_ttt_magnum = true,
 	halo1_plasmapistol = true,
 	halo1_plasmarifle = true,
 	halo1_redflag = true,
@@ -275,7 +275,7 @@ local Halo1SWEPS = {
 }
 
  local ScopedWeaponH1 = {
-	halo1_pistol = true,
+	weapon_ttt_magnum = true,
 	halo1_rocketlauncher = true,
 	halo1_sniper = true
 }
@@ -308,7 +308,7 @@ local Halo1SWEPS = {
 	halo1_gravityrifle = true,
 	halo1_needler = true,
 	halo1_oddball = true,
-	halo1_pistol = true,
+	weapon_ttt_magnum = true,
 	halo1_plasmapistol = true,
 	halo1_plasmarifle = true,
 	halo1_redflag = true,
@@ -318,7 +318,7 @@ local Halo1SWEPS = {
 }
 
  local ScopedWeaponH1 = {
-	halo1_pistol = true,
+	weapon_ttt_magnum = true,
 	halo1_rocketlauncher = true,
 	halo1_sniper = true
 }
@@ -367,7 +367,7 @@ hook.Add("PlayerDroppedWeapon", "H1FixWeaponDrops", function( owner, wep )
 	elseif wep:GetClass() == "halo1_flamethrower" then
 	owner:StopSound("Halo1_Flamethrower.Deploy")
 	owner:StopSound("Halo1_Flamethrower.DeployAlt")
-	elseif wep:GetClass() == "halo1_pistol" then
+	elseif wep:GetClass() == "weapon_ttt_magnum" then
 	owner:StopSound("Halo1_Pistol.Deploy")
 	elseif wep:GetClass() == "halo1_needler" then
 	owner:StopSound("Halo1_Needler.Deploy")

@@ -1,5 +1,5 @@
 if SERVER then
-   AddCSLuaFile( "weapon_intervention.lua" )
+   AddCSLuaFile( "weapon_ttt_intervention.lua" )
    resource.AddFile("materials/vgui/ttt/icon_intervention.vtf")
 	resource.AddFile("materials/vgui/ttt/icon_intervention.vmt")
    resource.AddWorkshop("334016220")
@@ -97,7 +97,7 @@ if SERVER then
       end
       local weapon = dmginfo:GetAttacker():GetActiveWeapon()
 
-      if weapon:GetClass() == "weapon_intervention" then
+      if weapon:GetClass() == "weapon_ttt_intervention" then
          if weapon:GetCanBodyshot() then
             dmginfo:ScaleDamage(10)
             weapon:SetCanBodyshot(false)

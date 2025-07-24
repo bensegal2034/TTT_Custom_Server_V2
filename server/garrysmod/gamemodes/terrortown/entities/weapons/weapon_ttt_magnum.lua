@@ -2,7 +2,7 @@
 Halo: Combat Evolved Pistol v2
 ---------------------------------]]
 if SERVER then
-	AddCSLuaFile("halo1_pistol.lua")
+	AddCSLuaFile("weapon_ttt_magnum.lua")
 	AddCSLuaFile("autorun/h1sweps_autorun.lua")
 	AddCSLuaFile("effects/flash_muzzle_halo1/init.lua")
 	AddCSLuaFile("entities/distant_weapon_gunfire_h1.lua")
@@ -64,7 +64,7 @@ SWEP.CanBuy = {}
 SWEP.AllowDrop = true
 SWEP.UseHands = false
 SWEP.HeadshotMultiplier = 1
-SWEP.HeadshotMultiplierReal = 1.75
+SWEP.HeadshotMultiplierReal = 1.5
 SWEP.HoldType = "Revolver"
 SWEP.Tracer = "Tracer"
 SWEP.FiresUnderwater = false
@@ -94,7 +94,7 @@ SWEP.Icon 					= "vgui/ttt/icon_magnum"
 
 if CLIENT then
 	SWEP.WepSelectIcon = surface.GetTextureID("vgui/entities/halo1_pistol")
-	killicon.Add("halo1_pistol", "VGUI/hud/halo1_pistol", color_white)
+	killicon.Add("weapon_ttt_magnum", "VGUI/hud/halo1_pistol", color_white)
 end
 
 SWEP.IsEquipment = false

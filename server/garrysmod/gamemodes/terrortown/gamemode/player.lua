@@ -88,8 +88,14 @@ function GM:PlayerSpawn(ply)
    hook.Call("PlayerLoadout", GAMEMODE, ply)
    hook.Call("PlayerSetModel", GAMEMODE, ply)
    hook.Call("TTTPlayerSetColor", GAMEMODE, ply)
-
+   
    ply:SetupHands()
+   --Handles default speed (and viewmodel color)
+   ply:SetWalkSpeed(220)
+   ply:SetJumpPower(160)
+   local colDefault = Color(255,255,255,255)
+   ply:GetViewModel():SetColor(colDefault)
+   ply:SetColor(colDefault)
 
    SCORE:HandleSpawn(ply)
 end

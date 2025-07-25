@@ -184,11 +184,18 @@ hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dm
             ["body"] = 0
         }
     end
+
     if entTakingDamage:LastHitGroup() == HITGROUP_HEAD then
         totalHeadshots[wepName]["head"] = totalHeadshots[wepName]["head"] + 1
     else
         totalHeadshots[wepName]["body"] = totalHeadshots[wepName]["body"] + 1
     end
+
+    if totalUsage[wepName] == nil then
+        --i swear to god i was smelling toast working with this table
+        totalUsage[wepName] = wepName
+    end
+
 end)
 
 hook.Add("DoPlayerDeath", "TrackSWEPKills", function(victim, attacker, dmginfo)

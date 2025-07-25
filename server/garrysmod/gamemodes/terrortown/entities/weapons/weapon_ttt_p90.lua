@@ -94,23 +94,21 @@ end
 function SWEP:Reload()
    if ( self:Clip1() == self.Primary.ClipSize or self.Owner:GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
    self:DefaultReload( ACT_VM_RELOAD )
-   if self.Owner:GetWalkSpeed() == 220 then
+   if self.SpeedBoostRemoved then
       self.Reloaded = true
-      timer.Simple(2,function()
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
-      end)
-      timer.Simple(5,function()
-         self.Reloaded = false
-         self.SpeedBoostRemoved = false
+      timer.Simple(2.5,function()
+         if self.Owner:IsValid() then
+            self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
+            self.Reloaded = true
+            self.SpeedBoostRemoved = false
+         end
       end)
    end
 end
 
 function SWEP:Holster()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() then
-      if self.SpeedBoostRemoved == false then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
-      end
+   if IsValid(self.Owner) and self.Owner:IsPlayer() and self.Owner:GetWalkSpeed() > 220 then
+      self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
    end
    return true
 end
@@ -129,7 +127,7 @@ function SWEP:Deploy()
          return
       end
 
-      if (self:Clip1() >= 1) then
+      if (self:Clip1() >= 1) and self.Owner:GetWalkSpeed() < 275 then
          self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
       end
    end

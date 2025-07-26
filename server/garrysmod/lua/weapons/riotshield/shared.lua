@@ -386,8 +386,14 @@ function SWEP:DrawHUD(...)
    	return BaseClass.DrawHUD(self, ...)
 end
 
+hook.Add("EntityTakeDamage","ShieldDMGReduction",shieldDMGReduct)
+hook.Add("Tick","chargeCheckTick",chargeCheckTick)
+hook.Add("KeyRelease","chargeCheckRelease",chargeCheckRelease)
+hook.Add("CreateEntityRagdoll","chargeHitRagdoll",makeRagdoll)
+hook.Add("TTTPlayerSpeed","tttChargeSpeed",tttChargeSpeed)
+
 function SWEP:Initialize()
-	self.Owner:SetNWFloat("chargeSpeedMult",chargeSpeedMult)
+	--self.Owner:SetNWFloat("chargeSpeedMult",chargeSpeedMult)
 
 	util.PrecacheSound(Sound("physics/glass/glass_impact_bullet1.wav"))
 	util.PrecacheSound(Sound("physics/glass/glass_impact_bullet2.wav"))
@@ -401,16 +407,6 @@ function SWEP:Initialize()
 	util.PrecacheSound(Sound("physics/glass/glass_impact_soft2.wav"))
 	util.PrecacheSound(Sound("physics/glass/glass_impact_soft3.wav"))
 	util.PrecacheSound(chargeHitSound)
-	
-	if table.Count(ents.FindByClass("riotshield")) <= 1 then
-		hook.Add("EntityTakeDamage","ShieldDMGReduction",shieldDMGReduct)
-		hook.Add("Tick","chargeCheckTick",chargeCheckTick)
-		hook.Add("KeyRelease","chargeCheckRelease",chargeCheckRelease)
-		hook.Add("CreateEntityRagdoll","chargeHitRagdoll",makeRagdoll)
-		if TTT then
-			hook.Add("TTTPlayerSpeed","tttChargeSpeed",tttChargeSpeed)
-		end
-	end
 
 	if TTT then
 		--durabilityBar = pB_create(0.01,0.95,0.12,0.0245, "Durability",Color(255, 255, 150, 255),Color(50,50,50,255),8)
@@ -481,15 +477,6 @@ function SWEP:Deploy()
 end
 
 function SWEP:OnRemove()
-	if table.Count(ents.FindByClass("riotshield")) <= 0 then
-		hook.Remove("EntityTakeDamage","ShieldDMGReduction")
-		hook.Remove("Tick","chargeCheckTick")
-		hook.Remove("KeyRelease","chargeCheckRelease")
-		hook.Remove("CreateEntityRagdoll","chargeHitRagdoll")
-		if TTT then
-			hook.Remove("TTTPlayerSpeed","tttChargeSpeed")
-		end
-	end
 	self:Holster()
 end
 

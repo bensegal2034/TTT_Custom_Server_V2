@@ -286,3 +286,23 @@ function SWEP:Deploy()
    end
    return true
 end
+
+if SERVER then
+	hook.Add("DoPlayerDeath", "VectorHealOnKill", function(victim, attacker, dmginfo)
+		if
+			not IsValid(dmginfo:GetAttacker())
+			or not dmginfo:GetAttacker():IsPlayer()
+			or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+		then
+			return
+		end
+		local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+
+      if weapon:GetClass() == "weapon_ttt_vector" and weapon:GetWeaponState() == 1 then
+         attacker:SetHealth(attacker:Health()+20)
+         if attacker:Health() > 100 then
+            attacker:SetHealth(100)
+         end
+      end
+   end)
+end

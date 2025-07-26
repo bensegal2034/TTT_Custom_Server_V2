@@ -132,9 +132,13 @@ if SERVER then
 		if not IsValid(dmginfo:GetInflictor()) or dmginfo:GetInflictor() == nil then return end
 		if not IsValid(ply) or not ply:IsPlayer() then return end
 
-		if dmginfo:GetInflictor():GetClass() == "obj_rgun_proj" and GetRoundState() == ROUND_PREP then
-			dmginfo:SetInflictor(self)
-			return true
+		local infl = dmginfo:GetInflictor()
+
+		if infl:GetClass() == "obj_rgun_proj" then
+			dmginfo:SetInflictor(infl.Parent)
+			if GetRoundState() == ROUND_PREP then
+				return true
+			end
 		end
 	end)
 end

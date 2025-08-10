@@ -235,7 +235,7 @@ function SWEP:Think()
    end
    self.StateValue = self:GetWeaponState()
    if IsValid(self:GetOwner()) then
-      self.DamageBoost = (math.Round(math.abs(self.Owner:Health() - 100)/10))
+      self.DamageBoost = (math.Round(math.abs(self.Owner:Health() - 100)/5))
       self.MissingHealthDamage = self.Primary.Damage + self.DamageBoost
    end
 end

@@ -35,7 +35,7 @@ SWEP.AdminSpawnable			= true
 SWEP.DrawCrosshair 			= false
 
 SWEP.Primary.Sound			= Sound("Weapon_tmg.Single")		-- Script that calls the primary fire sound
-SWEP.Primary.Delay			= 0.11		-- This is in Rounds Per Minute
+SWEP.Primary.Delay			= 0.1		-- This is in Rounds Per Minute
 SWEP.Primary.ClipSize			= 150		-- Size of a clip
 SWEP.Primary.DefaultClip		= 300		-- Bullets you start with
 SWEP.Primary.MaxClip 			= 450		
@@ -46,7 +46,7 @@ SWEP.AmmoEnt = "item_ammo_smg1_ttt"
 -- Pistol, buckshot, and slam always ricochet. Use AirboatGun for a light metal peircing shotgun pellets
 
 SWEP.Primary.NumShots	= 1		-- How many bullets to shoot per trigger pull
-SWEP.Primary.Damage		= 13	-- Base damage per bullet
+SWEP.Primary.Damage		= 15	-- Base damage per bullet
 SWEP.Primary.Cone		= 0.01	-- Define from-the-hip accuracy 1 is terrible, .0001 is exact)
 SWEP.HeadshotMultiplier = 2
 

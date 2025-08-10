@@ -274,11 +274,10 @@ function IgniteTarget(att, path, dmginfo)
 
    if SERVER then
 
-      local dur = ent:IsPlayer() and 3 or 6
+      local dur = ent:IsPlayer() and 3 or 20
 
       -- disallow if prep or post round
       if ent:IsPlayer() and (not GAMEMODE:AllowPVP()) then return end
-
       ent:Ignite(dur, 20)
 
       ent.ignite_info = {att=dmginfo:GetAttacker(), infl=dmginfo:GetInflictor()}

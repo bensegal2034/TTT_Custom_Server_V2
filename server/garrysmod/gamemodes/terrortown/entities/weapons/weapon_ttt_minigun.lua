@@ -104,7 +104,7 @@ SWEP.Secondary.ClipSize = -1
 SWEP.HeadshotMultiplier = 1.67
 SWEP.Revving = false
 SWEP.RevTimer = 0
-SWEP.PushForceSelf = 22
+SWEP.PushForceSelf = 25
 SWEP.AnimStart = 0
 
 SWEP.DamageType            = "Impact"

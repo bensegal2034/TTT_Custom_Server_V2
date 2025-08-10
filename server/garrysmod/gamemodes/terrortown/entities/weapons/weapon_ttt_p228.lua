@@ -95,7 +95,7 @@ function SWEP:SecondaryAttack()
 	self.Primary.Cone = self.Secondary.Cone
 
 	self:ShootBullet( self.Secondary.Damage, self.Secondary.Recoil, self.Secondary.NumShots, self.Secondary.Cone )
-	self:TakePrimaryAmmo( 1 )
+	self:TakePrimaryAmmo( 3 )
 
 	local owner = self:GetOwner()
 	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end

@@ -68,7 +68,7 @@ if SERVER then
       if weapon:GetClass() == "weapon_ttt_sawedoff" then
          local angles = dmginfo:GetAttacker():GetAngles()
          local forward = dmginfo:GetAttacker():GetForward()
-         local pushforce = dmginfo:GetDamage() * 100
+         local pushforce = 1000 + (dmginfo:GetDamage() * 100)
          if ply:IsOnGround() == false then
             ply:SetVelocity(Vector(forward.r * (pushforce),forward.y * (pushforce),angles.p * 4))
          else

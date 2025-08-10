@@ -39,7 +39,7 @@ SWEP.MaxDamage = 200
 SWEP.CloseDist = 0
 SWEP.MediumDist = 500
 SWEP.FarDist = 1500
-SWEP.MaxDist = 2500
+SWEP.MaxDist = 2225
 
 SWEP.HeadshotMultiplier = 1.5
 
@@ -79,7 +79,7 @@ end
 function SWEP:SetZoom(state)
    if not (IsValid(self.Owner) and self.Owner:IsPlayer()) then return end
    if state then
-      self.Owner:SetFOV(80, 0.5)
+      self.Owner:SetFOV(60, 0.5)
    else
       self.Owner:SetFOV(0, 0.2)
    end

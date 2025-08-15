@@ -107,7 +107,7 @@ SWEP.Primary.Damage      = 10
 SWEP.Primary.RageDamage  = 16
 SWEP.MissingHealthDamage = 10
 SWEP.Primary.Delay       = 0.09
-SWEP.Primary.RageDelay   = 0.06
+SWEP.Primary.RageDelay   = 0.07
 SWEP.Primary.Cone        = 0.05
 SWEP.Primary.RageCone    = 0  
 SWEP.Primary.ConeSaved   = 0.05
@@ -234,10 +234,6 @@ function SWEP:Think()
       self:SetWeaponState(self.StateValue)
    end
    self.StateValue = self:GetWeaponState()
-   if IsValid(self:GetOwner()) then
-      self.DamageBoost = (math.Round(math.abs(self.Owner:Health() - 100)/5))
-      self.MissingHealthDamage = self.Primary.Damage + self.DamageBoost
-   end
 end
 
 function SWEP:PreDrop()
@@ -300,6 +296,11 @@ if SERVER then
 
       if weapon:GetClass() == "weapon_ttt_vector" and weapon:GetWeaponState() == 1 then
          attacker:SetHealth(attacker:Health()+20)
+         if attacker:Health() > 100 then
+            attacker:SetHealth(100)
+         end
+      elseif weapon:GetClass() == "weapon_ttt_vector" and weapon:GetWeaponState() != 1 then
+         attacker:SetHealth(attacker:Health()+50)
          if attacker:Health() > 100 then
             attacker:SetHealth(100)
          end

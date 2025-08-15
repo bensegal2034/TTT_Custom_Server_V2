@@ -28,7 +28,7 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Primary.Recoil        = 4
 SWEP.Primary.Damage        = 25
-SWEP.DamageType            = "Puncture"
+SWEP.DamageType            = "True"
 SWEP.Primary.Delay         = 0.56
 SWEP.Primary.Cone          = 0.02
 SWEP.Primary.ClipSize      = 4
@@ -56,7 +56,7 @@ SWEP.IronSightsAng         = Vector(-0.5, 0, 0)
 SWEP.PrimaryAnim           = ACT_VM_PRIMARYATTACK_SILENCED
 SWEP.ReloadAnim            = ACT_VM_RELOAD_SILENCED
 
-local Duration = 10
+local Duration = 5
 
 sound.Add({
 	name = 			"Weapon_Tracker.Ping",
@@ -270,6 +270,7 @@ function SWEP:PrimaryAttack()
       if tgt.entity == entity then return end
 	end
    EmitSound("trackerping.mp3", Vector(0, 0, 0), -2, 1, 1, SNDLVL_NONE, 0, 100, 0, entity)
+   sound.Play("Weapon_Tracker.Ping", entity:GetPos(), 75)
 
    table.insert(Targets, {entity=entity})
 

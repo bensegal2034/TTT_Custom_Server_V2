@@ -59,10 +59,20 @@ local PregnancyLength = 30
 
 if SERVER then
 	util.AddNetworkString("Pregnancy_Update")
+	util.AddNetworkString("Pregnancy_Hit")
+	util.AddNetworkString("Pregnancy_Repeat")
 end
 if CLIENT then
 	net.Receive("Pregnancy_Update", function(len, ply)
 		Pregnant = net.ReadTable()
+	end)
+
+	net.Receive("Pregnancy_Hit", function(len, ply)
+		EmitSound("garrysmod/save_load1.wav", Vector(0, 0, 0), -2, 1, SNDLVL_NONE)
+	end)
+
+	net.Receive("Pregnancy_Repeat", function(len, ply)
+		EmitSound("garrysmod/save_load2.wav", Vector(0, 0, 0), -2, 1, SNDLVL_NONE)
 	end)
 
 	hook.Add("PreDrawEffects", "PregnancyDrawPregnant", function()
@@ -138,9 +148,13 @@ function SWEP:PrimaryAttack()
 
 	-- Already pregnant
 	if Pregnant[entity] != nil then
+		net.Start("Pregnancy_Repeat")
+		net.Send(ply)
 		return
 	end
 
+	net.Start("Pregnancy_Hit")
+	net.Send(ply)
 	Pregnant[entity] = CurTime() + PregnancyLength
 	
 	net.Start("Pregnancy_Update")

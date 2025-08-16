@@ -93,6 +93,17 @@ if CLIENT then
 	end)
 end
 
+-- Clear pregnancy at various points between rounds to prevent cross-round pregnant
+hook.Add("TTTPrepareRound", "PregnancyTTTPrepareRound", function()
+	Pregnant = {}
+end)
+hook.Add("TTTBeginRound", "PregnancyTTTBeginRound", function()
+	Pregnant = {}
+end)
+hook.Add("TTTEndRound", "PregnancyTTTEndRound", function()
+	Pregnant = {}
+end)
+
 function SWEP:Initialize()
 	self:SetColor( Color( 255, 0, 0 ) )
 end
@@ -139,6 +150,11 @@ function SWEP:PrimaryAttack()
 	timer.Simple(PregnancyLength, function()
 		if !IsValid(entity) or !entity:Alive() then
 			Pregnant[entity] = nil
+			return
+		end
+
+		-- Handle timer remaining even when pregnancy cleared at round end
+		if !Pregnant[entity] then
 			return
 		end
 

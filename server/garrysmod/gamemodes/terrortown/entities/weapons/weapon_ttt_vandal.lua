@@ -42,6 +42,15 @@ hook.Add("TTTPrepareRound", "ResetVandalSpeed", function()
    end
 end)
 
+hook.Add("TTTPlayerSpeedModifier", "VandalSpeed", function(ply,slowed,mv)
+   if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+      return
+   end
+   if ply:GetActiveWeapon():GetClass() == "weapon_ttt_vandal" then
+      return 21/22
+   end
+end)
+
 -- Always derive from weapon_tttbase
 SWEP.Base = "weapon_tttbase"
 
@@ -168,8 +177,6 @@ function SWEP:Think()
       self.DrawKillBanner = false
       self.KillBannerDelayTimer = 0
    end
-   --default speed 220
-   self:GetOwner():SetWalkSpeed(210)
 
    if self.Owner:KeyDown(IN_FORWARD) or self.Owner:KeyDown(IN_BACK) or self.Owner:KeyDown(IN_MOVELEFT) or self.Owner:KeyDown(IN_MOVERIGHT) then
       self.MovementInaccuracy = true
@@ -281,7 +288,6 @@ function SWEP:Deploy()
          end
       end)
    end
-   self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
 end
 
 function SWEP:CanPrimaryAttack()
@@ -298,13 +304,4 @@ end
 
 function SWEP:OwnerChanged()
    return
-end
-
-function SWEP:Holster()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() then
-      if self.SpeedBoostRemoved == false then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
-      end
-   end
-   return true
 end

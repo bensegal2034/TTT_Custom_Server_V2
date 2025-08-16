@@ -107,6 +107,8 @@ SWEP.RevTimer = 0
 SWEP.PushForceSelf = 25
 SWEP.AnimStart = 0
 
+SWEP.Slowed = false
+
 SWEP.DamageType            = "Impact"
 
 hook.Add("TTTPrepareRound", "ResetMinigunSpeed", function()
@@ -132,7 +134,7 @@ function SWEP:Think()
 		--Check if weapon is already being spun up, if not begin pre-firing spinup, otherwise bypass SetNextPrimaryFire and immediately skip to firing
 		if self.Revving == false then
 			vm:SendViewModelMatchingSequence(vm:LookupSequence("fire04"))	
-			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
+			self.Slowed = true
 			self.Weapon:EmitSound(Sound("Minigun.Start"))
 			self:SetNextPrimaryFire(CurTime() + 0.7)
 		end
@@ -146,7 +148,7 @@ function SWEP:Think()
 		self:SetNextSecondaryFire(CurTime() + 0.7)
 		self:SetNextPrimaryFire(CurTime() + 0.7)
 		self.Weapon:EmitSound(Sound("Minigun.Start"))
-		self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
+		self.Slowed = true
 		self.Revving = true
 	--Releasing spinup key without firing 
 	elseif self.Owner:IsValid() and self.Owner:KeyReleased(IN_ATTACK2) and self.Revving then
@@ -154,7 +156,7 @@ function SWEP:Think()
 		self:SetNextSecondaryFire(CurTime() + 0.7)
 		self.Weapon:StopSound( "Minigun.Start" )
 		self.Weapon:EmitSound(Sound("Minigun.Stop"))
-		self.Owner:SetWalkSpeed(220)
+		self.Slowed = false
 		self.Revving = false
 	end
 
@@ -171,7 +173,7 @@ function SWEP:Think()
 		self:SetNextSecondaryFire(CurTime() + 0.7)
 		self.Weapon:StopSound( "Minigun.Start" )
 		self.Weapon:EmitSound(Sound("Minigun.Stop"))
-		self.Owner:SetWalkSpeed(220)
+		self.Slowed = false
 	end
 end
 
@@ -316,15 +318,10 @@ function SWEP:PrimaryAttack()
 
 		local angles = self.Owner:GetAngles()
 		local forward = self.Owner:GetForward()
-		self.Owner:SetVelocity(Vector(forward.r * ((self.PushForceSelf) * -1),forward.y * ((self.PushForceSelf) * -1), self.PushForceSelf * angles.p / 50))
-		self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.RevSlow)
-		
+		self.Owner:SetVelocity(Vector(forward.r * ((self.PushForceSelf) * -1),forward.y * ((self.PushForceSelf) * -1), self.PushForceSelf * angles.p / 50))		
 end
 
 function SWEP:Holster()
-	if IsValid(self.Owner) and self.Owner:IsPlayer() then
-		self.Owner:SetWalkSpeed(220)
-	end
 	self.Weapon:StopSound( "weapons/minigun1/New3/minigunshoot.wav" )
 	return true
 end
@@ -334,18 +331,27 @@ function SWEP:OnRemove()
 end
 
 function SWEP:Reload()
- //if self.ReloadingTime and CurTime() <= self.ReloadingTime then return end
- 
+	if self.ReloadingTime and CurTime() <= self.ReloadingTime then return end
 	if ( self:Clip1() < self.Primary.ClipSize and self.Owner:GetAmmoCount( self.Primary.Ammo ) > 0 ) then
-	
 		self:DefaultReload( ACT_VM_RELOAD )
-				
-				self.Owner:SetWalkSpeed(220)
-				self.Weapon:EmitSound(Sound("Minigun.Reload"))
-				self.Weapon:StopSound( "weapons/minigun1/New3/minigunshoot.wav" )
-                local AnimationTime = self.Owner:GetViewModel():SequenceDuration()
-                self.ReloadingTime = CurTime() + 1
-                self:SetNextPrimaryFire(CurTime() + 1)
-                self:SetNextSecondaryFire(CurTime() + 1)
+		self.Slowed = false
+		self.Weapon:EmitSound(Sound("Minigun.Reload"))
+		self.Weapon:StopSound( "weapons/minigun1/New3/minigunshoot.wav" )
+		local AnimationTime = self.Owner:GetViewModel():SequenceDuration()
+		self.ReloadingTime = CurTime() + 1
+		self:SetNextPrimaryFire(CurTime() + 1)
+		self:SetNextSecondaryFire(CurTime() + 1)
 	end
 end
+
+hook.Add("TTTPlayerSpeedModifier", "MinigunSpeed", function(ply,slowed,mv)
+	if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+		return
+	end
+	local weapon = ply:GetActiveWeapon()
+	if weapon:GetClass() == "weapon_ttt_minigun" then
+		if weapon.Slowed then
+			return weapon.RevSlow
+		end
+	end
+end)

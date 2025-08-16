@@ -76,73 +76,6 @@ SWEP.IsSilent = false
 -- If NoSights is true, the weapon won't have ironsights
 SWEP.NoSights = true
 
-hook.Add("TTTPrepareRound", "ResetP90Speed", function()
-   if SERVER then
-      local rf = RecipientFilter()
-      rf:AddAllPlayers()
-      players = rf:GetPlayers()
-      for i = 1, #players do
-         players[i]:SetWalkSpeed(220)
-      end
-   end
-end)
-
-function SWEP:PreDrop()
-   return self.BaseClass.PreDrop( self )
-end
-
-function SWEP:Reload()
-   if ( self:Clip1() == self.Primary.ClipSize or self.Owner:GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
-   self:DefaultReload( ACT_VM_RELOAD )
-   if self.SpeedBoostRemoved then
-      self.Reloaded = true
-      timer.Simple(2.5,function()
-         if self.Owner:IsValid() then
-            self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
-            self.Reloaded = true
-            self.SpeedBoostRemoved = false
-         end
-      end)
-   end
-end
-
-function SWEP:Holster()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() and self.Owner:GetWalkSpeed() > 220 then
-      self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
-   end
-   return true
-end
-
-function SWEP:Deploy()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() then
-      local rand = math.random(1, 10000)
-      if rand == 9999 then
-         self.Owner:SetWalkSpeed(3500)
-         timer.Simple(3, function()
-            util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 500, 200)
-            local effectdata = EffectData()
-            effectdata:SetOrigin(self:GetOwner():GetPos())
-            util.Effect("Explosion", effectdata, true, true)
-         end)
-         return
-      end
-
-      if (self:Clip1() >= 1) and self.Owner:GetWalkSpeed() < 275 then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
-      end
-   end
-end
-
-function SWEP:Think()
-   if ((self:Clip1() <= 1) and self.Reloaded == false) then
-      if self.SpeedBoostRemoved == false then
-         self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
-         self.SpeedBoostRemoved = true
-      end
-   end
-end
-
-
 -- Equipment menu information is only needed on the client
 if CLIENT then
    -- Text shown in the equip menu
@@ -151,3 +84,12 @@ if CLIENT then
    desc = "Extremely fast firing SMG.\n\nComes with a mounted scope."
    }
 end
+
+hook.Add("TTTPlayerSpeedModifier", "P90Speed", function(ply,slowed,mv)
+   if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+      return
+   end
+   if ply:GetActiveWeapon():GetClass() == "weapon_ttt_p90" then
+      return 1.25
+   end
+end)

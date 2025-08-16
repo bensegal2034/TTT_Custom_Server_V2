@@ -56,7 +56,6 @@ SWEP.DrawCrosshair = false
 SWEP.DrawAmmo = true
 SWEP.CSMuzzleFlashes = 1
 SWEP.Base = "weapon_tttbase"
-SWEP.WalkSpeed = 266
 SWEP.RunSpeed = 532
 SWEP.Reloading = 0
 SWEP.ReloadingTimer = CurTime()

@@ -114,7 +114,6 @@ function SWEP:PrimaryAttack(worldsnd)
  
 	self:ShootBullet( dmg, recoil, self.Primary.NumShots, self:GetPrimaryCone() )
 	self:TakePrimaryAmmo( 1 )
-	self.Owner:SetWalkSpeed(self.ModulationSpeed)
 	self.IsFiring = true
 	local owner = self.Owner
 	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
@@ -135,14 +134,11 @@ function SWEP:Think()
 	   self.FiringTimer = CurTime() + self.FiringDelay
 	end
 	if self.ModulationTime and CurTime() > self.ModulationTime then
-		if IsValid(self.Owner) and self.Owner:IsPlayer() then
-		self.Owner:SetWalkSpeed(220)
-	end
 		self.ModulationTime = nil
 		self.ModulationCone = 1
 		self.ModulationSpeed = 220
 	end
- end
+end
  
 
 -- Add some zoom to ironsights for this gun
@@ -152,19 +148,19 @@ end
  
  
 function SWEP:Reload()
-	self.Owner:SetWalkSpeed(220)
 	if (self:Clip1() == self.Primary.ClipSize or
 		self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0) then
 		return
 	end
 	self:DefaultReload(ACT_VM_RELOAD)
-
 end
- 
-function SWEP:Holster()
-	if IsValid(self.Owner) and self.Owner:IsPlayer() then
-	   self.Owner:SetWalkSpeed(220)
-	end
 
-	return true
- end
+hook.Add("TTTPlayerSpeedModifier", "TommyGunSpeed", function(ply,slowed,mv)
+	if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+		return
+	end
+	local weapon = ply:GetActiveWeapon()
+	if weapon:GetClass() == "weapon_ttt_tommygun" then
+		return weapon.ModulationSpeed / 220
+	end
+end)

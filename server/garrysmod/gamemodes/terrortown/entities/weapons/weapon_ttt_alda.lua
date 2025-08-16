@@ -354,7 +354,6 @@ end
 function SWEP:Holster()
 	if IsValid(self.Owner) and self.Owner:IsPlayer() then
 		if self.SpeedBoostRemoved == false then
-			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
 			if self.Owner:Health() > self.HealthBoost then
 				self.Owner:SetHealth(self.Owner:Health() / self.HealthBoost)
 				if server then
@@ -369,7 +368,6 @@ end
 function SWEP:Deploy()
 	if IsValid(self.Owner) and self.Owner:IsPlayer() then
 		if (self:Clip1() >= 1) then
-			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() * self.SpeedBoost)
 			if server then
 				self.Owner:SetMaxHealth(125)
 			end
@@ -383,7 +381,6 @@ end
 function SWEP:Think()
 	if ((self:Clip1() <= 1) and self.Reloaded == false) then
 		if self.SpeedBoostRemoved == false then
-			self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() / self.SpeedBoost)
 			if server then
 				self.Owner:SetMaxHealth(100)
 			end
@@ -395,22 +392,18 @@ function SWEP:Think()
 	end
 end
 
-hook.Add("TTTPrepareRound", "ResetAlda", function()
-	if SERVER then
-	   local rf = RecipientFilter()
-	   rf:AddAllPlayers()
-	   players = rf:GetPlayers()
-	   for i = 1, #players do
-		  players[i]:SetWalkSpeed(220)
-		  players[i]:SetHealth(100)
-		  players[i]:SetMaxHealth(100)
-	   end
-	end
+hook.Add("TTTPlayerSpeedModifier", "AldaSpeed", function(ply,slowed,mv)
+   if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+      return
+   end
+   if ply:GetActiveWeapon():GetClass() == "weapon_ttt_alda" then
+      return .75
+   end
 end)
 
 hook.Add("TTTBeginRound", "AldaStartingHealth", function()
 	for _, ply in ipairs( player.GetAll() ) do
-		if !IsValid(ply:GetActiveWeapon()) or !IsValid(ply) then
+		if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
 			continue
       	end
 		if ply:GetActiveWeapon():GetClass() == "weapon_ttt_alda" then

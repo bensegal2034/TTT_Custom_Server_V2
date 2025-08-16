@@ -99,7 +99,6 @@ function SWEP:PrimaryAttack(worldsnd)
 
    self:ShootBullet( dmg, recoil, self.Primary.NumShots, self:GetPrimaryCone() )
    self:TakePrimaryAmmo( 1 )
-   self.Owner:SetWalkSpeed(self.ModulationSpeed)
    self.IsFiring = true
    local owner = self.Owner
    if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
@@ -113,9 +112,7 @@ function SWEP:Think()
       self.FiringTimer = CurTime() + self.FiringDelay
    end
 	if self.ModulationTime and CurTime() > self.ModulationTime then
-		if IsValid(self.Owner) and self.Owner:IsPlayer() then
-         self.Owner:SetWalkSpeed(220)
-      end
+
       self.ModulationTime = nil
 		self.ModulationRecoil = 1
 		self.ModulationCone = 1
@@ -138,7 +135,6 @@ function SWEP:GetPrimaryCone()
 end
 
 function SWEP:Reload()
-   self.Owner:SetWalkSpeed(220)
     if (self:Clip1() == self.Primary.ClipSize or
         self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0) then
        return
@@ -147,12 +143,19 @@ function SWEP:Reload()
 end
 
 function SWEP:Holster()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() then
-      self.Owner:SetWalkSpeed(220)
-   end
    return true
 end
 
 function SWEP:SecondaryAttack()
 
 end
+
+hook.Add("TTTPlayerSpeedModifier", "NegevSpeed", function(ply,slowed,mv)
+   if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+      return
+   end
+   local weapon = ply:GetActiveWeapon()
+   if weapon:GetClass() == "weapon_ttt_negev" then
+      return weapon.ModulationSpeed / 220
+   end
+end)

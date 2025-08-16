@@ -336,18 +336,6 @@ function SWEP:Reload()
          self:SetHoldingAces(math.random(1,self.Primary.ClipSize))
       end
    end
-   if (self.Upside == 4) then
-      if self.Owner:GetWalkSpeed() == 220 then
-         self.Reloaded = true
-         timer.Simple(3,function()
-            self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() + self.SpeedBoost)
-         end)
-         timer.Simple(5,function()
-            self.Reloaded = false
-            self.SpeedBoostRemoved = false
-         end)
-      end
-   end
 end
 DEFINE_BASECLASS( SWEP.Base )
 if CLIENT then
@@ -646,14 +634,6 @@ function SWEP:Think()
          self.FirstShotAccuracyBullets = 0
       end
    end
-   if (self.Upside == 4) then
-      if ((self:Clip1() <= 1) and self.Reloaded == false) then
-         if self.SpeedBoostRemoved == false then
-            self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() - self.SpeedBoost)
-            self.SpeedBoostRemoved = true
-         end
-      end
-   end
 end
 
 function SWEP:RicochetCallback(bouncenum, attacker, tr, dmginfo)
@@ -738,13 +718,6 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:Holster()
-   if (self.Upside == 4) then
-      if IsValid(self.Owner) and self.Owner:IsPlayer() then
-         if self.SpeedBoostRemoved == false then
-            self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() - self.SpeedBoost)
-         end
-      end
-   end
    if (self.Downside == 4) then
       if IsValid(self.Owner) and self.Owner:IsPlayer() then
          self.Owner:SetJumpPower(160)
@@ -754,38 +727,26 @@ function SWEP:Holster()
 end
 
 function SWEP:Deploy()
-   if (self.Upside == 4) then
-      self.SpeedBoostRemoved = false
-      if IsValid(self.Owner) and self.Owner:IsPlayer() then
-         local rand = math.random(1, 10000)
-         if rand == 9999 then
-            self.Owner:SetWalkSpeed(3500)
-            timer.Simple(3, function()
-               util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 500, 200)
-               local effectdata = EffectData()
-               effectdata:SetOrigin(self:GetOwner():GetPos())
-               util.Effect("Explosion", effectdata, true, true)
-            end)
-            return
-         end
-
-         if (self:Clip1() >= 1) then
-            self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed() + self.SpeedBoost)
-         end
-      end
-   end
    if (self.Downside == 4) then
       self.Owner:SetJumpPower(0)
    end
 end
 
 function SWEP:PreDrop()
-   if (self.Upside == 4) then
-      self.Owner:SetWalkSpeed(self.Owner:GetWalkSpeed())
-   end
-   
    if (self.Downside == 4) then
       self.Owner:SetJumpPower(160)
    end
    return self.BaseClass.PreDrop( self )
 end
+
+hook.Add("TTTPlayerSpeedModifier", "Tec9Speed", function(ply,slowed,mv)
+   if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+      return
+   end
+   local weapon = ply:GetActiveWeapon()
+   if weapon:GetClass() == "weapon_ttt_tec9" then
+      if weapon.Upside == 4 then
+         return 1.25
+      end
+   end
+end)

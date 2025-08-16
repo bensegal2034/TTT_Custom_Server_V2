@@ -164,6 +164,8 @@ function SWEP:PrimaryAttack()
 	if not IsFirstTimePredicted() then return end
 
 	self:DoSATMAnimation(true)
+	-- Don't allow flicker-tracks that prevent the tracked player from responding
+	self:SetNextPrimaryFire(CurTime() + 2)
 	if self:Clip1() > 0 then
 		if CLIENT then
 			self:FixIndex()

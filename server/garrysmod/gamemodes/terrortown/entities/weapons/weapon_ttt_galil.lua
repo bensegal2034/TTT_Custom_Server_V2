@@ -129,6 +129,7 @@ hook.Add("PostEntityTakeDamage", "GalilGetCharge", function(ent, dmginfo, wasDam
    if
       not IsValid(dmginfo:GetAttacker())
       or not IsValid(ent)
+      or not IsPlayer(ent)
       or not dmginfo:GetAttacker():IsPlayer()
       or not IsValid(ent:GetActiveWeapon())
       or not GetRoundState() == ROUND_ACTIVE

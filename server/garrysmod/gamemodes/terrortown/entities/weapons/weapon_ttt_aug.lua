@@ -449,17 +449,18 @@ end
  
 hook.Add("PostEntityTakeDamage", "AugStackOnHit", function(ent, dmginfo, wasDamageTaken)
 	if
-	   not IsValid(dmginfo:GetAttacker())
-	   or not dmginfo:GetAttacker():IsPlayer()
-	   or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-	   or not GetRoundState() == ROUND_ACTIVE
-	   or not wasDamageTaken
+		not IsValid(dmginfo:GetAttacker())
+		or not dmginfo:GetAttacker():IsPlayer()
+		or not IsPlayer(ent)
+		or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+		or not GetRoundState() == ROUND_ACTIVE
+		or not wasDamageTaken
 	then
-	   return
+		return	
 	end
  
 	local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-	
+
 	if weapon:GetClass() == "weapon_ttt_aug" then
 		weapon:SetStackCount(weapon:GetStackCount() + 1)
 	end

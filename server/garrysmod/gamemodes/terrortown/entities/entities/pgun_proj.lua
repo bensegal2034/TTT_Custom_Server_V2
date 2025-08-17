@@ -7,7 +7,7 @@ AddCSLuaFile()
 ENT.Type 		= "anim"
 ENT.Base 		= "base_anim"
 
-ENT.PrintName	= "Molotov"
+ENT.PrintName	= "Pregnant"
 ENT.Author		= "SmiteTheHero"
 ENT.Contact		= ""
 ENT.Spawnable	= false

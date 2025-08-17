@@ -29,7 +29,7 @@ SWEP.WorldModel         = "models/weapons/w_eq_fraggrenade.mdl"
 -- Kind specifies the category this weapon is in. Players can only carry one of
 -- each. Can be: WEAPON_... MELEE, PISTOL, HEAVY, NADE, CARRY, EQUIP1, EQUIP2 or ROLE.
 -- Matching SWEP.Slot values: 0      1       2     3      4      6       7        8
-SWEP.Kind = WEAPON_NADE
+SWEP.Kind = WEAPON_ICE
    
 -- If AutoSpawnable is true and SWEP.Kind is not WEAPON_EQUIP1/2, then this gun can
 -- be spawned as a random weapon.

@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "arsen/Tripmine"
+	"$normalmap" "arsen/Tripmine_n"
+	"$surfaceprop" "Computer"
+}

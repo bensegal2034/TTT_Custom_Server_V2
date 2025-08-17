@@ -6,8 +6,8 @@ if SERVER then
 CreateConVar("beecount", "9", FCVAR_NOTIFY + FCVAR_ARCHIVE)
 
 CreateConVar("beerandom", "0", FCVAR_NOTIFY + FCVAR_ARCHIVE)
-CreateConVar("beerandommin", "9", FCVAR_NOTIFY + FCVAR_ARCHIVE)
-CreateConVar("beerandommax", "15", FCVAR_NOTIFY + FCVAR_ARCHIVE)
+CreateConVar("beerandommin", "15", FCVAR_NOTIFY + FCVAR_ARCHIVE)
+CreateConVar("beerandommax", "21", FCVAR_NOTIFY + FCVAR_ARCHIVE)
 
    
 	util.AddNetworkString("chat_AddText")
@@ -49,7 +49,7 @@ SWEP.HoldType			= "grenade"
 
 SWEP.CanBuy = { ROLE_TRAITOR }
 SWEP.InLoadoutFor = nil
-SWEP.LimitedStock = true
+SWEP.LimitedStock = false
 SWEP.AllowDrop = true
 SWEP.IsSilent = false
 SWEP.NoSights = true
@@ -62,6 +62,7 @@ SWEP.AutoSpawnable      = false
 -- really the only difference between grenade weapons: the model and the thrown
 -- ent.
 SWEP.NoCook = true
+SWEP.Reusable = true
 
 if CLIENT then
    -- Path to the icon material

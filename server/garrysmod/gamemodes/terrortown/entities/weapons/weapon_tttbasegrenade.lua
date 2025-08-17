@@ -49,6 +49,8 @@ SWEP.DeploySpeed           = 1.5
 SWEP.LastPinState          = false
 SWEP.InitDetTimeDelta      = 0
 
+SWEP.Reusable = false
+
 AccessorFunc(SWEP, "det_time", "DetTime")
 
 CreateConVar("ttt_no_nade_throw_during_prep", "1")
@@ -160,7 +162,9 @@ function SWEP:BlowInFace()
 
    if self.was_thrown then return end
 
-   self.was_thrown = true
+   if self.Reusable == false then
+      self.was_thrown = true
+   end
 
    -- drop the grenade so it can immediately explode
 
@@ -171,7 +175,12 @@ function SWEP:BlowInFace()
    self:CreateGrenade(src, Angle(0,0,0), Vector(0,0,1), Vector(0,0,1), ply)
 
    self:SetThrowTime(0)
-   self:Remove()
+   if !self.Reusable then
+      self:Remove()
+   end
+   if self.Reusable then
+      self.Reusable = false
+   end
 end
 
 function SWEP:StartThrow()
@@ -187,7 +196,9 @@ function SWEP:Throw()
 
       if self.was_thrown then return end
 
-      self.was_thrown = true
+      if self.Reusable == false then
+         self.was_thrown = true
+      end
 
       local ang = ply:EyeAngles()
       local src = ply:GetPos() + (ply:Crouching() and ply:GetViewOffsetDucked() or ply:GetViewOffset())+ (ang:Forward() * 8) + (ang:Right() * 10)
@@ -206,7 +217,12 @@ function SWEP:Throw()
       self:CreateGrenade(src, Angle(0,0,0), thr, Vector(600, math.random(-1200, 1200), 0), ply)
 
       self:SetThrowTime(0)
-      self:Remove()
+      if !self.Reusable then
+         self:Remove()
+      end
+      if self.Reusable then
+         self.Reusable = false
+      end
    end
 end
 

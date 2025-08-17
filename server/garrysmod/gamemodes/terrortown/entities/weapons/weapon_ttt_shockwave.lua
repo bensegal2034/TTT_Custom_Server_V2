@@ -28,7 +28,7 @@ SWEP.Kind               = WEAPON_SHOCKWAVE
 
 --All grenades inherently use this value to determine fuse time, default ttt grenades don't set it and use a default value of 5
 SWEP.detonate_timer      = 5
-SWEP.LimitedStock = false
+SWEP.LimitedStock = true
 SWEP.Spawnable          = true
 SWEP.AutoSpawnable      = false
 SWEP.CanBuy                = {ROLE_TRAITOR, ROLE_DETECTIVE}
@@ -36,6 +36,7 @@ SWEP.UseHands           = true
 SWEP.ViewModel          = "models/weapons/cstrike/c_eq_fraggrenade.mdl"
 SWEP.WorldModel         = "models/weapons/w_eq_fraggrenade.mdl"
 SWEP.NoCook             = true
+SWEP.Reusable           = true
 
 SWEP.Weight             = 5
 

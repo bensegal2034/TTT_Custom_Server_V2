@@ -116,7 +116,7 @@ if TTT == true then
 
 	--SWEP.InLoadoutFor = {ROLE_TRAITOR}
 	SWEP.CanBuy = {ROLE_DETECTIVE}
-	SWEP.LimitedStock = false
+	SWEP.LimitedStock = true
 
 	SWEP.AutoSpawnable = false
 	SWEP.AdminSpawnable = true
@@ -415,7 +415,8 @@ function SWEP:Initialize()
 		--durabilityBar = pB_create(0.019,0.87,0.12,0.0245, "Durability",Color(255, 255, 150, 255),Color(50,50,50,255),8)
 		durabilityBar = ProgressBar:Create(self.Owner,0.019,0.87,0.12,0.0245, "Durability",Color(255, 255, 150, 255),Color(50,50,50,255),8,1)
 	end
-	self.Owner:SetNWFloat("durability",maxdurability)
+	print(self:GetOwner())
+	self:GetOwner():SetNWFloat("durability",maxdurability)
 	--durabilityBar:ShowHUD()
 	
 	self:SetHoldType(self.HoldType)

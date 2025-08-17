@@ -31,9 +31,9 @@ SWEP.WorldModel = "models/weapons/w_rocket_launcher.mdl"
 SWEP.Primary.Delay = 0.125
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "none"
-SWEP.Primary.ClipSize = 50
-SWEP.Primary.DefaultClip = 50
-SWEP.Primary.ClipMax = 50
+SWEP.Primary.ClipSize = 10
+SWEP.Primary.DefaultClip = 10
+SWEP.Primary.ClipMax = 10
 
 SWEP.AllowDrop = true
 SWEP.AmmoEnt = "none"

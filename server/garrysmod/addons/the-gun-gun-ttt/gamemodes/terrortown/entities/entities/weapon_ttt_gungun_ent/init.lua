@@ -59,9 +59,14 @@ function ENT:Initialize()
 			effectdata:SetEntity( self )
 			effectdata:SetAttachment( 1 )
 			util.Effect( "MuzzleEffect", effectdata )
-			self:FireBullets(
-				{ Damage = self.Damage, Dir = self:GetAngles():Forward(), Src = self:GetPos() }
-			)
+			self:FireBullets({
+				Damage = 7, --self.Damage
+				Dir = self:GetAngles():Forward(),
+				Src = self:GetPos(),
+				Callback = function(ply, tr, dmginfo) 
+					return self:RicochetCallback(0, ply, tr, dmginfo)
+				end
+			})
 		end)
 	end
 	timer.Simple( 30, function()
@@ -74,4 +79,64 @@ function ENT:Initialize()
 		util.Effect( "StunstickImpact", effectdata )
 		self:Remove()
 	end)
+end
+
+function ENT:RicochetCallback(bouncenum, attacker, tr, dmginfo)
+
+   if not IsFirstTimePredicted() then
+      return {damage = false, effects = false}
+   end
+
+   self.MaxRicochet = 15
+   self.RicochetMulti = 1
+
+   if 
+      bouncenum >= self.MaxRicochet
+      or tr.HitSky
+      or (IsValid(tr.Entity) and tr.Entity:IsPlayer())
+   then
+      return {damage = true, effects = true}
+   end
+
+   -- Bounce vector
+   if SERVER then
+      local DotProduct = tr.HitNormal:Dot(tr.Normal * -1)
+      local dir = ((2 * tr.HitNormal * DotProduct) + tr.Normal)
+      
+      local ricochetbullet = {}
+         ricochetbullet.Num 		= 1
+         ricochetbullet.Src 		= tr.HitPos
+         ricochetbullet.Dir 		= dir
+         ricochetbullet.Spread 	= Vector(0, 0, 0)
+         ricochetbullet.Force		= dmginfo:GetDamageForce() * 2
+         ricochetbullet.Damage	= 7 --dmginfo:GetDamage() * self.RicochetMulti
+         ricochetbullet.Tracer   = 1
+         ricochetbullet.TracerName = "m9k_effect_mad_ricochet_trace"
+         ricochetbullet.Attacker = self.Owner
+         ricochetbullet.Callback  	= function(a, b, c)  
+            return self:RicochetCallback(bouncenum + 1, a, b, c) end
+
+            
+      -- Unarmed so it doesn't have a model or an offset muzzle location or let you pick it up
+      /**
+      local fakeswep = ents.Create("weapon_ttt_unarmed")
+      fakeswep:SetPos(tr.HitPos)
+      fakeswep:SetAngles(dir:Angle())
+      fakeswep:SetOwner(self.Owner)
+      fakeswep:DrawShadow(false)
+      
+      fakeswep:Spawn()
+      -- If the timer isn't here it breaks. Don't ask me why.
+      timer.Simple(0, function()
+         fakeswep:FireBullets(ricochetbullet)
+         fakeswep:Remove()
+      end)
+      **/
+      timer.Simple(0, function() 
+         if attacker != nil then 
+            attacker:FireBullets(ricochetbullet)
+         end 
+      end)
+      return {damage = true, effects = true}
+   end
 end

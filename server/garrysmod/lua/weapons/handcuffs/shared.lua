@@ -48,11 +48,11 @@ SWEP.CanBuy         = { ROLE_DETECTIVE }
 SWEP.Primary.NumShots       =  1
 SWEP.Primary.Delay          =  0.9
 SWEP.Primary.Recoil         =  0
-SWEP.Primary.Ammo           = "none"
+SWEP.Primary.Ammo           = "AlyxGun"
 SWEP.Primary.Damage         =  0
 SWEP.Primary.Cone           =  0
-SWEP.Primary.ClipSize       = -1
-SWEP.Primary.DefaultClip    = -1
+SWEP.Primary.ClipSize       = 1
+SWEP.Primary.DefaultClip    = 1
 SWEP.Primary.Automatic      = false
 
 
@@ -94,7 +94,7 @@ end
 
 function SWEP:PrimaryAttack(ply)
     if not SERVER then return end
-    
+    if self:Clip1() <= 0 then return end
     local owner = self:GetOwner()
     
     local ply = doTrace(owner)
@@ -119,7 +119,7 @@ function SWEP:PrimaryAttack(ply)
    end
     
     owner:PrintMessage(HUD_PRINTCENTER,"Player was cuffed.")
-    
+    self:TakePrimaryAmmo(1)
     ply:SetNWBool("TTT_Handcuffed", true)
     ply:SetNWFloat("TTT_Handcuff_Timer", 30.0)
     

@@ -125,16 +125,19 @@ if CLIENT then
    end
 end
 
-hook.Add("ScalePlayerDamage", "GalilGetCharge", function(target, hitgroup, dmginfo)
+hook.Add("PostEntityTakeDamage", "GalilGetCharge", function(ent, dmginfo, wasDamageTaken)
    if
       not IsValid(dmginfo:GetAttacker())
+      or not IsValid(ent)
       or not dmginfo:GetAttacker():IsPlayer()
-      or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+      or not IsValid(ent:GetActiveWeapon())
+      or not GetRoundState() == ROUND_ACTIVE
+	   or not wasDamageTaken
    then
       return
    end
 
-   local weapon = target:GetActiveWeapon()
+   local weapon = ent:GetActiveWeapon()
    if SERVER then
       if weapon:GetClass() == "weapon_ttt_galil" then
          local maxcharges = 5
@@ -145,15 +148,13 @@ hook.Add("ScalePlayerDamage", "GalilGetCharge", function(target, hitgroup, dmgin
          local stackcount = totaldamage / 15
          local roundedstack = math.floor(stackcount)
 
-
-
          for s=1, roundedstack do
             if weapon:GetChargeCount() < maxcharges then
                weapon:SetChargeCount(weapon:GetChargeCount()+1)
             end
          end
          if dmginfo:GetDamage() > 0 then
-            weapon:SetDamageTaken(math.fmod(totaldamage,dmgreq))
+            weapon:SetDamageTaken(math.fmod(totaldamage, dmgreq))
          end
       end
    end

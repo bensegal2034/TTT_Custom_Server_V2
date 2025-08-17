@@ -94,7 +94,9 @@ function SWEP:Think()
 		if (self.Weapon:Clip1() < 50) then
 			self.WeaponTimer = self.WeaponTimer + 1
 			if self.WeaponTimer >= 7 then
-				self.Weapon:SetClip1(self.Weapon:Clip1()+ 1) 
+				if SERVER then
+					self.Weapon:SetClip1(self.Weapon:Clip1()+ 1)
+				end
 				self.WeaponTimer = 0
 			end
 		end
@@ -122,18 +124,18 @@ function SWEP:PrimaryAttack()
 		end
 	--sound.Play("weapons/shoot/kamehame.wav", Vector(0,0,0),180)
 	self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK )
-	timer.Create( "timerUnFreezePlayer", 4.9, 1, function() 
+	timer.Simple(4.9, function() 
 		if ply:Alive() then
 			self.Owner:Freeze(false) 
 			self.WeaponActive = false
 			end
 		end)
-	timer.Create( "FinalHA", 3.4, 1, function()
+	timer.Simple(3.4, function()
     	self.Owner:Freeze(true)
 		for k, v in pairs( player.GetAll( ) ) do
 		  v:ConCommand( "play weapons/shoot/ha.wav\n" )
 		end
-    	timer.Create( "Beam", 0.010, 50, function()
+    	timer.Create( "Beam" .. math.random(), 0.010, 50, function()
 			--
 			local bullet = {} 
 			bullet.Src 	= self.Owner:GetShootPos() 

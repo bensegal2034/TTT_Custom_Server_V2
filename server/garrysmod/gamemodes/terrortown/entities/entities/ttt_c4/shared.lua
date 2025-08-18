@@ -222,6 +222,13 @@ function ENT:Explode(tr)
       local r_inner = 750
       local r_outer = self:GetRadius()
 
+      local explodemodifier = self:GetExplodeTime() / 45 
+
+      if self:GetExplodeTime() >= 45 then
+         r_inner = r_inner * explodemodifier
+         r_outer = r_outer * explodemodifier
+      end
+      
       if self.DisarmCausedExplosion then
          r_inner = r_inner / 2.5
          r_outer = r_outer / 2.5

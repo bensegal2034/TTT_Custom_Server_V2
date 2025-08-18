@@ -43,15 +43,6 @@ SWEP.IronSightsAng       =  Vector( 0.7, 5.3, 7 )
 
 SWEP.DeploySpeed         = 3
 
-
---[[ Debug func
-function SWEP:Think()
-   if CLIENT then
-      print(self:GetOwner():GetEyeTrace().Entity:GetModel())
-   end
-end
---]]
-
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
    self:SendWeaponAnim(self.PrimaryAnim)

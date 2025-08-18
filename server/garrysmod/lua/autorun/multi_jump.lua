@@ -29,7 +29,7 @@ end
 hook.Add("SetupMove", "WingerJump", function(ply, mv)
 	if !IsValid(ply:GetActiveWeapon()) then return end
 	local localwep = ply:GetActiveWeapon()
-	if localwep:GetClass() == "weapon_ttt_winger" then
+	if localwep:GetClass() == "weapon_ttt_winger" or localwep:GetClass() == "weapon_ttt_tec9" and localwep.Upside == 3 then
 		-- Let the engine handle movement from the ground
 		if ply:OnGround() then
 			ply:SetJumpLevel(0)

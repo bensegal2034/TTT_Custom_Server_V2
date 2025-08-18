@@ -280,12 +280,12 @@ function ENT:Think()
             self.Target = nil
             for k,v in pairs(ents.FindInSphere(self.dzialko:GetPos(), self:GetSearchRadius())) do
                 if (v:IsPlayer() and v:Alive() && !Applicable(string.lower(v:Nick()), self.Filters) || (self:GetTargetNPCs() && (v:IsNPC() || v:IsNextBot()) && v:Health() > 0 && !Applicable(v:GetClass(), self.Filters)))  then
-                    if (v:IsNPC() || v:IsNextBot()) || v:IsPlayer() && !(v:Nick() == self.Owner && self:GetTargetOwner()) && !(v:IsActiveTraitor()) then
+                    if (v:IsNPC() || v:IsNextBot()) || v:IsPlayer() && !(v:Nick() == self.Owner && self:GetTargetOwner()) then
                         if self:GetTargetClosest() == true then
 
                             local tracetest = util.TraceLine({
                                 start = self.dzialko:GetPos(),
-                              endpos = v:GetPos() + v:OBBCenter(),
+                            endpos = v:GetPos() + v:OBBCenter(),
                                 filter = self.dzialko
                             })
 
@@ -302,7 +302,7 @@ function ENT:Think()
 
                             local tracetest = util.TraceLine({
                                 start = self.dzialko:GetPos(),
-                              endpos = v:GetPos() + v:OBBCenter(),
+                            endpos = v:GetPos() + v:OBBCenter(),
                                 filter = self.dzialko
                             })
 
@@ -428,9 +428,8 @@ function ENT:Think()
                         dmg:SetDamage(dmg:GetDamage() * tbl[2])
                     end
                 end
-
                 self.dzialko:FireBullets(TablicaOgnia)
-
+                
                 efekt:SetEntity(self.dzialko)
                 efekt:SetAttachment(1)
                 efekt:SetScale(1)

@@ -1,5 +1,5 @@
-local detectiveEnabled = CreateConVar("ttt_satm_detective", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Should Detectives be able to buy the SATM?")
-local traitorEnabled = CreateConVar("ttt_satm_traitor", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Should Traitors be able to buy the SATM?")
+local detectiveEnabled = CreateConVar("ttt_satm_detective", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Should Detectives be able to buy the SATM?")
+local traitorEnabled = CreateConVar("ttt_satm_traitor", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Should Traitors be able to buy the SATM?")
 local satmduration = CreateConVar("ttt_satm_duration", 10, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "How long the duration of the SATM should be?")
 local satmteleportcharges = CreateConVar("ttt_satm_teleport_charges", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "How many charges should the teleport function have?")
 --GeneralSettings\\
@@ -55,7 +55,7 @@ SWEP.AllowDrop = true
 SWEP.IsSilent = false
 SWEP.NoSights = true
 SWEP.UseHands = false
-SWEP.CanBuy = {}
+SWEP.CanBuy = {ROLE_DETECTIVE}
 SWEP.TPClipSize = satmteleportcharges:GetInt()
 --SWEP.TPDefaultClip = 1
 
@@ -170,7 +170,7 @@ function SWEP:SecondaryAttack()
 	self:DoSATMAnimation(false)
 	self.satmmode = self.satmmode + 1
 
-	if self.satmmode >= 5 then
+	if self.satmmode >= 4 then
 		self.satmmode = 1
 	end
 

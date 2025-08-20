@@ -16,6 +16,13 @@ if SERVER then
     CreateConVar("vdg_enable_collision_damage", "1", {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Enable or disable crash and prop collision damage")
     CreateConVar("vdg_collision_damage_sensitivity", "1", {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Controls how sensitive vehicle collisions are to damage")
     CreateConVar("vdg_collision_think_delay", "0.1", {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Delay between vehicle collision checks for performance. Lower is more frequent.")
+   
+    resource.AddFile("sound/j_horn_goofy.mp3")
+    resource.AddFile("sound/j_horn_normal.mp3")
+    resource.AddFile("sound/j_radio.wav")
+    resource.AddFile("sound/j_siren.wav")
+    resource.AddFile("materials/vgui/ttt/icon_jeep.vtf")
+    resource.AddWorkshop("3282631707")
 end
 
 -- Vehicle Damage and Gibbing System with Options
@@ -70,11 +77,13 @@ end
 local allowedVehicles = {
     ["prop_vehicle_jeep"] = true,
     ["prop_vehicle_airboat"] = true,
-    ["prop_vehicle_jalopy"] = true
+    ["prop_vehicle_jalopy"] = true,
+    ["prop_vehicle_prisoner_pod"] = true
 }
 
 local defaultVehicleHealth = {
     ["prop_vehicle_jeep"] = 100,
+    ["prop_vehicle_prisoner_pod"] = 1,
     ["prop_vehicle_airboat"] = 80,
     ["prop_vehicle_jalopy"] = 120
 }
@@ -404,6 +413,9 @@ function GetGibModels(vehicle)
             "models/jalopy/extaus.mdl", "models/jalopy/front_bumper.mdl", "models/jalopy/roof_jalopy.mdl",
             "models/jalopy/st_wheel.mdl", "models/jalopy/wheel front.mdl", "models/jalopy/wheel_right.mdl",
             universalScrap
+        },
+        ["prop_vehicle_prisoner_pod"] = {
+            universalScrap
         }
     }
 
@@ -479,8 +491,9 @@ function ExplodeVehicle(vehicle)
     if not IsValid(vehicle) then return end
     local pos = vehicle:GetPos()
     local gibs = GetGibModels(vehicle)
-
-    -- Spawn gibs
+    
+    -- Spawn gibs temporarily disabled until i can fix them being all errors
+    --[[
     for _, model in ipairs(gibs) do
         local gib = ents.Create("prop_physics")
         if not IsValid(gib) then continue end
@@ -501,6 +514,7 @@ function ExplodeVehicle(vehicle)
         gib:Spawn()
         ApplyForceAndAutoRemove(gib)
     end
+    ]]--
 
     -- Spawn loot
     if math.random() < Cfg.LootChance then

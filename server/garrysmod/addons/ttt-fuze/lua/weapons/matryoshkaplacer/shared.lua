@@ -1,3 +1,7 @@
+if SERVER then
+    resource.AddWorkshop("3545785442")
+end
+
 SWEP.Category               = "Rainbow 6: Siege Gadgets"
 SWEP.Spawnable              = true
 SWEP.AdminSpawnable         = true

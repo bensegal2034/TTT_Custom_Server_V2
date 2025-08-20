@@ -6,6 +6,7 @@ if SERVER then
     resource.AddFile('sound/j_horn_normal.mp3')
     resource.AddFile('sound/j_siren.mp3')
     resource.AddFile('sound/j_radio.mp3')
+    resource.AddWorkshop("2801706833")
 end
 
 if CLIENT then
@@ -244,7 +245,7 @@ if SERVER then
     hook.Add("PlayerButtonDown", "SirenButton", function(ply, button)
         if button == KEY_F then
             local jeep = ply:GetVehicle()
-            if not IsValid(jeep) then return end
+            if not IsValid(jeep) then return end 
             if jeep:GetClass() ~= "prop_vehicle_jeep" then return end
             jeep.sirenOn = !jeep.sirenOn
             net.Start("DETECTIVE_JEEP_SIREN")
@@ -284,8 +285,8 @@ if CLIENT then
         if jeepIds[jeep:EntIndex()] == nil then jeepIds[jeep:EntIndex()] = table.Count(jeepIds) * 4 + 1 end
         local lightIndex = jeepIds[jeep:EntIndex()]
         if isOn then
-            timer.Create("SirenTimer" .. jeep:EntIndex(), 0.7, 0, function()
-                if currentLight == 0 then
+            timer.Create("SirenTimer" .. jeep:EntIndex(), 0.7, 0, function() --errors if siren is on when car is destroyed
+                if currentLight == 0 then 
                     local sirenLeft = DynamicLight(lightIndex)
                     sirenLeft.Pos = jeep:LocalToWorld(Vector(30, -60, 90))
                     sirenLeft.r = 255

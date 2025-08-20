@@ -2,7 +2,7 @@ AddCSLuaFile()
 if SERVER then util.AddNetworkString( "playrocketonlocalply" ) end
 
 
-local rescalecc = 0.9
+local rescalecc = 1.5
 
 ENT.Base = "drone_two_entity"
 ENT.PrintName		= "Scout Drone"
@@ -65,6 +65,7 @@ function ENT:Initialize()
 			end
 			if user:KeyDown(IN_ATTACK) and self:HasAmmo() then
 				if CurTime() > self.nextshoot then
+					--[[
 					local bullet = {}
 					bullet.Num = 1
 					bullet.Src = self:GetPos() - self:GetUp() * self.cam_up + self.gun:GetForward() * 8  --8 so we dont hit ourselves
@@ -90,8 +91,8 @@ function ENT:Initialize()
 					
 
 					self.gun:FireBullets( bullet )
+					--]]
 
-					--[[
 					self.gun:EmitSound("Weapon_RPG.Single")
 
 					if ( SERVER ) then
@@ -109,10 +110,9 @@ function ENT:Initialize()
 			                        phys:SetVelocity( self:GetDriverDirection()* 1500 )
 			                end
 			        end
-					--]]
 					self:SetAmmo(self.Ammo - 1)
 
-					self.nextshoot = CurTime() + 0.15
+					self.nextshoot = CurTime() + 0.4
 					self.mostrecentammo =  CurTime() + 0.2
 					
 

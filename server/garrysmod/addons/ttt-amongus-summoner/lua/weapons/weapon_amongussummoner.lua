@@ -8,7 +8,7 @@ if CLIENT then
 	SWEP.Author			= "Spaaz (with credit to AviLouden,TRGraphix,Mangonaut,Jenssons)"
 	SWEP.Contact			= "";
 	SWEP.Instructions	= "Target on upside of a flat surface"
-	SWEP.Slot = 0
+	SWEP.Slot = 6
 	SWEP.SlotPos = 1
 	SWEP.IconLetter		= "M"
 end
@@ -31,7 +31,7 @@ end
 	SWEP.Kind = 42
 	SWEP.CanBuy = { ROLE_TRAITOR }
 	SWEP.AutoSpawnable = false
-
+	SWEP.DeploySpeed = 1.2
 	SWEP.Primary.ClipSize		= 1
 	SWEP.Primary.DefaultClip	= 1
 	SWEP.Primary.Automatic		= false
@@ -40,13 +40,14 @@ end
 	SWEP.Weight					= 7
 	SWEP.DrawAmmo				= true
     
-if SERVER then
-    function SWEP:Initialize()
-        -- Override the "thrower" of the zombine's grenade to be the original owner
-        hook.Add("OnEntityCreated", "OnEntityCreated_Grenade_" .. self:EntIndex(), function(ent)
-            if not IsValid(ent) then return end
-            if ent:GetClass() ~= "npc_grenade_frag" then return end
-            -- Get the grenade's owner, make sure it is a zombine, and make sure it is one spawned by us
+function SWEP:Initialize()
+	self:SetDeploySpeed(self.DeploySpeed)
+	if SERVER then
+	-- Override the "thrower" of the zombine's grenade to be the original owner
+		hook.Add("OnEntityCreated", "OnEntityCreated_Grenade_" .. self:EntIndex(), function(ent)
+			if not IsValid(ent) then return end
+			if ent:GetClass() ~= "npc_grenade_frag" then return end
+			-- Get the grenade's owner, make sure it is a zombine, and make sure it is one spawned by us
 			timer.Simple(0.1, function()
 				local entOwner = ent:GetOwner()
 				if not IsValid(entOwner) or entOwner:GetClass() ~= "npc_zombine" or entOwner:GetName() ~= "amongusz" then return end
@@ -57,17 +58,18 @@ if SERVER then
 
 				-- Wait a short delay ot make sure the grenade's key values are populated
 
-                -- And then override the thrower, as long as the grenade and the owner are both still valid
-                if not IsValid(ent) then return end
-                if not IsValid(plyOwner) then return end
-                ent:SetSaveValue("m_hThrower", plyOwner)
-            end)
-        end)
-    end
-
-    function SWEP:OnRemove()
-        hook.Remove("OnEntityCreated", "OnEntityCreated_Grenade_" .. self:EntIndex())
-    end
+				-- And then override the thrower, as long as the grenade and the owner are both still valid
+				if not IsValid(ent) then return end
+				if not IsValid(plyOwner) then return end
+				ent:SetSaveValue("m_hThrower", plyOwner)
+			end)
+		end)
+	end
+end
+if SERVER then
+	function SWEP:OnRemove()
+		hook.Remove("OnEntityCreated", "OnEntityCreated_Grenade_" .. self:EntIndex())
+	end
 end
 
 local function FindRespawnLocCust(pos)
@@ -166,7 +168,6 @@ end
 function SWEP:Equip()
 	if ( !IsValid( self.Owner ) ) then return end
 		if engine.ActiveGamemode() == "terrortown" then
-			self.Owner:PrintMessage(HUD_PRINTTALK, "Amongus Summoner:\nSummons hidden Amongus.\nTraitors can see where they're\nhiding.")
 		end
 end
 
@@ -179,6 +180,6 @@ if CLIENT then
    -- Text shown in the equip menu
    SWEP.EquipMenuData = {
       type = "Weapon",
-      desc = "Summons hidden Amongus.\nTraitors can see where they're\nhiding. "
+      desc = "Summons hidden Amongus.\nOther players with amongus summoners \ncan see where they're hiding. "
    };
 end

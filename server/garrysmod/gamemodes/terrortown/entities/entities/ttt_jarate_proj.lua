@@ -30,7 +30,7 @@ local function PissedRadius(pos, thrower, dmginfo)
 	local duration	= 20
 
 	for k, target in pairs(ents.FindInSphere(pos, radius)) do
-		if IsValid(target) and target:IsPlayer() and (not target:IsFrozen()) and (not target:IsSpec()) then
+		if IsValid(target) and target:IsPlayer() and target != thrower and (not target:IsFrozen()) and (not target:IsSpec()) then
 			--Tell all hit players to get pissed on
 			ParticleEffectAttach("peejar_drips",PATTACH_POINT_FOLLOW,target,target:LookupAttachment("eyes"))
 			target:SetNWBool("PissedOn",true)

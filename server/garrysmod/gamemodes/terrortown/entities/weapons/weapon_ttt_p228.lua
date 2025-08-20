@@ -84,7 +84,7 @@ function SWEP:SecondaryAttack()
 	self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
-	if not self:CanPrimaryAttack() then return end
+	if not self:CanSecondaryAttack() then return end
 
 	if not worldsnd then
 		self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
@@ -95,6 +95,7 @@ function SWEP:SecondaryAttack()
 	self.Primary.Cone = self.Secondary.Cone
 
 	self:ShootBullet( self.Secondary.Damage, self.Secondary.Recoil, self.Secondary.NumShots, self.Secondary.Cone )
+	
 	self:TakePrimaryAmmo( 3 )
 
 	local owner = self:GetOwner()
@@ -125,4 +126,14 @@ function SWEP:PrimaryAttack()
 	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
 
 	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
+end
+
+function SWEP:CanSecondaryAttack()
+   if not IsValid(self:GetOwner()) then return end
+
+   if self:Clip1() <= 2 then
+      self:DryFire(self.SetNextSecondaryFire)
+      return false
+   end
+   return true
 end

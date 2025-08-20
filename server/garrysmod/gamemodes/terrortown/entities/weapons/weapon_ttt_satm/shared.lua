@@ -170,7 +170,7 @@ function SWEP:SecondaryAttack()
 	self:DoSATMAnimation(false)
 	self.satmmode = self.satmmode + 1
 
-	if self.satmmode >= 4 then
+	if self.satmmode >= 5 then
 		self.satmmode = 1
 	end
 

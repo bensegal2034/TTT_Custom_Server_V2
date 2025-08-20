@@ -19,8 +19,8 @@ SWEP.Spawnable = true
 SWEP.Kind = WEAPON_HEAVY
 
 SWEP.Primary.Ammo = "357"
-SWEP.Primary.Damage = 20
-SWEP.BaseDamage = 20
+SWEP.Primary.Damage = 40
+SWEP.BaseDamage = 40
 SWEP.Primary.Cone = 0
 SWEP.Primary.Delay = 1.05
 SWEP.Primary.ClipSize = 8
@@ -36,10 +36,8 @@ SWEP.MediumDamage = 40
 SWEP.FarDamage = 75
 SWEP.MaxDamage = 200
 
-SWEP.CloseDist = 0
-SWEP.MediumDist = 500
-SWEP.FarDist = 1500
-SWEP.MaxDist = 2225
+SWEP.FarDist = 1250
+SWEP.MaxDist = 2500
 
 SWEP.HeadshotMultiplier = 1.5
 
@@ -259,10 +257,8 @@ hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
       -- of them were hull traces that could not headshot.
       
       if (dist > weapon.MaxDist) then
-         dmginfo:ScaleDamage(10)
+         dmginfo:ScaleDamage(5)
       elseif (dist > weapon.FarDist) then
-         dmginfo:ScaleDamage(4)
-      elseif (dist > weapon.MediumDist) then
          dmginfo:ScaleDamage(2)
       end
    end

@@ -59,7 +59,7 @@ SWEP.NoCook = true
 SWEP.Base				= "weapon_tttbasegrenade"
 SWEP.Spawnable = true
 
-SWEP.CanBuy = {ROLE_TRAITOR} 
+SWEP.CanBuy = {ROLE_TRAITOR, ROLE_DETECTIVE} 
 SWEP.LimitedStock = false
 SWEP.Kind = WEAPON_EQUIP2
 

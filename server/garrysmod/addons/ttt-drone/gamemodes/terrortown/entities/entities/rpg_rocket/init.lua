@@ -67,7 +67,7 @@ function ENT:Explode()
         
         local explosion = ents.Create( "env_explosion" )
 		explosion:SetKeyValue( "spawnflags", 144 )
-		explosion:SetKeyValue( "iMagnitude", 13 )
+		explosion:SetKeyValue( "iMagnitude", 7 )
 		explosion:SetKeyValue( "iRadiusOverride", 170 )
 		explosion:SetPos(self:GetPos())
                 explosion:SetOwner(self.originalplayer)

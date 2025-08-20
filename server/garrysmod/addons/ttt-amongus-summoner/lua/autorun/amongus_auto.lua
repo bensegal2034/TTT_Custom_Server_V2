@@ -183,8 +183,8 @@ if CLIENT then
 	hook.Add("HUDPaint", "drawAmongusWarning", function()
 		if engine.ActiveGamemode() == "terrortown" then
 			local ply = LocalPlayer()
-
-			if ply:IsActiveTraitor() or (CR_VERSION and ply:IsActiveTraitorTeam()) then
+			
+			if ply:HasWeapon("weapon_amongussummoner") then
 				for _, ent in ipairs(ents.FindByClass( "amongus_spawner" )) do
 					local screenPos = (ent:GetPos() + Vector(0,0,30)):ToScreen()
 					if screenPos.visible then

@@ -26,7 +26,7 @@ if ( CLIENT ) then
         SWEP.Purpose            = "Shoot Linked Portals"
         SWEP.ViewModelFOV       = "54"
         SWEP.Instructions       = ""
-        SWEP.Slot = 3
+        SWEP.Slot = 6
         SWEP.Slotpos = 1
         SWEP.CSMuzzleFlashes    = false
 
@@ -43,8 +43,8 @@ end
 
 ----------------------------Shit Used for TTT-------------------------
 SWEP.Base 				= "weapon_tttbase"
-SWEP.Kind 				= WEAPON_EQUIP2
-SWEP.CanBuy 				= {}
+SWEP.Kind 				= WEAPON_PORTAL
+SWEP.CanBuy 				= {ROLE_DETECTIVE}
 SWEP.Gun      			= ("ttt_weapon_portalgun")
 SWEP.InLoadoutFor 			= nil
 SWEP.LimitedStock 			= false
@@ -53,6 +53,11 @@ SWEP.IsSilent 				= true
 SWEP.NoSights 				= false
 SWEP.AutoSpawnable 			= false
 SWEP.Icon 				= "VGUI/ttt/portalgun.png"
+
+SWEP.EquipMenuData = {
+    type = "Tool",
+    desc = "Shoot Linked Portals"
+}
 
 -----------------------------------------------------------------------
 

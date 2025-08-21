@@ -489,11 +489,17 @@ function SpawnSkeletalRemains(pos, vehicle)
 end
 function ExplodeVehicle(vehicle)
     if not IsValid(vehicle) then return end
+
+    -- funny extras for detective jeep bugs !!
+    vehicle:StopSound("j_siren.wav")
+    for _, ent in ipairs(ents.FindByClass("prop_vehicle_prisoner_pod")) do
+        ent:Remove()
+    end
+
     local pos = vehicle:GetPos()
     local gibs = GetGibModels(vehicle)
-    
+
     -- Spawn gibs temporarily disabled until i can fix them being all errors
-    --[[
     for _, model in ipairs(gibs) do
         local gib = ents.Create("prop_physics")
         if not IsValid(gib) then continue end
@@ -514,7 +520,6 @@ function ExplodeVehicle(vehicle)
         gib:Spawn()
         ApplyForceAndAutoRemove(gib)
     end
-    ]]--
 
     -- Spawn loot
     if math.random() < Cfg.LootChance then

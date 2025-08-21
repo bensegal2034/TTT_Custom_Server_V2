@@ -141,6 +141,10 @@ function SWEP:SpawnJeep()
     seat:SetAngles(jeep:LocalToWorldAngles(Angle(0, 0, 0)))
     seat:Spawn()
     -- seat:GetPhysicsObject():AddGameFlag(FVPHYSICS_NO_PLAYER_PICKUP)
+
+    function jeep:OnRemove()
+        seat:Remove()
+    end
         
     local cubeLeft = ents.Create('prop_physics')
     cubeLeft:SetModel('models/hunter/plates/plate025x025.mdl')    
@@ -286,7 +290,8 @@ if CLIENT then
         local lightIndex = jeepIds[jeep:EntIndex()]
         if isOn then
             timer.Create("SirenTimer" .. jeep:EntIndex(), 0.7, 0, function() --errors if siren is on when car is destroyed
-                if currentLight == 0 then 
+                if (not IsValid(jeep)) or (not jeep) then return end
+                if currentLight == 0 then
                     local sirenLeft = DynamicLight(lightIndex)
                     sirenLeft.Pos = jeep:LocalToWorld(Vector(30, -60, 90))
                     sirenLeft.r = 255

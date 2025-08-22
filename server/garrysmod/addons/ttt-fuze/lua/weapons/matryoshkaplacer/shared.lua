@@ -29,6 +29,8 @@ SWEP.Secondary.ClipSize     = -1
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Automatic    = false
 SWEP.Secondary.Ammo         = "none"
+SWEP.IsEquipment            = true
+
 
 SWEP.Kind                   = WEAPON_FUZE
 SWEP.CanBuy                 = {ROLE_TRAITOR}
@@ -43,4 +45,8 @@ if CLIENT then
     SWEP.PrintName = "Breaching Charge"
     SWEP.Slot = 6
     SWEP.Icon = "vgui/ttt/breaching_charge"
+end
+
+function SWEP:IsEquipment()
+   return true
 end

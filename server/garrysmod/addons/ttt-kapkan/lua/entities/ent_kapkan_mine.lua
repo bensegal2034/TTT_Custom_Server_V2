@@ -92,7 +92,7 @@ function ENT:Think()
             filter = function(ent)
                 if ent == self then return false end
                 if ent:IsWorld() then return false end
-                if ent:GetMoveType() == MOVETYPE_NONE then return false end
+                if !ent:IsPlayer() then return false end
                 return true
             end
         })

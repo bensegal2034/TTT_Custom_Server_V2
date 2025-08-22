@@ -337,7 +337,7 @@ function SWEP:Initialize()
 end
 
 function SWEP:IsEquipment()
-   return true
+	return WEPS.IsEquipment(self)
 end
 
 function SWEP:Holster()

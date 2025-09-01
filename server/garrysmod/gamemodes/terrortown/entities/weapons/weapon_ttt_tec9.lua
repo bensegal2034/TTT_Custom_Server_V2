@@ -521,11 +521,11 @@ hook.Add("PostEntityTakeDamage", "Tec9GetCharge", function(ent, dmginfo, wasDama
    if SERVER then
       if weapon:GetClass() == "weapon_ttt_tec9" and weapon.Upside == 6 then
          local maxcharges = 5
-         local dmgreq = 15
+         local dmgreq = 20
          
          local damagetaken = weapon:GetDamageTaken()
          local totaldamage = dmginfo:GetDamage() + damagetaken
-         local stackcount = totaldamage / 15
+         local stackcount = totaldamage / dmgreq
          local roundedstack = math.floor(stackcount)
 
          for s=1, roundedstack do

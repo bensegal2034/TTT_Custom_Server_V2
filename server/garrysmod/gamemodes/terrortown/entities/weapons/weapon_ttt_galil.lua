@@ -20,7 +20,7 @@ SWEP.Base                  = "weapon_tttbase"
 SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_M16
 
-SWEP.Primary.Delay         = 0.13
+SWEP.Primary.Delay         = 0.14
 SWEP.Primary.Recoil        = 1.1
 SWEP.Primary.Automatic     = true
 
@@ -82,7 +82,7 @@ function SWEP:Think()
    if self.FirstShotAccuracy == true then
       self.Primary.Cone = 0.02
    else
-      self.Primary.Cone = 0 + (math.min(0.04, self.FirstShotAccuracyBullets / 150))
+      self.Primary.Cone = 0 + (math.min(0.06, self.FirstShotAccuracyBullets / 150))
    end
    if CurTime() > self.FSAccuracyTimer then
       self.FirstShotAccuracy = true
@@ -142,11 +142,11 @@ hook.Add("PostEntityTakeDamage", "GalilGetCharge", function(ent, dmginfo, wasDam
    if SERVER then
       if weapon:GetClass() == "weapon_ttt_galil" then
          local maxcharges = 5
-         local dmgreq = 15
+         local dmgreq = 20
          
          local damagetaken = weapon:GetDamageTaken()
          local totaldamage = dmginfo:GetDamage() + damagetaken
-         local stackcount = totaldamage / 15
+         local stackcount = totaldamage / dmgreq
          local roundedstack = math.floor(stackcount)
 
          for s=1, roundedstack do

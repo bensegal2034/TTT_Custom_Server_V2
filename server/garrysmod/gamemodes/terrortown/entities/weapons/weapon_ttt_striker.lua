@@ -59,17 +59,17 @@ SWEP.Spawnable = true
 
 SWEP.Kind = WEAPON_HEAVY
 
-SWEP.Primary.Damage = 6
+SWEP.Primary.Damage = 5
 SWEP.Primary.Cone = 0.1
 SWEP.Primary.Delay = 0.3
 
 SWEP.Primary.Automatic = true
-SWEP.Primary.NumShots = 8
+SWEP.Primary.NumShots = 12
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_box_buckshot_ttt"
 
 SWEP.UseHands			= true
-SWEP.ViewModelFlip		= false
+SWEP.ViewModelFlip		= true
 
 SWEP.ViewModelFOV		= 70
 SWEP.ViewModel			= "models/weapons/v_striker_12g.mdl"
@@ -77,7 +77,7 @@ SWEP.WorldModel			= "models/weapons/w_striker_12g.mdl"
 SWEP.Primary.Sound			= "weapons/striker12/xm1014-1.wav"
 SWEP.Primary.Recoil			= 9
 
-SWEP.IronSightsPos = Vector(3.805, -1.045, 1.805)
+SWEP.IronSightsPos = Vector(0, 0, 0)
 SWEP.IronSightsAng = Vector(2.502, 3.431, 0)
 
 SWEP.reloadtimer = 0
@@ -99,6 +99,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Think()
+	self:CalcViewModel()
 	if CurTime() > self.CoolingDelay and self.CurrentHeat > 0 then
 		if SERVER then
 			self.HeatTimer = self.HeatTimer + 1
@@ -173,21 +174,22 @@ function SWEP:PrimaryAttack(worldsnd)
 			self:SetDisplayHeat(self.CurrentHeat)
 		end
 	end
-	self.CoolingDelay = CurTime() + 2
+	self.CoolingDelay = CurTime() + self.IgniteDuration
 	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 end
-
-function SWEP:Initialize()
+DEFINE_BASECLASS(SWEP.Base)
+function SWEP:Initialize(...)
    heatBar = ProgressBar:Create(self.Owner,0.01,0.95,0.12,0.0245, "Heat",Color(255,50,50,255),Color(255,255,255,255),8,1)
    self:SetDeploySpeed(self.DeploySpeed)
    if self.SetHoldType then
       self:SetHoldType(self.HoldType or "pistol")
    end
    self:SetHeat(0)
+   return self.BaseClass.Initialize(self)
 end
 
 
-DEFINE_BASECLASS(SWEP.Base)
+
 function SWEP:DrawHUD(...)
 	if IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "weapon_ttt_striker" then
 		heatBar:SetProgress((self:GetDisplayHeat())/(self.HeatLimit))

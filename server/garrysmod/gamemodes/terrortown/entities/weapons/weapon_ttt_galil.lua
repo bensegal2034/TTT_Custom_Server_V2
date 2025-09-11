@@ -72,7 +72,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Think()
-   
+   self:CalcViewModel()
    if self:GetPlaySound() then
       sound.Play("crit", self:GetPos())
       self:SetPlaySound(false)
@@ -82,7 +82,7 @@ function SWEP:Think()
    if self.FirstShotAccuracy == true then
       self.Primary.Cone = 0.02
    else
-      self.Primary.Cone = 0 + (math.min(0.06, self.FirstShotAccuracyBullets / 150))
+      self.Primary.Cone = 0 + (math.min(0.08, self.FirstShotAccuracyBullets / 100))
    end
    if CurTime() > self.FSAccuracyTimer then
       self.FirstShotAccuracy = true

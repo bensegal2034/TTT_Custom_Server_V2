@@ -11,14 +11,14 @@ ENT.Spawnable = true
 
 ENT.Speed = 2000
 ENT.RotateSpeed = 1100
-ENT.armor = 50
+ENT.armor = 25
 
 ENT.forward = 60
 ENT.up = 5*rescalecc
 ENT.cam_up = 13*rescalecc
 
-ENT.Ammo = 20
-ENT.MaxAmmo = 20
+ENT.Ammo = 10
+ENT.MaxAmmo = 10
 ENT.AmmoBox = 0
 ENT.AmmoType = "item_ammo_pistol"
 ENT.UseAmmo = true
@@ -112,8 +112,8 @@ function ENT:Initialize()
 			        end
 					self:SetAmmo(self.Ammo - 1)
 
-					self.nextshoot = CurTime() + 0.4
-					self.mostrecentammo =  CurTime() + 0.2
+					self.nextshoot = CurTime() + 0.8
+					self.mostrecentammo =  CurTime() + 1.6
 					
 
 		

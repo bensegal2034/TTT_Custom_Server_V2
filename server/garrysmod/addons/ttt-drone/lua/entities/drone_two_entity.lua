@@ -550,7 +550,7 @@ function ENT:_Think()
 			self:SetFuel(math.max(0, self.CurrentFuel))
 			self:SetArm(self.armor+1)
 		end 
-		if  self.mostrecentammo < CurTime() - 0.4 then
+		if  self.mostrecentammo < CurTime() - 1 then
 			self.mostrecentammo = CurTime()
 
 			self:SetAmmo(self.Ammo +1) 

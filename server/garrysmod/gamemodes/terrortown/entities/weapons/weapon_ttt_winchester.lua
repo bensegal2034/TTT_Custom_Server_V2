@@ -249,7 +249,6 @@ hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
    
       local dist = target:GetPos():Distance(att:GetPos())
       local d = math.max(0, dist - 140)
-      print(dist)
       -- Decay from 2 to 1 slowly as distance increases. Note that this used to be
       -- 3+, but at that time shotgun bullets were treated like in HL2 where half
       -- of them were hull traces that could not headshot.

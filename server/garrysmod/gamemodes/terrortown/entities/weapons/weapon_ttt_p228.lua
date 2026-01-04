@@ -33,7 +33,7 @@ SWEP.Primary.NumShots = 1
 
 SWEP.Secondary.Delay = 0.4
 SWEP.Secondary.Recoil	= 1.5
-SWEP.Secondary.Cone = 0.1
+SWEP.Secondary.Cone = 0.15
 SWEP.Secondary.Damage = 30
 SWEP.Secondary.Automatic = true
 SWEP.Secondary.Ammo = "pistol"

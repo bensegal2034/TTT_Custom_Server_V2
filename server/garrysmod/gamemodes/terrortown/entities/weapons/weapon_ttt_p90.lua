@@ -17,7 +17,7 @@ SWEP.HoldType = "smg"
 
 SWEP.Primary.Ammo = "SMG1"
 SWEP.Primary.Delay = 0.07
-SWEP.Primary.Recoil = 0.8
+SWEP.Primary.Recoil = 1
 SWEP.Primary.Cone = 0.043
 SWEP.Primary.Damage = 11
 SWEP.Primary.Automatic = true
@@ -27,7 +27,7 @@ SWEP.Primary.DefaultClip = 100
 SWEP.Primary.Sound = Sound( "Weapon_P90.Single" )
 SWEP.Secondary.Sound = Sound( "Default.Zoom" )
 SWEP.HeadshotMultiplier = 2
-SWEP.SpeedBoost = 1.25
+SWEP.SpeedBoost = 1.3
 SWEP.Reloaded = false
 SWEP.SpeedBoostRemoved = false
 SWEP.DamageType            = "Impact"

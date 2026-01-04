@@ -57,7 +57,7 @@ SWEP.UseHands = true
 
 
 
-SWEP.RevSlow = .65
+SWEP.RevSlow = .4
 SWEP.RevTimer = 0
 
 if CLIENT then
@@ -78,13 +78,14 @@ SWEP.Primary.Cone = 0.08
 SWEP.Primary.Spread = 0.5
 SWEP.Primary.ClipSize = 240
 SWEP.Primary.Force = 60
-SWEP.Primary.Damage = 14
+SWEP.Primary.Damage = 6
 SWEP.Primary.Delay = 0.06
 SWEP.Primary.Recoil = 0.07
 SWEP.Primary.ClipSize = 200
 SWEP.Primary.ClipMax = 600
 SWEP.Primary.DefaultClip = 400
 SWEP.Primary.Automatic = true
+SWEP.Primary.NumberofShots = 2
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.Sound = Sound("Minigun.Shoot")
 
@@ -104,7 +105,7 @@ SWEP.Secondary.ClipSize = -1
 SWEP.HeadshotMultiplier = 1.67
 SWEP.Revving = false
 SWEP.RevTimer = 0
-SWEP.PushForceSelf = 25
+SWEP.PushForceSelf = 22
 SWEP.AnimStart = 0
 
 SWEP.Slowed = false
@@ -291,6 +292,7 @@ end
 function SWEP:PrimaryAttack()
 	randompitch = math.Rand(90, 130)
 	self.RevTimer = CurTime() + 0.7
+	self.Slowed = true
 	if ( !self:CanPrimaryAttack() ) then return end
 	local bullet = {}
 		bullet.Num = self.Primary.NumberofShots

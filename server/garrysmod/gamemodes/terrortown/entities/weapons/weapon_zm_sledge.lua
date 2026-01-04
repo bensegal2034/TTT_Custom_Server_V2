@@ -22,13 +22,13 @@ SWEP.WeaponID              = AMMO_M249
 
 SWEP.Primary.Damage        = 4
 SWEP.Primary.Delay         = 0
-SWEP.Primary.Cone          = 0.04
+SWEP.Primary.Cone          = 0.03
 SWEP.Primary.ClipSize      = 300
 SWEP.Primary.ClipMax       = 900
 SWEP.Primary.DefaultClip   = 600
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "smg1"
-SWEP.Primary.Recoil        = 2.2
+SWEP.Primary.Recoil        = 1.8
 SWEP.Primary.Sound         = Sound("Weapon_m249.Single")
 SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
 SWEP.DamageType            = "Impact"

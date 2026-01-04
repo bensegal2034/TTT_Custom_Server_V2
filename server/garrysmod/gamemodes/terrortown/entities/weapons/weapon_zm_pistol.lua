@@ -48,7 +48,3 @@ function SWEP:Reload()
    self:GetOwner():GetViewModel():SetPlaybackRate(self.ReloadSpeed)
    self:SetIronsights( false )
 end
-
-function SWEP:SecondaryAttack()
-   print(self.Owner:GetGravity())
-end

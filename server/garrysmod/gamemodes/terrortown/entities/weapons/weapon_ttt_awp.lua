@@ -60,7 +60,7 @@ SWEP.LimitedStock = true
 
 -- CanBuy is a table of ROLE_* entries like ROLE_TRAITOR and ROLE_DETECTIVE. If
 -- a role is in this table, those players can buy this.
-SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.CanBuy = { }
 SWEP.LimitedStock = true
 -- If AllowDrop is false, players can't manually drop the gun with Q
 SWEP.AllowDrop = true

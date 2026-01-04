@@ -36,8 +36,8 @@ SWEP.MediumDamage = 40
 SWEP.FarDamage = 75
 SWEP.MaxDamage = 200
 
-SWEP.FarDist = 1250
-SWEP.MaxDist = 2500
+SWEP.FarDist = 900
+SWEP.MaxDist = 2100
 
 SWEP.HeadshotMultiplier = 1.5
 
@@ -53,9 +53,6 @@ SWEP.IronSightsPos = Vector(4.356, 0, 2.591)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.reloadtimer = 0
-
-
-
 
 function SWEP:Initialize()
    if CLIENT and self:Clip1() == -1 then
@@ -252,6 +249,7 @@ hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
    
       local dist = target:GetPos():Distance(att:GetPos())
       local d = math.max(0, dist - 140)
+      print(dist)
       -- Decay from 2 to 1 slowly as distance increases. Note that this used to be
       -- 3+, but at that time shotgun bullets were treated like in HL2 where half
       -- of them were hull traces that could not headshot.

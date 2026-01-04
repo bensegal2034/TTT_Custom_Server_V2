@@ -27,7 +27,7 @@ SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_FiveSeven.Single" )
 SWEP.DamageType            = "Puncture"
 
-SWEP.ReloadSpeed = 0.8
+SWEP.ReloadSpeed = 0.9
 
 SWEP.AutoSpawnable         = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
@@ -47,4 +47,8 @@ function SWEP:Reload()
    self:SendWeaponAnim(ACT_VM_RELOAD)
    self:GetOwner():GetViewModel():SetPlaybackRate(self.ReloadSpeed)
    self:SetIronsights( false )
+end
+
+function SWEP:SecondaryAttack()
+   print(self.Owner:GetGravity())
 end

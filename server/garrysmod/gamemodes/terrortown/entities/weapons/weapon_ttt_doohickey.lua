@@ -90,12 +90,12 @@ SWEP.Base = "weapon_tttbase"
 SWEP.Primary.Sound = "doohickey_fire.wav"
 SWEP.Primary.Damage = 16
 SWEP.Primary.TakeAmmo = 1
-SWEP.Primary.ClipSize = 4 
-SWEP.Primary.ClipMax       = 4
-SWEP.Primary.DefaultClip   = 4
+SWEP.Primary.ClipSize = 3
+SWEP.Primary.ClipMax       = 3
+SWEP.Primary.DefaultClip   = 3
 SWEP.Primary.Ammo = "AlyxGun"
-SWEP.Primary.DefaultClip = 4
-SWEP.Primary.Cone = 0.20
+SWEP.Primary.DefaultClip = 3
+SWEP.Primary.Cone = 0.1
 SWEP.Primary.NumShots = 20
 SWEP.Primary.Automatic = false
 SWEP.Primary.Recoil = 50
@@ -121,7 +121,7 @@ function SWEP:PrimaryAttack()
 			local effectdata = EffectData()
 			effectdata:SetOrigin(self:GetOwner():GetPos())
 			util.Effect("Explosion", effectdata, true, true)
-			util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 200, 999)
+			util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 0, 999)
 		end
 	else
 		self:ShootEffects()
@@ -139,7 +139,6 @@ end
 
 function SWEP:Reload()
 
-	self.Weapon:DefaultReload( ACT_VM_RELOAD );
 end
 
 local IRONSIGHT_TIME = 0.1
@@ -243,7 +242,7 @@ end
 function SWEP:Initialize()
 	
 	if SERVER then
-		self:SetExplode(math.random(1,4))
+		self:SetExplode(math.random(1,3))
 	end
 	self.Misfire = self:GetExplode()
 util.PrecacheSound(self.Primary.Sound) 

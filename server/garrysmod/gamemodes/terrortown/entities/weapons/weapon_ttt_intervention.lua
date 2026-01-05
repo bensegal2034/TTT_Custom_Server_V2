@@ -25,7 +25,7 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "357"
 SWEP.Primary.Damage = 50
 SWEP.DamageType = "Puncture"
-SWEP.Primary.Cone = 0.005
+SWEP.Primary.Cone = 0.1
 SWEP.Primary.ClipSize = 10
 SWEP.Primary.ClipMax = 20 -- keep mirrored to ammo
 SWEP.Primary.DefaultClip = 15
@@ -57,56 +57,14 @@ SWEP.AllowedShootDelayTimer = 0
 
 SWEP.PreviousScopeState = false
 
--- stolen code
-SWEP.oRot = 0.0
-SWEP.maxDecay = 3;
-SWEP.decay = 0;
-SWEP.decayInc = 0.015;
-SWEP.decayDec = SWEP.maxDecay/10;
-SWEP.rotToDecDecay = 5; --minimum rotation required in one frame to lower the amount of decay temporarily
-SWEP.endCrutch = 40 -- the leeway one has when doing the 360 (you don't have to get exactly 360 to do it)
-
-SWEP.shootTime = 1.10 --this is just a random number I chose. The amount of time you have to shoot
-SWEP.rotDir = 1 --1 for clockwise, -1 for counter-clockwise
-SWEP.wasAbleToShoot = false
-SWEP.startTime = 0
-SWEP.Reloadaftershoot = 0 				-- Can't reload when firing
+SWEP.IsScoped = false
+SWEP.Velocity = 0.0
 
 function SWEP:SetupDataTables()
-
-	self:NetworkVar("Float", 0, "CRot");
-	self:NetworkVar("Float", 1, "CCRot");
-	self:NetworkVar("Float", 2, "TimeLeft");
-	self:NetworkVar("Bool", 0, "CanBodyshot");
-
-   self:NetworkVar("Bool", 3, "IronsightsPredicted")
+	self:NetworkVar("Float", 0, "JumpVelocity");
+   self:NetworkVar("Bool", 1, "IsScoped");
+   self:NetworkVar("Bool", 3, "IronsightsPredicted");
    self:NetworkVar("Float", 3, "IronsightsTime")
-
-end
-
--- end stolen code
-
-if SERVER then
-   hook.Add("ScalePlayerDamage", "EnableBodyshots", function(target, hitgroup, dmginfo)
-      if
-         not IsValid(dmginfo:GetAttacker())
-         or not dmginfo:GetAttacker():IsPlayer()
-         or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-      then
-         return
-      end
-      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-
-      if weapon:GetClass() == "weapon_ttt_intervention" then
-         if weapon:GetCanBodyshot() then
-            dmginfo:ScaleDamage(10)
-            weapon:SetCanBodyshot(false)
-            if (timer.Exists("NoScopeAwp".. self:EntIndex())) then
-               timer.Remove("NoScopeAwp".. self:EntIndex())
-            end
-         end
-      end
-   end)
 end
 
 function SWEP:SetZoom(state)
@@ -137,23 +95,37 @@ function SWEP:SecondaryAttack()
     end
 
     self:SetNextSecondaryFire( CurTime() + 0.3)
+   if SERVER then
+      if self.IsScoped == false then
+         self:SetIsScoped(true)
+         self.IsScoped = true
+      else
+         self:SetIsScoped(false)
+         self.IsScoped = false
+      end
+   end
 end
 
 function SWEP:PreDrop()
-   if CLIENT then
-      return
-   elseif IsValid(self.Owner) and self.Owner:IsPlayer() then
-      self.Owner:SetGravity(1)
-   end
-
    self:SetZoom(false)
    self:SetIronsights(false)
+   self.IsScoped = false
+   if SERVER then
+      self.IsScoped = false
+      self:SetIsScoped(false)
+   end
    return self.BaseClass.PreDrop(self)
 end
 
 function SWEP:OnDrop()
    local phys = self:GetPhysicsObject()
-   phys:AddVelocity(Vector(400, 0, 400))
+   self:SetZoom(false)
+   self:SetIronsights(false)
+   self.IsScoped = false
+   if SERVER then
+      self.IsScoped = false
+      self:SetIsScoped(false)
+   end
 end
 
 function SWEP:Reload()
@@ -165,52 +137,29 @@ function SWEP:Reload()
    self:DefaultReload( ACT_VM_RELOAD )
    self:SetIronsights( false )
    self:SetZoom( false )
-end
-
-function SWEP:Deploy()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() then
-      self.Owner:SetGravity(0.2)
+   self.IsScoped = false
+   if SERVER then
+      self.IsScoped = false
+      self:SetIsScoped(false)
    end
 end
 
 function SWEP:Holster()
-   if IsValid(self.Owner) and self.Owner:IsPlayer() then
-      self.Owner:SetGravity(1)
-   end
     self:SetIronsights(false)
     self:SetZoom(false)
+    self.IsScoped = false
+      if SERVER then
+         self.IsScoped = false
+         self:SetIsScoped(false)
+      end
     return true
 end
 
-hook.Add("TTTPrepareRound", "ResetInterventionGravity", function()
-   if SERVER then
-      local rf = RecipientFilter()
-      rf:AddAllPlayers()
-      players = rf:GetPlayers()
-      for i = 1, #players do
-         players[i]:SetGravity(1)
-      end
-   end
-end)
 
 if CLIENT then
    local scope = surface.GetTextureID("sprites/scope")
    function SWEP:DrawHUD()
       if self:GetIronsights() then
-         -- Timer
-         local x = ScrW() / 2.0
-         local y = ScrH() / 2.0
-         local scope_size = ScrH()
-         surface.SetDrawColor( 0, 0, 0, 255 )
-         surface.SetFont("HealthAmmo")
-         surface.SetTextPos(x, y + 55)
-         if(CurTime() < self.AllowedShootDelayTimer) then
-            surface.SetTextColor(0, 255, 0, 255)
-            surface.DrawText("WEAPON READY")
-         else
-            surface.SetTextColor(255, 0, 0, 255)
-            surface.DrawText("WEAPON OVERHEAT")
-         end
          -- Scope + Crosshair
          surface.SetDrawColor( 0, 0, 0, 255 )
          
@@ -266,27 +215,62 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 function SWEP:PrimaryAttack(worldsnd)
-   if CurTime() < self.ReloadFiringDelayTimer and self.IsReloading then
-      -- we are still reloading and the timer isn't up yet!
-      return
-   elseif CurTime() < self.AllowedShootDelayTimer then
-      -- shoot delay timer not up, allowed to shoot
-      if self:GetIronsights() then
-         self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
-         self.ReloadFiringDelayTimer = 0
-         self.IsReloading = false
-         self:SetNextSecondaryFire(CurTime() + 0.01)
-      end
-   else
-      -- shoot delay timer expired, can't shoot
-      return
+
+   self:SetNextSecondaryFire( CurTime() + 0 )
+   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+
+   if not self:CanPrimaryAttack() then return end
+
+   if not worldsnd then
+      self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+   elseif SERVER then
+      sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
    end
+
+   self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+
+   self:TakePrimaryAmmo( 1 )
+
+   local owner = self:GetOwner()
+   if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
+
+   owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 end
 
 function SWEP:Think()
-   if self:GetIronsights() and self.PreviousScopeState == false then
-      -- we weren't scoped in on the last frame and now we are scoped in
-      self.AllowedShootDelayTimer = CurTime() + self.AllowedShootDelay
+   if CLIENT then
+      self.IsScoped = self:GetIsScoped()
    end
-   self.PreviousScopeState = self:GetIronsights()
+   if SERVER then
+      if self.Owner:IsOnGround() then
+         self:SetJumpVelocity(9999)
+      else
+         self.Velocity = self.Owner:GetVelocity().z
+         self:SetJumpVelocity(self.Velocity)
+      end
+   end
+   self.Velocity = self:GetJumpVelocity()
+
+   if !self.Owner:IsOnGround() then
+      if self.Velocity < 20 and self.Velocity > -20 then
+         self.Primary.Cone = 0
+         self.Primary.Damage = 100
+      else
+         if self.IsScoped then
+            self.Primary.Cone = 0
+         else
+            self.Primary.Cone = .1
+         end
+         self.Primary.Damage = 50
+      end
+   else
+      if self.IsScoped then
+         self.Primary.Cone = 0
+      else
+         self.Primary.Cone = .1
+      end
+      self.Primary.Damage = 50
+   end
+
+   
 end

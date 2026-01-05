@@ -19,12 +19,12 @@ SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_RIFLE
 
 SWEP.Primary.Delay         = 1.3
-SWEP.Primary.Recoil        = 7
+SWEP.Primary.Recoil        = 0
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
 SWEP.Primary.BaseDamage    = 40
 SWEP.Primary.Damage        = 40
-SWEP.Primary.Cone          = 0.0001
+SWEP.Primary.Cone          = 0.1
 SWEP.Primary.ClipSize      = 3
 SWEP.Primary.ClipMax       = 9 -- keep mirrored to ammo
 SWEP.Primary.DefaultClip   = 6
@@ -52,10 +52,13 @@ SWEP.ChargeMulti = 1
 SWEP.DotSize = 0
 SWEP.DotVisibility = 0
 
+SWEP.IsScoped = false
+
 function SWEP:SetupDataTables()
    self:NetworkVar("Int", 0, "ChargeTime")
    self:NetworkVar("Float", 0, "DotSize")
    self:NetworkVar("Int", 0, "DotVisibility")
+   self:NetworkVar("Bool", 1, "IsScoped");
    self:NetworkVar("Bool", 3, "IronsightsPredicted")
    self:NetworkVar("Float", 3, "IronsightsTime")
 end
@@ -102,10 +105,24 @@ function SWEP:SecondaryAttack()
       self:EmitSound(self.Secondary.Sound)
    end
    self:SetNextSecondaryFire( CurTime() + 0.3)
+   if SERVER then
+      if self.IsScoped == false then
+         self:SetIsScoped(true)
+         self.IsScoped = true
+      else
+         self:SetIsScoped(false)
+         self.IsScoped = false
+      end
+   end
 end
 function SWEP:PreDrop()
    self:SetZoom(false)
    self:SetIronsights(false)
+   self.IsScoped = false
+   if SERVER then
+      self.IsScoped = false
+      self:SetIsScoped(false)
+   end
    return self.BaseClass.PreDrop(self)
 end
 
@@ -115,12 +132,22 @@ function SWEP:Reload()
    self:DefaultReload( ACT_VM_RELOAD )
    self:SetIronsights( false )
    self:SetZoom( false )
+   self.IsScoped = false
+   if SERVER then
+      self.IsScoped = false
+      self:SetIsScoped(false)
+   end
 end
 
 
 function SWEP:Holster()
    self:SetIronsights(false)
    self:SetZoom(false)
+   self.IsScoped = false
+   if SERVER then
+      self.IsScoped = false
+      self:SetIsScoped(false)
+   end
    return true
 end
 
@@ -200,6 +227,14 @@ end
 
 function SWEP:Think()
    self:CalcViewModel()
+   if CLIENT then
+      self.IsScoped = self:GetIsScoped()
+   end
+   if self.IsScoped then
+      self.Primary.Cone = 0
+   else
+      self.Primary.Cone = .1
+   end
    if self.IsCharging then
       if self.CurrentCharge < self.MaxCharge then
          if SERVER then

@@ -77,7 +77,7 @@ SWEP.Primary.Damage         = 13
 SWEP.HeadshotMultiplier		= 2
 SWEP.Primary.NumShots       = 1
 SWEP.Primary.Cone           = 0.07
-SWEP.Primary.Delay          = 0.07
+SWEP.Primary.Delay          = 0.066
 SWEP.DamageType 			= "Impact"
 
 SWEP.Primary.Ammo = "SMG1"

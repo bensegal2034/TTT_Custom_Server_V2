@@ -74,11 +74,11 @@ end
 
 SWEP.Primary.NumberofShots = 1
 SWEP.Primary.Ammo = "SMG1"
-SWEP.Primary.Cone = 0.08
+SWEP.Primary.Cone = 0.1
 SWEP.Primary.Spread = 0.5
 SWEP.Primary.ClipSize = 240
 SWEP.Primary.Force = 60
-SWEP.Primary.Damage = 6
+SWEP.Primary.Damage = 5
 SWEP.Primary.Delay = 0.06
 SWEP.Primary.Recoil = 0.07
 SWEP.Primary.ClipSize = 200

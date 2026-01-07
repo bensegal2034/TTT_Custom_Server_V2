@@ -242,7 +242,7 @@ function SWEP:Think()
 	if CurTime() > self.CoolingDelay and self.CurrentHeat > 0 then
 		if SERVER then
 			self.HeatTimer = self.HeatTimer + 1
-			if self.HeatTimer % 4 == 0 then
+			if self.HeatTimer % 3 == 0 then
 				self.CurrentHeat = self.CurrentHeat - 1
 				self.Ignited = false
 				self.IgniteDuration = 2

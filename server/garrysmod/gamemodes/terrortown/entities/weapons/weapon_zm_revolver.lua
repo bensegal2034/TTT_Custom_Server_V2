@@ -30,6 +30,8 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.Sound         = Sound( "Weapon_Deagle.Single" )
 SWEP.Secondary.Sound       = Sound("Default.Zoom")
 
+SWEP.DamageType            = "Puncture"
+
 SWEP.HeadshotMultiplier    = 4
 
 SWEP.AutoSpawnable         = true

@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+"$baseTexture" "lolixtin/ender_pearl/texture"
+"$surfaceprop" "metal"
+"$model" 1
+}

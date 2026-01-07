@@ -88,6 +88,7 @@ SWEP.Primary.ClipMax = 90
 SWEP.Primary.Automatic      = true
 
 SWEP.Secondary.ClipSize     = -1
+SWEP.Secondary.Delay = 0.05
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Automatic    = false
 SWEP.Secondary.Ammo         = "none"
@@ -95,13 +96,39 @@ SWEP.Secondary.Ammo         = "none"
 SWEP.DeploySpeed			= 1
 SWEP.Primary.Recoil = 0.8
 
+SWEP.IsFloating = false
 
 SWEP.IronSightsPos			= Vector( -4.73, 0, 0 )
 SWEP.IronSightsAng			= Vector( 1, 0.1, -1 )
 SWEP.IronSightsFov			= 60
 SWEP.IronSightsTime			= 0.25
 
+SWEP.MaxCharge = 60
+SWEP.CurrentCharge = 60 
+
+hook.Add("TTTPrepareRound", "ResetMP9Jump", function()
+   if SERVER then
+      local rf = RecipientFilter()
+      rf:AddAllPlayers()
+      players = rf:GetPlayers()
+      for i = 1, #players do
+         players[i]:SetGravity(1)
+      end
+   end
+end)
+
+function SWEP:SetupDataTables()
+   self:NetworkVar("Bool", 1, "IsFloating");
+   self:NetworkVar("Int", 2, "ChargeTime")
+end
+
 function SWEP:Think()
+	self:CalcViewModel()
+
+	if !IsValid(self.Owner) or !IsValid(self.Owner:GetActiveWeapon()) then
+		return
+	end
+
 	if self.Owner:IsOnGround() == false then
 		self.Primary.Cone = 0.001
 		self.Primary.Recoil = 0
@@ -109,4 +136,108 @@ function SWEP:Think()
 		self.Primary.Cone = 0.07
 		self.Primary.Recoil = 0.8
 	end
+	if CLIENT then
+		self.IsFloating = self:GetIsFloating()
+	end
+
+	self.ZVelocity = self.Owner:GetVelocity().z
+	self.XVelocity = self.Owner:GetVelocity().x
+	self.YVelocity = self.Owner:GetVelocity().y
+
+	if !self.Owner:IsOnGround() then
+		if self.IsFloating then
+			if self.CurrentCharge >= 0 then
+				self.Owner:SetLocalVelocity(Vector(self.XVelocity,self.YVelocity,0))
+				self.Owner:SetGravity(0)
+				if SERVER then
+					self.CurrentCharge = self.CurrentCharge - 1
+					self:SetChargeTime(self.CurrentCharge)
+				end
+				self.CurrentCharge = self:GetChargeTime()
+			else
+				self.IsFloating = false
+				self.Owner:SetGravity(1)
+			end
+		else
+			self.Owner:SetGravity(1)
+		end
+	end
+
+	if self.Owner:IsOnGround() then
+		if SERVER then
+			if self.CurrentCharge < self.MaxCharge then
+				self.CurrentCharge = self.CurrentCharge + 1
+				self:SetChargeTime(self.CurrentCharge)
+			end
+		end
+		self.CurrentCharge = self:GetChargeTime()
+	end
+
+end
+
+function SWEP:SecondaryAttack()
+	if self:GetNextSecondaryFire() > CurTime() then return end
+
+	if SERVER then
+		if self.Owner:IsOnGround() == false then
+			if self.IsFloating == false then
+				self:SetIsFloating(true)
+				self.IsFloating = true
+			else
+				self:SetIsFloating(false)
+				self.IsFloating = false
+			end
+		end
+   	end
+end
+
+if CLIENT then
+   function SWEP:DrawHUD()
+      if CLIENT then
+         local barLength = 40
+         local yOffset = 35
+         local yOffsetText = 3
+         local shadowOffset = 2
+         local chargeTime = self.CurrentCharge
+         local maxCharge  = self.MaxCharge
+         local x = math.floor(ScrW() / 2) - 20
+         local y = math.floor(ScrH() / 2) + 35
+         local chargePercentage = (chargeTime/maxCharge) * barLength
+         local chargeTimeDelta = math.Clamp(math.Truncate(chargeTime, 1), 0, maxCharge)
+         draw.RoundedBox(0, x, y, barLength, 5, Color(20, 20, 20, 200))
+         draw.RoundedBox(0, x, y, chargePercentage, 5, Color(0, 0, 200, 255))
+      end
+      return self.BaseClass.DrawHUD(self)
+   end
+end
+
+function SWEP:PreDrop()
+   self.IsFloating = false
+   if SERVER then
+      self.IsFloating = false
+      self:SetIsFloating(false)
+   end
+   return self.BaseClass.PreDrop(self)
+end
+
+function SWEP:Reload()
+	if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
+   if self:Clip1() >= self:GetMaxClip1() then return end
+   self:DefaultReload( ACT_VM_RELOAD )
+   self.IsFloating = false
+   if SERVER then
+      self.IsFloating = false
+      self:SetIsFloating(false)
+   end
+end
+
+
+function SWEP:Holster()
+   self.IsScoped = false
+   self.IsFloating = false
+   if SERVER then
+      self.IsFloating = false
+      self:SetIsFloating(false)
+   end
+   return true
 end

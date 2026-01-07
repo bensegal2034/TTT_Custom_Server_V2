@@ -238,6 +238,7 @@ function SWEP:PrimaryAttack(worldsnd)
 end
 
 function SWEP:Think()
+   self:CalcViewModel()
    if CLIENT then
       self.IsScoped = self:GetIsScoped()
    end
@@ -271,6 +272,4 @@ function SWEP:Think()
       end
       self.Primary.Damage = 50
    end
-
-   
 end

@@ -12,6 +12,7 @@ def start():
     subprocess.Popen([
         'srcds.exe',
         '-console',
+        '-condebug',
         '+maxplayers',
         '7',
         '-allowlocalhttp',

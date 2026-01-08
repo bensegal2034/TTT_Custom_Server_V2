@@ -1,40 +1,26 @@
-if SERVER then
+if ( SERVER ) then
 	AddCSLuaFile()
-	resource.AddFile("materials/vgui/ttt/icon_whiplash.vmt")
-	resource.AddFile("materials/vgui/ttt/icon_whiplash.vtf")
-	resource.AddFile("models/grapple/whiplash_hook.mdl")
-	resource.AddFile("sound/shotgraple.wav")
-	resource.AddFile("sound/loops.wav")
-	resource.AddFile("sound/grabgraple.wav")
 end
-SWEP.Author		= "Engineer_ZY"
-SWEP.Instructions	= ""
-SWEP.Category		= "ULTRAKILL"
+
+SWEP.Category		= "DEADLOCK"
 SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable = true
+SWEP.AutoSpawnable = false
 SWEP.AdminOnly = false
 
-SWEP.Primary.ClipSize = -1
-SWEP.Primary.DefaultClip = -1
-SWEP.Primary.Automatic = false
-SWEP.Primary.Ammo = "none"
 SWEP.Kind = WEAPON_EQUIP2
-SWEP.Secondary.ClipSize	= -1
-SWEP.Secondary.DefaultClip = -1
-SWEP.Secondary.Automatic = false
-SWEP.Secondary.Ammo	= "none"
 if CLIENT then
-	SWEP.PrintName          = "Whiplash"
+	SWEP.PrintName          = "Majestic Leap"
 	SWEP.Slot               = 8
 	SWEP.Icon = "vgui/ttt/icon_whiplash"
 end
 	-- Text shown in the equip menu
 SWEP.EquipMenuData = {
 	type = "Weapon",
-	desc = "MANKIND IS DEAD. \nBLOOD IS FUEL. \nHELL IS FULL.\n\nPress F to activate grappling hook"
+	desc = "This will change the world.\n\nPress F to activate leap"
 };
 
-SWEP.CanBuy = { ROLE_TRAITOR, ROLE_DETECTIVE }
+SWEP.CanBuy = {}
 SWEP.DrawAmmo			= false
 SWEP.DrawCrosshair		= true
 
@@ -47,7 +33,7 @@ SWEP.HitDistance = 40
 SWEP.Damage = 0
 
 if SERVER then
-	util.AddNetworkString( "grap" )
+util.AddNetworkString( "leap" )
 end
 
 
@@ -59,18 +45,22 @@ end
 function SWEP:Initialize()
 self:SetHoldType( "normal" )
 self.gra = nil
-end
+end 
 
 function SWEP:PrimaryAttack()
+ if SERVER then
+  
+ end
+
 
 end
 
 function SWEP:Holster( wep )
-	return true
+return true
 end
 
 function SWEP:SecondaryAttack()
-	
+
 end
 
 function SWEP:Reload()

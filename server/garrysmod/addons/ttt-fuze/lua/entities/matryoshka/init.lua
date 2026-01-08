@@ -16,7 +16,7 @@ function ENT:Initialize()
 
 	self:SetNWBool("CanBeUsed", true)
 	self:SetNWInt("BombNumbers" , -2 ) --How many minigrenades fire off to the right
-	self:EmitSound("player/bhit_helmet-1.wav")
+	--self:EmitSound("player/bhit_helmet-1.wav")
 	self:GetPos()
 
 	local traces = util.TraceLine({
@@ -82,10 +82,10 @@ function ENT:StartBomb()
         if self:GetNWBool("CanBeUsed") then
             -- Add activation delay
             self:SetNWBool("ActivationStarted", true)
-            self:SetNWFloat("ActivationTime", CurTime() + 1.5)
+            self:SetNWFloat("ActivationTime", CurTime() + .75)
             
             -- Play charging sound
-            self:EmitSound("ambient/machines/thumper_startup1.wav", 75, 100)
+            self:EmitSound("ambient/machines/thumper_startup1.wav", 75, 100, 0.25)
             
             -- Create effect to show charging
             local effectData = EffectData()
@@ -106,7 +106,7 @@ function ENT:Think()
             self:SetNWInt("Delay", CurTime() + 0.2)
             
             -- Play activation complete sound
-            self:EmitSound("weapons/physcannon/energy_sing_explosion2.wav", 75, 100)
+            self:EmitSound("weapons/physcannon/energy_sing_explosion2.wav", 75, 100, 0.25)
         end
     end
 

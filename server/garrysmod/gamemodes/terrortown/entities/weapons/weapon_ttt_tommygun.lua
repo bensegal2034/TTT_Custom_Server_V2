@@ -97,8 +97,8 @@ sound.Add({
 function SWEP:PrimaryAttack(worldsnd)
 
 	self.ModulationTime = CurTime() + 0.5
-	self.ModulationCone = math.min(4.5, self.ModulationCone * 1.03)
-	self.ModulationSpeed = math.min(375, self.ModulationSpeed * 1.025)
+	self.ModulationCone = math.min(4.5, self.ModulationCone * 1.025)
+	self.ModulationSpeed = math.min(375, self.ModulationSpeed * 1.03)
 	dmg = self.Primary.Damage
 	recoil = self.Primary.Recoil
 	self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
@@ -152,6 +152,9 @@ function SWEP:Reload()
 		self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0) then
 		return
 	end
+	self.ModulationTime = nil
+	self.ModulationCone = 1
+	self.ModulationSpeed = 220
 	self:DefaultReload(ACT_VM_RELOAD)
 end
 

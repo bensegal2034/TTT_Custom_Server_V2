@@ -483,7 +483,7 @@ hook.Add("TTTPlayerSpeedModifier", "Tec9Speed", function(ply,slowed,mv)
    end
    local weapon = ply:GetActiveWeapon()
    if weapon:GetClass() == "weapon_ttt_tec9" and weapon.Upside == 5 then
-      return 1.25
+      return 1.3
    end
 end)
 

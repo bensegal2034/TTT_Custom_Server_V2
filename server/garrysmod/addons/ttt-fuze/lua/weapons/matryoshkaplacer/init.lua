@@ -34,10 +34,8 @@ function SWEP:PrimaryAttack()
             -- Start placement timer
             self:SetNWBool("IsPlacing", true)
             self:SetNWFloat("PlaceStartTime", CurTime())
-            self:SetNWFloat("PlaceEndTime", CurTime() + 1.5)
-            
-            self:EmitSound("physics/metal/metal_box_impact_hard1.wav", 90, 100)
-            
+            self:SetNWFloat("PlaceEndTime", CurTime())
+
             timer.Create("MatryoshkaPlacementBeeps_" .. self:EntIndex(), 0.15, 0, function()
                 if IsValid(self) and self:GetNWBool("IsPlacing") then
                     -- Use world-emitted sound to avoid channel conflicts

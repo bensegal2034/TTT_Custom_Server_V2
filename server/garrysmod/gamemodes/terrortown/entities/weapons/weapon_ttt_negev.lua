@@ -41,7 +41,7 @@ SWEP.Primary.Cone 		    = 0.08
 SWEP.Primary.ClipSize       = 300
 SWEP.Primary.DefaultClip    = 600
 SWEP.Primary.ClipMax        = 900
-SWEP.Primary.Delay 		    = 0.07
+SWEP.Primary.Delay 		    = 0.065
 SWEP.Primary.Automatic 		 = true
 SWEP.Primary.Ammo           = "SMG1"
 SWEP.RandomatSpawn          = true
@@ -81,8 +81,8 @@ function SWEP:PrimaryAttack(worldsnd)
    local modulatedDMG = self.Primary.Damage * self.ModulationDMG
    self.ModulationTime = CurTime() + 0.5
    self.ModulationRecoil = math.max(0.2, self.ModulationRecoil * 0.96)
-   self.ModulationCone = math.max(0.01, self.ModulationCone * 0.97)
-   self.ModulationSpeed = math.max(0.1, self.ModulationSpeed * 0.96)
+   self.ModulationCone = math.max(0.01, self.ModulationCone * 0.995)
+   self.ModulationSpeed = math.max(0.1, self.ModulationSpeed * 0.985)
    self.ModulationDMG = self.ModulationDMG * 1.01
    dmg = math.min(40, modulatedDMG)
 

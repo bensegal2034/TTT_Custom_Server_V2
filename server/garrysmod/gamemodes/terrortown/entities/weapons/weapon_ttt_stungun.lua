@@ -3,7 +3,7 @@ AddCSLuaFile()
 SWEP.HoldType              = "ar2"
 
 if CLIENT then
-   SWEP.PrintName          = "UMP V1.0"
+   SWEP.PrintName          = "UMP-45"
    SWEP.Slot               = 2
 
    SWEP.ViewModelFlip      = false
@@ -205,5 +205,5 @@ function SWEP:Initialize()
    if self.SetHoldType then
       self:SetHoldType(self.HoldType or "pistol")
    end
-   self:SetChargeTime(120)
+   self:SetChargeTime(self.MaxCharge)
 end

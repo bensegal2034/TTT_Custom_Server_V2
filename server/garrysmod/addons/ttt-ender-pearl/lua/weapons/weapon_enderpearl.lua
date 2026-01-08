@@ -2,8 +2,8 @@ CreateConVar("pearl_ammo","2",{FCVAR_ARCHIVE,FCVAR_REPLICATED,FCVAR_SERVER_CAN_E
 CreateConVar("pearl_velocity","1600",{FCVAR_ARCHIVE,FCVAR_REPLICATED,FCVAR_SERVER_CAN_EXECUTE})
 
 if SERVER then
-	AddCSLuaFile("entities/melee_attack_h3.lua")
-	AddCSLuaFile("entities/needle_h3.lua")
+	AddCSLuaFile("entities/ender_pearl.lua")
+	AddCSLuaFile("effects/pearl_particle.lua")
 	resource.AddFile("materials/entities/ender_pearl.png")
 	resource.AddFile("materials/entities/weapon_enderpearl.png")
 	resource.AddFile("materials/lolixtin/ender_pearl/p1.vmt")

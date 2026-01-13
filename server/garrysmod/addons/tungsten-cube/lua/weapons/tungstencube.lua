@@ -10,8 +10,8 @@ if SERVER then
     resource.AddFile("materials/models/linnaeus/tungsten/tngstn.vtf")
     resource.AddFile("materials/models/linnaeus/tungsten/tngstn_rough.vtf")
     resource.AddFile("materials/models/linnaeus/tungsten/tungstencube.vmt")
-    --resource.AddFile("materials/vgui/ttt/icon_cube.vmt")
-    --resource.AddFile("materials/vgui/ttt/icon_cube.vtf")
+    resource.AddFile("materials/vgui/ttt/icon_cube.vmt")
+    resource.AddFile("materials/vgui/ttt/icon_cube.vtf")
     resource.AddFile("models/linnaeus/weaps/v_tungsten.mdl")
     resource.AddFile("models/linnaeus/weaps/w_tungsten.mdl")
     resource.AddFile("models/linnaeus/tungsten.mdl")
@@ -37,24 +37,24 @@ SWEP.AutoSwitchTo = true
 SWEP.AutoSwitchFrom = true
 SWEP.PrintName = "Tungsten Cube"
 
-SWEP.Slot = 3
+SWEP.Slot = 8
 SWEP.SlotPos = 5
 SWEP.DrawAmmo = false
 SWEP.Base = "weapon_tttbasegrenade"
 SWEP.AdminOnly = false
 
-SWEP.Kind = WEAPON_NADE
+SWEP.Kind = WEAPON_CUBE
 
 SWEP.ViewModel = "models/linnaeus/weaps/v_tungsten.mdl"
 SWEP.WorldModel = "models/linnaeus/weaps/w_tungsten.mdl"
 SWEP.HoldType = "melee"
 
-SWEP.CanBuy = { }
---SWEP.EquipMenuData = {
---      type = "Tungsten Cube",
---      desc = "Throw a tungsten cube like you're a fuckin pitcher"
---   }
---SWEP.Icon = "vgui/ttt/icon_cube"
+SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.EquipMenuData = {
+      type = "Tungsten Cube",
+      desc = "Throw a tungsten cube like you're a fuckin pitcher"
+   }
+SWEP.Icon = "vgui/ttt/icon_cube"
 
 if CLIENT then
     SWEP.IconOverride = "entities/tungstencubeicon"

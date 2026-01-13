@@ -1,0 +1,25 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models\codbo2\other\RC-XD\mtl_veh_t6_rcxd_antenna_shadow"
+	"$bumpmap"     "models\codbo2\other\RC-XD\normal"
+
+	"$phong" "1"
+	"$phongboost" "0"
+	"$phongexponent" "10"
+	"$phongfresnelranges" "[2 1.2 8]"
+	"$phongalbedotint" "1"
+	"$normalmapalphaenvmapmask" "1"
+
+	"$translucent" "1"
+
+
+	"$phongexponenttexture" "models\codbo2\other\exponent"
+
+
+	"$cloakPassEnabled" 		"1"				
+	"$nocull" "1"
+
+
+	"$no_draw" "1"
+
+}

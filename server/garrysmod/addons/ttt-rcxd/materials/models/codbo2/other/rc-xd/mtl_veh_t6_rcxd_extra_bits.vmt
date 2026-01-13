@@ -1,0 +1,28 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models\codbo2\other\RC-XD\mtl_veh_t6_rcxd_extra_bits"
+	"$bumpmap"     "models\codbo2\other\RC-XD\mtl_veh_t6_rcxd_extra_bits_n"
+
+	"$phong" "1"
+	"$phongboost" "3.5"
+	"$phongexponent" "10"
+	"$phongfresnelranges" "[2 1.2 8]"
+	"$phongalbedotint" "1"
+	"$normalmapalphaenvmapmask" "1"
+
+	"$detail" "models\codbo2\other\RC-XD\mtl_veh_t6_rcxd_extra_bits_s"    
+	"$detailscale" "1"        
+	"$detailblendfactor" "0.15"     
+	"$detailblendmode" "1"
+
+
+	"$phongexponenttexture" "models\codbo2\other\exponent"
+
+
+	"$cloakPassEnabled" 		"1"				
+	"$nocull" "1"
+
+
+
+
+}

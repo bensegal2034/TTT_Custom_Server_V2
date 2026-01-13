@@ -1,0 +1,25 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models\codbo2\other\RC-XD\mtl_veh_t6_rcxd_wheels"
+	"$bumpmap"     "models\codbo2\other\RC-XD\mtl_veh_t6_rcxd_wheels_n"
+
+	"$phong" "1"
+	"$phongboost" "3.5"
+	"$phongexponent" "10"
+	"$phongfresnelranges" "[2 1.2 8]"
+	"$phongalbedotint" "1"
+	"$normalmapalphaenvmapmask" "1"
+
+
+
+
+	"$phongexponenttexture" "models\codbo2\other\exponent"
+
+
+	"$cloakPassEnabled" 		"1"				
+	"$nocull" "1"
+
+
+
+
+}

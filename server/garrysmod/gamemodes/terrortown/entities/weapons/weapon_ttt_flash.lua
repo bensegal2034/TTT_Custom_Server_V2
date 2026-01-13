@@ -1,13 +1,8 @@
 if ( SERVER ) then
 	AddCSLuaFile()
-	resource.AddFile("materials/vgui/ttt/icon_leap.vmt")
-	resource.AddFile("materials/vgui/ttt/icon_leap.vtf")
-	resource.AddFile( "sound/weapons/leap/leap_jump.wav" )
-	resource.AddFile( "sound/weapons/leap/leap_land.wav" )
-	resource.AddFile( "sound/weapons/leap/warden.wav" )
 end
 
-SWEP.Category		= "DEADLOCK"
+SWEP.Category		= "LEAGUE OF LEGENDS"
 SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable = true
 SWEP.AutoSpawnable = false
@@ -15,17 +10,17 @@ SWEP.AdminOnly = false
 
 SWEP.Kind = WEAPON_EQUIP2
 if CLIENT then
-	SWEP.PrintName          = "Majestic Leap"
+	SWEP.PrintName          = "Flash"
 	SWEP.Slot               = 8
-	SWEP.Icon = "vgui/ttt/icon_leap"
+	SWEP.Icon = "vgui/ttt/icon_p90"
 end
 	-- Text shown in the equip menu
 SWEP.EquipMenuData = {
 	type = "Weapon",
-	desc = "This will change the world.\n\nPress F to activate leap"
+	desc = "Press F to teleport forward"
 };
 
-SWEP.CanBuy = { ROLE_DETECTIVE }
+SWEP.CanBuy = { }
 SWEP.DrawAmmo			= false
 SWEP.DrawCrosshair		= true
 
@@ -38,7 +33,7 @@ SWEP.HitDistance = 40
 SWEP.Damage = 0
 
 if SERVER then
-util.AddNetworkString( "leap" )
+util.AddNetworkString( "flash" )
 end
 
 

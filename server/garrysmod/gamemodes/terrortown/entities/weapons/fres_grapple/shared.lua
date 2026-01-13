@@ -3,6 +3,8 @@ if SERVER then
 	resource.AddFile("materials/vgui/ttt/icon_whiplash.vmt")
 	resource.AddFile("materials/vgui/ttt/icon_whiplash.vtf")
 	resource.AddFile("models/grapple/whiplash_hook.mdl")
+	resource.AddFile("materials/grapple/whip_lash.vtf")
+	resource.AddFile("materials/grapple/whiplash.vmt")
 	resource.AddFile("sound/shotgraple.wav")
 	resource.AddFile("sound/loops.wav")
 	resource.AddFile("sound/grabgraple.wav")

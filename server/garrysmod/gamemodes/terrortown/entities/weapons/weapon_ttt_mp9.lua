@@ -73,8 +73,8 @@ SWEP.WorldModel				= Model( "models/weapons/smg_mp9/w_mp9.mdl" )
 SWEP.HoldType				= "smg"
 
 SWEP.Primary.Sound		= Sound( "Weapon_MP9.Fire" ) 
-SWEP.Primary.Damage         = 13
-SWEP.HeadshotMultiplier		= 2
+SWEP.Primary.Damage         = 12
+SWEP.HeadshotMultiplier		= 1.75
 SWEP.Primary.NumShots       = 1
 SWEP.Primary.Cone           = 0.07
 SWEP.Primary.Delay          = 0.066
@@ -131,11 +131,15 @@ function SWEP:Think()
 
 	if self.Owner:IsOnGround() == false then
 		self.Primary.Cone = 0.001
-		self.Primary.Recoil = 0
 	else
 		self.Primary.Cone = 0.07
 		self.Primary.Recoil = 0.8
-	end
+		if SERVER then
+			self:SetIsFloating(false)
+			self.IsFloating = false
+		end
+   	end
+
 	if CLIENT then
 		self.IsFloating = self:GetIsFloating()
 	end
@@ -172,7 +176,6 @@ function SWEP:Think()
 		end
 		self.CurrentCharge = self:GetChargeTime()
 	end
-
 end
 
 function SWEP:SecondaryAttack()
@@ -240,4 +243,22 @@ function SWEP:Holster()
       self:SetIsFloating(false)
    end
    return true
+end
+
+function SWEP:Initialize()
+	if CLIENT and self:Clip1() == -1 then
+		self:SetClip1(self.Primary.DefaultClip)
+	elseif SERVER then
+		self.fingerprints = {}
+
+		self:SetIronsights(false)
+	end
+
+	self:SetDeploySpeed(self.DeploySpeed)
+
+	-- compat for gmod update
+	if self.SetHoldType then
+		self:SetHoldType(self.HoldType or "pistol")
+	end
+	self:SetChargeTime(self.MaxCharge)
 end

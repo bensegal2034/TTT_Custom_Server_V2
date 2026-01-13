@@ -101,7 +101,6 @@ SWEP.Weight             = 5
 SWEP.AutoSwitchTo       = false
 SWEP.AutoSwitchFrom     = false
 
-SWEP.Primary.Sound          = Sound( "Weapon_Pistol.Empty" )
 SWEP.Primary.Recoil         = 1.5
 SWEP.Primary.Damage         = 1
 SWEP.Primary.NumShots       = 1

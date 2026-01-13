@@ -1,5 +1,9 @@
 AddCSLuaFile()
 
+resource.AddFile("models/weapons/ak47_custom.mdl")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G1.vtf")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G2.vtf")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G3.vtf")
 resource.AddFile("materials/vgui/ttt/icon_ak47.vmt")
 
 if CLIENT then
@@ -39,9 +43,9 @@ SWEP.FSAccuracyTimer = 0
 
 -- Model settings
 SWEP.UseHands = true
-SWEP.ViewModelFlip = false
-SWEP.ViewModelFOV = 50
-SWEP.ViewModel = "models/weapons/cstrike/c_rif_ak47.mdl"
+SWEP.ViewModelFlip = true
+SWEP.ViewModelFOV = 80
+SWEP.ViewModel = "models/weapons/ak47_custom.mdl"
 SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
 
 SWEP.IronSightsPos = Vector( -6.518, -4.646, 2.134 )

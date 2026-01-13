@@ -98,9 +98,9 @@ if SERVER then
                 // so fuck it just set it to 1 that'll probably be right
                 killTbl[id] = 1
             end
-        end
 
-        wep:SetKillCount(util.TableToJSON(killTbl))
+            wep:SetKillCount(util.TableToJSON(killTbl))
+        end
     end)
 end
 

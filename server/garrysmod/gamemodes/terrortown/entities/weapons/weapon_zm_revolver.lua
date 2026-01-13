@@ -6,8 +6,6 @@ SWEP.ReloadHoldType        = "pistol"
 if CLIENT then
    SWEP.PrintName          = "Deagle"
    SWEP.Slot               = 1
-
-   SWEP.ViewModelFlip      = false
    SWEP.ViewModelFOV       = 54
 
    SWEP.Icon               = "vgui/ttt/icon_deagle"
@@ -17,6 +15,7 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Kind                  = WEAPON_PISTOL
 SWEP.WeaponID              = AMMO_DEAGLE
+SWEP.ViewModelFlip         = false
 
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil        = 6

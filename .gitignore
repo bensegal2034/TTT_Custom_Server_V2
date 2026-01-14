@@ -28,3 +28,4 @@ server/platform/config/Server.vdf
 /server/chart/node_modules
 server/chart/package-lock.json
 server/garrysmod/console.log
+server/garrysmod/cfg/testmode.cfg

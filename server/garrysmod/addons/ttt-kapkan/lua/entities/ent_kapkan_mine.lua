@@ -93,6 +93,7 @@ function ENT:Think()
                 if ent == self then return false end
                 if ent:IsWorld() then return false end
                 if !ent:IsPlayer() then return false end
+                if ent == self:GetOwner() then return false end
                 return true
             end
         })

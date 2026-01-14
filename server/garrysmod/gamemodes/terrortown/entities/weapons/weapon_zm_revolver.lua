@@ -21,7 +21,7 @@ SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use other
 SWEP.Primary.Recoil        = 6
 SWEP.Primary.Damage        = 30
 SWEP.Primary.Delay         = 0.6
-SWEP.Primary.Cone          = 0.06
+SWEP.Primary.Cone          = 0.08
 SWEP.Primary.ClipSize      = 8
 SWEP.Primary.ClipMax       = 36
 SWEP.Primary.DefaultClip   = 16
@@ -139,7 +139,7 @@ function SWEP:Think()
    if self.IsScoped then
       self.Primary.Cone = 0.01
    else
-      self.Primary.Cone = .06
+      self.Primary.Cone = .08
    end
 end
 

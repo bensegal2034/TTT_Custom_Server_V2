@@ -90,7 +90,7 @@ hook.Add("TTTPlayerSpeedModifier", "P90Speed", function(ply,slowed,mv)
       return
    end
    if ply:GetActiveWeapon():GetClass() == "weapon_ttt_p90" then
-      return SWEP.SpeedBoost
+      return 1.45
    end
 end)
 
@@ -99,11 +99,14 @@ hook.Add("TTTKarmaGivePenalty", "P90Love", function(ply,penalty,victim)
    if wep:IsValid() and wep:GetClass() == "weapon_ttt_p90" then
       return true
    end
-)
+end)
 
 hook.Add("TTTBodyFound", "P90Hate", function(ply,deadply,rag)
-   wep = ply:GetActiveWeapon()
-   if wep:IsValid() and wep:GetClass() == "weapon_ttt_p90" then
-      ply:Kill()
+   if rag.dmgwep == "weapon_ttt_p90" then
+      local effectdata = EffectData()
+      effectdata:SetOrigin(rag:GetPos())
+      util.Effect("Explosion", effectdata, true, true)
+
+      util.BlastDamage(rag, rag, rag:GetPos(), 200, 20)
    end
-)
+end)

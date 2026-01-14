@@ -88,6 +88,16 @@ sound.Add({
 	sound = 			"weapons/Kriss/unfold.mp3"
 })
 
+hook.Add("TTTPrepareRound", "ResetVectorColor", function()
+   for _, ply in ipairs(player.GetAll())do
+      local colDefault = Color(255,255,255,255)
+      if IsValid(ply) and ply:Alive() and not ply:IsBot() and IsValid(ply:GetViewModel()) then
+         ply:GetViewModel():SetColor(colDefault)
+         ply:SetColor(colDefault)
+      end
+   end
+end)
+
 
 SWEP.Base = "weapon_tttbase"
 
@@ -120,7 +130,14 @@ SWEP.RoundOver           = false
 SWEP.IronSightsPos       = Vector(3.943, -0.129, 1.677)
 SWEP.IronSightsAng       = Vector(-1.922, 0.481, 0)
 
+SWEP.StateValue = 0
 SWEP.DeploySpeed = 3
+
+SWEP.SecondaryDelay = 0.05
+
+function SWEP:SetupDataTables()
+   self:NetworkVar( "Int", 0, "WeaponState" )
+end   
 
 
 function SWEP:Initialize()
@@ -147,6 +164,7 @@ function SWEP:PrimaryAttack(worldsnd)
       self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
       self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
       self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+      self:SetNextSecondaryFire( CurTime() + self.SecondaryDelay )
       local owner = self:GetOwner()
       if SERVER then
          TakeDamage(owner, 2, owner, self)
@@ -161,9 +179,89 @@ end
 
 
 function SWEP:SecondaryAttack()
-
+   
+   if (self.StateValue == 0) then
+      if SERVER then
+         self.StateValue = 1
+      end
+      local effectdata = EffectData()
+		effectdata:SetOrigin( self.Owner:GetPos() )
+		effectdata:SetNormal( self.Owner:GetPos() )
+		effectdata:SetMagnitude( 0.5 )
+		effectdata:SetScale( 0.5 )
+	   util.Effect( "VortDispel", effectdata)
+      self:EmitSound("weapons/kriss/on.wav")
+      self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
+      local colGreen = Color(0,255,0,255)
+      self:SetColor(colGreen)
+      self:GetOwner():GetViewModel():SetColor(colGreen)
+      self:GetOwner():SetColor(colGreen)
+   elseif (self.StateValue == 1) then
+      if SERVER then
+         self.StateValue = 0
+      end
+      self:EmitSound("weapons/kriss/off.wav")
+      local colDefault = Color(255,255,255,255)
+      self:SetColor(colDefault)
+      self:GetOwner():GetViewModel():SetColor(colDefault)
+      self:GetOwner():SetColor(colDefault)
+      self.Primary.Cone = self.Primary.ConeSaved
+   end
 end
 
+function SWEP:Think()
+   if SERVER then
+      self:SetWeaponState(self.StateValue)
+   end
+   self.StateValue = self:GetWeaponState()
+end
+
+function SWEP:PreDrop()
+   if SERVER and IsValid(self:GetOwner()) and self.Primary.Ammo != "none" then
+      local ammo = self:Ammo1()
+
+      -- Do not drop ammo if we have another gun that uses this type
+      for _, w in ipairs(self:GetOwner():GetWeapons()) do
+         if IsValid(w) and w != self and w:GetPrimaryAmmoType() == self:GetPrimaryAmmoType() then
+            ammo = 0
+         end
+      end
+
+      self.StoredAmmo = ammo
+
+      if ammo > 0 then
+         self:GetOwner():RemoveAmmo(ammo, self.Primary.Ammo)
+      end
+   end
+   
+end
+
+DEFINE_BASECLASS( SWEP.Base )
+function SWEP:Holster(...)
+   if (self.StateValue == 1) then
+      local colDefault = Color(255,255,255,255)
+      if IsValid(self:GetOwner()) then
+         self:SetColor(colDefault)
+         self:GetOwner():GetViewModel():SetColor(colDefault)
+         self:GetOwner():SetColor(colDefault)
+      end
+      self.Primary.Cone = self.Primary.ConeSaved
+   end
+   return BaseClass.Holster(self, ...)
+end
+
+
+function SWEP:Deploy()
+   self:SetIronsights(false)
+   if (self.StateValue == 1) then
+      local colGreen = Color(0,255,0,255)
+      self:SetColor(colGreen)
+      self:GetOwner():GetViewModel():SetColor(colGreen)
+      self:GetOwner():SetColor(colGreen)
+      self.Primary.Cone = self.Primary.ConeSaved
+   end
+   return true
+end
 
 function SWEP:GetPrimaryCone()
    local cone = self.Primary.Cone or 0.2

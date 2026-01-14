@@ -73,8 +73,8 @@ SWEP.WorldModel				= Model( "models/weapons/smg_mp9/w_mp9.mdl" )
 SWEP.HoldType				= "smg"
 
 SWEP.Primary.Sound		= Sound( "Weapon_MP9.Fire" ) 
-SWEP.Primary.Damage         = 12
-SWEP.HeadshotMultiplier		= 1.75
+SWEP.Primary.Damage         = 11
+SWEP.HeadshotMultiplier		= 1.82
 SWEP.Primary.NumShots       = 1
 SWEP.Primary.Cone           = 0.07
 SWEP.Primary.Delay          = 0.066

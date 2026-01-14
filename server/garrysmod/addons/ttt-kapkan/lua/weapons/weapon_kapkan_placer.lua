@@ -127,6 +127,7 @@ function SWEP:PrimaryAttack()
     ent:Spawn()
     ent:SetNWInt("ExplosionDamage", KAPKAN_CONFIG.ExplosionDamage)
     ent:GetPhysicsObject():EnableMotion(false)
+	ent:SetOwner(self:GetOwner())
 
     if KAPKAN_CONFIG.AllowUndo then
         undo.Create("Kapkan Mine")

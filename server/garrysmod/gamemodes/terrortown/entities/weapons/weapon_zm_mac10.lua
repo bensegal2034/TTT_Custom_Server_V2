@@ -19,7 +19,7 @@ SWEP.HeadshotMultiplier = 2
 SWEP.RicochetMulti       = 2
 
 DAMAGE = SWEP.Primary.Damage
-SWEP.Primary.Damage      = 9
+SWEP.Primary.Damage      = 10
 SWEP.Primary.Delay       = 0.08
 SWEP.Primary.Cone        = 0.02
 SWEP.Primary.ClipSize    = 30

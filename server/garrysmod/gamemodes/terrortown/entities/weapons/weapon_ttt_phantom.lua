@@ -29,11 +29,11 @@ if SERVER then
     resource.AddFile("materials/gn_carbine/gn_carbine_11.vtf")
     resource.AddFile("materials/gn_carbine/gn_carbine_12.vtf")
     
-    resource.AddFile("materials/gn_carbine/kill1banner.vtf")
-    resource.AddFile("materials/gn_carbine/kill2banner.vtf")
-    resource.AddFile("materials/gn_carbine/kill3banner.vtf")
-    resource.AddFile("materials/gn_carbine/kill4banner.vtf")
-    resource.AddFile("materials/gn_carbine/kill5banner.vtf")
+    resource.AddFile("materials/gn_carbine/kill1banner.png")
+    resource.AddFile("materials/gn_carbine/kill2banner.png")
+    resource.AddFile("materials/gn_carbine/kill3banner.png")
+    resource.AddFile("materials/gn_carbine/kill4banner.png")
+    resource.AddFile("materials/gn_carbine/kill5banner.png")
     
     resource.AddFile("sound/gn_carbine/equip_1.wav")
     resource.AddFile("sound/gn_carbine/equip_2.wav")
@@ -58,6 +58,8 @@ end
 
 function SWEP:SetupDataTables()
     self:NetworkVar("String", 0, "KillCount")
+
+    self:NetworkVarNotify("KillCount", self.KillBannerTimerUpdate)
 end
 
 hook.Add("TTTPrepareRound", "ResetPhantomSpeed", function()
@@ -82,14 +84,16 @@ end)
 
 if SERVER then
     hook.Add("DoPlayerDeath", "PhantomKill", function(victim, attacker, dmginfo)
-        if not IsValid(dmginfo:GetAttacker()) or not dmginfo:GetAttacker():IsPlayer() or not IsValid(dmginfo:GetAttacker():GetActiveWeapon()) then return end
         local atk = dmginfo:GetAttacker()
-        local id = atk:SteamID64()
+        local id = atk:UserID()
         local wep = atk:GetActiveWeapon()
+        if not IsValid(atk) or not atk:IsPlayer() or not IsValid(wep) then return end
         
         if wep:GetClass() == "weapon_ttt_phantom" then
-            killTbl = util.JSONToTable(wep:GetKillCount())
+            local killTbl = util.JSONToTable(wep:GetKillCount())
 
+            if killTbl == nil then return end
+            
             if not(killTbl[id] == nil) then
                 killTbl[id] = killTbl[id] + 1
             else
@@ -98,7 +102,7 @@ if SERVER then
                 // so fuck it just set it to 1 that'll probably be right
                 killTbl[id] = 1
             end
-
+            
             wep:SetKillCount(util.TableToJSON(killTbl))
         end
     end)
@@ -131,6 +135,8 @@ SWEP.ViewModelFlip = true
 SWEP.ViewModelFOV = 65
 SWEP.ViewModel = "models/v_phantom.mdl"
 SWEP.WorldModel = "models/w_phantom.mdl"
+SWEP.Mins = Vector(-16, -16, -16)
+SWEP.Maxs = Vector(16, 16, 16)
 
 -- TTT settings
 SWEP.Kind = WEAPON_HEAVY
@@ -141,6 +147,18 @@ SWEP.LimitedStock = true
 SWEP.AllowDrop = true
 SWEP.IsSilent = true
 SWEP.NoSights = true
+
+--- Kill Banners
+SWEP.KillBanner1 = Material("gn_carbine/kill1banner.png", "noclamp smooth")
+SWEP.KillBanner2 = Material("gn_carbine/kill2banner.png", "noclamp smooth")
+SWEP.KillBanner3 = Material("gn_carbine/kill3banner.png", "noclamp smooth")
+SWEP.KillBanner4 = Material("gn_carbine/kill4banner.png", "noclamp smooth")
+SWEP.KillBanner5 = Material("gn_carbine/kill5banner.png", "noclamp smooth")
+
+if CLIENT then
+    SWEP.KillBannerTimer = 0
+    SWEP.HasPlayedKillSfx = false
+end
 
 // this is a manual (in code) fix for the world model displaying in the character's chest.
 // thanks tom :)
@@ -179,20 +197,56 @@ if CLIENT then
 end
 
 if CLIENT then
-   function SWEP:DrawHUD()
-      local scrW = ScrW()
-      local scrH = ScrH()
-      if self:GetKillCount() > 0 then
-         surface.SetMaterial(killBanner)
-         surface.SetDrawColor(255, 255, 255, 255)
-         surface.DrawTexturedRect(scrW * 0.4485, scrH * 0.65, 200, 256)
-      end
-      self.BaseClass.DrawHUD(self)
-   end
+    function SWEP:DrawHUD()
+        local x = math.floor(ScrW() / 2.0)
+        local y = math.floor(ScrH() / 2.0) * 1.5
+        local owner = self:GetOwner()
+        if not(IsValid(owner) or not(owner:IsPlayer())) or not(owner.UserID) then return end
+
+        if CurTime() < self.KillBannerTimer then
+            local killTbl = util.JSONToTable(self:GetKillCount())
+            local killCount = killTbl[owner:UserID()]
+            local soundStr = "gn_carbine/kill" .. math.max(1, math.min(killCount, 5)) .. ".wav"
+            surface.SetDrawColor(255, 255, 255, 255)
+            if killCount == 1 then
+                surface.SetMaterial(self.KillBanner1)
+            elseif killCount == 2 then
+                surface.SetMaterial(self.KillBanner2)
+            elseif killCount == 3 then
+                surface.SetMaterial(self.KillBanner3)
+            elseif killCount == 4 then
+                surface.SetMaterial(self.KillBanner4)
+            elseif killCount >= 5 then
+                surface.SetMaterial(self.KillBanner5)
+            end
+            if not(self.HasPlayedKillSfx) then
+                owner:EmitSound(soundStr, 0, 100, 1, CHAN_STATIC)
+                self.HasPlayedKillSfx = true
+            end
+            surface.DrawTexturedRect(x - 150, y - 150, 300, 300)
+        else
+            self.HasPlayedKillSfx = false
+        end
+
+        self.BaseClass.DrawHUD(self)
+    end
 end
 
-function SWEP:DisplayKillBanner()
-
+function SWEP:KillBannerTimerUpdate(name, old, new)
+    local killDisplayTime = 2.5
+    
+    if CLIENT then
+        local owner = self:GetOwner()
+        killTbl = util.JSONToTable(new)
+        if not(IsValid(owner) or not(owner:IsPlayer())) or not(owner.UserID) or killTbl == nil then return end
+        
+        local killCount = killTbl[owner:UserID()]
+        if killCount == nil then return end
+        if killCount > 0 then
+            self.KillBannerTimer = CurTime() + killDisplayTime + math.min(killCount / 10, 0.5)
+            self.HasPlayedKillSfx = false
+        end
+    end
 end
 
 function SWEP:Initialize()
@@ -203,13 +257,12 @@ function SWEP:Initialize()
 end
 
 function SWEP:Equip(newOwner)
-    if newOwner:IsPlayer() then
-        if SERVER then
-            local killTbl = util.JSONToTable(self:GetKillCount())
-            killTbl[newOwner:SteamID64()] = 0
-
-            self:SetKillCount(util.TableToJSON(killTbl))
-        end
+    if not(IsValid(newOwner) or not(newOwner:IsPlayer())) or not(newOwner.UserID) or killTbl == nil then return end
+    if SERVER then
+        local killTbl = util.JSONToTable(self:GetKillCount())
+        killTbl[newOwner:UserID()] = 0
+        
+        self:SetKillCount(util.TableToJSON(killTbl))
     end
 end
 
@@ -236,7 +289,26 @@ function SWEP:PrimaryAttack(worldsnd)
     self.BaseClass.PrimaryAttack(self, worldsnd)
 end
 
+function SWEP:OnDrop()
+    self.PhysCollide = CreatePhysCollideBox( self.Mins, self.Maxs )
+    self:SetCollisionBounds( self.Mins, self.Maxs )
+
+    if SERVER then
+        self:PhysicsInitBox( self.Mins, self.Maxs )
+        self:SetSolid( SOLID_VPHYSICS )
+        self:PhysWake()
+    end
+
+    if CLIENT then
+        self:SetRenderBounds( self.Mins, self.Maxs )
+    end
+
+    self:EnableCustomCollisions( true )
+    self:DrawShadow( false )
+end
+
 function SWEP:Reload(worldsnd)
+    if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
     local owner = self:GetOwner()
     if SERVER then
         local soundStr = "gn_carbine/reload_" .. tostring(math.random(1, 2)) .. ".wav"
@@ -244,15 +316,4 @@ function SWEP:Reload(worldsnd)
         sound.Play(soundStr, owner:GetPos(), 140, 100, 1)
     end
     self.BaseClass.Reload(self, worldsnd)
-end
-
-function SWEP:OnDrop()
-    if SERVER then
-        local mins, maxs = self:GetModelBounds()
-        mins:Mul(0.5)
-        maxs:Mul(0.5)
-        local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
-
-        self:SetKillCount(0)
-    end
 end

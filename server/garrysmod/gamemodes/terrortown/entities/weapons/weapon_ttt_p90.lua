@@ -16,18 +16,18 @@ SWEP.Base = "weapon_tttbase"
 SWEP.HoldType = "smg"
 
 SWEP.Primary.Ammo = "SMG1"
-SWEP.Primary.Delay = 0.07
+SWEP.Primary.Delay = 0.11
 SWEP.Primary.Recoil = 1
-SWEP.Primary.Cone = 0.043
-SWEP.Primary.Damage = 12
+SWEP.Primary.Cone = 0.087
+SWEP.Primary.Damage = 7
 SWEP.Primary.Automatic = true
 SWEP.Primary.ClipSize = 50
 SWEP.Primary.ClipMax = 150
 SWEP.Primary.DefaultClip = 100
 SWEP.Primary.Sound = Sound( "Weapon_P90.Single" )
 SWEP.Secondary.Sound = Sound( "Default.Zoom" )
-SWEP.HeadshotMultiplier = 2
-SWEP.SpeedBoost = 1.3
+SWEP.HeadshotMultiplier = 5
+SWEP.SpeedBoost = 1.45
 SWEP.Reloaded = false
 SWEP.SpeedBoostRemoved = false
 SWEP.DamageType            = "Impact"
@@ -81,7 +81,7 @@ if CLIENT then
    -- Text shown in the equip menu
    SWEP.EquipMenuData = {
    type = "Weapon",
-   desc = "Extremely fast firing SMG.\n\nComes with a mounted scope."
+   desc = "Extremely fast firing SMG."
    }
 end
 
@@ -90,6 +90,20 @@ hook.Add("TTTPlayerSpeedModifier", "P90Speed", function(ply,slowed,mv)
       return
    end
    if ply:GetActiveWeapon():GetClass() == "weapon_ttt_p90" then
-      return 1.25
+      return SWEP.SpeedBoost
    end
 end)
+
+hook.Add("TTTKarmaGivePenalty", "P90Love", function(ply,penalty,victim)
+   wep = ply:GetActiveWeapon()
+   if wep:IsValid() and wep:GetClass() == "weapon_ttt_p90" then
+      return true
+   end
+)
+
+hook.Add("TTTBodyFound", "P90Hate", function(ply,deadply,rag)
+   wep = ply:GetActiveWeapon()
+   if wep:IsValid() and wep:GetClass() == "weapon_ttt_p90" then
+      ply:Kill()
+   end
+)

@@ -69,16 +69,20 @@ const server = http.createServer(function(request, response) {
         }
 
         // all checks passed, file can now be sent out
-        fs.readFile(path, function(err, content) {
-            serverResponse(
-                [
-                    200, 
-                    {"Content-Length": Buffer.byteLength(content)}
-                ],
-                content,
-                "Serving request for " + path
-            )
-        })
+        const fileStream = fs.createReadStream(path)
+        const stats = fs.statSync(path)
+
+        response.writeHead(200, {
+            "Content-Length": stats.size
+        });
+        fileStream.pipe(response)
+        fileStream.on('error', (error) => {
+            console.error('Error streaming file:', error);
+            res.writeHead(404);
+            res.end('File not found.');
+        });
+        console.log("Serving file " + path + "; Content-Length: " + stats.size)
+
     } else if (request.method === "POST") {
         console.log("Serving POST request")
         //this is a request to log an error

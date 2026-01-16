@@ -27,8 +27,8 @@ SWEP.LimitedStock          = false
 SWEP.AmmoEnt = "item_ammo_smg1_ttt"
 SWEP.Tracer = "AR2Tracer"
 SWEP.Primary.Damage        = 15
-SWEP.Primary.Delay         = 0.11
-SWEP.Primary.Cone          = 0.04
+SWEP.Primary.Delay         = 0.10
+SWEP.Primary.Cone          = 0.035
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.ClipMax       = 120
 SWEP.Primary.DefaultClip   = 60
@@ -93,7 +93,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Force  = 5
    bullet.Damage = dmg
    if self.ChargeTime >= self.MaxCharge then
-      bullet.Damage = 20
+      bullet.Damage = 30
    end
 
    bullet.Callback = function(att, tr, dmginfo)

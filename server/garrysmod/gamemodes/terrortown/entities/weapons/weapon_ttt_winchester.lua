@@ -22,7 +22,7 @@ SWEP.Primary.Ammo = "357"
 SWEP.Primary.Damage = 40
 SWEP.BaseDamage = 40
 SWEP.Primary.Cone = 0
-SWEP.Primary.Delay = 1.05
+SWEP.Primary.Delay = .72
 SWEP.Primary.ClipSize = 8
 SWEP.Primary.ClipMax = 24
 SWEP.Primary.DefaultClip = 16
@@ -39,7 +39,7 @@ SWEP.MaxDamage = 200
 SWEP.FarDist = 900
 SWEP.MaxDist = 2100
 
-SWEP.HeadshotMultiplier = 1.5
+SWEP.HeadshotMultiplier = 1
 
 SWEP.UseHands			= false
 SWEP.ViewModelFlip		= true

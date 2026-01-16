@@ -36,13 +36,13 @@ SWEP.DamageType            = "True"
 SWEP.ViewModel             = "models/weapons/v_mach_m249para.mdl"
 SWEP.WorldModel            = "models/weapons/w_mach_m249para.mdl"
 
-SWEP.HeadshotMultiplier    = 2
+SWEP.HeadshotMultiplier    = 4
 
 SWEP.IronSightsPos         = Vector( -4.4, -3, 2 )
 SWEP.IronSightsAng         = Vector(0, 0, 0)
 
-local FixatedDuration = 1.5
-local FixatedMulti = .3
+local FixatedDuration = 3
+local FixatedMulti = .5
 local HitPlayers = {} -- List of players that have been hit, incremented by FixatedMulti to increase damage taken by said player
 local HitTimers = {} -- Contains the last time at which each player was hit, used to reset multiplier if player hasn't been hit in FixatedDuration amount of time
 

@@ -109,7 +109,7 @@ function ENT:RicochetCallback(bouncenum, attacker, tr, dmginfo)
          ricochetbullet.Dir 		= dir
          ricochetbullet.Spread 	= Vector(0, 0, 0)
          ricochetbullet.Force		= dmginfo:GetDamageForce() * 2
-         ricochetbullet.Damage	= 7 --dmginfo:GetDamage() * self.RicochetMulti
+         ricochetbullet.Damage	= 20 --dmginfo:GetDamage() * self.RicochetMulti
          ricochetbullet.Tracer   = 1
          ricochetbullet.TracerName = "m9k_effect_mad_ricochet_trace"
          ricochetbullet.Attacker = self.Owner

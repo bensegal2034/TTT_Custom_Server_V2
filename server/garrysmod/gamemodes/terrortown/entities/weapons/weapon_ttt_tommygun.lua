@@ -129,7 +129,7 @@ function SWEP:GetPrimaryCone()
  end
 
 function SWEP:Think()
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 	if self.IsFiring then
 	   self.IsFiring = false
 	   self.FiringTimer = CurTime() + self.FiringDelay

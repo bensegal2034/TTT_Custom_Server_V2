@@ -204,7 +204,7 @@ if SERVER then
    local CHARGE_DELAY = 0.025
 
    function SWEP:Think()
-      BaseClass.Think(self)
+      self.BaseClass.Think(self)
       if not IsValid(self:GetOwner()) then return end
 
       if self.IsCharging and self:GetOwner():KeyDown(IN_ATTACK2) then

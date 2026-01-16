@@ -325,7 +325,7 @@ function SWEP:Think()
 		self:SendWeaponAnim(ACT_VM_IDLE)
 	end
 	
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 end
 
 function SWEP:PickupProp( ent )

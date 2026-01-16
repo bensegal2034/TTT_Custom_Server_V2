@@ -903,7 +903,7 @@ function SWEP:Think()
 		self:SetNextIdle(0)
 	end
 
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 end
 
 if SERVER then

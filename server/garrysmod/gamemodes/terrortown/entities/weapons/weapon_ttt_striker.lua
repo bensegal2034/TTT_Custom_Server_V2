@@ -238,7 +238,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 end
 
 function SWEP:Think()
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 	if CurTime() > self.CoolingDelay and self.CurrentHeat > 0 then
 		if SERVER then
 			self.HeatTimer = self.HeatTimer + 1

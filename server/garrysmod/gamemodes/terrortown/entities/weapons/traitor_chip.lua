@@ -311,7 +311,7 @@ end
 				end
 				
 			end
-			BaseClass.Think(self)
+			self.BaseClass.Think(self)
 		end
 		
 	else
@@ -340,7 +340,7 @@ end
 				end
 			
 			end
-			BaseClass.Think(self)
+			self.BaseClass.Think(self)
 		end
 		
 		function SWEP:ViewModelDrawn()

@@ -237,7 +237,7 @@ function SWEP:Think()
 
         self:SetNWEntity("Matr", matr)
     end
-    BaseClass.Think(self)
+    self.BaseClass.Think(self)
 end
 
 -- Helper function to restore player movement properly

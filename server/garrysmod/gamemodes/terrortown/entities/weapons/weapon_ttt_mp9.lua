@@ -123,7 +123,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Think()
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 
 	if !IsValid(self.Owner) or !IsValid(self.Owner:GetActiveWeapon()) then
 		return

@@ -231,7 +231,7 @@ function SWEP:Reload()
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    self.CurrentCharge = self:GetChargeCount()
    if self.Upside == 6 then
       if self:GetPlaySound() then

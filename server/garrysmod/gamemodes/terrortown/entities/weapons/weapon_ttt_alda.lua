@@ -373,7 +373,7 @@ function SWEP:Deploy()
 end
 
 function SWEP:Think()
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 	if ((self:Clip1() <= 1) and self.Reloaded == false) then
 		if self.SpeedBoostRemoved == false then
 			if server then

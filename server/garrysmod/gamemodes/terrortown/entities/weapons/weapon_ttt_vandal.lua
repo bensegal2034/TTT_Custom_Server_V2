@@ -155,7 +155,7 @@ if CLIENT then
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    if self:GetShowKillEffect() > 0 then
       self.DrawKillBanner = true
       self.KillBannerDelayTimer = CurTime() + self.KillBannerDelay

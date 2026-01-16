@@ -375,7 +375,7 @@ end
 function SWEP:ShootEffects() end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    if SERVER then
       if self.ReloadDelay == true then
          self.ReloadTimer = self.ReloadTimer + 1

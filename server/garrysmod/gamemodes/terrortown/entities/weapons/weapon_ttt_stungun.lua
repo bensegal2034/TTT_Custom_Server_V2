@@ -159,7 +159,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
 
    if self.ChargeTime < self.MaxCharge then
 		if SERVER then

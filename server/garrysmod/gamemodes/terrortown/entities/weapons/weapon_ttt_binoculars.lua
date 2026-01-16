@@ -149,7 +149,7 @@ function SWEP:IdentifyCorpse()
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    if self.dt.processing then
       if self:IsTargetingCorpse() then
          if CurTime() > (self.dt.start_time + self.ProcessingDelay) then

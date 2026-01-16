@@ -72,7 +72,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    if self:GetPlaySound() then
       sound.Play("crit", self:GetPos())
       self:SetPlaySound(false)

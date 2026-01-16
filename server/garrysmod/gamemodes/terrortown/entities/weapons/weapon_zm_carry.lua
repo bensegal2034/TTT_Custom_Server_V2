@@ -208,7 +208,7 @@ local ent_diff_time = CurTime()
 
 local stand_time = 0
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    if not self:CheckValidity() then return end
 
    -- If we are too far from our object, force a drop. To avoid doing this

@@ -541,7 +541,7 @@ function SWEP:CalcViewModel()
 end
 
 -- Note that if you override Think in your SWEP, you should call
--- BaseClass.Think(self) so as not to break ironsights
+-- self.BaseClass.Think(self) so as not to break ironsights
 function SWEP:Think()
    self:CalcViewModel()
 end

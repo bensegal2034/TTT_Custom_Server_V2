@@ -191,5 +191,5 @@ function SWEP:WasBought(buyer)
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
 end

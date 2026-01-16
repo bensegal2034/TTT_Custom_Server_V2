@@ -226,7 +226,7 @@ if CLIENT then
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    if CLIENT then
       self.IsScoped = self:GetIsScoped()
    end

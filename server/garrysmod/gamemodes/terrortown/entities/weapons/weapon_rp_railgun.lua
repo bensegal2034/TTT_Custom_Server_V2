@@ -295,7 +295,7 @@ function SWEP:Think()
 	self.mode4 = nil
 	self.overcharge = nil
 
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 end
 
 function SWEP:PreDrop()

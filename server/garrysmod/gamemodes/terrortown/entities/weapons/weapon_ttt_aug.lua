@@ -371,7 +371,7 @@ if CLIENT then
 end
 
 function SWEP:Think()
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 	if SERVER then
 		if GetRoundState() == ROUND_WAIT then
 			self.PreRoundCheck = 1
@@ -411,7 +411,7 @@ function SWEP:Think()
 		self.Primary.Recoil = 0.4
 	end
 
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 end	
 
 if SERVER then

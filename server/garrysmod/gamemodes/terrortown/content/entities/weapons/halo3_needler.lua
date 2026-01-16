@@ -1969,5 +1969,5 @@ function SWEP:Think()
 	self.Owner:GetViewModel():ManipulateBonePosition( 50, Vector(-1000,5000,-1000) )
 	self.Owner:GetViewModel():ManipulateBonePosition( 51, Vector(-1000,5000,-1000) )
 	end
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 end

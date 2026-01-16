@@ -264,7 +264,7 @@ hook.Add("Think", "Portalgun Holding Item", function()
 end)
 
 function SWEP:Think()
-	BaseClass.Think(self)
+	self.BaseClass.Think(self)
 
 	-- -- HOLDING FUNC
 

@@ -183,7 +183,7 @@ function SWEP:Holster()
 end
 
 function SWEP:Think()
-   BaseClass.Think(self)
+   self.BaseClass.Think(self)
    if self.IsCharging and IsValid(self:GetOwner()) and self:GetOwner():IsTerror() then
       -- on client this is prediction
       if not self:GetOwner():KeyDown(IN_ATTACK2) then

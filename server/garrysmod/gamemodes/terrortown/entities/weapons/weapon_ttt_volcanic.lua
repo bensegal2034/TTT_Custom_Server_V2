@@ -368,7 +368,7 @@ function SWEP:FinishReload()
 end
 
 function SWEP:Think()
-    BaseClass.Think(self)
+    self.BaseClass.Think(self)
     if self:GetReloading() then 
        if self:GetReloadTimer() <= CurTime() then
  

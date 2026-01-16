@@ -16,8 +16,8 @@ const server = http.createServer(function(request, response) {
     if (request.method === "GET") {
         // we are dealing with a request for a file (most likely lmao)
         // remove /garrysmod/ from start of path if it exists - if not, error code 404
-        if (request.url.split("/")[1] === "garrysmod") {
-            var rawPath = request.url.slice(11)
+        if (decodeURIComponent(request.url).split("/")[1] === "garrysmod") {
+            var rawPath = decodeURIComponent(request.url).slice(11)
             var path = ""
         } else {
             serverResponse(

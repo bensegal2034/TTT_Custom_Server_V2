@@ -58,7 +58,10 @@ end
 
 function SWEP:SetupDataTables()
     self:NetworkVar("String", 0, "KillCount")
-
+    self:NetworkVar("Float", 0, "PrimaryCone")
+    self:NetworkVar("Float", 1, "MovementCone")
+    self:NetworkVar("Int", 0, "FirstShotAccuracyBullets")
+    
     self:NetworkVarNotify("KillCount", self.KillBannerTimerUpdate)
 end
 
@@ -91,7 +94,7 @@ if SERVER then
         
         if wep:GetClass() == "weapon_ttt_phantom" then
             local killTbl = util.JSONToTable(wep:GetKillCount())
-
+            
             if killTbl == nil then return end
             
             if not(killTbl[id] == nil) then
@@ -118,7 +121,7 @@ SWEP.Primary.Ammo = "pistol"
 SWEP.Primary.Delay = 0.08
 SWEP.Primary.Recoil = 2.5
 SWEP.Primary.Cone = 0.001
-SWEP.Primary.Damage = 24
+SWEP.Primary.Damage = 16
 SWEP.Primary.Automatic = true
 SWEP.Primary.ClipSize = 25
 SWEP.Primary.ClipMax = 75
@@ -126,15 +129,16 @@ SWEP.Primary.DefaultClip = 50
 SWEP.Primary.Sound = "gn_carbine/shot_" .. tostring(math.random(1, 4)) .. ".wav"
 SWEP.AutoSpawnable         = false
 SWEP.Spawnable             = true
-SWEP.HeadshotMultiplier    = 4.3
+SWEP.HeadshotMultiplier    = 3
 SWEP.DamageType = "Puncture"
 
 -- Model settings
 SWEP.UseHands = false
 SWEP.ViewModelFlip = true
-SWEP.ViewModelFOV = 65
+SWEP.ViewModelFOV = 60
 SWEP.ViewModel = "models/v_phantom.mdl"
 SWEP.WorldModel = "models/w_phantom.mdl"
+SWEP.FakeWorldModel = nil
 SWEP.Mins = Vector(-16, -16, -16)
 SWEP.Maxs = Vector(16, 16, 16)
 
@@ -155,6 +159,14 @@ SWEP.KillBanner3 = Material("gn_carbine/kill3banner.png", "noclamp smooth")
 SWEP.KillBanner4 = Material("gn_carbine/kill4banner.png", "noclamp smooth")
 SWEP.KillBanner5 = Material("gn_carbine/kill5banner.png", "noclamp smooth")
 
+--- Inaccuracy
+SWEP.MovementAccuracyTimer = 0
+SWEP.AccuracyDelay = 0.2
+SWEP.MovementInaccuracy = false
+SWEP.FirstShotAccuracy = true
+SWEP.FirstShotDelay = 0.2
+SWEP.AccuracyTimer = 0
+
 if CLIENT then
     SWEP.KillBannerTimer = 0
     SWEP.HasPlayedKillSfx = false
@@ -163,11 +175,14 @@ end
 // this is a manual (in code) fix for the world model displaying in the character's chest.
 // thanks tom :)
 if CLIENT then
-    local WorldModel = ClientsideModel(SWEP.WorldModel)
-    WorldModel:SetSkin(0)
-    WorldModel:SetNoDraw(true)
-    
     function SWEP:DrawWorldModel()
+        if not(IsValid(self.FakeWorldModel)) then
+            self.FakeWorldModel = ClientsideModel(self.WorldModel)
+        end
+        
+        -- Settings...
+        self.FakeWorldModel:SetSkin(1)
+        self.FakeWorldModel:SetNoDraw(true)
         local _Owner = self:GetOwner()
         
         if (IsValid(_Owner)) then
@@ -183,16 +198,16 @@ if CLIENT then
             
             local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
             
-            WorldModel:SetPos(newPos)
-            WorldModel:SetAngles(newAng)
+            self.FakeWorldModel:SetPos(newPos)
+            self.FakeWorldModel:SetAngles(newAng)
             
-            WorldModel:SetupBones()
+            self.FakeWorldModel:SetupBones()
         else
-            WorldModel:SetPos(self:GetPos())
-            WorldModel:SetAngles(self:GetAngles())
+            self.FakeWorldModel:SetPos(self:GetPos())
+            self.FakeWorldModel:SetAngles(self:GetAngles())
         end
         
-        WorldModel:DrawModel()
+        self.FakeWorldModel:DrawModel()
     end
 end
 
@@ -202,7 +217,7 @@ if CLIENT then
         local y = math.floor(ScrH() / 2.0) * 1.5
         local owner = self:GetOwner()
         if not(IsValid(owner) or not(owner:IsPlayer())) or not(owner.UserID) then return end
-
+        
         if CurTime() < self.KillBannerTimer then
             local killTbl = util.JSONToTable(self:GetKillCount())
             local killCount = killTbl[owner:UserID()]
@@ -227,7 +242,7 @@ if CLIENT then
         else
             self.HasPlayedKillSfx = false
         end
-
+        
         self.BaseClass.DrawHUD(self)
     end
 end
@@ -251,6 +266,10 @@ end
 
 function SWEP:Initialize()
     if SERVER then
+        self:SetPrimaryCone(0.001)
+        self:SetMovementCone(0.001)
+        self:SetFirstShotAccuracyBullets(0)
+        
         local killTbl = {}
         self:SetKillCount(util.TableToJSON(killTbl))
     end
@@ -286,25 +305,20 @@ function SWEP:PrimaryAttack(worldsnd)
     vm:SendViewModelMatchingSequence(1)
     self.Primary.Sound = "gn_carbine/shot_" .. tostring(math.random(1, 4)) .. ".wav"
     
+    if self:Clip1() > 0 and ((CLIENT and IsFirstTimePredicted()) or SERVER) then
+        self.FirstShotAccuracy = false
+        self:SetFirstShotAccuracyBullets(self:GetFirstShotAccuracyBullets() + 1)
+        self.AccuracyTimer = CurTime() + math.min(self.FirstShotDelay + (self:GetFirstShotAccuracyBullets() / 20), 0.8)
+    end
+    
     self.BaseClass.PrimaryAttack(self, worldsnd)
 end
 
 function SWEP:OnDrop()
-    self.PhysCollide = CreatePhysCollideBox( self.Mins, self.Maxs )
-    self:SetCollisionBounds( self.Mins, self.Maxs )
-
     if SERVER then
-        self:PhysicsInitBox( self.Mins, self.Maxs )
-        self:SetSolid( SOLID_VPHYSICS )
-        self:PhysWake()
+        local mins, maxs = self:GetModelBounds()
+        local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
     end
-
-    if CLIENT then
-        self:SetRenderBounds( self.Mins, self.Maxs )
-    end
-
-    self:EnableCustomCollisions( true )
-    self:DrawShadow( false )
 end
 
 function SWEP:Reload(worldsnd)
@@ -316,4 +330,49 @@ function SWEP:Reload(worldsnd)
         sound.Play(soundStr, owner:GetPos(), 140, 100, 1)
     end
     self.BaseClass.Reload(self, worldsnd)
+end
+
+function SWEP:Think()
+    self.BaseClass.Think(self)
+    
+    if self.Owner:KeyDown(IN_FORWARD) or self.Owner:KeyDown(IN_BACK) or self.Owner:KeyDown(IN_MOVELEFT) or self.Owner:KeyDown(IN_MOVERIGHT) then
+        self.MovementInaccuracy = true
+        self:SetMovementCone((self.Owner:GetVelocity():Length()) / 3000)
+        self.MovementAccuracyTimer = CurTime() + self.AccuracyDelay
+    end
+    if CurTime() > self.MovementAccuracyTimer then
+        self:SetMovementCone(0.001)
+        self.MovementInaccuracy = false
+    end
+    
+    if self.FirstShotAccuracy == true and self.MovementInaccuracy == false then
+        self:SetPrimaryCone(0.001)
+    elseif self.FirstShotAccuracy != true then
+        local magicFsaVal = 100
+        local magicNoFsaVal = 40
+        local bulletInaccuracyCap = 10
+
+        if self:GetFirstShotAccuracyBullets() < 4 then
+            if self.MovementInaccuracy then
+                self:SetPrimaryCone(math.min(self:GetFirstShotAccuracyBullets(), bulletInaccuracyCap) / magicFsaVal + self:GetMovementCone())
+            else
+                self:SetPrimaryCone(math.min(self:GetFirstShotAccuracyBullets(), bulletInaccuracyCap) / magicFsaVal)
+            end
+        else
+            if self.MovementInaccuracy then
+                self:SetPrimaryCone(math.min(0 + (math.min(self:GetFirstShotAccuracyBullets(), bulletInaccuracyCap) / magicNoFsaVal) + self:GetMovementCone(), 1))
+            else
+                self:SetPrimaryCone(math.min(0 + (math.min(self:GetFirstShotAccuracyBullets(), bulletInaccuracyCap) / magicNoFsaVal), 1))
+            end
+        end
+        -- ((((self.AccuracyTimer - CurTime()) - 0) * 100) / (1.5 - 0)) / 100
+        -- formula for making accuracy start out at fully inaccurate and slowly decay over time
+    else
+        self:SetPrimaryCone(self:GetMovementCone())
+    end
+    
+    if CurTime() > self.AccuracyTimer then
+        self.FirstShotAccuracy = true
+        self:SetFirstShotAccuracyBullets(0)
+    end
 end

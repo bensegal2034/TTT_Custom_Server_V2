@@ -42,7 +42,8 @@ function SWEP:Initialize()
 	util.PrecacheSound("weapons/bazinga/laugh3.wav")
 end
 
-function SWEP:Think()	
+function SWEP:Think()
+	BaseClass.Think(self)	
 end
 
 function SWEP:PrimaryAttack()

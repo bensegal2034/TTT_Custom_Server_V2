@@ -126,7 +126,7 @@ hook.Add("PostEntityTakeDamage", "FixatedTrigger", function(ent, dmginfo, wasDam
 end)
 
 function SWEP:Think()
-   self:CalcViewModel()
+   BaseClass.Think(self)
    for ply in pairs(HitPlayers) do
       if HitTimers[ply] != nil then
          if CurTime() > HitTimers[ply] then

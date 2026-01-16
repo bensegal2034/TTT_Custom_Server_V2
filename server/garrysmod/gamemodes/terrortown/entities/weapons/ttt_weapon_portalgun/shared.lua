@@ -264,6 +264,7 @@ hook.Add("Think", "Portalgun Holding Item", function()
 end)
 
 function SWEP:Think()
+	BaseClass.Think(self)
 
 	-- -- HOLDING FUNC
 
@@ -321,7 +322,6 @@ function SWEP:Think()
 		self.idledelay = nil
 		self:SendWeaponAnim(ACT_VM_IDLE)
 	end
-
 end
 
 function SWEP:PickupProp( ent )

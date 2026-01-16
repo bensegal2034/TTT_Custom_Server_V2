@@ -902,6 +902,8 @@ function SWEP:Think()
 		self:SendWeaponAnim(ACT_VM_IDLE)
 		self:SetNextIdle(0)
 	end
+
+	BaseClass.Think(self)
 end
 
 if SERVER then

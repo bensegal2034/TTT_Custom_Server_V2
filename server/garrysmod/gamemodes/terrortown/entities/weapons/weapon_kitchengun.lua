@@ -130,6 +130,7 @@ function SWEP:Think()
 		self.nextShot = nil
 		self:OnFireAutomationStop()
 	end
+	BaseClass.Think(self)
 end
 
 function SWEP:SecondaryAttack()

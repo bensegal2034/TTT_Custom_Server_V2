@@ -190,7 +190,7 @@ function SWEP:PrimaryAttack( worldsnd )
 end
 
 function SWEP:Think()
-
+   BaseClass.Think(self)
    if self.dt.reloading and IsFirstTimePredicted() then
       if self.Owner:KeyDown(IN_ATTACK) then
          self:FinishReload()

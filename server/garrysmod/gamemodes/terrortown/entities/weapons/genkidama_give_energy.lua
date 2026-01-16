@@ -187,6 +187,7 @@ if CLIENT then
 end
 
 function SWEP:Think()
+    BaseClass.Think(self)
 end
 
 function SWEP:Reload()

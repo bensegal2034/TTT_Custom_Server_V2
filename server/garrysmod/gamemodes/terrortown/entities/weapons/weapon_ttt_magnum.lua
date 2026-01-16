@@ -1087,6 +1087,7 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	if self:GetOwner():InVehicle() and self:GetOwner():GetAllowWeaponsInVehicle() == false then return end
 	if self:GetNextIdle() ~= 0 and self:GetNextIdle() < CurTime() then
 		self:SendWeaponAnim(ACT_VM_IDLE)

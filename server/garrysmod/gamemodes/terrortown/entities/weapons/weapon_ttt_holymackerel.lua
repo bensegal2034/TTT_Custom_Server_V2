@@ -603,6 +603,7 @@ function SWEP:Reload()
 end
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	if self.Attack == 1 and self.AttackTimer <= CurTime() then
 	local tr = util.TraceLine( {
 	start = self.Owner:GetShootPos(),

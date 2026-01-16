@@ -210,6 +210,7 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Think()
+   BaseClass.Think(self)
    if SERVER then
       self:SetWeaponState(self.StateValue)
    end

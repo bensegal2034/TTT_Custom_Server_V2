@@ -101,6 +101,7 @@ function SWEP:Think()
 			end
 		end
 	end
+	BaseClass.Think(self)
 end
 
 function SWEP:PrimaryAttack()

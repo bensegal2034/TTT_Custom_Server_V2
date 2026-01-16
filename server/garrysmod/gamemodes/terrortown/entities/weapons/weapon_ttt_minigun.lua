@@ -128,6 +128,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	local vm = self.Owner:GetViewModel()
 	self:SetWeaponHoldType( self.HoldType )
 	--Begin Firing

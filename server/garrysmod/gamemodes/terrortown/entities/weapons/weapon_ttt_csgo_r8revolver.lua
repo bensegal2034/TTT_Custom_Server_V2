@@ -357,6 +357,7 @@ function SWEP:IdleAnimation()
 end
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	if self.Hammer == 1 then
 		if !self.Owner:KeyDown( IN_ATTACK ) then
 			self.Hammer = 0

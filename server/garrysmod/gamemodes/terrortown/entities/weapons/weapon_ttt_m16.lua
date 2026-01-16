@@ -154,6 +154,7 @@ function SWEP:Initialize()
 end
 
 function SWEP:Think()
+   BaseClass.Think(self)
    self.ClickTimer = CurTime() - self.ClickTime
    if self.ClickTimer < .14 then
       self.ClickDamage = self.ClickTimer * 175
@@ -161,5 +162,4 @@ function SWEP:Think()
       self.ClickDamage = 25
    end
    self.Primary.Damage = math.min(self.ClickDamage, 35)
-   self:CalcViewModel()
 end

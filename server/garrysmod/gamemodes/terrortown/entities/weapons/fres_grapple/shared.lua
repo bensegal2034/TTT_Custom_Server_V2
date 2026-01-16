@@ -55,7 +55,8 @@ end
 
 
 function SWEP:Think()
-local owner = self:GetOwner()
+	BaseClass.Think(self)
+	local owner = self:GetOwner()
 end
 
 function SWEP:Initialize()

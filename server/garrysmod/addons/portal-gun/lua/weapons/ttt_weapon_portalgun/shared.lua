@@ -324,7 +324,8 @@ function SWEP:Think()
 		self.idledelay = nil
 		self:SendWeaponAnim(ACT_VM_IDLE)
 	end
-
+	
+	BaseClass.Think(self)
 end
 
 function SWEP:PickupProp( ent )

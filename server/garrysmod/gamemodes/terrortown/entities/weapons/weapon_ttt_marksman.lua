@@ -185,6 +185,7 @@ end
 	Desc: Called every frame
 -----------------------------------------------------------]]
 function SWEP:Think()
+	BaseClass.Think(self)
 	if CurTime() > self.CoinTimer then
 		self:SetClip2(4)
 	end

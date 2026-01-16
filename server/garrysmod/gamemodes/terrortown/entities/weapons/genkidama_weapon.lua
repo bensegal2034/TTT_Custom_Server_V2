@@ -87,6 +87,7 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Think()
+    BaseClass.Think(self)
 end
 
 function SWEP:Reload()

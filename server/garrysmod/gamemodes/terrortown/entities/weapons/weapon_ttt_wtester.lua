@@ -326,6 +326,7 @@ if SERVER then
    end
 
    function SWEP:Think()
+      BaseClass.Think(self)
       if self:GetCharge() < MAX_CHARGE then
          if self.NextCharge < CurTime() then
             self:SetCharge(math.min(MAX_CHARGE, self:GetCharge() + CHARGE_RATE))

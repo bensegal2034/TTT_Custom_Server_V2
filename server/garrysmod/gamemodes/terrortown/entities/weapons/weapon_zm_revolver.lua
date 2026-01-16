@@ -198,7 +198,7 @@ function SWEP:Holster()
 end
 
 function SWEP:Think()
-   self:CalcViewModel()
+   BaseClass.Think(self)
    if CLIENT then
       self.IsScoped = self:GetIsScoped()
    end

@@ -355,6 +355,7 @@ end
 
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	if self:GetReloading() then
 	   
  

@@ -179,6 +179,7 @@ function SWEP:Reload()
 end
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	if self.Reloading == 1 and self.ReloadingTimer <= CurTime() then
 		if self:Ammo1() > (self.Primary.ClipSize - self:Clip1()) then
 			self.Owner:SetAmmo(self:Ammo1() - self.Primary.ClipSize + self:Clip1(), self.Primary.Ammo)

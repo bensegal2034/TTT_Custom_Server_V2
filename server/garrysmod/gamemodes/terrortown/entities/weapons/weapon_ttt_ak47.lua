@@ -127,7 +127,7 @@ function SWEP:Think()
       self.FirstShotAccuracy = true
       self.FirstShotAccuracyBullets = 0
    end
-
+   BaseClass.Think(self)
 end
 
 function SWEP:PrimaryAttack()

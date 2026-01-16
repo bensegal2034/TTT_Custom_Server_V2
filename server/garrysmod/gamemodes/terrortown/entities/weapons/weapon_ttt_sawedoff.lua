@@ -226,5 +226,6 @@ function SWEP:PrimaryAttack(worldsnd)
 end
 
 function SWEP:Think()
+   BaseClass.Think(self)
    return
 end

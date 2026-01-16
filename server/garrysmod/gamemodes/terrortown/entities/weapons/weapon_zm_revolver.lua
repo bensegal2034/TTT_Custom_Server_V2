@@ -1,19 +1,19 @@
 AddCSLuaFile()
 resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/bullet.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/DE black norm.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/DE black.vmt")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/DE black norm.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/DE black.vtf")
 resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/grip.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/grip_normal.vmt")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/grip_normal.vtf")
 resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/lam.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/lam_norm.vmt")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/lam_norm.vtf")
 resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/Lens1.vmt")
 resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/Lens2.vmt")
 resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/main.vmt")
 resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/Map1.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/white grip norm.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/white grip.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/wood grip norm.vmt")
-resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/wood grip.vmt")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/white grip norm.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/white grip.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/wood grip norm.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/wood grip.vtf")
 resource.AddFile("models/weapons/v_deagle_scope_custom.mdl")
 resource.AddFile("models/weapons/w_deagle_scope_custom.mdl")
 resource.AddFile("scripts/weapons/deagle.txt")
@@ -84,9 +84,9 @@ SWEP.WeaponID              = AMMO_DEAGLE
 SWEP.ViewModelFlip         = true
 
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
-SWEP.Primary.Recoil        = 6
-SWEP.Primary.Damage        = 30
-SWEP.Primary.Delay         = 0.6
+SWEP.Primary.Recoil        = 12
+SWEP.Primary.Damage        = 10
+SWEP.Primary.Delay         = 1
 SWEP.Primary.Cone          = 0.08
 SWEP.Primary.ClipSize      = 8
 SWEP.Primary.ClipMax       = 36
@@ -97,7 +97,7 @@ SWEP.Secondary.Sound       = Sound("Default.Zoom")
 
 SWEP.DamageType            = "Puncture"
 
-SWEP.HeadshotMultiplier    = 4
+SWEP.HeadshotMultiplier    = 8
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
@@ -204,8 +204,10 @@ function SWEP:Think()
    end
    if self.IsScoped then
       self.Primary.Cone = 0.01
+      self.Primary.Delay = 1.2
    else
       self.Primary.Cone = .08
+      self.Primary.Delay = 1
    end
 end
 
@@ -265,3 +267,36 @@ if CLIENT then
       return (self:GetIronsights() and 0.2) or nil
    end
 end
+
+
+hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo)
+   if
+      not IsValid(dmginfo:GetAttacker())
+      or not dmginfo:GetAttacker():IsPlayer()
+      or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+   then
+      return
+   end
+
+   local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+   
+   if weapon:GetClass() == "weapon_zm_revolver" then
+      
+      local att = dmginfo:GetAttacker()
+      if target:IsPlayer() and IsValid(target) then
+         timer.Simple(0.9, function()
+            local maxhp = target:GetMaxHealth()
+            local curhp = target:Health()
+            local dmg = DamageInfo()
+            local poisondmg = math.min(((maxhp-curhp)/2),30)
+            dmg:SetDamage(poisondmg)
+            dmg:SetAttacker(att)
+            dmg:SetInflictor(weapon)
+            dmg:SetDamageForce(Vector(0,0,0))
+            dmg:SetDamageType(DMG_POISON)
+            target:TakeDamageInfo(dmg)
+            target:EmitSound( "player/geiger3.wav", 75, 100, 1, CHAN_ITEM )
+         end)
+      end
+   end
+end)

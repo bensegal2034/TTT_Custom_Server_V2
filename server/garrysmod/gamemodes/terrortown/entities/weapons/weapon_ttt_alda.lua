@@ -107,6 +107,7 @@ SWEP.ViewModelFlip = false
 SWEP.UseHands = true
 SWEP.ViewModel = "models/weapons/fml/siege/c_alda_556.mdl"
 SWEP.WorldModel = "models/weapons/fml/siege/c_alda_556.mdl"
+SWEP.FakeWorldModel = nil
 SWEP.Slot				= 2				-- Slot in the weapon selection menu
 SWEP.Kind 				= WEAPON_HEAVY
 SWEP.ShowViewModel = true
@@ -285,29 +286,22 @@ end
 function SWEP:OnDrop()
 	if SERVER then
 		local mins, maxs = self:GetModelBounds()
-		mins:Mul(0.5)
-		maxs:Mul(0.5)
-		
+
+		mins:Mul(0.8)
+		maxs:Mul(0.8)
 		local result = self:PhysicsInitBox(mins, maxs, "solidmetal")
-		--[[
-		local phys = self:GetPhysicsObject()
-		phys:Wake()
-		print(phys)
-		print("their malevolent nasty angles: " .. tostring(phys:GetAngles()) .. "\nour beautiful perfect angles: " .. tostring(self:GetAngles()))
-		phys:SetAngles(self:GetAngles())
-		print("their malevolent nasty angles (changed): " .. tostring(phys:GetAngles()) .. "\nour beautiful perfect angles: " .. tostring(self:GetAngles()))
-		]]--
 	end
 end
 
 if CLIENT then
-	local WorldModel = ClientsideModel(SWEP.WorldModel)
-
-	-- Settings...
-	WorldModel:SetSkin(1)
-	WorldModel:SetNoDraw(true)
-
 	function SWEP:DrawWorldModel()
+		if not(IsValid(self.FakeWorldModel)) then
+			self.FakeWorldModel = ClientsideModel(self.WorldModel)
+		end
+
+		-- Settings...
+		self.FakeWorldModel:SetSkin(1)
+		self.FakeWorldModel:SetNoDraw(true)
 		local _Owner = self:GetOwner()
 
 		if (IsValid(_Owner)) then
@@ -323,16 +317,16 @@ if CLIENT then
 
 			local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
 
-			WorldModel:SetPos(newPos)
-			WorldModel:SetAngles(newAng)
+			self.FakeWorldModel:SetPos(newPos)
+			self.FakeWorldModel:SetAngles(newAng)
 
-            WorldModel:SetupBones()
+            self.FakeWorldModel:SetupBones()
 		else
-			WorldModel:SetPos(self:GetPos())
-			WorldModel:SetAngles(self:GetAngles())
+			self.FakeWorldModel:SetPos(self:GetPos())
+			self.FakeWorldModel:SetAngles(self:GetAngles())
 		end
 
-		WorldModel:DrawModel()
+		self.FakeWorldModel:DrawModel()
 	end
 end
 
@@ -379,6 +373,7 @@ function SWEP:Deploy()
 end
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	if ((self:Clip1() <= 1) and self.Reloaded == false) then
 		if self.SpeedBoostRemoved == false then
 			if server then

@@ -105,6 +105,7 @@ SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 
 SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/v_deagle_scope_custom.mdl"
+SWEP.FakeWorldModel        = nil
 SWEP.WorldModel            = "models/weapons/w_deagle_scope_custom.mdl"
 
 SWEP.IronSightsPos         = Vector( 5, -15, -2 )
@@ -119,6 +120,42 @@ function SWEP:SetupDataTables()
    self:NetworkVar("Float", 3, "IronsightsTime")
 end
 
+if CLIENT then
+    function SWEP:DrawWorldModel()
+        if not(IsValid(self.FakeWorldModel)) then
+            self.FakeWorldModel = ClientsideModel(self.WorldModel)
+        end
+        
+        -- Settings...
+        self.FakeWorldModel:SetSkin(1)
+        self.FakeWorldModel:SetNoDraw(true)
+        local _Owner = self:GetOwner()
+        
+        if (IsValid(_Owner)) then
+            -- Specify a good position
+            local offsetVec = Vector(1, -1, -1)
+            local offsetAng = Angle(180, 180, 0)
+            
+            local boneid = _Owner:LookupBone("ValveBiped.Bip01_R_Hand") -- Right Hand
+            if !boneid then return end
+            
+            local matrix = _Owner:GetBoneMatrix(boneid)
+            if !matrix then return end
+            
+            local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
+            
+            self.FakeWorldModel:SetPos(newPos)
+            self.FakeWorldModel:SetAngles(newAng)
+            
+            self.FakeWorldModel:SetupBones()
+        else
+            self.FakeWorldModel:SetPos(self:GetPos())
+            self.FakeWorldModel:SetAngles(self:GetAngles())
+        end
+        
+        self.FakeWorldModel:DrawModel()
+    end
+end
 
 function SWEP:SetZoom(state)
    if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then

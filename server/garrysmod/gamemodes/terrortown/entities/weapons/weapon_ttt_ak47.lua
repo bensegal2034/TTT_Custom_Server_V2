@@ -2,8 +2,14 @@ AddCSLuaFile()
 
 resource.AddFile("models/weapons/ak47_custom.mdl")
 resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G1.vtf")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G1_normal.vtf")
 resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G2.vtf")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G2_normal.vtf")
 resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G3.vtf")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G3_normal.vtf")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G1.vmt")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G2.vmt")
+resource.AddFile("materials/models/weapons/v_models/TehSnake_AK/G3.vmt")
 resource.AddFile("materials/vgui/ttt/icon_ak47.vmt")
 
 if CLIENT then

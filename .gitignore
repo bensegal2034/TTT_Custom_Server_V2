@@ -29,3 +29,4 @@ server/platform/config/Server.vdf
 server/chart/package-lock.json
 server/garrysmod/console.log
 server/garrysmod/cfg/testmode.cfg
+server/garrysmod/data/mapvote/recentmaps.txt

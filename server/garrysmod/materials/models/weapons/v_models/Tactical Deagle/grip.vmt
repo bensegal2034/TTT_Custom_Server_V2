@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\v_models\Tactical Deagle\grip"
+      "$bumpmap" "models\weapons\v_models\Tactical Deagle\grip_normal"
+}

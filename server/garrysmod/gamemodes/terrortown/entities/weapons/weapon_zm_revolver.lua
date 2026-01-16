@@ -1,4 +1,70 @@
 AddCSLuaFile()
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/bullet.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/DE black norm.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/DE black.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/grip.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/grip_normal.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/lam.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/lam_norm.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/Lens1.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/Lens2.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/main.vmt")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/Map1.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/white grip norm.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/white grip.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/wood grip norm.vtf")
+resource.AddFile("materials/models/weapons/v_models/Tactical Deagle/wood grip.vtf")
+resource.AddFile("models/weapons/v_deagle_scope_custom.mdl")
+resource.AddFile("models/weapons/w_deagle_scope_custom.mdl")
+resource.AddFile("scripts/weapons/deagle.txt")
+resource.AddFile("sound/weapons/deagle/1911s_deploy.wav")
+resource.AddFile("sound/weapons/deagle/1911slideback.wav")
+resource.AddFile("sound/weapons/deagle/1911slideforward.wav")
+resource.AddFile("sound/weapons/deagle/clipin.wav")
+resource.AddFile("sound/weapons/deagle/clipout.wav")
+resource.AddFile("sound/weapons/deagle/de_clipin.wav")
+resource.AddFile("sound/weapons/deagle/de_clipout.wav")
+resource.AddFile("sound/weapons/deagle/de_deploy.wav")
+resource.AddFile("sound/weapons/deagle/de_slideback.wav")
+resource.AddFile("sound/weapons/deagle/deagle-1.wav")
+resource.AddFile("sound/weapons/deagle/deagle-2.wav")
+resource.AddFile("sound/weapons/deagle/deagle_magin.wav")
+resource.AddFile("sound/weapons/deagle/deagle_magout.wav")
+resource.AddFile("sound/weapons/deagle/magin.wav")
+resource.AddFile("sound/weapons/deagle/magout.wav")
+resource.AddFile("sound/weapons/deagle/slideback.wav")
+resource.AddFile("sound/weapons/deagle/slideforward.wav")
+resource.AddFile("sound/weapons/deagle/sliderelease.wav")
+
+sound.Add({
+   name = "Weapon_OSHIT.Magout",
+	channel = "CHAN_ITEM",
+	sound = "weapons/deagle/magout.wav" 
+})
+
+sound.Add({
+   name = "Weapon_OSHIT.Magin",
+	channel = "CHAN_ITEM",
+	sound = "weapons/deagle/magin.wav" 
+})
+
+sound.Add({
+   name = "Weapon_OSHIT.SlideForward",
+	channel = "CHAN_ITEM",
+	sound = "weapons/deagle/slideforward.wav" 
+})
+
+sound.Add({
+   name = "Weapon_OSHIT.SlideBack",
+	channel = "CHAN_ITEM",
+	sound = "weapons/deagle/slideback.wav" 
+})
+
+sound.Add({
+   name = "Weapon_OSHIT.Sliderelease",
+	channel = "CHAN_ITEM",
+	sound = "weapons/deagle/sliderelease.wav" 
+})
 
 SWEP.HoldType              = "revolver"
 SWEP.ReloadHoldType        = "pistol"
@@ -6,7 +72,7 @@ SWEP.ReloadHoldType        = "pistol"
 if CLIENT then
    SWEP.PrintName          = "Deagle"
    SWEP.Slot               = 1
-   SWEP.ViewModelFOV       = 54
+   SWEP.ViewModelFOV       = 70
 
    SWEP.Icon               = "vgui/ttt/icon_deagle"
 end
@@ -15,7 +81,7 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Kind                  = WEAPON_PISTOL
 SWEP.WeaponID              = AMMO_DEAGLE
-SWEP.ViewModelFlip         = false
+SWEP.ViewModelFlip         = true
 
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil        = 6
@@ -38,8 +104,8 @@ SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_pist_deagle.mdl"
-SWEP.WorldModel            = "models/weapons/w_pist_deagle.mdl"
+SWEP.ViewModel             = "models/weapons/v_deagle_scope_custom.mdl"
+SWEP.WorldModel            = "models/weapons/w_deagle_scope_custom.mdl"
 
 SWEP.IronSightsPos         = Vector( 5, -15, -2 )
 SWEP.IronSightsAng         = Vector( 2.6, 1.37, 3.5 )

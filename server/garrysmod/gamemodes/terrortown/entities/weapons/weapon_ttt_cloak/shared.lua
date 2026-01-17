@@ -12,7 +12,7 @@ if( CLIENT ) then
  
    SWEP.EquipMenuData = {
       type = "item_weapon",
-      desc = "Hold it to become nearly invisible.\n\nDoesn't hide your name, shadow or\nbloodstains on your body."
+      desc = "Hold it to become nearly invisible.\n\nYou will become visible if someone is very close to you. Be careful of getting shot, though.."
    };
 
 end
@@ -47,34 +47,77 @@ SWEP.Primary.Ammo         = "none"
 SWEP.NoSights = true
 SWEP.AllowDrop = false
 
+SWEP.LastOwner = nil
+
+function SWEP:SetupDataTables()
+    self:NetworkVar("Bool", "Cloaked")
+
+    --[[
+    self:NetworkVarNotify("Cloaked", function(name, old, new)
+        print(tostring(name) .. " | " .. tostring(new))
+    end)
+    ]]--
+end
+
+hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
+    local wep = ply:GetActiveWeapon()
+
+    if IsValid(ply) and not(ply == LocalPlayer()) and IsValid(wep) and wep:GetClass() == "weapon_ttt_cloak" then
+        if wep:GetCloaked() then
+            local dist = 11000
+            local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
+	        local shouldReveal = distCalc > dist
+
+            return shouldReveal
+        end
+    end
+end)
+
+function SWEP:OwnerChanged()
+    if IsValid(self:GetOwner()) then
+        self.LastOwner = self:GetOwner()
+    end
+end
+
+function SWEP:Initialize()
+    if SERVER then
+        self:SetCloaked(false)
+    end
+
+    self:CallOnRemove("UnCloak", function(ent)
+        ent:UnCloak()
+    end)
+end
+
 function SWEP:PrimaryAttack()
    return false
 end
 
-function SWEP:DrawWorldModel() -- Thanks v_hana :)
-	-- if not IsValid(self.Owner) then -- Well let's test this way then
-	-- 	self:DrawWorldModel()
-	-- end
-end
-
-function SWEP:DrawWorldModelTranslucent()
-end
-
 function SWEP:Cloak()
-    self.Owner:SetColor( Color(255, 255, 255, 3) ) 			
-    self.Owner:SetMaterial( "sprites/heatwave" )
-    -- self.Weapon:SetMaterial("sprites/heatwave")
-    self:EmitSound( "AlyxEMP.Charge" )
-    self.Owner:DrawWorldModel( false ) -- Thanks v_hana :)
-    self.conceal = true
+    if not(self:GetCloaked()) and IsValid(self.LastOwner) then
+        self.LastOwner:SetColor( Color(255, 255, 255, 3) ) 			
+        self.LastOwner:SetMaterial( "sprites/heatwave" )
+        -- self.Weapon:SetMaterial("sprites/heatwave")
+        self:EmitSound("AlyxEMP.Discharge", 255, 100, 1, CHAN_WEAPON)
+        --sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
+        self.LastOwner:SetNWBool("disguised", true)
+        if SERVER then
+            self:SetCloaked(true)
+        end
+    end
 end
 
 function SWEP:UnCloak()
-    self.Owner:SetMaterial("models/glass")
-    -- self.Weapon:SetMaterial("models/glass")
-    self:EmitSound( "AlyxEMP.Discharge" )
-    self.Owner:DrawWorldModel( true ) -- Thanks v_hana :)
-    self.conceal = false
+    if self:GetCloaked() and IsValid(self.LastOwner) then
+        self.LastOwner:SetMaterial("models/glass")
+        -- self.Weapon:SetMaterial("models/glass")
+        self:EmitSound("AlyxEMP.Discharge", 255, 100, 1, CHAN_WEAPON)
+        --sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
+        self.LastOwner:SetNWBool("disguised", false)
+        if SERVER then
+            self:SetCloaked(false)
+        end
+    end
 end
 
 function SWEP:Deploy()
@@ -82,21 +125,17 @@ function SWEP:Deploy()
 end
 
 function SWEP:Holster()
+    if self:GetCloaked() then
+        self:UnCloak()
+    end
 
-if ( self.conceal ) then
-    self:UnCloak()
-end
-	
-return true
-
+    return true
 end
  
 function SWEP:PreDrop()
-
-if ( self.conceal ) then
-    self:UnCloak()
-end
- 
+    if self:GetCloaked() then
+        self:UnCloak()
+    end
 end
 
 function SWEP:OnDrop() --Hopefully this'll work

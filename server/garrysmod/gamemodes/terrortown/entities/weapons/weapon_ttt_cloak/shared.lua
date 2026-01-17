@@ -65,7 +65,7 @@ function SWEP:Cloak()
     self.Owner:SetMaterial( "sprites/heatwave" )
     -- self.Weapon:SetMaterial("sprites/heatwave")
     self:EmitSound( "AlyxEMP.Charge" )
-    -- self.Owner:DrawWorldModel( false ) -- Thanks v_hana :)
+    self.Owner:DrawWorldModel( false ) -- Thanks v_hana :)
     self.conceal = true
 end
 
@@ -73,7 +73,7 @@ function SWEP:UnCloak()
     self.Owner:SetMaterial("models/glass")
     -- self.Weapon:SetMaterial("models/glass")
     self:EmitSound( "AlyxEMP.Discharge" )
-    -- self.Owner:DrawWorldModel( true ) -- Thanks v_hana :)
+    self.Owner:DrawWorldModel( true ) -- Thanks v_hana :)
     self.conceal = false
 end
 

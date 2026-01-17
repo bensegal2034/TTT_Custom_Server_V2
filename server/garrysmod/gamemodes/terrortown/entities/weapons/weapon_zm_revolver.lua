@@ -86,7 +86,7 @@ SWEP.ViewModelFlip         = true
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil        = 12
 SWEP.Primary.Damage        = 10
-SWEP.Primary.Delay         = 1
+SWEP.Primary.Delay         = 1.2
 SWEP.Primary.Cone          = 0.08
 SWEP.Primary.ClipSize      = 8
 SWEP.Primary.ClipMax       = 36
@@ -241,10 +241,8 @@ function SWEP:Think()
    end
    if self.IsScoped then
       self.Primary.Cone = 0.01
-      self.Primary.Delay = 1.2
    else
       self.Primary.Cone = .08
-      self.Primary.Delay = 1
    end
 end
 
@@ -321,7 +319,7 @@ hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo
       
       local att = dmginfo:GetAttacker()
       if target:IsPlayer() and IsValid(target) then
-         timer.Simple(0.9, function()
+         timer.Simple(1.5, function()
             local maxhp = target:GetMaxHealth()
             local curhp = target:Health()
             local dmg = DamageInfo()
@@ -332,6 +330,17 @@ hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo
             dmg:SetDamageForce(Vector(0,0,0))
             dmg:SetDamageType(DMG_NERVEGAS)
             target:TakeDamageInfo(dmg)
+
+            local effectdata = EffectData()
+            effectdata:SetOrigin( target:GetPos() + Vector(0,0,15) )
+            effectdata:SetNormal( Vector(0,0,0) )
+            effectdata:SetMagnitude( 1 )
+            effectdata:SetScale( 0 )
+            effectdata:SetColor(0)
+               effectdata:SetRadius( 0 )
+            util.Effect( "AntlionGib", effectdata )
+
+
             target:EmitSound( "player/geiger3.wav", 75, 100, 1, CHAN_ITEM )
          end)
       end

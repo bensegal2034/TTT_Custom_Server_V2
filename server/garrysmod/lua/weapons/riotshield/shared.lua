@@ -91,7 +91,7 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.Primary.Damage 		= 0
-SWEP.Primary.ClipSize		= -1
+SWEP.Primary.ClipSize		= maxdurability
 SWEP.Primary.DefaultClip	= -1
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Delay 			= 2.5
@@ -141,8 +141,6 @@ end
 	
 	local alreadyHit = {}
 	
-	local durabilityBar
-	
 	local impactsounds = {}
 	
 	impactsounds[1] = "physics/glass/glass_impact_soft1.wav"
@@ -181,6 +179,7 @@ function ragdollify(ent,ply)
 			ent:SetRagdollSpec(true)
 			ent:SpectateEntity(ragdoll)
 			ent:DrawViewModel(false)
+			ent:Lock()
 		elseif ent:IsNPC() then
 			NPCState = ent:GetNPCState()
 			ent:SetNPCState(NPC_STATE_IDLE )
@@ -210,78 +209,12 @@ function humanify(ent,ply,pos)
 		ent:UnSpectate()
 		ent:SetNoTarget(true)
 		ent:DrawViewModel(true)
+		ent:UnLock()
 	elseif ent:IsNPC() then
 		if IsValid(ent) then
 			ent:SetPos(ragdoll:GetPos()+Vector(0,0,1))
 		end
 		ent:SetNPCState(NPCState)
-	end
-end
-	
-function tttChargeSpeed(ply)
-	if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "riotshield" then
-		if ply:KeyDown(IN_ATTACK2) and ply:GetNWBool("isCharging") == true then
-			return ply:GetNWFloat("chargeSpeedMult")
-		end
-	end
-	return nil
-end
-
-function chargeCheckTick()
-	for k,ply in pairs(player.GetAll()) do
-		if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "riotshield" then
-			if ply:GetNWBool("isCharging") == true then
-				if ply:GetNWFloat("chargeSpeedMult") < chargeSpeedMultMax then
-					if !TTT then
-						ply:SetWalkSpeed(ply:GetWalkSpeed()/ply:GetNWFloat("chargeSpeedMult"))
-					end
-					ply:SetNWFloat("chargeSpeedMult",ply:GetNWFloat("chargeSpeedMult")+acceleration)
-					if !TTT then
-						ply:SetWalkSpeed(ply:GetWalkSpeed()*ply:GetNWFloat("chargeSpeedMult"))
-					end
-				end
-				for i,j in pairs(ents.FindInCone(ply:GetPos(),ply:GetAimVector(),60,45)) do
-					if (j:IsPlayer() or j:IsNPC()) then
-						if !table.HasValue(alreadyHit,j) then
-							table.insert(alreadyHit,j)
-							endCharge(ply)
-							chargeHit(j,ply)
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-function chargeCheckRelease(ply,key)
-	if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "riotshield" then
-		if ply:GetNWBool("isCharging") == true then
-			if key == IN_FORWARD or key == IN_ATTACK2 then
-				endCharge(ply)
-			end
-		end
-	end
-end
-
-function initiateCharge(ply)
-	ply:SetNWFloat("chargeSpeedMult",1)
-	ply:SetNWBool("isCharging",true)
-	timer.Simple(chargeDuration,function() 
-									if IsValid(ply) and ply:GetNWBool("isCharging") then 
-										endCharge(ply) 
-									end 
-								end)
-end
-
-function endCharge(ply)
-	if IsValid(ply) and ply:GetNWBool("isCharging") then
-		if !TTT then
-			ply:SetWalkSpeed(ply:GetWalkSpeed()/ply:GetNWFloat("chargeSpeedMult"))
-		end
-		ply:SetNWFloat("chargeSpeedMult",1)
-		ply:SetNWBool("isCharging",false)
-		alreadyHit = {}
 	end
 end
 
@@ -329,14 +262,19 @@ function shieldDMGReduct(target,dmginfo)
 			else
 				target:EmitSound(impactsounds[math.floor(math.Rand(8,10.99))])
 			end
+
+			local wep = target:GetActiveWeapon()
+			local durability = wep:GetDurability()
+
 			if durability - dmginfo:GetDamage() > 0 then
 				durability = durability - dmginfo:GetDamage()*DMGReductMult
-				target:SetNWFloat("durability", durability)
+				if SERVER then
+					wep:SetDurability(durability)
+				end
 			else
 				if IsValid(target:GetActiveWeapon()) then
 					target:GetActiveWeapon():Remove()
 					target:SelectWeapon("holstered")
-					target:SetNWFloat("durability", maxdurability)
 					target:EmitSound(impactsounds[math.floor(math.Rand(8,10.99))],4,0.5)
 				end
 			end
@@ -349,26 +287,47 @@ function shieldDMGReduct(target,dmginfo)
 end
 
 DEFINE_BASECLASS(SWEP.Base)
+
+function SWEP:SetupDataTables()
+	self:NetworkVar("Float", "Durability")
+	
+	if SERVER then
+		self:NetworkVarNotify("Durability", self.SetHUDClipSize)
+	end
+end
+
+function SWEP:SetHUDClipSize(name, old, new)
+	self:SetClip1(new)
+end
+
 function SWEP:DrawHUD(...)
+	--[[
 	if IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "riotshield" then
 		--durabilityBar = pB_setProgress(durabilityBar,(LocalPlayer():GetNWFloat("durability")+5)/(maxdurability+5))
-		durabilityBar:SetProgress((LocalPlayer():GetNWFloat("durability")+5)/(maxdurability+5))
+		-- WAS UNCOMMENTED durabilityBar:SetProgress((LocalPlayer():GetNWFloat("durability")+5)/(maxdurability+5))
 		--durabilityBar = pB_setTitle(durabilityBar,"Durability: "..math.floor(LocalPlayer():GetNWFloat("durability")).."/"..maxdurability)
-		durabilityBar:SetTitle("Durability: "..math.floor(LocalPlayer():GetNWFloat("durability")).."/"..maxdurability)
+		-- WAS UNCOMMENTED durabilityBar:SetTitle("Durability: "..math.floor(LocalPlayer():GetNWFloat("durability")).."/"..maxdurability)
 		--pB_paint(durabilityBar)
-		durabilityBar:Paint()
+		-- WAS UNCOMMENTED durabilityBar:Paint()
 	end
+	]]--
 	if CLIENT then
 		local x = math.floor(ScrW() / 2.0)
 		local y = math.floor(ScrH() / 2.0)
-		local barLength = 70
+		local barLength = 100
 		local yOffset = 35
 		local yOffsetText = 3
+		local yOffsetDurability = 10
 		local shadowOffset = 2
+
 		local attackTime = self.Weapon:GetNextPrimaryFire() - self.Primary.Delay
 		local secondsUntilCooldown  = CurTime() - attackTime
 		local cooldownPercentage = (1 - secondsUntilCooldown / self.Primary.Delay) * barLength
 		local attackTimeDelta = math.Clamp(math.Truncate(self.Weapon:GetNextPrimaryFire() - CurTime(), 1), 0, self.Primary.Delay)
+		
+		--local durability = LocalPlayer():GetNWFloat("durability")
+		--local durabilityPercentage = (durability / maxdurability) * barLength
+		
 		if attackTimeDelta > 0 then
 			draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
 			draw.RoundedBox(10, x - (cooldownPercentage / 2), y + yOffset, cooldownPercentage, 30, Color(255, 0, 0, 200))
@@ -376,10 +335,10 @@ function SWEP:DrawHUD(...)
 			local textW, textH = surface.GetTextSize(tostring(detTimeDelta))
 			surface.SetFont("HealthAmmo")
 			surface.SetTextColor(0, 0, 0, 255)
-			surface.SetTextPos(x - (textW / 0.8) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
+			surface.SetTextPos(x - (textW / 2) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
 			surface.DrawText(tostring(attackTimeDelta))
 			surface.SetTextColor(255, 255, 255)
-			surface.SetTextPos(x - (textW / 0.8), y + yOffset + yOffsetText)
+			surface.SetTextPos(x - (textW / 2), y + yOffset + yOffsetText)
 			surface.DrawText(tostring(attackTimeDelta))
 		end
    	end
@@ -393,6 +352,7 @@ hook.Add("CreateEntityRagdoll","chargeHitRagdoll",makeRagdoll)
 hook.Add("TTTPlayerSpeed","tttChargeSpeed",tttChargeSpeed)
 
 function SWEP:Initialize()
+	self:SetDurability(maxdurability)
 	--self.Owner:SetNWFloat("chargeSpeedMult",chargeSpeedMult)
 
 	util.PrecacheSound(Sound("physics/glass/glass_impact_bullet1.wav"))
@@ -407,17 +367,6 @@ function SWEP:Initialize()
 	util.PrecacheSound(Sound("physics/glass/glass_impact_soft2.wav"))
 	util.PrecacheSound(Sound("physics/glass/glass_impact_soft3.wav"))
 	util.PrecacheSound(chargeHitSound)
-
-	if TTT then
-		--durabilityBar = pB_create(0.01,0.95,0.12,0.0245, "Durability",Color(255, 255, 150, 255),Color(50,50,50,255),8)
-		durabilityBar = ProgressBar:Create(self.Owner,0.01,0.95,0.12,0.0245, "Durability",Color(255, 255, 150, 255),Color(50,50,50,255),8,1)
-	elseif sandbox then
-		--durabilityBar = pB_create(0.019,0.87,0.12,0.0245, "Durability",Color(255, 255, 150, 255),Color(50,50,50,255),8)
-		durabilityBar = ProgressBar:Create(self.Owner,0.019,0.87,0.12,0.0245, "Durability",Color(255, 255, 150, 255),Color(50,50,50,255),8,1)
-	end
-	print(self:GetOwner())
-	self:GetOwner():SetNWFloat("durability",maxdurability)
-	--durabilityBar:ShowHUD()
 	
 	self:SetHoldType(self.HoldType)
 
@@ -486,10 +435,6 @@ function SWEP:PrimaryAttack(worldsnd)
 	self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
 	if not IsValid(self:GetOwner()) then return end
  
-	if self:GetOwner().LagCompensation then -- for some reason not always true
-	   self:GetOwner():LagCompensation(true)
-	end
- 
 	local spos = self:GetOwner():GetShootPos()
 	local sdest = spos + (self:GetOwner():GetAimVector() * 90)
 	local ply = self:GetOwner()
@@ -517,7 +462,6 @@ function SWEP:PrimaryAttack(worldsnd)
 
 			-- do a bullet just to make blood decals work sanely
 			-- need to disable lagcomp because firebullets does its own
-			self:GetOwner():LagCompensation(false)
 			chargeHit(hitEnt, ply)
 		  else
 			 util.Effect("Impact", edata)
@@ -952,111 +896,4 @@ if CLIENT then
 		
 	end
 	
-end
-
-ProgressBar = 	{
-					Data = {}
-				}
- 
-function ProgressBar:Create(ent,posx,posy,width,height,title,titlecolor,barcolor,cornerradius,initprogress)
-	self:SetPlayer()
-	self:SetPos(posx,posy)
-	self:SetBounds(width,height)
-	self:SetTitle(title)
-	self:SetTitleColor(titlecolor)
-	self:SetBarColor(barcolor)
-	self:SetCornerradius(cornerradius)
-	self:SetProgress(initprogress)
-	return self
-end
-
-function ProgressBar:Paint()
-	--if IsValid(self.Data[0]) and self.Data[0]:Alive() and IsValid(self.Data[0]:GetActiveWeapon()) and self.Data[0]:GetActiveWeapon():GetClass() == "riotshield" then
-		draw.RoundedBox(self.Data[8], ScrW()*self.Data[1], ScrH()*self.Data[2],ScrW()*self.Data[3],ScrH()*self.Data[4],Color(self.Data[6].r,self.Data[6].g,self.Data[6].b,self.Data[6].a*0.50))
-		draw.RoundedBox(self.Data[8], ScrW()*self.Data[1], ScrH()*self.Data[2],ScrW()*self.Data[3]*self.Data[9],ScrH()*self.Data[4],self.Data[6])
-		draw.SimpleText(self.Data[5],"Default",ScrW()*(self.Data[1]+(self.Data[3]/2)),ScrH()*(self.Data[2]+(self.Data[4]/2)),self.Data[7], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	--end
-end
-
-function ProgressBar:ShowHUD()
-	hook.Add("HUDPaint","Riotshield_HUD_Paint",ProgressBar:Paint())
-end
-		
-function ProgressBar:Remove()
-	self.Data = {}
-	hook.Remove("HUDPaint","Riotshield_HUD_Paint")
-end
-
-function ProgressBar:SetPlayer(ent)
-	if IsValid(ent) and ent:IsPlayer() then
-		self.Data[0] = ent
-	end
-end
-
-function ProgressBar:SetPos(x,y)
-	self.Data[1] = x
-	self.Data[2] = y
-end
-							
-function ProgressBar:SetBounds(width,height)
-	self.Data[3] = width
-	self.Data[4] = height
-end
-							
-function ProgressBar:SetTitle(title)
-	self.Data[5] = title							
-end														
-							
-function ProgressBar:SetTitleColor(titleColor)
-	self.Data[6] = titleColor
-end														
-							
-function ProgressBar:SetBarColor(barColor)
-	self.Data[7] = barColor
-end
-							
-function ProgressBar:SetCornerradius(radius)
-	self.Data[8] = radius
-end
-							
-function ProgressBar:SetProgress(progress)
-	self.Data[9] = progress
-end
-
-function ProgressBar:GetPlayer()
-	return self.Data[0]
-end
-
-function ProgressBar:GetPos()
-	local Pos = {self.Data[1],self.Data[2]}
-	return Pos
-end
-							
-function ProgressBar:GetBounds()
-	local Bounds = {self.Data[3],self.Data[4]}
-	return Bounds
-end
-							
-function ProgressBar:GetTitle()
-	return self.Data[5]						
-end														
-							
-function ProgressBar:GetTitleColor()
-	return self.Data[6]
-end														
-							
-function ProgressBar:GetBarColor()
-	return self.Data[7]
-end
-							
-function ProgressBar:GetCornerradius()
-	return self.Data[8]
-end
-							
-function ProgressBar:GetProgress()
-	return self.Data[9]
-end
-
-function ProgressBar:GetDataTable()
-	return self.Data
 end

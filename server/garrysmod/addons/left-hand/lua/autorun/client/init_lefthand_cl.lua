@@ -20,6 +20,8 @@ end
 
 weaponDefaults = weaponDefaults or {}
 firstLoad = firstLoad or true
+bannedWeapons = {"riotshield"}
+
 if not(table.IsEmpty(weaponDefaults)) then buildWeaponDefaultTable() end
 
 local function handleWeapon(wepName, currentCvarState)
@@ -37,6 +39,9 @@ local function handleWeapon(wepName, currentCvarState)
         end)
         return
     end
+
+    if table.HasValue(bannedWeapons, wepName) then return end
+
     local doLeftHand = not currentCvarState
     local default = weaponDefaults[wepName]
     --print("Runnning for " .. wepName .. ", default " .. tostring(default))

@@ -322,7 +322,7 @@ hook.Add("TTTEndRound", "WriteStats", function()
         updatedUsage = currentUsage + 1
 
         currentDamage = (sql.QueryValue("SELECT Damage FROM WeaponStats WHERE Name = '" .. wepName .. "'"))
-        if totalDamage[wepName]["damage"] == nil then
+        if totalDamage[wepName]["damage"] == nil then -- this line will consistently error. might be messing with stats. tried to fix it and it broke the whole thing. help me god.
             tempDamage = 0
             updatedDamage = 0
         else

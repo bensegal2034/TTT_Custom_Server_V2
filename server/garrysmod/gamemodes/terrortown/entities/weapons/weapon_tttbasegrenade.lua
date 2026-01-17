@@ -92,7 +92,6 @@ end
 
 
 function SWEP:Think()
-   self.BaseClass.Think(self)
    local ply = self:GetOwner()
    if not IsValid(ply) then return end
 

@@ -143,7 +143,7 @@ function SWEP:PrimaryAttack()
 	end
 		
 	self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
-
+	--IF THIS IS ERRORING IT IS YOUR FAULT
 	self:ShootBullet( damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
 	
 	self:TakePrimaryAmmo( 1 )

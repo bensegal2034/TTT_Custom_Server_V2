@@ -156,6 +156,23 @@ sound.Add( {
 	sound = "weapons/crit2.wav"
 } )
 
+if SERVER then
+	hook.Add("EntityTakeDamage", "Tec9RaygunFix", function(ply, dmginfo)
+		if not IsValid(dmginfo:GetInflictor()) or dmginfo:GetInflictor() == nil then return end
+		if not IsValid(ply) or not ply:IsPlayer() then return end
+
+		local infl = dmginfo:GetInflictor()
+
+		if infl:GetClass() == "obj_tec9_proj" then
+			dmginfo:SetInflictor(infl.Parent)
+			if GetRoundState() == ROUND_PREP then
+				return true
+			end
+		end
+	end)
+end
+
+
 function SWEP:SetupDataTables()
 	self:NetworkVar( "Int", 0, "DamageOutput" )
    self:NetworkVar( "Float", 1, "WeaponCone" )

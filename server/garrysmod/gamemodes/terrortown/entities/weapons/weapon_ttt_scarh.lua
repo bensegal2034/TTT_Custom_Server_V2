@@ -254,7 +254,7 @@ end
 
 function SWEP:Deploy()
    self:SetIronsights(false)
-   self.Weapon:EmitSound("Weapon_SCARH.Bolt") 
+   self:EmitSound("Weapon_SCARH.Bolt") 
    return true
 end
 
@@ -269,9 +269,9 @@ function SWEP:Reload()
 	Time = CurTime()
 
     --Times to match the reload animation	
-	timer.Simple(0.125,function() self.Weapon:EmitSound("Weapon_SCARH.Magout") end)
-	timer.Simple(1.35,function() self.Weapon:EmitSound("Weapon_SCARH.Magin") end)
-	timer.Simple(1.425,function() self.Weapon:EmitSound("Weapon_SCARH.Magin") end)
-	timer.Simple(1.95,function() self.Weapon:EmitSound("Weapon_SCARH.Bolt") end)
+	timer.Simple(0.125,function() self:EmitSound("Weapon_SCARH.Magout") end)
+	timer.Simple(1.35,function() self:EmitSound("Weapon_SCARH.Magin") end)
+	timer.Simple(1.425,function() self:EmitSound("Weapon_SCARH.Magin") end)
+	timer.Simple(1.95,function() self:EmitSound("Weapon_SCARH.Bolt") end)
     self:DefaultReload(ACT_VM_RELOAD)
 end 

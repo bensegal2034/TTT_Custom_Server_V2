@@ -103,7 +103,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 
-SWEP.Primary.Damage      = 16
+SWEP.Primary.Damage      = 17
 SWEP.Primary.Delay       = 0.07
 SWEP.Primary.Cone        = 0.05 
 SWEP.Primary.ConeSaved   = 0.05

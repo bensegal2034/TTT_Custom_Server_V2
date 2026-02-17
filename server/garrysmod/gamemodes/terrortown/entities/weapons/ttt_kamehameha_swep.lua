@@ -105,72 +105,75 @@ function SWEP:Think()
 end
 
 function SWEP:PrimaryAttack()
-	local ply = self.Owner
-   local myposition = self.Owner:GetShootPos()
-   local aimraytrace = myposition + (self.Owner:GetAimVector() * 70)
-	
-   local kmins = Vector(1,1,1) * -10
-   local kmaxs = Vector(1,1,1) * 10
+	if IsValid(self:GetOwner()) then
+		local ply = self.Owner
+		local myposition = self.Owner:GetShootPos()
+		local aimraytrace = myposition + (self.Owner:GetAimVector() * 70)
+			
+		local kmins = Vector(1,1,1) * -10
+		local kmaxs = Vector(1,1,1) * 10
 
-   local tr = util.TraceHull({start=myposition, endpos=aimraytrace, filter=self.Owner, mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
+		local tr = util.TraceHull({start=myposition, endpos=aimraytrace, filter=self.Owner, mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
 
-   if not IsValid(tr.Entity) then
-      tr = util.TraceLine({start=myposition, endpos=aimraytrace, filter=self.Owner, mask=MASK_SHOT_HULL})
-   end
-	
-    if (self.Weapon:Clip1() < 50) then return end
-		self.WeaponActive = true
-		for k, v in pairs( player.GetAll( ) ) do
-		  v:ConCommand( "play weapons/shoot/kamehame.wav\n" )
+		if not IsValid(tr.Entity) then
+			tr = util.TraceLine({start=myposition, endpos=aimraytrace, filter=self.Owner, mask=MASK_SHOT_HULL})
 		end
-	--sound.Play("weapons/shoot/kamehame.wav", Vector(0,0,0),180)
-	self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK )
-	timer.Simple(4.9, function() 
-		if ply:Alive() then
-			self.Owner:Freeze(false) 
-			self.WeaponActive = false
+			
+		if (self.Weapon:Clip1() < 50) then return end
+			self.WeaponActive = true
+			for k, v in pairs( player.GetAll( ) ) do
+			v:ConCommand( "play weapons/shoot/kamehame.wav\n" )
 			end
+		--sound.Play("weapons/shoot/kamehame.wav", Vector(0,0,0),180)
+		self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK )
+		timer.Simple(4.9, function() 
+			if ply:Alive() then
+				self.Owner:Freeze(false) 
+				self.WeaponActive = false
+				end
+			end)
+		timer.Simple(3.4, function()
+			if ply:Alive() then
+				self.Owner:Freeze(true)
+				for k, v in pairs( player.GetAll( ) ) do
+				v:ConCommand( "play weapons/shoot/ha.wav\n" )
+				end
+				timer.Create( "Beam" .. math.random(), 0.010, 50, function()
+					--
+					local bullet = {} 
+					bullet.Src 	= self.Owner:GetShootPos() 
+					bullet.Dir 	= self.Owner:GetAimVector() 
+					bullet.Spread 	= Vector(0, 0, 0)
+					bullet.Num = 1
+					bullet.Tracer = 1//2
+					bullet.Damage	= 30
+					bullet.TracerName = "kamebeam"
+					self:TakePrimaryAmmo(1)
+					self.Owner:FireBullets(bullet)
+					--
+					local effects = EffectData()
+					local trace = self.Owner:GetEyeTrace()	
+					--			
+					effects:SetOrigin(trace.HitPos + 
+					Vector( math.Rand(-0.5, 0.5), 
+					math.Rand(-0.5, 0.5), 
+					math.Rand(-0.5, 0.5 )))
+					---
+					effects:SetScale(10)
+					effects:SetRadius(200)
+					effects:SetMagnitude(3.1)
+					effects:SetAngles(Angle(0,90,0))
+					--
+					util.Effect( "beampact", effects )
+					util.BlastDamage(self, self, trace.HitPos, 200, 170)
+					sound.Play("weapons/explosion/dbzexplosion.wav", trace.HitPos,180)
+					end)
+				end
+			
 		end)
-	timer.Simple(3.4, function()
-    	self.Owner:Freeze(true)
-		for k, v in pairs( player.GetAll( ) ) do
-		  v:ConCommand( "play weapons/shoot/ha.wav\n" )
-		end
-    	timer.Create( "Beam" .. math.random(), 0.010, 50, function()
-			--
-			local bullet = {} 
-			bullet.Src 	= self.Owner:GetShootPos() 
-			bullet.Dir 	= self.Owner:GetAimVector() 
-			bullet.Spread 	= Vector(0, 0, 0)
-       		bullet.Num = 1
-        	bullet.Tracer = 1//2
-			bullet.Damage	= 30
-        	bullet.TracerName = "kamebeam"
-        	self:TakePrimaryAmmo(1)
-   			self.Owner:FireBullets(bullet)
-			--
-			local effects = EffectData()
-			local trace = self.Owner:GetEyeTrace()	
-			--			
-			effects:SetOrigin(trace.HitPos + 
-			Vector( math.Rand(-0.5, 0.5), 
-			math.Rand(-0.5, 0.5), 
-			math.Rand(-0.5, 0.5 )))
-			---
-			effects:SetScale(10)
-			effects:SetRadius(200)
-			effects:SetMagnitude(3.1)
-			effects:SetAngles(Angle(0,90,0))
-			--
-			util.Effect( "beampact", effects )
-			util.BlastDamage(self, self, trace.HitPos, 200, 170)
-			sound.Play("weapons/explosion/dbzexplosion.wav", trace.HitPos,180)
-    		end)
 		
-		
-	end)
-	
-	self:SetNextPrimaryFire( CurTime() + 0.5 )    
+		self:SetNextPrimaryFire( CurTime() + 0.5 )    
+	end
 end
  
 function SWEP:Deploy()

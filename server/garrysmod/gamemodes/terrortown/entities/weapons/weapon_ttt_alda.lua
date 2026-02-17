@@ -214,7 +214,7 @@ SWEP.SpeedBoost = .75
 SWEP.Reloaded = false
 SWEP.SpeedBoostRemoved = false
 SWEP.DamageType            = "Impact"
-SWEP.HealthBoost = 1.25
+SWEP.HealthBoost = 1.5
 
 sound.Add({
 	name = 			"Weapon_FML_ALDA556.Pew",

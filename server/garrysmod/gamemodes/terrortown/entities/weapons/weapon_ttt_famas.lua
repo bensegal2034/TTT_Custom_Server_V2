@@ -99,7 +99,7 @@ SWEP.RapidHitStackInfo = {
    }
 }
 
-SWEP.DeploySpeed = 3
+SWEP.DeploySpeed = 2.5
 SWEP.ReloadSpeedBase = 1
 SWEP.ReloadSpeed = SWEP.ReloadSpeedBase
 SWEP.Reloading = false
@@ -336,6 +336,7 @@ function SWEP:Reload()
    end
 
    self.Reloading = true
+   self.BurstInProgress = false
    self:SendWeaponAnim(ACT_VM_RELOAD)
    self:GetOwner():GetViewModel():SetPlaybackRate(self.ReloadSpeed)
    self.ReloadTimer = CurTime() + (self:SequenceDuration() / self.ReloadSpeed)

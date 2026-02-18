@@ -7,11 +7,6 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.LeapNum = 1
 
-CreateConVar( "leap_Cooldowng", 45, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Cooldown on Leap" ) 
-if CLIENT then 
-CreateClientConVar( "leap_bindg", KEY_F, true, true, "Key" ) 
-end
-
 if CLIENT then
 	function leapStandsSetting1(panel)	
 		check = panel:NumSlider("Cooldown on Leaph\n0 will remove cooldown", "leap_Cooldowng",0,60 )
@@ -60,8 +55,8 @@ if SERVER then
 		if ent:IsPlayer() and ent.ShouldReduceFallDamage and inflictor:IsFallDamage() then
 			inflictor:SetDamage(0)
 			ent:EmitSound( "weapons/leap/leap_land.wav", 100, 100, 1, CHAN_ITEM )	
-			if ent:GetNWFloat("leapat") < CurTime() then
-				ent:SetNWFloat("leapat",CurTime()+GetConVar("leap_Cooldowng"):GetInt())
+			if ent:GetNWFloat("leapat") <= CurTime() then
+				ent:SetNWFloat("leapat",CurTime() + GetConVar("leap_Cooldowng"):GetInt())
 				ent.LeapNum = 1
 			end
 		end

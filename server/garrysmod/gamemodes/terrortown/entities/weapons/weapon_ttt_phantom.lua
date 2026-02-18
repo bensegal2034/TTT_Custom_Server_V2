@@ -88,6 +88,7 @@ end)
 if SERVER then
     hook.Add("DoPlayerDeath", "PhantomKill", function(victim, attacker, dmginfo)
         local atk = dmginfo:GetAttacker()
+        if not atk.UserID then return end
         local id = atk:UserID()
         local wep = atk:GetActiveWeapon()
         if not IsValid(atk) or not atk:IsPlayer() or not IsValid(wep) then return end
@@ -123,7 +124,7 @@ SWEP.Primary.Recoil = 2.5
 SWEP.Primary.Cone = 0.001
 SWEP.Primary.Damage = 16
 SWEP.Primary.Automatic = true
-SWEP.Primary.ClipSize = 25
+SWEP.Primary.ClipSize = 30
 SWEP.Primary.ClipMax = 75
 SWEP.Primary.DefaultClip = 50
 SWEP.Primary.Sound = "gn_carbine/shot_" .. tostring(math.random(1, 4)) .. ".wav"

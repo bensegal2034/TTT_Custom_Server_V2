@@ -97,9 +97,8 @@ function SWEP:Cloak()
     if not(self:GetCloaked()) and IsValid(self.LastOwner) then
         self.LastOwner:SetColor( Color(255, 255, 255, 3) ) 			
         self.LastOwner:SetMaterial( "sprites/heatwave" )
-        -- self.Weapon:SetMaterial("sprites/heatwave")
+        self:SetMaterial("sprites/heatwave")
         self:EmitSound("AlyxEMP.Discharge", 255, 100, 1, CHAN_WEAPON)
-        --sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
         self.LastOwner:SetNWBool("disguised", true)
         if SERVER then
             self:SetCloaked(true)
@@ -110,9 +109,8 @@ end
 function SWEP:UnCloak()
     if self:GetCloaked() and IsValid(self.LastOwner) then
         self.LastOwner:SetMaterial("models/glass")
-        -- self.Weapon:SetMaterial("models/glass")
+        self:SetMaterial("models/glass")
         self:EmitSound("AlyxEMP.Discharge", 255, 100, 1, CHAN_WEAPON)
-        --sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
         self.LastOwner:SetNWBool("disguised", false)
         if SERVER then
             self:SetCloaked(false)

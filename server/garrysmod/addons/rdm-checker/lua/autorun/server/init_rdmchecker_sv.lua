@@ -82,5 +82,4 @@ hook.Add("DoPlayerDeath", "RDMEvent", function(ply, attacker, dmg)
         killer = tostring(attacker:SteamID64()),
         weapon = attacker:GetActiveWeapon():GetClass()
     }
-    PrintTable(RDMTABLE_CURRENTROUND)
 end)

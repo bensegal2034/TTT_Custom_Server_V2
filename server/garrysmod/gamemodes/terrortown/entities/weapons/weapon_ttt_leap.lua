@@ -19,10 +19,10 @@ SWEP.Spawnable = false
 SWEP.AutoSpawnable = false
 SWEP.AdminOnly = false
 
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = 78
 if CLIENT then
 	SWEP.PrintName          = "Majestic Leap"
-	SWEP.Slot               = 8
+	SWEP.Slot               = 98
 	SWEP.Icon = "vgui/ttt/icon_leap"
 end
 -- Text shown in the equip menu
@@ -31,9 +31,10 @@ SWEP.EquipMenuData = {
 	desc = "This will change the world.\n\nPress F to activate leap"
 };
 
-SWEP.CanBuy = {}
+SWEP.CanBuy = {ROLE_DETECTIVE}
+SWEP.LimitedStock = true
 SWEP.DrawAmmo			= false
-SWEP.DrawCrosshair		= true
+SWEP.DrawCrosshair		= false
 
 SWEP.ViewModelFOV		= 54
 SWEP.ViewModel = ""
@@ -56,7 +57,6 @@ end
 
 function SWEP:Initialize()
 	self:SetHoldType( "normal" )
-	self.gra = nil
 end 
 
 function SWEP:PrimaryAttack()
@@ -87,29 +87,47 @@ function SWEP:OnDrop()
 	self:Remove() -- You can't drop fists-
 end
 
-hook.Add("DrawOverlay", "DrawOverlayExample", function()
-
+local leapIcon = Material("vgui/ttt/icon_leap")
+hook.Add("HUDPaint", "DrawLeapHud", function()
+	if not(LocalPlayer().HasWeapon) then return end
 	if LocalPlayer():HasWeapon("weapon_ttt_leap") then
-		local ourMat = Material("vgui/ttt/icon_leap", "noclamp smooth")
-		local cooldownTime = LocalPlayer():GetNWFloat("leapat",CurTime())
-		local convarCooldown = GetConVar("leap_Cooldowng"):GetInt()
-		local at = cooldownTime - CurTime() / convarCooldown
-		local att = Lerp(at,0,60)
+		local boxSizeW = 64
+		local boxSizeH = 64
+		local outlineScalar = 0
+		local shadowOffset = 2
+		local x = (ScrW() - boxSizeW) * 0.108
+		local y = (ScrH() - boxSizeH) * 0.993
 		
-		local boxW,boxH = 150 * ScrW()/ 1920, 200 * ScrH() / 1920
-		local boxofW, boxofH = ScrW() *0.3 - boxW/2 , ScrH() * 0.88
+		surface.SetMaterial(leapIcon)
 		
-		surface.SetMaterial( ourMat )
+		local leapTimer = math.max(LocalPlayer():GetNWFloat("leapat",CurTime()) - CurTime(), 0)
 		
-		local leapTimerForRealsies = LocalPlayer():GetNWFloat("leapat",CurTime()) - CurTime()
-		print(leapTimerForRealsies)
-		if Lerp((leapTimerForRealsies)*0.2,0,500) == 0 then
-			surface.SetDrawColor(255,255,255,255)
-		else
-			surface.SetDrawColor(255,200,200,150)
+		surface.SetDrawColor(255, 255, 255, 255)
+		surface.DrawTexturedRect(x, y, boxSizeW, boxSizeH)
+		surface.SetDrawColor(0, 0, 0, 255)
+		surface.DrawOutlinedRect((ScrW() - boxSizeW - outlineScalar) * 0.108, (ScrH() - boxSizeH - outlineScalar) * 0.993, boxSizeW + outlineScalar, boxSizeH + outlineScalar, 2)
+
+		if not(leapTimer == 0) then
+			surface.SetDrawColor(255, 0, 0, 100)
+			surface.DrawRect((ScrW() - boxSizeW - outlineScalar) * 0.108, (ScrH() - boxSizeH - outlineScalar) * 0.993, boxSizeW + outlineScalar, boxSizeH + outlineScalar)
+
+			local leapTimerStr = tostring(math.Truncate(leapTimer, 0))
+			local textW, textH = surface.GetTextSize(leapTimerStr)
+			if leapTimer < 10 then
+				textX = (ScrW() - (textW / 2)) * 0.115
+			else
+				textX = (ScrW() - (textW / 2)) * 0.113
+			end
+			local textY = (ScrH() - (textH / 2)) * 0.971
+
+			surface.SetFont("HealthAmmo")
+			surface.SetTextColor(0, 0, 0, 255)
+			surface.SetTextPos(textX + shadowOffset, textY + shadowOffset)
+			surface.DrawText(leapTimerStr)
+
+			surface.SetTextColor(255, 255, 255)
+			surface.SetTextPos(textX, textY)
+			surface.DrawText(leapTimerStr)
 		end
-		surface.DrawTexturedRect(boxofW, boxofH, boxW, boxH)
-		surface.SetDrawColor(0,0,0,200)
-		surface.DrawTexturedRect(	boxofW, boxofH, att * ScrW() / 1920,boxH)
 	end
 end)

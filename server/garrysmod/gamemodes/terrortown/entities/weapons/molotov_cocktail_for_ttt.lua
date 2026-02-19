@@ -33,7 +33,7 @@ resource.AddFile("models/props_junk/garbage_glassbottle003a.mdl")
 if ( CLIENT ) then
 	SWEP.PrintName			= "Molotov Cocktail" -- By SmiteTheHero
 	SWEP.Author				= "SmiteTheHero" -- By...
-	SWEP.Slot				= 3
+	SWEP.Slot				= 7
 	SWEP.DrawAmmo 			= false
 	SWEP.DrawCrosshair 		= false --You really don't need to aim a molotov!
 	SWEP.Contact 			= "smitethehero@hotmail.co.uk; for TTT related topics: Captain der Mondbär, steam id:76561198126185919"

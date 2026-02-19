@@ -331,9 +331,9 @@ function SWEP:DrawHUD(...)
 		if attackTimeDelta > 0 then
 			draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
 			draw.RoundedBox(10, x - (cooldownPercentage / 2), y + yOffset, cooldownPercentage, 30, Color(255, 0, 0, 200))
-
-			local textW, textH = surface.GetTextSize(tostring(detTimeDelta))
+			
 			surface.SetFont("HealthAmmo")
+			local textW, textH = surface.GetTextSize(tostring(attackTimeDelta))
 			surface.SetTextColor(0, 0, 0, 255)
 			surface.SetTextPos(x - (textW / 2) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
 			surface.DrawText(tostring(attackTimeDelta))

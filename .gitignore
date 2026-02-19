@@ -30,3 +30,4 @@ server/chart/package-lock.json
 server/garrysmod/console.log
 server/garrysmod/cfg/testmode.cfg
 server/garrysmod/data/mapvote/recentmaps.txt
+server/garrysmod/data/rdmdata.json

@@ -52,7 +52,7 @@ net.Receive("RDMVoteResult", function(len, ply)
     local result = net.ReadBool()
     local rdmEventTbl = RDMTABLE_POSTROUND[tostring(ply:SteamID64())]
     local plyPenalized = player.GetBySteamID64(rdmEventTbl["killer"])
-    if not(rdmEventTbl["resolved"]) then
+    if not(rdmEventTbl["resolved"]) and IsValid(plyPenalized) then
         if result then
             plyPenalized:SetLiveKarma(plyPenalized:GetLiveKarma() - KARMA_RDM_PENALTY)
             plyPenalized:SetBaseKarma(plyPenalized:GetLiveKarma()) // "rebasing" karma, just following what ttt gamemode does for karma at end of round

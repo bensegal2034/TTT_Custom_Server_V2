@@ -2,7 +2,6 @@ RDMEVENT = nil
 
 net.Receive("RDMVote", function(len, ply)
     RDMEVENT = net.ReadTable(false)
-    print("Received RDM vote netmessage!")
     PrintTable(RDMEVENT)
     LocalPlayer():AddPlayerOption("RDMVote", GetConVar("ttt_preptime_seconds"):GetInt(), VoteCallback, DrawRDMVotePanel)
 end)

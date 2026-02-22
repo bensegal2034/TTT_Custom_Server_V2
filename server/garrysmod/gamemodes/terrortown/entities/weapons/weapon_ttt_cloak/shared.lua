@@ -64,9 +64,10 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
 
     if IsValid(ply) and not(ply == LocalPlayer()) and IsValid(wep) and wep:GetClass() == "weapon_ttt_cloak" then
         if wep:GetCloaked() then
-            local dist = 11000
+            local dist = 250000
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
 	        local shouldReveal = distCalc > dist
+            print(distCalc)
 
             return shouldReveal
         end

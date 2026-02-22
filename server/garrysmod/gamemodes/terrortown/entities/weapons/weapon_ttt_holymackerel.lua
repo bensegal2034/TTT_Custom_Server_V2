@@ -122,13 +122,17 @@ function SWEP:Holster()
 			self:ResetBonePositions(vm)
 		end
 	end
-	self:GetOwner():RemoveEFlags(EFL_NO_DAMAGE_FORCES)
+	if IsValid(self:GetOwner()) then
+		self:GetOwner():RemoveEFlags(EFL_NO_DAMAGE_FORCES)
+	end
 	return true
 end
 
 function SWEP:OnRemove()
 	self:Holster()
-	self:GetOwner():RemoveEFlags(EFL_NO_DAMAGE_FORCES)
+	if IsValid(self:GetOwner()) then
+		self:GetOwner():RemoveEFlags(EFL_NO_DAMAGE_FORCES)
+	end
 end
 
 function SWEP:DrawWeaponSelection(x, y, wide, tall, alpha)
@@ -578,7 +582,9 @@ function SWEP:Deploy()
 	self.AttackTimer = CurTime()
 	self.Idle = 0
 	self.IdleTimer = CurTime() + self.Owner:GetViewModel():SequenceDuration()
-	self:GetOwner():AddEFlags(EFL_NO_DAMAGE_FORCES)
+	if IsValid(self:GetOwner()) then
+		self:GetOwner():AddEFlags(EFL_NO_DAMAGE_FORCES)
+	end
 	return true
 end
 
@@ -715,16 +721,12 @@ hook.Add("PostEntityTakeDamage", "MackerelKnockbackImmunity", function(ent, dmgi
          
          local damagetaken = weapon:GetDamageTaken()
          local totaldamage = dmginfo:GetDamage() + damagetaken
-         local stundmg = totaldamage / dmgreq
-         local roundedDMG = math.floor(stundmg)
 
-         for s=1, roundedDMG do
-            if weapon:GetStunDMG() < stundmg then
-				ent:SetVelocity(Vector(0,0,0))
-			end
-         end
+         if totaldamage >= dmgreq then
+			ent:SetLocalVelocity(Vector(0,0,0))
+		end
          if dmginfo:GetDamage() > 0 then
-            weapon:SetDamageTaken(math.fmod(totaldamage, dmgreq))
+            weapon:SetDamageTaken(totaldamage)
          end
       end
    end

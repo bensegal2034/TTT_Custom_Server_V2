@@ -88,7 +88,6 @@ if SERVER then
 			net.WriteEntity(ply)
 			net.WriteBool(false)
 			net.Send(ActivePings[ply])
-			ply:GetActiveWeapon():TakePrimaryAmmo( 1 )
 		end
 
 		local enableTrack = net.ReadBool()
@@ -96,6 +95,8 @@ if SERVER then
 			ActivePings[ply] = nil
 			return
 		end
+
+		ply:GetActiveWeapon():TakePrimaryAmmo( 1 )
 		local trackedPly = net.ReadEntity()
 		ActivePings[ply] = trackedPly
 	end)
@@ -149,7 +150,7 @@ function SWEP:FixIndex()
 	local startIndex = self.hoverIndex
 	for dummy = 1, #self.hoverArray * 2 do
 		local potentialPlayer = self.hoverArray[self.hoverIndex]
-		if self.hoverIndex != self.ownerIndex && IsValid(potentialPlayer) && potentialPlayer:Alive() && potentialPlayer:GetRole() != ROLE_TRAITOR then
+		if self.hoverIndex != self.ownerIndex && IsValid(potentialPlayer) && potentialPlayer:Alive() && potentialPlayer:GetRole() != ROLE_TRAITOR  && potentialPlayer:GetObserverMode() == OBS_MODE_NONE then
 			break
 		end
 		self.hoverIndex = (self.hoverIndex % #self.hoverArray) + 1
@@ -166,23 +167,35 @@ function SWEP:PrimaryAttack()
 	self:DoSATMAnimation(true)
 	-- Don't allow flicker-tracks that prevent the tracked player from responding
 	self:SetNextPrimaryFire(CurTime() + 2)
+
+	local sameAsLast = self.activeIndex == self.hoverIndex;
+
+	if CLIENT then
+		-- Always remove current track first, even if no ammo
+		net.Start("Deimos_SetTrack")
+		net.WriteBool(false)
+		net.SendToServer()
+		self.activeIndex = nil
+	end
+
+	-- If the new track is the same as the previous track, assume they just wanted to
+	-- disable the previous track, and do nothing else
+	if sameAsLast then
+		return
+	end
+
+	-- A new track has been selected, only proceed if the swep has charges left
 	if self:Clip1() > 0 then
 		if CLIENT then
 			self:FixIndex()
-			net.Start("Deimos_SetTrack")
 
-			-- disable track
-			if self.activeIndex == self.hoverIndex then
-				net.WriteBool(false)
-				net.SendToServer()
-				self.activeIndex = nil
-				return
-			end
-			-- track player
+			-- Track the new player
+			net.Start("Deimos_SetTrack")
 			net.WriteBool(true)
 			local ent = self.hoverArray[self.hoverIndex]
 			net.WriteEntity(ent)
 			net.SendToServer()
+
 			self.activeIndex = self.hoverIndex
 		end
 	end
@@ -273,6 +286,18 @@ if SERVER then
 			net.WriteInt(trackedPos.z, 32)
 			net.Send(owner)
 
+			for _, specply in ipairs(player.GetAll()) do
+				if specply:GetObserverMode() != OBS_MODE_NONE && specply:GetObserverTarget() == owner then
+					net.Start("Deimos_UpdateLocation")
+					net.WriteEntity(tracked)
+					net.WriteBool(true)
+					net.WriteInt(trackedPos.x, 32)
+					net.WriteInt(trackedPos.y, 32)
+					net.WriteInt(trackedPos.z, 32)
+					net.Send(specply)
+				end
+			end
+
 			if !doPingTracker then
 				continue
 			end
@@ -285,6 +310,17 @@ if SERVER then
 			net.WriteInt(ownerPos.y, 32)
 			net.WriteInt(ownerPos.z, 32)
 			net.Send(tracked)
+
+			for _, specply in ipairs(player.GetAll()) do
+				if specply:GetObserverMode() != OBS_MODE_NONE && specply:GetObserverTarget() == tracked then
+					net.WriteEntity(owner)
+					net.WriteBool(true)
+					net.WriteInt(ownerPos.x, 32)
+					net.WriteInt(ownerPos.y, 32)
+					net.WriteInt(ownerPos.z, 32)
+					net.Send(specply)
+				end
+			end
 		end
 	end)
 

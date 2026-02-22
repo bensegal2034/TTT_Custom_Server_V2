@@ -687,3 +687,20 @@ local function hop( ent )
 	end
 end
 hook.Add("CreateMove", "MackerelHop", hop)
+
+hook.Add("ScalePlayerDamage", "MackerelKnockbackImmunity", function(target, hitgroup, dmginfo)
+   if
+      not IsValid(target)
+      or not target:IsPlayer()
+      or not target:GetActiveWeapon()
+   then
+      return
+   end
+
+   local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+   if SERVER then
+      if weapon:GetClass() == "weapon_ttt_holymackerel" then
+		dmginfo:SetDamageForce(Vector(0,0,0))
+      end
+   end
+end)

@@ -363,7 +363,7 @@ function SWEP:Deploy()
 	if IsValid(self.Owner) and self.Owner:IsPlayer() then
 		if (self:Clip1() >= 1) then
 			if server then
-				self.Owner:SetMaxHealth(125)
+				self.Owner:SetMaxHealth(150)
 			end
 			if self.Owner:Health() > 5 then
 				self.Owner:SetHealth(self.Owner:Health() * self.HealthBoost)
@@ -402,7 +402,7 @@ hook.Add("TTTBeginRound", "AldaStartingHealth", function()
 			continue
       	end
 		if ply:GetActiveWeapon():GetClass() == "weapon_ttt_alda" then
-			ply:SetHealth(125)
+			ply:SetHealth(150)
 		end
 	end
 end)

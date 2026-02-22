@@ -180,12 +180,27 @@ if CLIENT then
       if LocalPlayer():GetActiveWeapon():GetClass() != "weapon_ttt_scarh" then
          return
       end
+
       if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
          return
       end
 
       return true
    end)
+
+   function SWEP:ShouldDrawViewModel()
+      if LocalPlayer():GetObserverMode() != OBS_MODE_IN_EYE then
+         return
+      end
+      obs_targ = LocalPlayer():GetObserverTarget()
+      if !IsValid(obs_targ) then
+         return
+      end
+      if obs_targ:GetActiveWeapon():GetClass() != "weapon_ttt_scarh" then
+         return
+      end
+      return false
+   end
 
    hook.Add("CalcView", "ScarThirdPerson", function(ply, pos, angles, fov)
       if !IsValid(ply:GetActiveWeapon()) then
@@ -194,11 +209,14 @@ if CLIENT then
       if ply:GetActiveWeapon():GetClass() != "weapon_ttt_scarh" then
          return
       end
-      if ply:GetObserverMode() != OBS_MODE_NONE then
+      viewply = ply
+      if ply:GetObserverMode() == OBS_MODE_IN_EYE then
+         viewply = ply:GetObserverTarget()
+      elseif ply:GetObserverMode() != OBS_MODE_NONE then
          return
       end
 
-      local result = CalcCameraLocation(ply)
+      local result = CalcCameraLocation(viewply)
       return GAMEMODE:CalcView(ply, result.pos, result.ang, fov)
    end)
 
@@ -210,35 +228,102 @@ if CLIENT then
       if ply:GetActiveWeapon():GetClass() != "weapon_ttt_scarh" then
          return
       end
-      if ply:GetObserverMode() != OBS_MODE_NONE then
+      viewply = ply
+      if ply:GetObserverMode() == OBS_MODE_IN_EYE then
+         viewply = ply:GetObserverTarget()
+      elseif ply:GetObserverMode() != OBS_MODE_NONE then
          return
       end
 
-      local camera = CalcCameraLocation(ply)
-      local aimdir = ply:GetActiveWeapon():CalcAimVector(ply)
+      local camera = CalcCameraLocation(viewply)
+      local aimdir = viewply:GetActiveWeapon():CalcAimVector(viewply)
 
       local cameratrace = {}
       cameratrace.start = camera.pos
       cameratrace.endpos = camera.pos + (camera.ang:Forward() * (4096 * 8))
-      cameratrace.filter = ply
+      cameratrace.filter = {ply, viewply}
       cameratrace.mask = MASK_VISIBLE_AND_NPCS
       local camerapos = util.TraceLine(cameratrace).HitPos
 
       local aimtrace = {}
-      aimtrace.start = ply:EyePos()
-      aimtrace.endpos = ply:EyePos() + (aimdir * (4096 * 8))
-      aimtrace.filter = ply
+      aimtrace.start = viewply:EyePos()
+      aimtrace.endpos = viewply:EyePos() + (aimdir * (4096 * 8))
+      aimtrace.filter = {ply, viewply}
       aimtrace.mask = MASK_VISIBLE_AND_NPCS
       local aimpos = util.TraceLine(aimtrace).HitPos
 
       -- < 30 unit difference between aim and camera
-      if camerapos:DistToSqr(aimpos) < 900 then
+      if camerapos:DistToSqr(aimpos) >= 900 then
+         -- Add indicator where aim is hitting to warn about blocker
+         render.SetMaterial(Material("sprites/light_ignorez"))
+         render.DrawSprite(aimpos, 30, 30, Color(255, 0, 0, 255))
+      end
+
+      ----------------------------------------------------------------------
+      -- Draw player world model if spectating IN_EYE
+      ----------------------------------------------------------------------
+      if ply:GetObserverMode() != OBS_MODE_IN_EYE then
          return
       end
-      
-      -- Add indicator where aim is hitting to warn about blocker
-      render.SetMaterial(Material("sprites/light_ignorez"))
-      render.DrawSprite(aimpos, 30, 30, Color(255, 0, 0, 255))
+
+      obs_ply = ply:GetObserverTarget()
+
+      -- Create a clientside only copy of the player model
+      local entity = ClientsideModel(obs_ply:GetModel())
+      entity:SetPos(obs_ply:GetPos())
+
+      -- Setup the bones so they are ready to be read/written
+      obs_ply:SetupBones()
+      entity:SetupBones()
+
+      -- Copy the current state of the bones from the player to the copy
+      for i=0, obs_ply:GetBoneCount()-1 do
+         -- idk why the the bones are invalid, but the only other source I found
+         -- using SetBonePosition also had to do this so I guess it's just like that
+         if entity:GetBoneName(i) == "__INVALIDBONE__" then
+            continue
+         end
+         local bmat = obs_ply:GetBoneMatrix(i)
+         local bpos = bmat:GetTranslation()
+         local bang = bmat:GetAngles()
+         entity:SetBonePosition(i, bpos, bang)
+      end
+      -- Draw the copy
+      entity:DrawModel()
+
+      -- Cleanup the copy
+      entity:Remove()
+
+      ----------------------------------------------------------------------
+      -- Draw gun world model if spectating IN_EYE
+      ----------------------------------------------------------------------
+
+      -- Create a clientside only copy of the gun model
+      local wep = ply:GetActiveWeapon()
+      entity = ClientsideModel(wep:GetModel())
+
+      -- Setup the bones so they are ready to be read/written
+      wep:SetupBones()
+      entity:SetupBones()
+
+      -- Copy the current state of the bones from the player to the copy
+      for i=0, wep:GetBoneCount()-1 do
+         -- idk why the the bones are invalid, but the only other source I found
+         -- using SetBonePosition also had to do this so I guess it's just like that
+         if entity:GetBoneName(i) == "__INVALIDBONE__" then
+            continue
+         end
+         local bmat = wep:GetBoneMatrix(i)
+         local bpos = bmat:GetTranslation()
+         local bang = bmat:GetAngles()
+         entity:SetBonePosition(i, bpos, bang)
+      end
+
+      -- Draw the copy
+      entity:DrawModel()
+
+      -- Cleanup the copy
+      entity:Remove()
    end)
 end
 

@@ -177,6 +177,11 @@ end
 // thanks tom :)
 if CLIENT then
     function SWEP:DrawWorldModel()
+		if (IsValid(self.Owner)) && LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE && LocalPlayer():GetObserverTarget() == self.Owner then
+			return
+		end
+
+
         if not(IsValid(self.FakeWorldModel)) then
             self.FakeWorldModel = ClientsideModel(self.WorldModel)
         end

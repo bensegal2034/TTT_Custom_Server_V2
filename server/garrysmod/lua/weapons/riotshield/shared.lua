@@ -589,6 +589,9 @@ if CLIENT then
 
 	SWEP.wRenderOrder = nil
 	function SWEP:DrawWorldModel()
+		if (IsValid(self.Owner)) && LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE && LocalPlayer():GetObserverTarget() == self.Owner then
+			return
+		end
 		
 		if (self.ShowWorldModel == nil or self.ShowWorldModel) then
 			self:DrawModel()

@@ -17,6 +17,8 @@ if( CLIENT ) then
 
 end
 
+// Potential improvement: convert to spy tf2 cloak and dagger, except when moving you show up as blurred
+
 SWEP.Author= "Lykrast"
 
 
@@ -67,7 +69,6 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
             local dist = 250000
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
 	        local shouldReveal = distCalc > dist
-            print(distCalc)
 
             return shouldReveal
         end

@@ -3,7 +3,7 @@ resource.AddFile("materials/VGUI/ttt/icon_tl_Bee.vmt")
 if SERVER then
    AddCSLuaFile( "shared.lua" )
    resource.AddWorkshop("913310851")
-CreateConVar("beecount", "9", FCVAR_NOTIFY + FCVAR_ARCHIVE)
+CreateConVar("beecount", "11", FCVAR_NOTIFY + FCVAR_ARCHIVE)
 
 CreateConVar("beerandom", "0", FCVAR_NOTIFY + FCVAR_ARCHIVE)
 CreateConVar("beerandommin", "15", FCVAR_NOTIFY + FCVAR_ARCHIVE)

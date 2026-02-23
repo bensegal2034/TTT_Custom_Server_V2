@@ -1,6 +1,6 @@
 if SERVER then
    AddCSLuaFile("shared.lua")
-   CreateConVar("beeinnodamage", "15", FCVAR_NOTIFY + FCVAR_ARCHIVE)
+   CreateConVar("beeinnodamage", "20", FCVAR_NOTIFY + FCVAR_ARCHIVE)
    CreateConVar("beetraitordamage", "5", FCVAR_NOTIFY + FCVAR_ARCHIVE)
 end
 

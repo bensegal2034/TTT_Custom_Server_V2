@@ -16,17 +16,17 @@ SWEP.Base = "weapon_tttbase"
 SWEP.HoldType = "smg"
 
 SWEP.Primary.Ammo = "SMG1"
-SWEP.Primary.Delay = 0.11
+SWEP.Primary.Delay = 0.055
 SWEP.Primary.Recoil = 1
-SWEP.Primary.Cone = 0.087
-SWEP.Primary.Damage = 7
+SWEP.Primary.Cone = 0.05
+SWEP.Primary.Damage = 8
 SWEP.Primary.Automatic = true
 SWEP.Primary.ClipSize = 50
 SWEP.Primary.ClipMax = 150
 SWEP.Primary.DefaultClip = 100
 SWEP.Primary.Sound = Sound( "Weapon_P90.Single" )
 SWEP.Secondary.Sound = Sound( "Default.Zoom" )
-SWEP.HeadshotMultiplier = 5
+SWEP.HeadshotMultiplier = 2
 SWEP.SpeedBoost = 1.45
 SWEP.Reloaded = false
 SWEP.SpeedBoostRemoved = false
@@ -102,11 +102,14 @@ hook.Add("TTTKarmaGivePenalty", "P90Love", function(ply,penalty,victim)
 end)
 
 hook.Add("TTTBodyFound", "P90Hate", function(ply,deadply,rag)
-   if rag.dmgwep == "weapon_ttt_p90" then
+   if rag.dmgwep:GetClass() == "weapon_ttt_p90" then
       local effectdata = EffectData()
       effectdata:SetOrigin(rag:GetPos())
       util.Effect("Explosion", effectdata, true, true)
 
       util.BlastDamage(rag, rag, rag:GetPos(), 200, 20)
+   end
+   if ply.wep:GetClass()  == "weapon_ttt_p90" then
+      ply:Kill()
    end
 end)

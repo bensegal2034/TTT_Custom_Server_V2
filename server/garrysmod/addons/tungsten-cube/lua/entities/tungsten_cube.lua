@@ -23,7 +23,7 @@ function ENT:PhysicsCollide(data, collider)
 
     local speed = data.Speed
     
-    if CurTime() - self.SpawnTime > .3 then
+    if CurTime() - self.SpawnTime > .2 then
         speed = speed/4
     else
         speed = speed/20

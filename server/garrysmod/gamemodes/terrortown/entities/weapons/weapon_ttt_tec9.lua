@@ -233,7 +233,7 @@ function SWEP:Initialize()
 
    if self.Primary.Cone > .11 then
       self.Primary.NumShots = self:GetNumBullets()
-      self.Primary.Damage = self.Primary.Damage / self.Primary.NumShots
+      self.Primary.Damage = self.Primary.Damage / math.Round(self.Primary.NumShots/2)
    end
    self.Primary.DefaultClip = (self.Primary.ClipSize * 3)
    if self.Upside == 2 then

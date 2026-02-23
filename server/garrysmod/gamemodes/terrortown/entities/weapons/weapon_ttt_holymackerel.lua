@@ -72,6 +72,11 @@ SWEP.WElements = {
 	["wm_holymackerel"] = { type = "Model", model = "models/weapons/c_models/c_holymackerel.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(3.635, 1.557, 1.557), angle = Angle(-180, 0, 0), size = Vector(0.8, 0.8, 0.8), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
 }
 
+function SWEP:SetupDataTables()
+	self:NetworkVar("Int", 0, "StunDMG" )
+	self:NetworkVar("Float", 0, "DamageTaken")
+end
+
 function SWEP:Initialize()
 	self:SetWeaponHoldType( self.HoldType )
 	// other initialize code goes here
@@ -117,12 +122,17 @@ function SWEP:Holster()
 			self:ResetBonePositions(vm)
 		end
 	end
-	
+	if IsValid(self:GetOwner()) then
+		self:GetOwner():RemoveEFlags(EFL_NO_DAMAGE_FORCES)
+	end
 	return true
 end
 
 function SWEP:OnRemove()
 	self:Holster()
+	if IsValid(self:GetOwner()) then
+		self:GetOwner():RemoveEFlags(EFL_NO_DAMAGE_FORCES)
+	end
 end
 
 function SWEP:DrawWeaponSelection(x, y, wide, tall, alpha)
@@ -572,6 +582,9 @@ function SWEP:Deploy()
 	self.AttackTimer = CurTime()
 	self.Idle = 0
 	self.IdleTimer = CurTime() + self.Owner:GetViewModel():SequenceDuration()
+	if IsValid(self:GetOwner()) then
+		self:GetOwner():AddEFlags(EFL_NO_DAMAGE_FORCES)
+	end
 	return true
 end
 
@@ -688,19 +701,41 @@ local function hop( ent )
 end
 hook.Add("CreateMove", "MackerelHop", hop)
 
-hook.Add("ScalePlayerDamage", "MackerelKnockbackImmunity", function(target, hitgroup, dmginfo)
+hook.Add("PostEntityTakeDamage", "MackerelKnockbackImmunity", function(ent, dmginfo, wasDamageTaken)
    if
-      not IsValid(target)
-      or not target:IsPlayer()
-      or not target:GetActiveWeapon()
+      not IsValid(dmginfo:GetAttacker())
+      or not IsValid(ent)
+      or not IsPlayer(ent)
+      or not dmginfo:GetAttacker():IsPlayer()
+      or not IsValid(ent:GetActiveWeapon())
+      or not GetRoundState() == ROUND_ACTIVE
+	   or not wasDamageTaken
    then
       return
    end
 
-   local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+   local weapon = ent:GetActiveWeapon()
    if SERVER then
       if weapon:GetClass() == "weapon_ttt_holymackerel" then
-		dmginfo:SetDamageForce(Vector(0,0,0))
+         local dmgreq = 50
+         
+         local damagetaken = weapon:GetDamageTaken()
+         local totaldamage = dmginfo:GetDamage() + damagetaken
+
+         if totaldamage >= dmgreq then
+			ent:SetLocalVelocity(Vector(0,0,0))
+		end
+         if dmginfo:GetDamage() > 0 then
+            weapon:SetDamageTaken(totaldamage)
+         end
+      end
+   end
+end)
+
+hook.Add("TTTPrepareRound", "ResetMackerelJump", function()
+   for _, ply in ipairs(player.GetAll())do
+      if IsValid(ply) and ply:Alive() and not ply:IsBot() then
+		ply:RemoveEFlags(EFL_NO_DAMAGE_FORCES)
       end
    end
 end)

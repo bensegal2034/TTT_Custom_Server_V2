@@ -114,7 +114,7 @@ SWEP.ViewModelFOV		= 64
 --SWEP.ViewModel			= "models/weapons/v_fnscarh.mdl"
 SWEP.ViewModel			= "models/weapons/v_rif_p4s.mdl"
 SWEP.WorldModel			= "models/weapons/w_fn_scar_h.mdl"
-
+SWEP.DamageType   = "Impact"
 
 SWEP.data 				= {}				--The starting firemode
 SWEP.data.ironsights			= 1

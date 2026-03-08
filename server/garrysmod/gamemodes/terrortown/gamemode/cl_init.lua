@@ -260,7 +260,7 @@ function GM:CleanUpMap()
    end
 
    -- This cleans up decals since GMod v100
-   game.CleanUpMap()
+   local removed = util.RemoveDecalsAt(Vector(0, 0, 0), math.huge, 0, false)
 end
 
 -- server tells us to call this when our LocalPlayer has spawned

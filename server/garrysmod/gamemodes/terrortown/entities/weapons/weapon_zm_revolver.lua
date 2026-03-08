@@ -38,32 +38,32 @@ resource.AddFile("sound/weapons/deagle/sliderelease.wav")
 
 sound.Add({
    name = "Weapon_OSHIT.Magout",
-	channel = "CHAN_ITEM",
-	sound = "weapons/deagle/magout.wav" 
+   channel = "CHAN_ITEM",
+   sound = "weapons/deagle/magout.wav" 
 })
 
 sound.Add({
    name = "Weapon_OSHIT.Magin",
-	channel = "CHAN_ITEM",
-	sound = "weapons/deagle/magin.wav" 
+   channel = "CHAN_ITEM",
+   sound = "weapons/deagle/magin.wav" 
 })
 
 sound.Add({
    name = "Weapon_OSHIT.SlideForward",
-	channel = "CHAN_ITEM",
-	sound = "weapons/deagle/slideforward.wav" 
+   channel = "CHAN_ITEM",
+   sound = "weapons/deagle/slideforward.wav" 
 })
 
 sound.Add({
    name = "Weapon_OSHIT.SlideBack",
-	channel = "CHAN_ITEM",
-	sound = "weapons/deagle/slideback.wav" 
+   channel = "CHAN_ITEM",
+   sound = "weapons/deagle/slideback.wav" 
 })
 
 sound.Add({
    name = "Weapon_OSHIT.Sliderelease",
-	channel = "CHAN_ITEM",
-	sound = "weapons/deagle/sliderelease.wav" 
+   channel = "CHAN_ITEM",
+   sound = "weapons/deagle/sliderelease.wav" 
 })
 
 SWEP.HoldType              = "revolver"
@@ -73,7 +73,7 @@ if CLIENT then
    SWEP.PrintName          = "Deagle"
    SWEP.Slot               = 1
    SWEP.ViewModelFOV       = 70
-
+   
    SWEP.Icon               = "vgui/ttt/icon_deagle"
 end
 
@@ -121,40 +121,44 @@ function SWEP:SetupDataTables()
 end
 
 if CLIENT then
-    function SWEP:DrawWorldModel()
-        if not(IsValid(self.FakeWorldModel)) then
-            self.FakeWorldModel = ClientsideModel(self.WorldModel)
-        end
-        
-        -- Settings...
-        self.FakeWorldModel:SetSkin(1)
-        self.FakeWorldModel:SetNoDraw(true)
-        local _Owner = self:GetOwner()
-        
-        if (IsValid(_Owner)) then
-            -- Specify a good position
-            local offsetVec = Vector(1, -1, -1)
-            local offsetAng = Angle(180, 180, 0)
-            
-            local boneid = _Owner:LookupBone("ValveBiped.Bip01_R_Hand") -- Right Hand
-            if !boneid then return end
-            
-            local matrix = _Owner:GetBoneMatrix(boneid)
-            if !matrix then return end
-            
-            local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
-            
-            self.FakeWorldModel:SetPos(newPos)
-            self.FakeWorldModel:SetAngles(newAng)
-            
-            self.FakeWorldModel:SetupBones()
-        else
-            self.FakeWorldModel:SetPos(self:GetPos())
-            self.FakeWorldModel:SetAngles(self:GetAngles())
-        end
-        
-        self.FakeWorldModel:DrawModel()
-    end
+   function SWEP:DrawWorldModel()
+      if not(IsValid(self.FakeWorldModel)) then
+         self.FakeWorldModel = ClientsideModel(self.WorldModel)
+      end
+      
+      if (IsValid(self.Owner)) && LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE && LocalPlayer():GetObserverTarget() == self.Owner then
+         return
+      end
+      
+      -- Settings...
+      self.FakeWorldModel:SetSkin(1)
+      self.FakeWorldModel:SetNoDraw(true)
+      local _Owner = self:GetOwner()
+      
+      if (IsValid(_Owner)) then
+         -- Specify a good position
+         local offsetVec = Vector(1, -1, -1)
+         local offsetAng = Angle(180, 180, 0)
+         
+         local boneid = _Owner:LookupBone("ValveBiped.Bip01_R_Hand") -- Right Hand
+         if !boneid then return end
+         
+         local matrix = _Owner:GetBoneMatrix(boneid)
+         if !matrix then return end
+         
+         local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
+         
+         self.FakeWorldModel:SetPos(newPos)
+         self.FakeWorldModel:SetAngles(newAng)
+         
+         self.FakeWorldModel:SetupBones()
+      else
+         self.FakeWorldModel:SetPos(self:GetPos())
+         self.FakeWorldModel:SetAngles(self:GetAngles())
+      end
+      
+      self.FakeWorldModel:DrawModel()
+   end
 end
 
 function SWEP:SetZoom(state)
@@ -180,9 +184,9 @@ function SWEP:SecondaryAttack()
    if self:GetNextSecondaryFire() > CurTime() then return end
    
    local bIronsights = not self:GetIronsights()
-
+   
    self:SetIronsights( bIronsights )
-
+   
    self:SetZoom(bIronsights)
    if (CLIENT) then
       self:EmitSound(self.Secondary.Sound)
@@ -211,7 +215,7 @@ function SWEP:PreDrop()
 end
 
 function SWEP:Reload()
-	if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
+   if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
    if self:Clip1() >= self:GetMaxClip1() then return end
    self:DefaultReload( ACT_VM_RELOAD )
    self:SetIronsights( false )
@@ -254,11 +258,11 @@ if CLIENT then
          
          local scrW = ScrW()
          local scrH = ScrH()
-
+         
          local x = scrW / 2.0
          local y = scrH / 2.0
          local scope_size = scrH
-
+         
          -- crosshair
          local gap = 80
          local length = scope_size
@@ -266,15 +270,15 @@ if CLIENT then
          surface.DrawLine( x + length, y, x + gap, y )
          surface.DrawLine( x, y - length, x, y - gap )
          surface.DrawLine( x, y + length, x, y + gap )
-
+         
          gap = 0
          length = 50
          surface.DrawLine( x - length, y, x - gap, y )
          surface.DrawLine( x + length, y, x + gap, y )
          surface.DrawLine( x, y - length, x, y - gap )
          surface.DrawLine( x, y + length, x, y + gap )
-
-
+         
+         
          -- cover edges
          local sh = scope_size / 2
          local w = (x - sh) + 2
@@ -284,20 +288,20 @@ if CLIENT then
          -- cover gaps on top and bottom of screen
          surface.DrawLine( 0, 0, scrW, 0 )
          surface.DrawLine( 0, scrH - 1, scrW, scrH - 1 )
-
+         
          surface.SetDrawColor(255, 0, 0, 255)
          surface.DrawLine(x, y, x + 1, y + 1)
-
+         
          -- scope
          surface.SetTexture(scope)
          surface.SetDrawColor(255, 255, 255, 255)
-
+         
          surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
       else
          return self.BaseClass.DrawHUD(self)
       end
    end
-
+   
    function SWEP:AdjustMouseSensitivity()
       return (self:GetIronsights() and 0.2) or nil
    end
@@ -306,13 +310,13 @@ end
 
 hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo)
    if
-      not IsValid(dmginfo:GetAttacker())
-      or not dmginfo:GetAttacker():IsPlayer()
-      or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+   not IsValid(dmginfo:GetAttacker())
+   or not dmginfo:GetAttacker():IsPlayer()
+   or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
    then
       return
    end
-
+   
    local weapon = dmginfo:GetAttacker():GetActiveWeapon()
    
    if weapon:GetClass() == "weapon_zm_revolver" then
@@ -330,17 +334,17 @@ hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo
             dmg:SetDamageForce(Vector(0,0,0))
             dmg:SetDamageType(DMG_NERVEGAS)
             target:TakeDamageInfo(dmg)
-
+            
             local effectdata = EffectData()
             effectdata:SetOrigin( target:GetPos() + Vector(0,0,15) )
             effectdata:SetNormal( Vector(0,0,0) )
             effectdata:SetMagnitude( 1 )
             effectdata:SetScale( 0 )
             effectdata:SetColor(0)
-               effectdata:SetRadius( 0 )
+            effectdata:SetRadius( 0 )
             util.Effect( "AntlionGib", effectdata )
-
-
+            
+            
             target:EmitSound( "player/geiger3.wav", 75, 100, 1, CHAN_ITEM )
          end)
       end

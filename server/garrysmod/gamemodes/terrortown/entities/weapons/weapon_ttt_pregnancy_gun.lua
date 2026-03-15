@@ -87,13 +87,21 @@ if CLIENT then
 
 			local pregProg = 1 - ((time - CurTime()) / PregnancyLength)
 
+			local bumpPos
+			if ply == LocalPlayer() then
+				-- This line would fix the bug of your own pregnancy appearing at world origin
+				-- However, not being able to see yourself pregnant makes it easier to be stealthy,
+				-- since someone else needs to notice you pregnant
+				--bumpPos = ply:GetPos() + Vector(0, 0, 50)
+				continue
+			end
 			local chestBoneIndex = ply:LookupBone("ValveBiped.Bip01_Spine")
 			local chestBoneMatrix = ply:GetBoneMatrix(chestBoneIndex)
 			local chestBonePos = chestBoneMatrix:GetTranslation()
 
 			local lookDir = ply:GetAimVector()
 			lookDir.z = 0
-			local bumpPos = chestBonePos + (lookDir * pregProg * 10)
+			bumpPos = chestBonePos + (lookDir * pregProg * 10)
 
 			local bumpSize = pregProg * 10
 

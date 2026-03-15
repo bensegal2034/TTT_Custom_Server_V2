@@ -1,7 +1,8 @@
 AddCSLuaFile()
 
-local SplashLifetime = 0.3
-local SplashSize = 40
+local SplashLifetime = 0.6
+local SplashFadeStart = 0.3
+local SplashSize = 75
 
 ENT.Type 			= "anim"
 ENT.Base 			= "base_anim"
@@ -23,24 +24,42 @@ function ENT:Initialize()
 			local startpos = client:EyePos()
 			local endpos = self:GetPos()
 
+			local function TraceFilter(ent)
+				if ent == client then
+					return false
+				end
+				cls = ent:GetClass()
+				if cls == "raygun_ring_proj" then
+					return false
+				end
+				if cls == "raygun_splash_proj" then
+					return false
+				end
+				if cls == "obj_rgun_proj" then
+					return false
+				end
+				return true
+			end
+
 			local trace = util.TraceLine({
 				start = startpos,
 				endpos = endpos,
 				mask = MASK_VISIBLE_AND_NPCS,
-				filter = client,
+				filter = TraceFilter,
 			})
 
 			if trace.Hit and trace.Entity != self then
 				return
 			end
 
+			local size = math.ceil(SplashSize * (CurTime() - self.SpawnTime) / SplashFadeStart)
+			local alpha = math.max(0, 255 * (1 - ((CurTime() - self.SpawnTime - SplashFadeStart) / (SplashLifetime - SplashFadeStart))))
+
 			render.SetMaterial(Material("sprites/raygun_splash"))
-			local size =  math.ceil(SplashSize * (CurTime() - self.SpawnTime) / SplashLifetime)
-			render.DrawSprite(self:GetPos(), size, size, Color(0, 255, 0, 255))
+			render.DrawSprite(self:GetPos(), size, size, Color(0, 255, 0, alpha))
 
 			render.SetMaterial(Material("sprites/light_ignorez"))
-			local size =  math.ceil(SplashSize * (CurTime() - self.SpawnTime) / SplashLifetime)
-			render.DrawSprite(self:GetPos(), size, size, Color(0, 255, 0, 255))
+			render.DrawSprite(self:GetPos(), size, size, Color(0, 255, 0, alpha))
 		end)
 	end
 end

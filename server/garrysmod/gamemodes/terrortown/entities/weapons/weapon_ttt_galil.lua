@@ -36,7 +36,7 @@ SWEP.ClickTime             = 0
 SWEP.ClickTimer            = 0
 SWEP.ClickDamage           = 35
 
-SWEP.DamageType            = "Puncture"
+SWEP.DamageType            = "Impact"
 SWEP.FirstShotAccuracyBullets = 0
 SWEP.FirstShotAccuracy = true
 SWEP.FirstShotDelay = 0.5

@@ -24,13 +24,13 @@ SWEP.Primary.Recoil         = 7
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "357"
 SWEP.Primary.Damage = 50
-SWEP.DamageType = "Puncture"
+SWEP.DamageType = "Impact"
 SWEP.Primary.Cone = 0.1
 SWEP.Primary.ClipSize = 10
 SWEP.Primary.ClipMax = 20 -- keep mirrored to ammo
 SWEP.Primary.DefaultClip = 15
 
-SWEP.HeadshotMultiplier = 4
+SWEP.HeadshotMultiplier = 6
 
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_357_ttt"

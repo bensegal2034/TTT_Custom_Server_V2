@@ -131,7 +131,7 @@ SWEP.Primary.Sound = "gn_carbine/shot_" .. tostring(math.random(1, 4)) .. ".wav"
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.HeadshotMultiplier    = 3
-SWEP.DamageType = "Puncture"
+SWEP.DamageType = "Impact"
 
 -- Model settings
 SWEP.UseHands = false

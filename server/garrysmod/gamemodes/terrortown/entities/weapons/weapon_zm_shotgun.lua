@@ -31,11 +31,19 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.NumShots      = 8
 SWEP.Primary.Sound         = Sound( "Weapon_XM1014.Single" )
 SWEP.Primary.Recoil        = 12
-SWEP.Secondary.Delay       = 0.6
+SWEP.SavedPrimaryCone = 0.15
+
+
+SWEP.Secondary.Damage   = 40
+SWEP.Secondary.Sound    = Sound("weapons/slug.wav")
+SWEP.Secondary.Delay    = 0.6
+SWEP.Secondary.NumShots = 1
+SWEP.Secondary.Cone     = 0
+SWEP.Secondary.Recoil   = 12
+
 SWEP.DamageType            = "Impact"
 
 SWEP.Secondary.Automatic   = true
-
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
@@ -134,6 +142,16 @@ function SWEP:CanPrimaryAttack()
    return true
 end
 
+function SWEP:CanSecondaryAttack()
+   if self:Clip1() <= 0 then
+      self:EmitSound( "Weapon_Shotgun.Empty" )
+      self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+      self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+      return false
+   end
+   return true
+end
+
 function SWEP:Think()
    self.BaseClass.Think(self)
    if self:GetReloading() then
@@ -180,21 +198,48 @@ function SWEP:GetHeadshotMultiplier(victim, dmginfo)
 end
 
 function SWEP:SecondaryAttack()
-   self.Primary.Sound    = Sound("weapons/slug.wav")
-   self.Primary.Damage   = 40
-   self.Primary.NumShots = 1
-   self.Primary.Cone     = 0
-   self.DamageType       = "Puncture"
-   self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
-   self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+	self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+
+	if not self:CanSecondaryAttack() then return end
+
+	if not worldsnd then
+		self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+	elseif SERVER then
+		sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
+	end
+	--This is done exclusively to trick the crosshair into displaying the inaccuracy of right clicking, which is reset on primary attack
+	self.Primary.Cone = self.Secondary.Cone
+
+	self:ShootBullet( self.Secondary.Damage, self.Secondary.Recoil, self.Secondary.NumShots, self.Secondary.Cone )
+	
+	self:TakePrimaryAmmo( 1 )
+
+	local owner = self:GetOwner()
+	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
+
+	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Secondary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Secondary.Recoil, 0 ) )
 end
 
 function SWEP:PrimaryAttack()
-   self.Primary.Sound    = Sound( "Weapon_XM1014.Single" )
-   self.Primary.Cone     = 0.15
-   self.Primary.NumShots = 8
-   self.Primary.Damage   = 9
-   self.DamageType       = "Impact"
-   self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
+	self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
+	if not self:CanPrimaryAttack() then return end
+
+	if not worldsnd then
+		self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+	elseif SERVER then
+		sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
+	end
+	-- Resetting primary cone to what it should be before shooting
+	self.Primary.Cone = self.SavedPrimaryCone
+
+	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+	self:TakePrimaryAmmo( 1 )
+
+	local owner = self:GetOwner()
+	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
+
+	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 end

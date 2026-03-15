@@ -20,7 +20,7 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Primary.Recoil        = 4
 SWEP.Primary.Damage        = 25
-SWEP.DamageType            = "Puncture"
+SWEP.DamageType            = "Impact"
 SWEP.Primary.Delay         = 0.56
 SWEP.Primary.Cone          = 0.02
 SWEP.Primary.ClipSize      = 20
@@ -30,7 +30,7 @@ SWEP.Primary.ClipMax       = 60
 SWEP.Primary.Ammo          = "AlyxGun"
 SWEP.Tracer = "GaussTracer"
 SWEP.Kind                  = WEAPON_SIPISTOL
-SWEP.CanBuy                = {ROLE_TRAITOR} -- only traitors can buy
+SWEP.CanBuy                = {} -- only traitors can buy
 SWEP.WeaponID              = AMMO_SIPISTOL
 SWEP.Primary.Sound         = Sound( "Weapon_USP.SilencedShot" )
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"

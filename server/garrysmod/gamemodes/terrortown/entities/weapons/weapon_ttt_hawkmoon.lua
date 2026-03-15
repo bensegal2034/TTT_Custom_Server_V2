@@ -48,8 +48,8 @@ SWEP.Kind = WEAPON_PISTOL
 SWEP.Icon = "VGUI/ttt/icon_hk"
 SWEP.Primary.Ammo       = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil			= 4
-SWEP.Primary.Damage = 34
-SWEP.Primary.Delay = 0.4
+SWEP.Primary.Damage = 30
+SWEP.Primary.Delay = 0.425
 SWEP.Primary.Cone = 0.01
 SWEP.Primary.ClipSize = 6
 SWEP.Primary.ClipMax = 36
@@ -108,7 +108,12 @@ end
 
 function SWEP:Initialize()
 	if SERVER then
-		self:SetHoldingAces(math.random(1,6))
+		local luckRoll = math.random(1,6)
+		if luckRoll == 5 or luckRoll == 6 then
+			local luckRoll = math.random(1,6)
+			print("Rerolling")
+		end
+		self:SetHoldingAces(luckRoll)
 	end
 	if CLIENT and self:Clip1() == -1 then
 	   self:SetClip1(self.Primary.DefaultClip)
@@ -160,6 +165,11 @@ function SWEP:Reload()
 	self:DefaultReload(self.ReloadAnim)
 	self:SetIronsights( false )
 	if SERVER then
-		self:SetHoldingAces(math.random(1,6))
+		local luckRoll = math.random(1,6)
+		if luckRoll == 5 or luckRoll == 6 then
+			local luckRoll = math.random(1,6)
+			print("Rerolling")
+		end
+		self:SetHoldingAces(luckRoll)
 	end
 end

@@ -16,8 +16,8 @@ SWEP.Kind                  = WEAPON_PISTOL
 SWEP.WeaponID              = AMMO_PISTOL
 
 SWEP.Primary.Recoil        = 1.5
-SWEP.Primary.Damage        = 50
-SWEP.Primary.Delay         = 0.3
+SWEP.Primary.Damage        = 65
+SWEP.Primary.Delay         = 0.25
 SWEP.Primary.Cone          = 0.01
 SWEP.Primary.ClipSize      = 2
 SWEP.Primary.Automatic     = true
@@ -39,7 +39,7 @@ SWEP.ViewModelFlip         = true
 SWEP.IronSightsPos         = Vector( 4.53, -4, 3.2 )
 SWEP.IronSightsAng         = Vector(0, 0, 0)
 
-SWEP.HeadshotMultiplier    = 2.7
+SWEP.HeadshotMultiplier    = 4
 
 function SWEP:Reload()
    if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end

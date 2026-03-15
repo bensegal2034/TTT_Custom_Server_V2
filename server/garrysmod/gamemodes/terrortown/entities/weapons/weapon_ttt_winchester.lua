@@ -30,7 +30,7 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.NumShots = 1
 SWEP.AutoSpawnable      = true
 SWEP.AmmoEnt = "item_ammo_357_ttt"
-SWEP.DamageType            = "Puncture"
+SWEP.DamageType            = "Impact"
 SWEP.CloseDamage = 20
 SWEP.MediumDamage = 40
 SWEP.FarDamage = 75
@@ -254,7 +254,7 @@ hook.Add("ScalePlayerDamage", "Longshot", function(target, hitgroup, dmginfo)
       -- of them were hull traces that could not headshot.
       
       if (dist > weapon.MaxDist) then
-         dmginfo:ScaleDamage(5)
+         dmginfo:ScaleDamage(7)
       elseif (dist > weapon.FarDist) then
          dmginfo:ScaleDamage(2)
       end

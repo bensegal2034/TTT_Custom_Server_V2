@@ -1,6 +1,7 @@
 AddCSLuaFile()
 
-local RingLifetime = 0.35
+local RingLifetime = 0.6
+local RingFadeStart = 0.35
 local RingSize = 25
 
 ENT.Type 			= "anim"
@@ -23,11 +24,28 @@ function ENT:Initialize()
 			local startpos = client:EyePos()
 			local endpos = self:GetPos()
 
+			local function TraceFilter(ent)
+			if ent == client then
+				return false
+			end
+			cls = ent:GetClass()
+			if cls == "raygun_ring_proj" then
+				return false
+			end
+			if cls == "raygun_splash_proj" then
+				return false
+			end
+			if cls == "obj_rgun_proj" then
+				return false
+			end
+				return true
+			end
+
 			local trace = util.TraceLine({
 				start = startpos,
 				endpos = endpos,
 				mask = MASK_VISIBLE_AND_NPCS,
-				filter = client,
+				filter = TraceFilter,
 			})
 
 			if trace.Hit and trace.Entity != self then
@@ -35,8 +53,9 @@ function ENT:Initialize()
 			end
 
 			render.SetMaterial(Material("sprites/raygun_ring"))
-			local size =  math.ceil(RingSize * (CurTime() - self.SpawnTime) / RingLifetime)
-			render.DrawSprite(self:GetPos(), size, size, Color(0, 0, 255, 255))
+			local size = math.ceil(RingSize * (CurTime() - self.SpawnTime) / RingFadeStart)
+			local alpha = math.max(0, 255 * (1 - ((CurTime() - self.SpawnTime - RingFadeStart) / (RingLifetime - RingFadeStart))))
+			render.DrawSprite(self:GetPos(), size, size, Color(0, 255, 0, alpha))
 		end)
 	end
 end

@@ -38,7 +38,7 @@ SWEP.Primary.Automatic   = true
 SWEP.Primary.Ammo        = "pistol"
 SWEP.Primary.Recoil      = 1.35
 SWEP.Primary.Sound       = "weapons/fokku_tc_famas/shot-1.wav"
-SWEP.DamageType          = "Puncture"
+SWEP.DamageType          = "Impact"
 SWEP.Icon 					= "vgui/ttt/icon_famas2"
 
 SWEP.AutoSpawnable = true

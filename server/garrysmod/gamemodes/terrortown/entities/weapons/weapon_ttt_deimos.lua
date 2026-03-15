@@ -54,6 +54,24 @@ function SWEP:Initialize()
 	end
 end
 
+hook.Add("TTTEndRound", "Deimos_EndRound", function(result)
+	ActivePings = {}
+	LastPing = 0
+	PlayerLocations = {}
+end)
+
+hook.Add("TTTBeginRound", "Deimos_BeginRound", function()
+	ActivePings = {}
+	LastPing = 0
+	PlayerLocations = {}
+end)
+
+hook.Add("TTTPrepareRound", "Deimos_PrepareRound", function()
+	ActivePings = {}
+	LastPing = 0
+	PlayerLocations = {}
+end)
+
 if SERVER then
 	AddCSLuaFile("weapon_ttt_deimos.lua")
 	
@@ -398,21 +416,3 @@ function DrawDeimosTarget(pos, size, offset, no_shrink)
 		surface.DrawText(text)
 	end
 end
-
-hook.Add("TTTEndRound", "Deimos_EndRound", function(result)
-	ActivePings = {}
-	LastPing = 0
-	PlayerLocations = {}
-end)
-
-hook.Add("TTTBeginRound", "Deimos_BeginRound", function()
-	ActivePings = {}
-	LastPing = 0
-	PlayerLocations = {}
-end)
-
-hook.Add("TTTPrepareRound", "Deimos_PrepareRound", function()
-	ActivePings = {}
-	LastPing = 0
-	PlayerLocations = {}
-end)

@@ -269,8 +269,8 @@ function SWEP:PrimaryAttack()
 	for j, tgt in ipairs(Targets) do
       if tgt.entity == entity then return end
 	end
-   EmitSound("trackerping.mp3", Vector(0, 0, 0), -2, 1, 1, SNDLVL_NONE, 0, 100, 0, entity)
-   sound.Play("Weapon_Tracker.Ping", entity:GetPos(), 75)
+   EmitSound("trackerping.mp3", entity:GetPos(), -2, 1, 1, SNDLVL_NONE, 0, 100, 0, entity)
+   entity:EmitSound("trackerping.mp3")
 
    table.insert(Targets, {entity=entity})
 
@@ -280,3 +280,22 @@ function SWEP:PrimaryAttack()
 
    TriggerScan()
 end
+
+hook.Add("PostEntityTakeDamage", "TrackerNoBlood", function(ent, dmginfo, wasDamageTaken)
+	if
+		not IsValid(dmginfo:GetAttacker())
+		or not dmginfo:GetAttacker():IsPlayer()
+		or not IsPlayer(ent)
+		or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+		or not GetRoundState() == ROUND_ACTIVE
+		or not wasDamageTaken
+	then
+		return	
+	end
+ 
+	local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+
+	if weapon:GetClass() == "weapon_ttt_tracker" then
+      dmginfo:IsDamageType(DMG_DIRECT)
+   end
+end)

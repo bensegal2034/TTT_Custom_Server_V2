@@ -69,4 +69,6 @@ SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.Delay = 0.5
 
 SWEP.SpawnDistance = 50
-SWEP.SpawnDelay = 0.5
+SWEP.SpawnDelay = 0
+
+SWEP.DeploySpeed = 100

@@ -4,13 +4,11 @@ include("shared.lua")
 
 function SWEP:PrimaryAttack()
     local owner = self:GetOwner()
-    if not IsValid(owner) then return end
-    
+
     -- Check if player already has an active RCXD
     local rcxd = RCXD.GetRCXDForPlayer(owner)
-    
+
     if not IsValid(rcxd) then
-        self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
         
         -- Spawn RCXD
         local trace = util.TraceLine({
@@ -23,7 +21,7 @@ function SWEP:PrimaryAttack()
         local ang = Angle(0, owner:EyeAngles().y, 0)
         
         local newRCXD = RCXD.SpawnRCXD(owner, pos, ang)
-        
+
         if IsValid(newRCXD) then
             owner:EmitSound("items/battery_pickup.wav")
             

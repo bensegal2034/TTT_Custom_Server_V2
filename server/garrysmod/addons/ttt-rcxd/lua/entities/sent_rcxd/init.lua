@@ -17,7 +17,7 @@ function ENT:Initialize()
 
     self.DeployTime = CurTime()
     self:SetNWFloat("DeployTime", self.DeployTime)
-    self.DetonationDelay = 5 -- 5 second delay before detonation is allowed
+    self.DetonationDelay = 1 -- 5 second delay before detonation is allowed
     
     self:SetUseType(SIMPLE_USE)
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)

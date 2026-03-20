@@ -1,0 +1,6 @@
+"UnLitGeneric"
+{
+	"$baseTexture" "Models/codbo1/weapons/shared/trinium_sight_glow"
+                "$model" "1"
+               "$translucent" "1"
+}

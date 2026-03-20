@@ -109,7 +109,7 @@ end
 function SWEP:Initialize()
 	if SERVER then
 		local luckRoll = math.random(1,6)
-		if luckRoll == 5 or luckRoll == 6 then
+		if luckRoll == 1 or luckRoll == 2 then
 			local luckRoll = math.random(1,6)
 			print("Rerolling")
 		end
@@ -166,7 +166,7 @@ function SWEP:Reload()
 	self:SetIronsights( false )
 	if SERVER then
 		local luckRoll = math.random(1,6)
-		if luckRoll == 5 or luckRoll == 6 then
+		if luckRoll == 1 or luckRoll == 2 then
 			local luckRoll = math.random(1,6)
 			print("Rerolling")
 		end

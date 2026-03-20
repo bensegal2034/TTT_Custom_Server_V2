@@ -18,22 +18,18 @@ SWEP.Base                  = "weapon_tttbase"
 SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_M16
 
-SWEP.Primary.Delay         = 0
+SWEP.Primary.Delay         = 0.13
 SWEP.Primary.Recoil        = 1.4
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Damage        = 30
 SWEP.Primary.Cone          = 0.008
 SWEP.Primary.ClipSize      = 20
-SWEP.Primary.ClipMax       = 60
-SWEP.Primary.DefaultClip   = 40
+SWEP.Primary.ClipMax       = 80
+SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound( "Weapon_M4A1.Single" )
 SWEP.DamageType            = "Impact"
 SWEP.HeadshotMultiplier    = 2
-SWEP.ClickTime             = 0
-SWEP.ClickTimer            = 0
-SWEP.ClickDamage           = 35
-
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
@@ -151,15 +147,4 @@ function SWEP:Initialize()
    if self.SetHoldType then
       self:SetHoldType(self.HoldType or "pistol")
    end
-end
-
-function SWEP:Think()
-   self.BaseClass.Think(self)
-   self.ClickTimer = CurTime() - self.ClickTime
-   if self.ClickTimer < .14 then
-      self.ClickDamage = self.ClickTimer * 175
-   else
-      self.ClickDamage = 25
-   end
-   self.Primary.Damage = math.min(self.ClickDamage, 35)
 end

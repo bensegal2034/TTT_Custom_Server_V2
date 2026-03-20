@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/codbo1/weapons/shared/suppresor"
+	"$bumpmap" "Models/codbo1/weapons/shared/suppresor_n"
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[0.1 0.1 0.1]"
+	"$normalmapalphaenvmapmask" 1
+	"$phong" "1"
+	"$phongboost" "7.5"
+	"$phongexponent" "25"
+	"$phongalbedotint" "1"								
+	"$phongfresnelranges"	"[.1 5 1]"
+}

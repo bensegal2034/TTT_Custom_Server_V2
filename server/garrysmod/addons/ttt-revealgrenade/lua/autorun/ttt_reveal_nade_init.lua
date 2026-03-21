@@ -43,7 +43,7 @@ if CLIENT then
         end
 
         if #validPlayers > 0 then
-            halo.Add(validPlayers, Color(255, 255, 0), 5, 5, 3, true, true)
+            halo.Add(validPlayers, Color(255, 0, 0, 255), 1, 1, 20, true, true)
         end
     end)
 

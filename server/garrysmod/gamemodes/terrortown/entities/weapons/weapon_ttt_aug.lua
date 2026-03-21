@@ -70,13 +70,13 @@ SWEP.AdminSpawnable			= true
 SWEP.Primary.Sound			= Sound("aug_a3.Single")		-- script that calls the primary fire sound
 SWEP.Primary.Delay				= 0.15		
 SWEP.Primary.ClipSize			= 30		-- Size of a clip
-SWEP.Primary.DefaultClip			= 60	-- Bullets you start with
+SWEP.Primary.DefaultClip		= 60	-- Bullets you start with
 SWEP.Primary.ClipMax			= 90
-SWEP.Primary.Recoil				= 1.4			-- Maximum up recoil (rise)
+SWEP.Primary.Recoil				= 2			-- Maximum up recoil (rise)
 SWEP.Primary.Automatic			= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
-SWEP.HeadshotMultiplier    = 1.5
+SWEP.HeadshotMultiplier    = 2
 
 SWEP.SelectiveFire		= true
 SWEP.AutoSpawnable = true
@@ -99,10 +99,10 @@ SWEP.ScopeScale 			= 0.5
 SWEP.ReticleScale 			= 0.6
 
 SWEP.Primary.NumShots	= 1		--how many bullets to shoot per trigger pull
-SWEP.BaseDamage 		= 15
+SWEP.BaseDamage 		= 10
 SWEP.Primary.Damage		= SWEP.BaseDamage	--base damage per bullet
-SWEP.Primary.Cone		= 0.1	--define from-the-hip accuracy 1 is terrible, .0001 is exact)
-SWEP.Primary.BaseCone		= 0.1	--define from-the-hip accuracy 1 is terrible, .0001 is exact)
+SWEP.Primary.Cone		= 0.15	--define from-the-hip accuracy 1 is terrible, .0001 is exact)
+SWEP.Primary.BaseCone		= 0.15	--define from-the-hip accuracy 1 is terrible, .0001 is exact)
 
 -- enter iron sight info and bone mod info below
 
@@ -416,6 +416,7 @@ function SWEP:Think()
 						end
 					end
 				end
+				print(self.VisiblePlayers)
 			end
 			self.StackTime = self.BaseStackTime - (120 * self.VisiblePlayers)
 			if self.StackTimer > self.StackTime then
@@ -428,21 +429,18 @@ function SWEP:Think()
 
 	self.StackCount = self:GetStackCount()
 	self.StackDamage = (self.StackCount/2) + self.BaseDamage
-	self.StackCone = math.max(0, self.Primary.BaseCone - self.StackCount / 250)
+	self.StackCone = math.max(0, self.Primary.BaseCone - self.StackCount / 300)
 	self.Primary.Cone = self.StackCone
 
 	self.Primary.Damage = self.StackDamage
-	if self.StackCount >= 10 then
-		self.HeadshotMultiplier = 2 
-	end
-	if self.StackCount >= 20 then
+	if self.StackCount >= 30 then
 		self.DamageType = "Puncture"
 	end
-	if self.StackCount >= 40 then
+	if self.StackCount >= 60 then
 		self.DamageType = "True"
 	end
-	if self.StackCount >= 30 then
-		self.Primary.Recoil = 0.4
+	if self.StackCount >= 20 then
+		self.Primary.Recoil = 0.8
 	end
 
 	self.BaseClass.Think(self)

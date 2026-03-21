@@ -1,0 +1,31 @@
+"VertexLitGeneric"
+{
+    "$baseTexture" "zapgrenade/models/items/W_grenadesheet"
+    "$envmap" "env_cubemap"    
+    "$model" 1
+
+    "$normalmapalphaenvmapmask"    "1"
+    "$envmaptint"                "[0.04 0.04 .05]"
+
+    "$selfillum" "1"
+    "$selfillumtint" "1"
+
+// see if this works:
+
+"Proxies" {
+
+        Sine // a proxy which produces a sine wave
+        {
+            resultVar    $selfillumtint // The shader parameter to be manipulated
+            sineperiod    0.3
+            sinemin        0.1
+            sinemax        0.99
+        }
+
+    }
+
+
+
+}
+
+

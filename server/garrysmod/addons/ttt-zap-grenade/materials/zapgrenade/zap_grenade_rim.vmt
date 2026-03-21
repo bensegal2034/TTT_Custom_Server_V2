@@ -1,0 +1,22 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "zapgrenade/models/weapons/v_grenade/rim"
+	"$bumpmap" "zapgrenade/models/weapons/v_grenade/rim_normal"
+
+
+"$envmap" "env_cubemap"	
+	"$basealphaenvmapmask" 1	
+	"$model" 1
+
+	"$phong"					"1"
+	"$phongexponent"			"11"
+	"$phongboost"				"0.25"
+	"$phongfresnelranges"		"[2 4 6]"
+	"$phongtint"				"[0.8 0.85 1]"
+
+	"$normalmapalphaenvmapmask"	"1"
+	"$envmaptint"				"[0.04 0.04 .05]"
+
+	
+
+}

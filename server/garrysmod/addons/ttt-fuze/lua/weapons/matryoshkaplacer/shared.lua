@@ -1,23 +1,23 @@
 if SERVER then
+    resource.AddFile("materials/matroshka/metal.vmt")
+    resource.AddFile("materials/matroshka/metal.vtf")
+    resource.AddFile("materials/matroshka/metalb.vmt")
+    resource.AddFile("materials/matroshka/metalb.vtf")
+    resource.AddFile("materials/matroshka/metal.vmt")
+    resource.AddFile("materials/matroshka/metlag.vmt")
+    resource.AddFile("materials/matroshka/metlag.vtf")
+    resource.AddFile("materials/matroshka/vint.vmt")
+    resource.AddFile("materials/matroshka/vint.vtf")
+    resource.AddFile("materials/vgui/ttt/breaching_charge2.vmt")
+    resource.AddFile("materials/vgui/ttt/breaching_charge2.vtf")
+    resource.AddFile("materials/vgui/ttt/icon_fuze.vmt")
+    resource.AddFile("materials/vgui/ttt/icon_fuze.vtf")
+    resource.AddFile("materials/vgui/entities/matryoshkaplacer.vmt")
+    resource.AddFile("materials/vgui/entities/matryoshkaplacer.vtf")
+    resource.AddFile("models/matroshka/matroshka.mdl")
+    resource.AddFile("sound/dryfire_rifle.wav")
+    resource.AddFile("sound/m203.wav")
     resource.AddWorkshop("3545785442")
-    resource.AddWorkshop("materials/matroshka/metal.vmt")
-    resource.AddWorkshop("materials/matroshka/metal.vtf")
-    resource.AddWorkshop("materials/matroshka/metalb.vmt")
-    resource.AddWorkshop("materials/matroshka/metalb.vtf")
-    resource.AddWorkshop("materials/matroshka/metal.vmt")
-    resource.AddWorkshop("materials/matroshka/metlag.vmt")
-    resource.AddWorkshop("materials/matroshka/metlag.vtf")
-    resource.AddWorkshop("materials/matroshka/vint.vmt")
-    resource.AddWorkshop("materials/matroshka/vint.vtf")
-    resource.AddWorkshop("materials/vgui/ttt/breaching_charge.vmt")
-    resource.AddWorkshop("materials/vgui/ttt/breaching_charge.vtf")
-    resource.AddWorkshop("materials/vgui/ttt/icon_fuze.vmt")
-    resource.AddWorkshop("materials/vgui/ttt/icon_fuze.vtf")
-    resource.AddWorkshop("materials/vgui/entities/matryoshkaplacer.vmt")
-    resource.AddWorkshop("materials/vgui/entities/matryoshkaplacer.vtf")
-    resource.AddWorkshop("models/matroshka/matroshka.mdl")
-    resource.AddWorkshop("sound/dryfire_rifle.wav")
-    resource.AddWorkshop("sound/m203.wav")
 end
 
 SWEP.Category               = "Rainbow 6: Siege Gadgets"
@@ -57,12 +57,12 @@ SWEP.EquipMenuData = {
     type = "Explosive",
     desc = "Look at a thin enough wall, breakable or not. \nLeft click to deploy. \nRight click after deploying to activate."
 }
-SWEP.Icon                   = "vgui/ttt/icon_fuze"
+SWEP.Icon                   = "vgui/ttt/breaching_charge2"
 
 if CLIENT then
     SWEP.PrintName = "Breaching Charge"
     SWEP.Slot = 6
-    SWEP.Icon = "vgui/ttt/icon_fuze"
+    SWEP.Icon = "vgui/ttt/breaching_charge2"
 end
 
 function SWEP:IsEquipment()

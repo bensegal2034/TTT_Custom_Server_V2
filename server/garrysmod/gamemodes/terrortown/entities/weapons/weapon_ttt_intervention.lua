@@ -20,7 +20,7 @@ SWEP.Kind = WEAPON_HEAVY
 SWEP.WeaponID = AMMO_RIFLE
 
 SWEP.Primary.Delay          = 1.5
-SWEP.Primary.Recoil         = 7
+SWEP.Primary.Recoil         = 10
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "357"
 SWEP.Primary.Damage = 50

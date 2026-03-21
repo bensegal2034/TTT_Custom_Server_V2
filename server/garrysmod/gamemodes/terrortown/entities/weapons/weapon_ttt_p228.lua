@@ -23,7 +23,7 @@ SWEP.Base = "weapon_tttbase"
 
 --[[Default GMod values]]--
 SWEP.Primary.Ammo = "pistol"
-SWEP.Primary.Delay = 0.25
+SWEP.Primary.Delay = 0.20
 SWEP.Primary.Recoil	= 1.5
 SWEP.Primary.Cone = 0.01
 SWEP.SavedPrimaryCone = 0.01

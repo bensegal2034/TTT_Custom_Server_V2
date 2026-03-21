@@ -34,7 +34,7 @@ SWEP.Primary.ClipMax       = 120
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "AlyxGun"
-SWEP.Primary.Recoil        = 2.2
+SWEP.Primary.Recoil        = 1.4
 SWEP.Primary.Sound         = Sound( "Weapon_UMP45.Single" )
 
 SWEP.AutoSpawnable = true
@@ -112,9 +112,10 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
                   if SERVER then
                      local entang = ent:EyeAngles()
 
-                     local j = 4
-                     entang.pitch = math.Clamp(entang.pitch + math.Rand(-j, j), -90, 90)
-                     entang.yaw = math.Clamp(entang.yaw + math.Rand(-j, j), -90, 90)
+                     local p = 2
+                     local y = 4
+                     entang.pitch = math.Clamp(entang.pitch + math.Rand(p, p*2), -90, 90)
+                     entang.yaw = math.Clamp(entang.yaw + math.Rand(-y, y), -90, 90)
                      ent:SetEyeAngles(entang)
 
                      self.IsCharged = false

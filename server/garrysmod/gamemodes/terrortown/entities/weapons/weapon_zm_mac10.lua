@@ -20,7 +20,7 @@ SWEP.RicochetMulti       = 2
 
 DAMAGE = SWEP.Primary.Damage
 SWEP.Primary.Damage      = 10
-SWEP.Primary.Delay       = 0.08
+SWEP.Primary.Delay       = 0.07
 SWEP.Primary.Cone        = 0.02
 SWEP.Primary.ClipSize    = 30
 SWEP.Primary.ClipMax     = 90

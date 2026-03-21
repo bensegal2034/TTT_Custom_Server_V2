@@ -72,7 +72,7 @@ SWEP.Primary.Delay				= 0.15
 SWEP.Primary.ClipSize			= 30		-- Size of a clip
 SWEP.Primary.DefaultClip		= 60	-- Bullets you start with
 SWEP.Primary.ClipMax			= 90
-SWEP.Primary.Recoil				= 2			-- Maximum up recoil (rise)
+SWEP.Primary.Recoil				= 2.8			-- Maximum up recoil (rise)
 SWEP.Primary.Automatic			= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
@@ -440,7 +440,7 @@ function SWEP:Think()
 		self.DamageType = "True"
 	end
 	if self.StackCount >= 20 then
-		self.Primary.Recoil = 0.8
+		self.Primary.Recoil = 1
 	end
 
 	self.BaseClass.Think(self)

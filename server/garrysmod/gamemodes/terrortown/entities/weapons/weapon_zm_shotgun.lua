@@ -21,25 +21,24 @@ SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_SHOTGUN
 
 SWEP.Primary.Ammo          = "Buckshot"
-SWEP.Primary.Damage        = 8
+SWEP.Primary.Damage        = 7
 SWEP.Primary.Cone          = 0.15
-SWEP.Primary.Delay         = 0.5
+SWEP.Primary.Delay         = 0.45
 SWEP.Primary.ClipSize      = 8
 SWEP.Primary.ClipMax       = 24
 SWEP.Primary.DefaultClip   = 16
 SWEP.Primary.Automatic     = true
-SWEP.Primary.NumShots      = 8
+SWEP.Primary.NumShots      = 10
 SWEP.Primary.Sound         = Sound( "Weapon_XM1014.Single" )
 SWEP.Primary.Recoil        = 12
 SWEP.SavedPrimaryCone = 0.15
-
 
 SWEP.Secondary.Damage   = 40
 SWEP.Secondary.Sound    = Sound("weapons/slug.wav")
 SWEP.Secondary.Delay    = 0.6
 SWEP.Secondary.NumShots = 1
 SWEP.Secondary.Cone     = 0
-SWEP.Secondary.Recoil   = 12
+SWEP.Secondary.Recoil   = 8
 
 SWEP.DamageType            = "Impact"
 

@@ -59,23 +59,23 @@ SWEP.Spawnable = true
 
 SWEP.Kind = WEAPON_HEAVY
 
-SWEP.Primary.Damage = 4
-SWEP.Primary.Cone = 0.14
-SWEP.Primary.Delay = 0.24
-
-SWEP.Primary.Automatic = true
-SWEP.Primary.NumShots = 12
-SWEP.AutoSpawnable      = true
-SWEP.AmmoEnt = "item_box_buckshot_ttt"
-
-SWEP.UseHands			= true
-SWEP.ViewModelFlip		= true
-
-SWEP.ViewModelFOV		= 70
-SWEP.ViewModel			= "models/weapons/v_striker_12g.mdl"
-SWEP.WorldModel			= "models/weapons/w_striker_12g.mdl"
-SWEP.Primary.Sound			= "weapons/striker12/xm1014-1.wav"
+SWEP.Primary.Damage        = 4
+SWEP.Primary.NumShots      = 12
 SWEP.Primary.Recoil			= 3
+SWEP.Primary.Cone          = 0.14
+SWEP.Primary.Delay         = 0.20
+SWEP.Primary.Automatic     = true
+
+SWEP.AutoSpawnable         = true
+SWEP.AmmoEnt               = "item_box_buckshot_ttt"
+
+SWEP.UseHands			      = true
+SWEP.ViewModelFlip		   = true
+
+SWEP.ViewModelFOV		      = 70
+SWEP.ViewModel			      = "models/weapons/v_striker_12g.mdl"
+SWEP.WorldModel			   = "models/weapons/w_striker_12g.mdl"
+SWEP.Primary.Sound			= "weapons/striker12/xm1014-1.wav"
 
 SWEP.IronSightsPos = Vector(0, 0, 0)
 SWEP.IronSightsAng = Vector(2.502, 3.431, 0)

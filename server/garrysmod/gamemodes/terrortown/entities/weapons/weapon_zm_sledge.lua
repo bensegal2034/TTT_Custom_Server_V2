@@ -21,14 +21,14 @@ SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_M249
 
 SWEP.Primary.Damage        = 1
-SWEP.Primary.Delay         = 0.04
-SWEP.Primary.Cone          = 0.05
+SWEP.Primary.Delay         = 0.0375
+SWEP.Primary.Cone          = 0.0475
 SWEP.Primary.ClipSize      = 200
 SWEP.Primary.ClipMax       = 600
 SWEP.Primary.DefaultClip   = 400
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "smg1"
-SWEP.Primary.Recoil        = 1.2
+SWEP.Primary.Recoil        = 0.9
 SWEP.Primary.Sound         = Sound("Weapon_m249.Single")
 SWEP.AmmoEnt             = "item_ammo_smg1_ttt"
 SWEP.DamageType            = "True"

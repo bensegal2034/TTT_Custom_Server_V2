@@ -87,7 +87,7 @@ SWEP.Primary.Delay			= 0.25		-- This is in Rounds Per Minute
 SWEP.Primary.ClipSize			= 10		-- Size of a clip
 SWEP.Primary.DefaultClip			= 20	-- Bullets you start with
 SWEP.Primary.MaxClip			= 30
-SWEP.Primary.Recoil 			= 1.2
+SWEP.Primary.Recoil 			= 1.8
 SWEP.Primary.Automatic			= false	-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "357"	-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
 SWEP.AmmoEnt               = "item_ammo_357_ttt"
@@ -108,7 +108,7 @@ SWEP.ScopeScale 			= 0.7
 SWEP.ReticleScale 			= 0.6
 
 SWEP.Primary.NumShots	= 1		--how many bullets to shoot per trigger pull
-SWEP.Primary.Damage		= 30	--base damage per bullet
+SWEP.Primary.Damage		= 25	--base damage per bullet
 SWEP.HeadshotMultiplier = 2.5
 SWEP.Primary.Cone		= .01	--define from-the-hip accuracy 1 is terrible, .0001 is exact)
 SWEP.Primary.IronAccuracy = .00012 -- ironsight accuracy, should be the same for shotguns

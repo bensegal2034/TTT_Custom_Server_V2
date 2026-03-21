@@ -109,7 +109,7 @@ SWEP.HoldType			= "ar2"
 
 SWEP.DrawCrosshair			= false	
 SWEP.Primary.Delay       = 0.11
-SWEP.Primary.Recoil      = 1.2
+SWEP.Primary.Recoil      = 2.2
 SWEP.Primary.Automatic   = true
 SWEP.Primary.Damage      = 20
 SWEP.Primary.Cone        = 0.1

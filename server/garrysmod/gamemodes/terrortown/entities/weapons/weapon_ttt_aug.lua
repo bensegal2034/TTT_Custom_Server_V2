@@ -85,8 +85,11 @@ SWEP.Secondary.ScopeZoom			= 3
 SWEP.Secondary.Sound       = Sound("Default.Zoom")
 SWEP.Stacks = 0
 SWEP.StackTimer = 0
+SWEP.BaseStackTime  = 480
+SWEP.StackTime  = 480
 SWEP.StackCount = 0
 SWEP.StackDamage = 0
+SWEP.VisiblePlayers = 0
 
 SWEP.PreRoundCheck = 0
 
@@ -109,6 +112,7 @@ SWEP.SightsPos = Vector (2.275, -2.9708, 0.5303)
 SWEP.SightsAng = Vector (0, 0, 0)
 SWEP.RunSightsPos = Vector (-3.0328, 0, 1.888)
 SWEP.RunSightsAng = Vector (-24.2146, -36.522, 10)
+
 
 
 sound.Add({
@@ -376,18 +380,48 @@ function SWEP:Think()
 		if GetRoundState() == ROUND_WAIT then
 			self.PreRoundCheck = 1
 			self.StackTimer = self.StackTimer + 1
-			if self.StackTimer % 300 == 0 then
+			if self.StackTimer % 60 == 0 then
+				self.VisiblePlayers = 0
+				self.plyArray = player.GetBots()
+				for i, ply in ipairs(self.plyArray) do
+					if ply:IsBot() or ply:IsPlayer() then
+						if self:GetOwner():Visible(ply) then
+							self.VisiblePlayers = self.VisiblePlayers + 1
+							if self.VisiblePlayers > 3 then
+								self.VisiblePlayers = 3
+							end
+						end
+					end
+				end
+			end
+			self.StackTime = self.BaseStackTime - (120 * self.VisiblePlayers)
+			if self.StackTimer > self.StackTime then
 				self.StackCount = self.StackCount + 1
+				self.StackTimer = 0
 				self:SetStackCount(self.StackCount)
 			end
 		elseif GetRoundState() == ROUND_ACTIVE then
-			if GetRoundState() != ROUND_PREP then
 			self.PreRoundCheck = 1
-				self.StackTimer = self.StackTimer + 1
-				if self.StackTimer % 300 == 0 then
-					self.StackCount = self.StackCount + 1
-					self:SetStackCount(self.StackCount)
+			self.StackTimer = self.StackTimer + 1
+			if self.StackTimer % 60 == 0 then
+				self.VisiblePlayers = 0
+				self.plyArray = player.GetBots()
+				for i, ply in ipairs(self.plyArray) do
+					if ply:IsBot() or ply:IsPlayer() then
+						if self:GetOwner():Visible(ply) then
+							self.VisiblePlayers = self.VisiblePlayers + 1
+							if self.VisiblePlayers > 3 then
+								self.VisiblePlayers = 3
+							end
+						end
+					end
 				end
+			end
+			self.StackTime = self.BaseStackTime - (120 * self.VisiblePlayers)
+			if self.StackTimer > self.StackTime then
+				self.StackCount = self.StackCount + 1
+				self.StackTimer = 0
+				self:SetStackCount(self.StackCount)
 			end
 		end
 	end
@@ -413,57 +447,3 @@ function SWEP:Think()
 
 	self.BaseClass.Think(self)
 end	
-
-if SERVER then
-	hook.Add("DoPlayerDeath", "StackGet", function(victim, attacker, dmginfo)
-		if
-			not IsValid(dmginfo:GetAttacker())
-			or not dmginfo:GetAttacker():IsPlayer()
-			or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-		then
-			return
-		end
-		local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-
-		if weapon:GetClass() == "weapon_ttt_aug" then
-			if player.GetCount() < 5 then
-				if ROUND_WAIT then
-					weapon:SetStackCount(weapon:GetStackCount() + 5)
-				end
-			else
-				if attacker:GetTraitor() then
-					if victim:GetTraitor() == false then 
-						if victim:GetDetective() == true then
-							weapon:SetStackCount(weapon:GetStackCount() + 10)
-						else
-							weapon:SetStackCount(weapon:GetStackCount() + 5)
-						end
-					end
-				else
-					if victim:GetTraitor() then
-						weapon:SetStackCount(weapon:GetStackCount() + 10)
-					end
-				end
-			end
-		end
-	end)
-end
- 
-hook.Add("PostEntityTakeDamage", "AugStackOnHit", function(ent, dmginfo, wasDamageTaken)
-	if
-		not IsValid(dmginfo:GetAttacker())
-		or not dmginfo:GetAttacker():IsPlayer()
-		or not IsPlayer(ent)
-		or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-		or not GetRoundState() == ROUND_ACTIVE
-		or not wasDamageTaken
-	then
-		return	
-	end
- 
-	local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-
-	if weapon:GetClass() == "weapon_ttt_aug" then
-		weapon:SetStackCount(weapon:GetStackCount() + 1)
-	end
-end)

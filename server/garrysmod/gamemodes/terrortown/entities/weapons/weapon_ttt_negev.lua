@@ -110,7 +110,6 @@ function SWEP:PrimaryAttack(worldsnd)
    self.IsFiring = true
    local owner = self.Owner
    if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
-   print(self.ModulationRecoil)
    owner:ViewPunch( Angle( math.Rand(-0.2,-0.1) * recoil, math.Rand(-0.1,0.1) * recoil, 0 ) )
 end
 

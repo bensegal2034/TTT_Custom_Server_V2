@@ -13,15 +13,15 @@ end
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Primary.Recoil        = 0.9
-SWEP.Primary.Damage        = 3
-SWEP.Primary.Delay         = 0.1
+SWEP.Primary.Recoil        = 1.3
+SWEP.Primary.Damage        = 2
+SWEP.Primary.Delay         = 0.09
 SWEP.Primary.Cone          = 0.175
-SWEP.Primary.ClipSize      = 20
+SWEP.Primary.ClipSize      = 10
 SWEP.Primary.Automatic     = true
-SWEP.Primary.DefaultClip   = 40
+SWEP.Primary.DefaultClip   = 30
 SWEP.Primary.ClipMax       = 60
-SWEP.Primary.NumShots      = 8
+SWEP.Primary.NumShots      = 10
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_Glock.Single" )
 SWEP.DamageType            = "Impact"
@@ -39,3 +39,7 @@ SWEP.ViewModel             = "models/weapons/v_pist_glock18.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_glock18.mdl"
 
 SWEP.IronSightsPos         = Vector( 4.33, -4.0, 2.9 )
+
+function SWEP:SecondaryAttack()
+
+end

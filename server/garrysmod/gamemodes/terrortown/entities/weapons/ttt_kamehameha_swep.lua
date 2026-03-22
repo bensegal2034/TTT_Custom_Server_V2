@@ -44,7 +44,6 @@ SWEP.Slot				= 6
 SWEP.SlotPos			= 1
 SWEP.DrawAmmo			= false
 SWEP.DrawCrosshair		= true
-SWEP.WeaponActive 		= false
 SWEP.WeaponTimer 		= 0
 SWEP.Icon = "VGUI/ttt/icon_kamehameha_ttt"
 SWEP.Slot = 6
@@ -71,9 +70,14 @@ function SWEP:ShouldDropOnDie()
 	return false
 end
 
+function SWEP:SetupDataTables()
+	self:NetworkVar("Bool", "WeaponActive")
+end
+
 function SWEP:Initialize()
-self.addhp = 0
-self.timehp = 0
+	if SERVER then self:SetWeaponActive(false) end
+	self.addhp = 0
+	self.timehp = 0
 	self:SetWeaponHoldType( "normal" )
 end
 
@@ -89,8 +93,8 @@ function SWEP:DoImpactEffect( trace, damageType )
 end
 function SWEP:SecondaryAttack()end
 
-function SWEP:Think()	
-	if self.WeaponActive == false then
+function SWEP:Think()
+	if not(self:GetWeaponActive()) then
 		if (self.Weapon:Clip1() < 50) then
 			self.WeaponTimer = self.WeaponTimer + 1
 			if self.WeaponTimer >= 7 then
@@ -105,22 +109,22 @@ function SWEP:Think()
 end
 
 function SWEP:PrimaryAttack()
-	if IsValid(self:GetOwner()) then
-		local ply = self.Owner
-		local myposition = self.Owner:GetShootPos()
-		local aimraytrace = myposition + (self.Owner:GetAimVector() * 70)
+	local ply = self:GetOwner()
+	if IsValid(ply) and not(self:GetWeaponActive()) then
+		local myposition = ply:GetShootPos()
+		local aimraytrace = myposition + (ply:GetAimVector() * 70)
 			
 		local kmins = Vector(1,1,1) * -10
 		local kmaxs = Vector(1,1,1) * 10
 
-		local tr = util.TraceHull({start=myposition, endpos=aimraytrace, filter=self.Owner, mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
+		local tr = util.TraceHull({start=myposition, endpos=aimraytrace, filter=ply, mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
 
 		if not IsValid(tr.Entity) then
-			tr = util.TraceLine({start=myposition, endpos=aimraytrace, filter=self.Owner, mask=MASK_SHOT_HULL})
+			tr = util.TraceLine({start=myposition, endpos=aimraytrace, filter=ply, mask=MASK_SHOT_HULL})
 		end
 			
 		if (self.Weapon:Clip1() < 50) then return end
-			self.WeaponActive = true
+			if SERVER then self:SetWeaponActive(true) end
 			for k, v in pairs( player.GetAll( ) ) do
 			v:ConCommand( "play weapons/shoot/kamehame.wav\n" )
 			end
@@ -128,31 +132,31 @@ function SWEP:PrimaryAttack()
 		self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK )
 		timer.Simple(4.9, function() 
 			if ply:Alive() then
-				self.Owner:Freeze(false) 
-				self.WeaponActive = false
+				ply:Freeze(false) 
+				if SERVER then self:SetWeaponActive(false) end
 				end
 			end)
 		timer.Simple(3.4, function()
 			if ply:Alive() then
-				self.Owner:Freeze(true)
+				ply:Freeze(true)
 				for k, v in pairs( player.GetAll( ) ) do
 				v:ConCommand( "play weapons/shoot/ha.wav\n" )
 				end
 				timer.Create( "Beam" .. math.random(), 0.010, 50, function()
 					--
 					local bullet = {} 
-					bullet.Src 	= self.Owner:GetShootPos() 
-					bullet.Dir 	= self.Owner:GetAimVector() 
+					bullet.Src 	= ply:GetShootPos() 
+					bullet.Dir 	= ply:GetAimVector() 
 					bullet.Spread 	= Vector(0, 0, 0)
 					bullet.Num = 1
 					bullet.Tracer = 1//2
 					bullet.Damage	= 30
 					bullet.TracerName = "kamebeam"
 					self:TakePrimaryAmmo(1)
-					self.Owner:FireBullets(bullet)
+					ply:FireBullets(bullet)
 					--
 					local effects = EffectData()
-					local trace = self.Owner:GetEyeTrace()	
+					local trace = ply:GetEyeTrace()	
 					--			
 					effects:SetOrigin(trace.HitPos + 
 					Vector( math.Rand(-0.5, 0.5), 

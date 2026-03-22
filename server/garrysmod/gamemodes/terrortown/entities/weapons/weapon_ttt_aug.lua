@@ -113,8 +113,6 @@ SWEP.SightsAng = Vector (0, 0, 0)
 SWEP.RunSightsPos = Vector (-3.0328, 0, 1.888)
 SWEP.RunSightsAng = Vector (-24.2146, -36.522, 10)
 
-
-
 sound.Add({
 	name = 			"aug_a3.Single",
 	channel = 		CHAN_USER_BASE+10,
@@ -382,7 +380,7 @@ function SWEP:Think()
 			self.StackTimer = self.StackTimer + 1
 			if self.StackTimer % 60 == 0 then
 				self.VisiblePlayers = 0
-				self.plyArray = player.GetBots()
+				self.plyArray = player.GetPlayers()
 				for i, ply in ipairs(self.plyArray) do
 					if ply:IsBot() or ply:IsPlayer() then
 						if self:GetOwner():Visible(ply) then
@@ -405,7 +403,7 @@ function SWEP:Think()
 			self.StackTimer = self.StackTimer + 1
 			if self.StackTimer % 60 == 0 then
 				self.VisiblePlayers = 0
-				self.plyArray = player.GetBots()
+				self.plyArray = player.GetPlayers()
 				for i, ply in ipairs(self.plyArray) do
 					if ply:IsBot() or ply:IsPlayer() then
 						if self:GetOwner():Visible(ply) then

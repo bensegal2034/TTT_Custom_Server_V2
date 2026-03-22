@@ -380,7 +380,7 @@ function SWEP:Think()
 			self.StackTimer = self.StackTimer + 1
 			if self.StackTimer % 60 == 0 then
 				self.VisiblePlayers = 0
-				self.plyArray = player.GetPlayers()
+				self.plyArray = player.GetAll()
 				for i, ply in ipairs(self.plyArray) do
 					if ply:IsBot() or ply:IsPlayer() then
 						if self:GetOwner():Visible(ply) then
@@ -403,7 +403,7 @@ function SWEP:Think()
 			self.StackTimer = self.StackTimer + 1
 			if self.StackTimer % 60 == 0 then
 				self.VisiblePlayers = 0
-				self.plyArray = player.GetPlayers()
+				self.plyArray = player.GetAll()
 				for i, ply in ipairs(self.plyArray) do
 					if ply:IsBot() or ply:IsPlayer() then
 						if self:GetOwner():Visible(ply) then

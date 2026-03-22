@@ -72,7 +72,7 @@ SWEP.Primary.Delay				= 0.15
 SWEP.Primary.ClipSize			= 30		-- Size of a clip
 SWEP.Primary.DefaultClip		= 60	-- Bullets you start with
 SWEP.Primary.ClipMax			= 90
-SWEP.Primary.Recoil				= 2.8			-- Maximum up recoil (rise)
+SWEP.Primary.Recoil				= 1			-- Maximum up recoil (rise)
 SWEP.Primary.Automatic			= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
@@ -248,7 +248,7 @@ function SWEP:PrimaryAttack(worldsnd)
 	local owner = self:GetOwner()
 	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
  
-	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil * 3, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil * 3, 0 ) )
+	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 end
 
 function SWEP:GetPrimaryCone()
@@ -381,9 +381,10 @@ function SWEP:Think()
 			if self.StackTimer % 60 == 0 then
 				self.VisiblePlayers = 0
 				self.plyArray = player.GetAll()
+				local owner = self:GetOwner()
 				for i, ply in ipairs(self.plyArray) do
-					if ply:IsBot() or ply:IsPlayer() then
-						if not ply == self:GetOwner() then
+					if ply != owner then
+						if ply:IsBot() or ply:IsPlayer() then
 							if self:GetOwner():Visible(ply) then
 								self.VisiblePlayers = self.VisiblePlayers + 1
 								if self.VisiblePlayers > 3 then
@@ -415,9 +416,5 @@ function SWEP:Think()
 	if self.StackCount >= 60 then
 		self.DamageType = "True"
 	end
-	if self.StackCount >= 20 then
-		self.Primary.Recoil = 1
-	end
-
 	self.BaseClass.Think(self)
 end	

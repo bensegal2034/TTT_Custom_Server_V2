@@ -761,7 +761,7 @@ end
 local function FixedDescription(v, item) -- (maybe rework)
 	local Result = SafeTranslate(v)
 
-	if fixedDesc[item.id] and FixedDescBool:GetBool() then -- fixed description ( #"\n" = 1 )
+	if true then -- fixed description ( #"\n" = 1 )
 		local Text = SafeTranslate(v)
 		local MaxLength = 40
 
@@ -1507,7 +1507,12 @@ local function TraitorMenuPopup()
 							dfields[k]:SetText(Result.."\n")--"\n" for better design in scroll panel
 						end
 					else
-						dfields[k]:SetText(SafeTranslate(v))
+						local Result = FixedDescription(v, new.item)
+						if TTT2 and TTT2Info:GetBool() then
+							dfields[k]:SetText(Result.."\n\nTTT2 INFO: \nMinimum Players: "..tostring(new.item.minPlayers).."\nPrice: "..tostring(new.item.credits).." credits\nNo Random: "..tostring(new.item.NoRandom).."\nGlobal limited: "..tostring(new.item.globalLimited).."\nPersonal limited: "..tostring(new.item.limited).."\nTeam limited: "..tostring(new.item.teamLimited).."\nnot Buyable: "..tostring(new.item.notBuyable).."\n")--"\n" for better design in scroll panel
+						else
+							dfields[k]:SetText(Result.."\n")--"\n" for better design in scroll panel
+						end
 					end
 
 					dfields[k]:SizeToContents()

@@ -375,46 +375,24 @@ end
 function SWEP:Think()
 	self.BaseClass.Think(self)
 	if SERVER then
-		if GetRoundState() == ROUND_WAIT then
+		if GetRoundState() == ROUND_WAIT or GetRoundState() == ROUND_ACTIVE then
 			self.PreRoundCheck = 1
 			self.StackTimer = self.StackTimer + 1
 			if self.StackTimer % 60 == 0 then
 				self.VisiblePlayers = 0
-				self.plyArray = player.GetAll()
+				self.plyArray = player.GetPlayers()
 				for i, ply in ipairs(self.plyArray) do
 					if ply:IsBot() or ply:IsPlayer() then
-						if self:GetOwner():Visible(ply) then
-							self.VisiblePlayers = self.VisiblePlayers + 1
-							if self.VisiblePlayers > 3 then
-								self.VisiblePlayers = 3
+						if not ply == self:GetOwner() then
+							if self:GetOwner():Visible(ply) then
+								self.VisiblePlayers = self.VisiblePlayers + 1
+								if self.VisiblePlayers > 3 then
+									self.VisiblePlayers = 3
+								end
 							end
 						end
 					end
 				end
-			end
-			self.StackTime = self.BaseStackTime - (120 * self.VisiblePlayers)
-			if self.StackTimer > self.StackTime then
-				self.StackCount = self.StackCount + 1
-				self.StackTimer = 0
-				self:SetStackCount(self.StackCount)
-			end
-		elseif GetRoundState() == ROUND_ACTIVE then
-			self.PreRoundCheck = 1
-			self.StackTimer = self.StackTimer + 1
-			if self.StackTimer % 60 == 0 then
-				self.VisiblePlayers = 0
-				self.plyArray = player.GetAll()
-				for i, ply in ipairs(self.plyArray) do
-					if ply:IsBot() or ply:IsPlayer() then
-						if self:GetOwner():Visible(ply) then
-							self.VisiblePlayers = self.VisiblePlayers + 1
-							if self.VisiblePlayers > 3 then
-								self.VisiblePlayers = 3
-							end
-						end
-					end
-				end
-				print(self.VisiblePlayers)
 			end
 			self.StackTime = self.BaseStackTime - (120 * self.VisiblePlayers)
 			if self.StackTimer > self.StackTime then

@@ -13,12 +13,6 @@ Example table entry:
     killer = "SteamID64 of killer"
     weapon = "weapon class name"
 }
-every time a new round goes to prep phase:
-transfer the stats from the currentround table into the postround one
-then clear out the currentround table
-use the postround table to ask players if they were rdm'ed
-if yes: harsher karma penalty for killer
-if no: do nothing (for now)
 ]]--
 
 util.AddNetworkString("RDMVote")

@@ -752,7 +752,7 @@ function SWEP:PrimaryAttack()
 		local sphereSize = 15 -- how big is the magnetization to the head?
 	
 		for _, ply in ipairs(allPlys) do
-			if self:GetOwner():IsLineOfSightClear(ply) and ply != self:GetOwner() and ply:Alive() and IsValid(ply) then
+			if self:GetOwner():IsLineOfSightClear(ply) and ply != self:GetOwner() and ply:Alive() and IsValid(ply) and ply:GetObserverMode() == OBS_MODE_NONE then
 				local headBoneIndex = ply:LookupBone("ValveBiped.Bip01_Head1")
 				local headBoneMatrix = ply:GetBoneMatrix(headBoneIndex)
 	

@@ -170,6 +170,11 @@ hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dm
     --if not(took) then return end
 
     local damageDealt = dmg:GetDamage()
+    
+    if damageDealt < 0 then
+        print(wepName, "did negative damage!")
+    end
+
     if totalDamage[wepName] ~= nil then
         totalDamage[wepName]["damage"] = totalDamage[wepName]["damage"] + math.Round(damageDealt)
     else
@@ -203,6 +208,11 @@ hook.Add("DoPlayerDeath", "TrackSWEPKills", function(victim, attacker, dmginfo)
     local wepName = dmginfo:GetAttacker():GetActiveWeapon():GetClass()
 
     local damageDealt = dmginfo:GetDamage()
+    
+    if damageDealt < 0 then
+        print(wepName, "did negative damage!")
+    end
+
     if totalDamage[wepName] ~= nil then
         totalDamage[wepName]["damage"] = totalDamage[wepName]["damage"] + math.Round(damageDealt)
     else

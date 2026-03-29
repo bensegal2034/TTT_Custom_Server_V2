@@ -17,9 +17,7 @@ if( CLIENT ) then
     
 end
 
-// Potential improvement: convert to spy tf2 cloak and dagger, except when moving you show up as blurred
-
-SWEP.Author= "Lykrast"
+SWEP.Author= "dot_dash"
 
 
 SWEP.Base = "weapon_tttbase"

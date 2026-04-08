@@ -42,15 +42,6 @@ local mat_dir = "vgui/ttt/"
 EquipmentItems = {
    [ROLE_DETECTIVE] = {
 
-      -- body armor
-      {  id       = EQUIP_ARMOR,
-         loadout  = true, -- default equipment for detectives
-         type     = "item_passive",
-         material = mat_dir .. "icon_armor",
-         name     = "item_armor",
-         desc     = "item_armor_desc"
-      },
-
 
       -- The default TTT equipment uses the language system to allow
       -- translation. Below is an example of how the type, name and desc fields

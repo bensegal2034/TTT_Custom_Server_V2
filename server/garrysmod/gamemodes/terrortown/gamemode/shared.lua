@@ -267,7 +267,6 @@ DefaultEquipment = {
       "weapon_ttt_stungun",
       "weapon_ttt_cse",
       "weapon_ttt_teleport",
-      EQUIP_ARMOR,
       EQUIP_RADAR
    },
 

@@ -131,24 +131,26 @@ function SWEP:place_sniper(tracedata)
         ent:SetPos(spawnereasd)
         ent:SetAngles(Angle(pitch, yaw, roll))
         ent:Spawn()
-
-        if GetConVar("ttt_combine_sniper_rotate"):GetBool() then
-            timer.Create("CombineSniperRotate" .. ent:EntIndex(), 0.1, 0, function()
-                if IsValid(ent) then
-                    local angles = ent:GetAngles()
-                    angles:Add(Angle(0, 5, 0))
-                    ent:SetAngles(angles)
-                else
-                    -- Remove the timer as soon as the entity is no longer valid,
-                    -- Such as at the end of the round when TTT removes all non-map entities
-                    timer.Remove("CombineSniperRotate" .. ent:EntIndex())
-                end
-            end)
-        end
+        
+        timer.Simple(1, function()
+            if GetConVar("ttt_combine_sniper_rotate"):GetBool() then
+                timer.Create("CombineSniperRotate" .. ent:EntIndex(), 0.1, 0, function()
+                    if IsValid(ent) then
+                        local angles = ent:GetAngles()
+                        angles:Add(Angle(0, 5, 0))
+                        ent:SetAngles(angles)
+                    else
+                        -- Remove the timer as soon as the entity is no longer valid,
+                        -- Such as at the end of the round when TTT removes all non-map entities
+                        timer.Remove("CombineSniperRotate" .. ent:EntIndex())
+                    end
+                end)
+            end
+        end)
 
         if GetConVar("ttt_combine_sniper_remove"):GetBool() then
             -- If for whatever reason the remove time cannot be read, set the remove timer to 15 seconds
-            local removeTime = GetConVar("ttt_combine_sniper_time"):GetInt() or 15
+            local removeTime = GetConVar("ttt_combine_sniper_time"):GetInt() or 16
 
             timer.Create("CombineSniperRemove" .. ent:EntIndex(), removeTime, 1, function()
                 timer.Remove("CombineSniperRotate" .. ent:EntIndex())

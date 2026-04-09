@@ -126,7 +126,7 @@ function SWEP:Think()
 	if not(self:GetWeaponActive()) then
 		if (self:GetChargeTime() < 50) then
 			self.WeaponTimer = self.WeaponTimer + 1
-			if self.WeaponTimer >= 2 then
+			if self.WeaponTimer >= 14 then
 				if SERVER then
 					self.ChargeTime = self.ChargeTime + 1
 					self:SetChargeTime(self.ChargeTime)

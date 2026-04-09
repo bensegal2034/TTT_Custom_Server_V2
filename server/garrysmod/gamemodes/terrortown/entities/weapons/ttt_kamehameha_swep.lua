@@ -124,20 +124,20 @@ function SWEP:SecondaryAttack()end
 
 function SWEP:Think()
 	if not(self:GetWeaponActive()) then
-		if (self:GetChargeTime() < 50) then
+		if (self:GetChargeTime() <= 50) then
 			self.WeaponTimer = self.WeaponTimer + 1
-			if self.WeaponTimer >= 14 then
+			if self.WeaponTimer >= 1 then
 				if SERVER then
 					self.ChargeTime = self.ChargeTime + 1
 					self:SetChargeTime(self.ChargeTime)
 				end
 				self.ChargeTime = self:GetChargeTime()
-				if CLIENT and IsFirstTimePredicted() then
+				if CLIENT then
 					if self.ChargeTime == 49 and not self.SoundPlayed then
 						local owner = self:GetOwner()
-						local soundStr = "weapons/shoot/goku" .. tostring(math.random(1, 3)) .. ".wav"       
-        				sound.Play(soundStr, owner:GetPos(), 140, 100, 1)
-						print(soundStr)
+						local num = math.random(1,3)
+						local soundStr = "weapons/shoot/goku" .. tostring(num) .. ".wav"       
+        				surface.PlaySound(soundStr)
 						self.SoundPlayed = true
 					end
 				end
@@ -191,7 +191,9 @@ function SWEP:PrimaryAttack()
 			end
 		--sound.Play("weapons/shoot/kamehame.wav", Vector(0,0,0),180)
 		self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK )
-		self.SoundPlayed = false
+		if CLIENT then
+			self.SoundPlayed = false
+		end
 		timer.Simple(4.9, function() 
 			if ply:Alive() then
 				ply:Freeze(false) 

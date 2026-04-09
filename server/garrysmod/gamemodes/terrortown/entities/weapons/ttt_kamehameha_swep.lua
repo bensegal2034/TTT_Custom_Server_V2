@@ -25,6 +25,7 @@ SWEP.FiresUnderwater = true
 
 SWEP.MaxCharge = 50
 SWEP.ChargeTime = 50
+SWEP.SoundPlayed = false
 
 --
 SWEP.Primary.Damage         = 50
@@ -58,16 +59,16 @@ SWEP.EquipMenuData = {
 
 if SERVER then
 	AddCSLuaFile("ttt_kamehameha_swep.lua")
-	resource.AddFile("effect_texture/kamehameha_beam.vmt")
-	resource.AddFile("effect_texture/kamehameha_beam.vtf")
+	resource.AddFile("materials/effect_texture/kamehameha_beam.vmt")
+	resource.AddFile("materials/effect_texture/kamehameha_beam.vtf")
 	resource.AddFile("models/weapons/kamehameha_viewmodel.mdl")
 	resource.AddFile("VGUI/ttt/icon_kamehameha_ttt.vtf")
 	resource.AddFile("VGUI/ttt/icon_kamehameha_ttt.vtf")
-	resource.AddFile("weapons/shoot/kamehame.wav")
-	resource.AddFile("weapons/shoot/ha.wav")
-	resource.AddFile("weapons/shoot/goku1.wav")
-	resource.AddFile("weapons/shoot/goku2.wav")
-	resource.AddFile("weapons/shoot/goku3.wav")
+	resource.AddFile("sound/weapons/shoot/kamehame.wav")
+	resource.AddFile("sound/weapons/shoot/ha.wav")
+	resource.AddFile("sound/weapons/shoot/goku1.wav")
+	resource.AddFile("sound/weapons/shoot/goku2.wav")
+	resource.AddFile("sound/weapons/shoot/goku3.wav")
 	resource.AddWorkshop("1599710095")
 end
 
@@ -132,11 +133,12 @@ function SWEP:Think()
 				end
 				self.ChargeTime = self:GetChargeTime()
 				if CLIENT and IsFirstTimePredicted() then
-					if self.ChargeTime == 49 then
+					if self.ChargeTime == 49 and not self.SoundPlayed then
 						local owner = self:GetOwner()
 						local soundStr = "weapons/shoot/goku" .. tostring(math.random(1, 3)) .. ".wav"       
         				sound.Play(soundStr, owner:GetPos(), 140, 100, 1)
 						print(soundStr)
+						self.SoundPlayed = true
 					end
 				end
 				self.WeaponTimer = 0
@@ -189,6 +191,7 @@ function SWEP:PrimaryAttack()
 			end
 		--sound.Play("weapons/shoot/kamehame.wav", Vector(0,0,0),180)
 		self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK )
+		self.SoundPlayed = false
 		timer.Simple(4.9, function() 
 			if ply:Alive() then
 				ply:Freeze(false) 

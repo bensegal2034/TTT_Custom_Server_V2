@@ -5,7 +5,7 @@ if SERVER then
 
     CreateConVar("ttt_combine_sniper_remove", "1", {FCVAR_NOTIFY}, "Whether the combine sniper should eventually be removed", 0, 1)
 
-    CreateConVar("ttt_combine_sniper_time", "15", {FCVAR_NOTIFY}, "Time in seconds until the combine sniper is removed", 1)
+    CreateConVar("ttt_combine_sniper_time", "20", {FCVAR_NOTIFY}, "Time in seconds until the combine sniper is removed", 1)
 end
 
 local detCvar = CreateConVar("ttt_combine_sniper_detective", "0", {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Whether detectives can buy the combine sniper", 0, 1)
@@ -59,6 +59,13 @@ if SERVER then
             dmginfo:SetDamage(9999)
         end
     end)
+
+    hook.Add("EntityTakeDamage", "CombineSniperDamage", function(target, dmginfo)
+        if target:IsNPC() and target:GetClass() == "npc_combine_s" and target:IsValid() then
+            dmginfo:ScaleDamage(0.25)
+        end
+    end)
+
 end
 
 function SWEP:PrimaryAttack(worldsnd)
@@ -117,57 +124,64 @@ end
 function SWEP:place_sniper(tracedata)
     if (CLIENT) then return end
     local ent = ents.Create("npc_sniper")
-
+    local tempent = ents.Create("npc_combine_s")
+    
     for k, v in pairs(player.GetAll()) do
         v:ChatPrint("A Combine Sniper has been summoned! Hide fast! Before you meet your end...")
     end
 
-    if (not IsValid(ent)) then return end
     local spawnereasd = self:FindRespawnLocationCustom(tracedata.pos)
 
     if spawnereasd ~= false then
         local pitch, yaw, roll = self:GetOwner():EyeAngles():Unpack()
         pitch = 0
-        ent:SetPos(spawnereasd)
+        tempent:SetPos(spawnereasd)
+        tempent:SetAngles(Angle(pitch, yaw, roll))
+        tempent:SetKeyValue("spawnflags", "144")
+        tempent:SetKeyValue("sleepstate", "0")
+        tempent:SetHealth(200)
+        tempent:SetMaxHealth(200)
+        tempent:Spawn()
+        ent:SetPos(tempent:GetPos())
         ent:SetAngles(Angle(pitch, yaw, roll))
-        ent:Spawn()
-        
-        timer.Simple(1, function()
-            if GetConVar("ttt_combine_sniper_rotate"):GetBool() then
-                timer.Create("CombineSniperRotate" .. ent:EntIndex(), 0.1, 0, function()
-                    if IsValid(ent) then
-                        local angles = ent:GetAngles()
-                        angles:Add(Angle(0, 5, 0))
-                        ent:SetAngles(angles)
-                    else
-                        -- Remove the timer as soon as the entity is no longer valid,
-                        -- Such as at the end of the round when TTT removes all non-map entities
-                        timer.Remove("CombineSniperRotate" .. ent:EntIndex())
-                    end
-                end)
+        ent:DrawShadow( false )
+        ent:SetMaterial( "models/effects/vol_light001" )
+        ent:SetRenderMode( RENDERMODE_TRANSALPHA )
+        ent:Fire( "alpha", 0, 0 )
+
+        timer.Simple(5, function()
+            if tempent:IsValid() and tempent:IsAlive() then
+                ent:Spawn()
+                if GetConVar("ttt_combine_sniper_rotate"):GetBool() then
+                    timer.Create("CombineSniperRotate" .. ent:EntIndex(), 0.1, 0, function()
+                        if IsValid(ent) then
+                            local angles = tempent:GetAngles()
+                            angles:Add(Angle(0, 5, 0))
+                            tempent:SetAngles(angles)
+                            ent:SetAngles(angles)
+                        else
+                            -- Remove the timer as soon as the entity is no longer valid,
+                            -- Such as at the end of the round when TTT removes all non-map entities
+                            timer.Remove("CombineSniperRotate" .. ent:EntIndex())
+                        end
+                    end)
+                end
             end
         end)
 
         if GetConVar("ttt_combine_sniper_remove"):GetBool() then
             -- If for whatever reason the remove time cannot be read, set the remove timer to 15 seconds
-            local removeTime = GetConVar("ttt_combine_sniper_time"):GetInt() or 16
+            local removeTime = GetConVar("ttt_combine_sniper_time"):GetInt() or 20
 
             timer.Create("CombineSniperRemove" .. ent:EntIndex(), removeTime, 1, function()
                 timer.Remove("CombineSniperRotate" .. ent:EntIndex())
 
                 if IsValid(ent) then
                     ent:Remove()
+                    tempent:Remove()
                 end
             end)
         end
-    end
-
-    local phys = ent:GetPhysicsObject()
-
-    if (not IsValid(phys)) then
-        ent:Remove()
-
-        return
     end
 end
 

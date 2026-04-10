@@ -71,7 +71,7 @@ SWEP.ViewModelFlip = false
 SWEP.AutoSwitchTo = false
 SWEP.AutoSwitchFrom = false
 SWEP.SlotPos = 0
-SWEP.LungeDistance = 200000
+SWEP.LungeDistance = 200
 SWEP.UseHands = false
 SWEP.HoldType = "knife"
 SWEP.FiresUnderwater = false
@@ -216,28 +216,12 @@ function SWEP:IsEntVisible(ent)
 	self.Owner:LagCompensation(true)
 	local looktr = util.TraceLine(LookTrace)
 	self.Owner:LagCompensation(false)
-	if IsValid(ent) and ent:IsPlayer() and looktr.Entity == ent then
-		self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
-		timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
-		return true
-	end
-
-	if IsValid(ent) and ent:IsNPC() and looktr.Entity == ent then
-		self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
-		timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
-		return true
-	end
-
-	if IsValid(ent) and ent:IsNextBot() and looktr.Entity == ent then
-		self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
-		timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
-		return true
-	end
-
-	if IsValid(ent) and self:EntityIsVehicle(ent) and looktr.Entity == ent then
-		self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
-		timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
-		return true
+	if IsValid(ent) and looktr.Entity == ent then
+		if ent:IsPlayer() or ent:IsNPC() then
+			self:SetNW2Bool("HaloSWEPSEntIsVisible", true)
+			timer.Create("WallTimeOut" .. self:EntIndex(), 0.05, 1, function() if IsValid(self) then self:SetNW2Bool("HaloSWEPSEntIsVisible", false) end end)
+			return true
+		end
 	end
 
 	local WallTrace = {}
@@ -304,7 +288,7 @@ function SWEP:DrawHUD()
 	if self.Owner:InVehicle() and self.Owner:GetAllowWeaponsInVehicle() == false or GetViewEntity() ~= self.Owner then return end
 	local LookTrace = {}
 	LookTrace.start = self.Owner:GetShootPos()
-	LookTrace.endpos = LookTrace.start + (self.Owner:GetAimVector() * 88)
+	LookTrace.endpos = LookTrace.start + (self.Owner:GetAimVector() * 119)
 	LookTrace.filter = function(ent)
 		if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h3_sword" or ent:GetClass() == "melee_attack_h3" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 			return false
@@ -320,7 +304,7 @@ function SWEP:DrawHUD()
 	if looktr.SurfaceFlags == SURF_TRANS or looktr.MatType == MAT_GLASS or looktr.Contents == 268435458 or looktr.Entity:IsNPC() or looktr.Entity:IsPlayer() or looktr.Entity:IsNextBot() or self:EntityIsVehicle(looktr.Entity) then
 		local Trace = {}
 		Trace.start = self.Owner:GetShootPos()
-		Trace.endpos = Trace.start + (self.Owner:GetAimVector() * 87)
+		Trace.endpos = Trace.start + (self.Owner:GetAimVector() * 119)
 		Trace.filter = function(ent)
 			if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h3_sword" or ent:GetClass() == "melee_attack_h3" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 				return false
@@ -346,21 +330,6 @@ function SWEP:DrawHUD()
 		self.Owner:LagCompensation(false)
 		self:HaloReticle(tr)
 	end
-end
-
-function SWEP:CanBePickedUpByNPCs()
-	if self:Clip1() > 0 and GetGlobalBool("H3SWEPSMounted") == true then
-		return true
-	else
-		return false
-	end
-end
-
-function SWEP:CustomAmmoDisplay()
-	self.AmmoDisplay = self.AmmoDisplay or {}
-	self.AmmoDisplay.PrimaryClip = self:Clip1()
-	self.AmmoDisplay.SecondaryAmmo = self:Ammo2()
-	return self.AmmoDisplay
 end
 
 function SWEP:MeleeHit()
@@ -405,7 +374,7 @@ function SWEP:MeleeHitSword()
 			melee.Owner = self.Owner
 			melee:Activate()
 			local phys = melee:GetPhysicsObject()
-			phys:SetVelocity(self.Owner:GetAimVector() * 420)
+			phys:SetVelocity(self.Owner:GetAimVector() * 700)
 		end
 
 		if SERVER and IsValid(self.Owner) then
@@ -473,7 +442,6 @@ function SWEP:Deploy()
 	end
 
 	self:SetNW2Int("NPCClipH3", -1)
-	if IsValid(self.Owner:GetViewModel()) then self.Owner:GetViewModel():SetWeaponModel(self.ViewModel, self) end
 	timer.Stop("GrenadeThrow" .. self:EntIndex())
 	timer.Stop("MeleeAttack" .. self:EntIndex())
 	timer.Stop("weapon_idle" .. self:EntIndex())
@@ -558,7 +526,7 @@ function SWEP:Deploy()
 		self.Owner:LagCompensation(true)
 		local looktr = util.TraceLine(LookTrace)
 		self.Owner:LagCompensation(false)
-		if SERVER and IsValid(looktr.Entity) and looktr.Entity:IsNPC() and looktr.Entity:Disposition(self.Owner) == 1 or SERVER and IsValid(looktr.Entity) and looktr.Entity:IsNPC() and looktr.Entity:Disposition(self.Owner) == 2 or SERVER and looktr.Entity:IsPlayer() and looktr.Entity:Team() ~= self.Owner:Team() or SERVER and looktr.Entity:IsPlayer() and looktr.Entity:Team() == TEAM_UNASSIGNED or looktr.Entity:IsNextBot() and looktr.Entity.Enemy == self.Owner or self:EntityIsVehicle(looktr.Entity) and self:EntityIsEnemyVehicle(looktr.Entity) and self:IsVehicleOccupied(looktr.Entity) then
+		if SERVER and IsValid(looktr.Entity) and looktr.Entity:IsPlayer() then
 			if IsValid(self.Owner:GetEyeTrace().Entity) and self.Owner:GetEyeTrace().Entity == looktr.Entity and self.Owner:GetEyeTrace().MatType ~= MAT_GRATE then self:SetNW2Entity("MeleeTargetH3", looktr.Entity) end
 		else
 			self:SetNW2Entity("MeleeTargetH3", NULL)
@@ -649,20 +617,13 @@ function SWEP:PrimaryAttack()
 			end
 			self:SetNextPrimaryFire(CurTime() + 1.4)
 			self:SetNextSecondaryFire(CurTime() + 1.4)
-			GAMEMODE:SetPlayerSpeed(self.Owner, 1, 1)
-			if LungeRange > self.LungeDistance and game.SinglePlayer() == true then
-				self.Owner:SetVelocity(self.Owner:GetForward() * 1000)
-			elseif LungeRange > self.LungeDistance and game.SinglePlayer() == false then
+			if LungeRange > self.LungeDistance then
 				self.Owner:SetVelocity(self.Owner:GetForward() * 880)
 			elseif LungeRange <= self.LungeDistance then
-				self.Owner:SetVelocity(self.Owner:GetForward() * 365)
+				self.Owner:SetVelocity(self.Owner:GetForward() * 1000)
 			end
 
-			timer.Create("MeleeAttack" .. self:EntIndex(), 0.13, 1, function()
-				self:MeleeHitSword()
-				self.Owner:SetRunSpeed(baseclass.Get(player_manager.GetPlayerClass(self.Owner)).RunSpeed)
-				self.Owner:SetWalkSpeed(baseclass.Get(player_manager.GetPlayerClass(self.Owner)).WalkSpeed)
-			end)
+			self:MeleeHitSword()
 		end
 
 		if IsValid(self:GetNW2Entity("MeleeTargetH3")) and LungeRange <= self.LungeDistance and not self.Owner:OnGround() and self:Clip1() > 0 then
@@ -680,12 +641,9 @@ function SWEP:PrimaryAttack()
 			end
 			self:SetNextPrimaryFire(CurTime() + 1.4)
 			self:SetNextSecondaryFire(CurTime() + 1.4)
-			GAMEMODE:SetPlayerSpeed(self.Owner, 1, 1)
 			self.Owner:SetVelocity(self.Owner:GetForward() * 500)
 			timer.Create("MeleeAttack" .. self:EntIndex(), 0.15, 1, function()
 				self:MeleeHitSword()
-				self.Owner:SetRunSpeed(baseclass.Get(player_manager.GetPlayerClass(self.Owner)).RunSpeed)
-				self.Owner:SetWalkSpeed(baseclass.Get(player_manager.GetPlayerClass(self.Owner)).WalkSpeed)
 			end)
 		end
 
@@ -792,8 +750,6 @@ function SWEP:Holster()
 	if IsValid(self.Owner) and self.Owner:GetActiveWeapon() == "halo3_sword" then
 		if IsValid(self.Owner:GetViewModel()) then
 			self.Owner:GetViewModel():SetSkin(0)
-			self.Owner:SetRunSpeed(baseclass.Get(player_manager.GetPlayerClass(self.Owner)).RunSpeed)
-			self.Owner:SetWalkSpeed(baseclass.Get(player_manager.GetPlayerClass(self.Owner)).WalkSpeed)
 		end
 	end
 	return true
@@ -926,3 +882,12 @@ if SERVER then
 	hook.Add("EntityTakeDamage", "ReduceFallDamage", ReduceFallDamage)
 	hook.Add("Think", "ShouldTakeFallDamage", ShouldTakeFallDamage)
  end
+
+hook.Add("TTTPlayerSpeedModifier", "EnergySwordSpeed", function(ply,slowed,mv)
+	if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
+		return
+	end
+	if ply:GetActiveWeapon():GetClass() == "halo3_sword" then
+		return 1.15
+	end
+end)

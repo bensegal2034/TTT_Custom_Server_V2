@@ -71,6 +71,7 @@ SWEP.WorldModel			= "models/orange_blossom/piss/piss_world.mdl"
 SWEP.Weight			= 5
 SWEP.AutoSpawnable      = false
 SWEP.ShowWorldModel = true
+SWEP.DeploySpeed = 5
 
 --Taken from base grenade
 function SWEP:Initialize()

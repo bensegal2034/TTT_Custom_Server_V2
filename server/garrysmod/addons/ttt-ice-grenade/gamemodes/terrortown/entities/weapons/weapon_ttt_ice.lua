@@ -53,6 +53,9 @@ SWEP.AllowDrop = true
 -- If NoSights is true, the weapon won't have ironsights
 SWEP.NoSights = true
 
+SWEP.DeploySpeed = 5
+
+
 function SWEP:GetGrenadeName()
    return "ttt_ice_proj"
 end
@@ -64,4 +67,18 @@ if CLIENT then
       type = "Ice Grenade",
       desc = "A grenade that emits a cold snap."
    }
+end
+
+function SWEP:Initialize()
+   if self.SetHoldType then
+      self:SetHoldType(self.HoldNormal)
+   end
+
+   self:SetDeploySpeed(self.DeploySpeed)
+
+   self:SetDetTime(0)
+   self:SetThrowTime(0)
+   self:SetPin(false)
+
+   self.was_thrown = false
 end

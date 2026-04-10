@@ -56,7 +56,7 @@ SWEP.EquipMenuData = {
 };
 
 SWEP.Base 					= "weapon_tttbase"
-SWEP.Kind 					= WEAPON_CUBE
+SWEP.Kind 					= WEAPON_HARPOON
 SWEP.CanBuy 				= { ROLE_TRAITOR }
 SWEP.InLoadoutFor 			= nil
 SWEP.LimitedStock 			= false

@@ -7,6 +7,9 @@ ENT.Category = "Arsen's Gadgets"
 ENT.Spawnable = true
 ENT.Icon = "entities/weapon_kapkan_placer.png"
 
+ENT.Shot = false
+ENT.HitEnt = nil
+
 function ENT:Initialize()
     if SERVER then
         self:SetModel("models/arsen/Tripmine.mdl")
@@ -48,6 +51,7 @@ function ENT:OnTakeDamage(dmg)
     if SERVER and not self.HasExploded then
         self:SetHealth(self:Health() - dmg:GetDamage())
         if self:Health() <= 0 then
+            self.Shot = true
             self:Explode()
         end
     end
@@ -61,7 +65,11 @@ function ENT:Explode()
         explode:SetPos(self:GetPos())
         explode:SetOwner(self)
         explode:Spawn()
-        explode:SetKeyValue("iMagnitude", tostring(self:GetNWInt("ExplosionDamage") or 100))
+        explode:SetKeyValue("iMagnitude", tostring(self:GetNWInt("ExplosionDamage") or 40))
+        if self.Shot == false then
+	        explode:SetKeyValue( "spawnflags", "1" )    -- Spawnflags( No Damage )
+            self.HitEnt:TakeDamage(40)
+        end
         explode:Fire("Explode", 0, 0)
         self:Remove()
     end
@@ -99,6 +107,7 @@ function ENT:Think()
         })
 
         if tr.Hit and IsValid(tr.Entity) then
+            self.HitEnt = tr.Entity
             self:TriggerMine()
         end
 

@@ -24,7 +24,7 @@ AddCSLuaFile("entities/shared.lua")
 SWEP.Author = "Linnaeus"
 SWEP.Purpose = "Throw a tungsten cube like you're a fuckin pitcher"
 SWEP.Spawnable = true
-SWEP.AutoSpawnable = true
+SWEP.AutoSpawnable = false
 SWEP.UseHands = true
 
 SWEP.Primary.ClipSize = -1
@@ -49,7 +49,7 @@ SWEP.ViewModel = "models/linnaeus/weaps/v_tungsten.mdl"
 SWEP.WorldModel = "models/linnaeus/weaps/w_tungsten.mdl"
 SWEP.HoldType = "melee"
 
-SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.CanBuy = { }
 SWEP.EquipMenuData = {
       type = "Tungsten Cube",
       desc = "Throw a tungsten cube like you're a fuckin pitcher"

@@ -38,7 +38,7 @@ function ENT:Think()
 end
 
 function ENT:Explosion()
-	util.BlastDamage( self, self:GetOwner(), self:GetPos(), 100, 15 ) --damage was 500 (way to high for TTT)
+	util.BlastDamage( self, self:GetOwner(), self:GetPos(), 150, 30 ) --damage was 500 (way to high for TTT)
 	local effectdata = EffectData()
 	effectdata:SetOrigin( self:GetPos() )
 	--util.Effect( "Molotov_Explosion", effectdata ) -- Explosion effect
@@ -46,14 +46,15 @@ function ENT:Explosion()
 	local shake = ents.Create( "env_shake" )
 	shake:SetOwner( self.Owner )
 	shake:SetPos( self:GetPos() )
-	shake:SetKeyValue( "amplitude", "250" )	-- Power of the shake
-	shake:SetKeyValue( "radius", "1000" )		-- Radius of the shake
+	shake:SetKeyValue( "amplitude", "500" )	-- Power of the shake
+	shake:SetKeyValue( "radius", "200" )		-- Radius of the shake
 	shake:SetKeyValue( "duration", "3" )		-- Time of shake
 	shake:SetKeyValue( "frequency", "255" )		-- How hard should the screenshake be
-	shake:SetKeyValue( "spawnflags", "4" )		-- Spawnflags( In Air )
+	shake:SetKeyValue( "spawnflags", "12" )		-- Spawnflags( In Air )
 	shake:Spawn()
 	shake:Activate()
 	shake:Fire( "StartShake", "", 0 )
+	
 
 	local physExplo = ents.Create( "env_physexplosion" )
 	physExplo:SetOwner( self.Owner )
@@ -61,11 +62,11 @@ function ENT:Explosion()
 	physExplo:SetPos( self:GetPos() )
 	physExplo:SetKeyValue( "Magnitude", "300" )	-- Power of the Physicsexplosion, originally 500
 	physExplo:SetKeyValue( "radius", "150" )	-- Radius of the explosion, originally 450
-	physExplo:SetKeyValue( "spawnflags", "19" )
+	physExplo:SetKeyValue( "spawnflags", "3" )
 	physExplo:Spawn()
 	physExplo:Fire( "Explode", "", 0.02 )
 
-	for i = 1, 20 do
+	for i = 1, 25 do
 		local fire = ents.Create( "env_fire" )
 		fire:SetPhysicsAttacker(self.Owner)
 		fire:SetPos( self:GetPos() + Vector( math.random( -10*i, 10*i ), math.random( -10*i, 10*i ), 0 ) )

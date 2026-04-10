@@ -61,6 +61,8 @@ SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/c_grenade.mdl"
 SWEP.WorldModel            = "models/weapons/w_grenade.mdl"
 
+SWEP.DeploySpeed = 1
+
 local VOTE_TEXT = "Vote"
 local SKIP_TEXT = "Skip vote"
 local SHOW_VOTES_TIME = 4
@@ -434,4 +436,8 @@ function SWEP:PrimaryAttack()
 		net.WriteEntity(self)
 		net.SendToServer()
 	end
+end
+
+function SWEP:Initialize()
+   self:SetDeploySpeed(self.DeploySpeed)
 end

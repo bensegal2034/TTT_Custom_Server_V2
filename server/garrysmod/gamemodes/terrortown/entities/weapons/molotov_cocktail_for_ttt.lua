@@ -110,7 +110,7 @@ function SWEP:PrimaryAttack()
 	Molotov:Spawn()
 
 	local mPhys = Molotov:GetPhysicsObject()
-	local Force = self.Owner:GetAimVector() * 2555 -- I put this up so you can throw a LITTLE bit further.
+	local Force = self.Owner:GetAimVector() * 1750 -- I put this up so you can throw a LITTLE bit further.
 
 	mPhys:ApplyForceCenter( Force )
 
@@ -133,7 +133,7 @@ function SWEP:SecondaryAttack()
 	Molotov:Spawn()
 
 	local mPhys = Molotov:GetPhysicsObject()
-	local Force = self.Owner:GetAimVector() * 500
+	local Force = self.Owner:GetAimVector() * 2000
 
 	mPhys:ApplyForceCenter( Force )
 

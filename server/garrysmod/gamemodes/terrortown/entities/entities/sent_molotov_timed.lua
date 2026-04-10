@@ -35,7 +35,7 @@ function ENT:Initialize()
 end
 
 function ENT:Think() 
-	if self.SpawnTime + 5 < CurTime() then
+	if self.SpawnTime + 2 < CurTime() then
 		self:Boom()
 	end
 end
@@ -69,7 +69,7 @@ function ENT:Explosion()
 	physExplo:Spawn()
 	physExplo:Fire( "Explode", "", 0.02 )
 
-	for i = 1, 25 do
+	for i = 1, 30 do
 		local fire = ents.Create( "env_fire" )
 		fire:SetPhysicsAttacker(self.Owner)
 		fire:SetPos( self:GetPos() + Vector( math.random( -12*i, 12*i ), math.random( -12*i, 12*i ), 0 ) )

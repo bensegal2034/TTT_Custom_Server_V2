@@ -129,6 +129,7 @@ function ENT:PhysicsCollide(data, phys)
 		end
 
 		if (Ent:IsPlayer() or Ent:IsNPC() or Ent:GetClass() == "prop_ragdoll") then 
+			PrintTable(data)
 			local effectdata = EffectData()
 			effectdata:SetStart(data.HitPos)
 			effectdata:SetOrigin(data.HitPos)
@@ -139,31 +140,19 @@ function ENT:PhysicsCollide(data, phys)
 			self:Disable()
 			self.Entity:GetPhysicsObject():SetVelocity(data.OurOldVelocity / 4)
 			
-			Ent:TakeDamage(pain, damager, self.Entity)
-			
+			Ent:TakeDamage(pain, damager, self.Entity)			
 		end
 	end
-
-	self.Entity:SetOwner(NUL)
 end
 
 /*---------------------------------------------------------
    Name: ENT:Use()
 ---------------------------------------------------------*/
 function ENT:Use(activator, caller) 
-	
-	if ((gmod.GetGamemode().Name) == "Murderthon 9000") or (GetConVar("DebugM9K"):GetBool()) then
-		if (activator:IsPlayer()) then
-			if activator:GetWeapon("m9k_harpoon") == NULL 
-			&& activator:GetWeapon("m9k_machete") == NULL then
-				activator:Give("m9k_harpoon")
-				self.Entity:Remove()
-			else return 
-			end
-		end
-	elseif (activator:IsPlayer()) then
-		if activator:GetWeapon("m9k_harpoon") == NULL then
-			activator:Give("m9k_harpoon")
+	print(self:GetOwner())
+	if (activator:IsPlayer()) and activator == self:GetOwner() then
+		if activator:GetWeapon("weapon_ttt_harpoon") == NULL then
+			activator:Give("weapon_ttt_harpoon")
 			self.Entity:Remove()
 		else
 			activator:GiveAmmo(1, "Harpoon")

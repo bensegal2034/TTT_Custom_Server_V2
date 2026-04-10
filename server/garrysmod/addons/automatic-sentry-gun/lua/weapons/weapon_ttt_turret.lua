@@ -14,29 +14,31 @@ if gamemode_name == "terrortown" then
 end
 
 local WorldModel = Model( "models/airboatgun.mdl" )
-SWEP.ViewModel			 = "models/weapons/v_crowbar.mdl"
-SWEP.WorldModel			= WorldModel
+SWEP.ViewModel			 = "models/weapons/c_slam.mdl"
+SWEP.WorldModel			= "models/weapons/w_slam.mdl"
 
 
 SWEP.DrawCrosshair		= false
-SWEP.Primary.ClipSize		 = -1
-SWEP.Primary.DefaultClip	 = -1
+SWEP.Primary.ClipSize		 = 2
+SWEP.Primary.DefaultClip	 = 2
 SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo		 = "none"
-SWEP.Primary.Delay = 0.001
+SWEP.Primary.Ammo		 = "AlyxGun"
+SWEP.Primary.Delay = 0.2
+SWEP.UseHands = true
+SWEP.DeploySpeed = 10
 
 SWEP.Secondary.ClipSize	  = -1
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Automatic	 = false
 SWEP.Secondary.Ammo	  = "none"
-SWEP.Secondary.Delay = 0.001
+SWEP.Secondary.Delay = 0.2
 
 -- This is special equipment
 
 SWEP.Kind = WEAPON_EQUIP2
 SWEP.CanBuy = {ROLE_TRAITOR}
 SWEP.Spawnable = true
-SWEP.LimitedStock = false
+SWEP.LimitedStock = true
 
 SWEP.Icon = "VGUI/ttt/weapon_ttt_turret_mr_v2"
 
@@ -67,7 +69,7 @@ if CLIENT then
 		SWEP.Slot = 4
 	end
 
-	SWEP.ViewModelFOV = 10
+	SWEP.ViewModelFOV = 50
 
 	local lang_desc
 	local lang_mapwarn
@@ -195,11 +197,19 @@ if CLIENT then
 end
 
 function SWEP:PrimaryAttack()
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	if not self:CanPrimaryAttack() then return end 
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+	self:TakePrimaryAmmo(1)
 	self:HealthDrop()
 end
+
+
 function SWEP:SecondaryAttack()
-	self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+	if not self:CanSecondaryAttack() then return end 
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+	self:TakePrimaryAmmo(1)
 	self:HealthDrop()
 end
 
@@ -254,7 +264,6 @@ function SWEP:HealthDrop()
 
 			support.turret = ents.Create( "autoturret" )
 			if IsValid( support.turret ) then
-				self.Planted = true
 				support.turret.support = support
 				support.turret:SetParent( support ) -- Bug in Garry's Mod
 				support.turret:SetLocalPos( Vector( 0,0,0 ) )
@@ -269,8 +278,9 @@ function SWEP:HealthDrop()
 
 
 				-- On empêche la tourelle de bloquer son propriétaire tant qu'il est à proximité.
-
-				self:Remove()
+				if self:Clip1() == 0 then
+					self:Remove()
+				end
 			end
 		end
 	end
@@ -292,6 +302,7 @@ if CLIENT then
 	if gamemode_name == "terrortown" then
 		function SWEP:Initialize()
 			self:Deploy()
+			self:SetDeploySpeed(self.DeploySpeed)
 
 			return self.BaseClass.Initialize(self)
 		end

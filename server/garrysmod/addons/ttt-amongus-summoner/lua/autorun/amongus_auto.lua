@@ -19,7 +19,8 @@ if SERVER then
 		if SERVER then
 			for i, ent in ipairs(ents.FindByClass( "amongus_spawner" )) do
 				for _, ply in ipairs( player.GetAll()) do
-					if ply:Alive() then
+					local ownerTeam = ent:GetOwner():GetRole()
+					if ply:Alive() and ply:GetRole() != ownerTeam then
 						local dis = 0.01905 * ((ply:GetPos() - ent:GetPos()):Length() - ply:BoundingRadius())
 						local maxDis = GetConVar("ttt_amongus_range"):GetFloat()
 						if dis < maxDis then
@@ -30,7 +31,7 @@ if SERVER then
 								filter = {ent,ply}
 							}
 							local tr = util.TraceLine(t)
-							
+
 							if not tr.Hit then 
 								local amongus = ents.Create( "npc_amongus_zombine" )
 
@@ -184,8 +185,9 @@ if CLIENT then
 		if engine.ActiveGamemode() == "terrortown" then
 			local ply = LocalPlayer()
 			
-			if ply:HasWeapon("weapon_amongussummoner") then
-				for _, ent in ipairs(ents.FindByClass( "amongus_spawner" )) do
+			for _, ent in ipairs(ents.FindByClass( "amongus_spawner" )) do
+				local ownerTeam = ent:GetOwner():GetRole()
+				if ply:GetRole() == ownerTeam then
 					local screenPos = (ent:GetPos() + Vector(0,0,30)):ToScreen()
 					if screenPos.visible then
 						local DisText = tostring(math.floor(0.01905 * (ply:GetPos() - ent:GetPos()):Length()))
@@ -213,8 +215,8 @@ if CLIENT then
 						
 						
 					end
-				end	
-			end
+				end
+			end	
 		end
 	end)
 end

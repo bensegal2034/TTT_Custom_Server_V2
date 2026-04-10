@@ -19,7 +19,7 @@ end
 
 
 -- Variables that are used on both client and server
-SWEP.Gun = ("ttt_m9k_harpoon") -- must be the name of your swep but NO CAPITALS!
+SWEP.Gun = ("weapon_ttt_harpoon") -- must be the name of your swep but NO CAPITALS!
 SWEP.Category				= "TTT M9K Specialties"
 SWEP.Author					= "edited for TTT by RustyPrime"
 SWEP.Contact				= ""
@@ -28,7 +28,7 @@ SWEP.Instructions			= ""
 SWEP.MuzzleAttachment		= "1" 	-- Should be "1" for CSS models or "muzzle" for hl2 models
 SWEP.ShellEjectAttachment	= "2" 	-- Should be "2" for CSS models or "1" for hl2 models
 SWEP.PrintName				= "Harpoon"		-- Weapon name (Shown on HUD)
-SWEP.Slot					= 4				-- Slot in the weapon selection menu
+SWEP.Slot					= 6				-- Slot in the weapon selection menu
 SWEP.SlotPos				= 1			-- Position in the slot
 SWEP.DrawAmmo				= false		-- Should draw the default HL2 ammo counter
 SWEP.DrawWeaponInfoBox		= false		-- Should draw the weapon info box
@@ -56,7 +56,7 @@ SWEP.EquipMenuData = {
 };
 
 SWEP.Base 					= "weapon_tttbase"
-SWEP.Kind 					= WEAPON_EQUIP2
+SWEP.Kind 					= WEAPON_CUBE
 SWEP.CanBuy 				= { ROLE_TRAITOR }
 SWEP.InLoadoutFor 			= nil
 SWEP.LimitedStock 			= false
@@ -79,7 +79,7 @@ SWEP.Icon = "vgui/ttt/tttharpoonicon.png"
 -- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
 -- Pistol, buckshot, and slam always ricochet. Use AirboatGun for a metal peircing shotgun slug
 
-SWEP.Primary.Round 			= ("m9k_thrown_harpoon")	--NAME OF ENTITY GOES HERE
+SWEP.Primary.Round 			= ("ttt_thrown_harpoon")	--NAME OF ENTITY GOES HERE
 
 SWEP.Secondary.IronFOV			= 60		-- How much you 'zoom' in. Less is more!
 
@@ -698,9 +698,13 @@ function SWEP:PrimaryAttack()
 	self.Weapon:EmitSound(Sound("Weapon_Knife.Slash"))
 	self.Weapon:SendWeaponAnim( ACT_VM_DRAW )
 	timer.Simple(0.35, function()
-		self:FireRocket()
-		self.Weapon:TakePrimaryAmmo(1)
-		self:CheckWeaponsAndAmmo()
+		if self.Owner:IsValid() and self.Owner:Alive() then
+			self:FireRocket()
+			self.Weapon:TakePrimaryAmmo(1)
+			if SERVER then
+				self:Remove()
+			end
+		end
 	end)
 end
 

@@ -50,6 +50,8 @@ AccessorFuncDT(SWEP, "charge", "Charge")
 
 SWEP.IsCharging            = false
 SWEP.NextCharge            = 0
+SWEP.Soundid = nil
+
 
 local CHARGE_AMOUNT = 0.02
 local CHARGE_DELAY = 0.025
@@ -81,7 +83,8 @@ function SWEP:SecondaryAttack()
 
    self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
    self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
-
+   self:StartLoopingSound("Weapon_PhysCannon.HoldSound")
+   self.Soundid = self:StartLoopingSound("Weapon_PhysCannon.HoldSound")
    self.IsCharging = true
 end
 
@@ -89,7 +92,7 @@ function SWEP:FirePulse(force_fwd, force_up)
    if not IsValid(self:GetOwner()) then return end
 
    self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
-
+   self:StopLoopingSound(self.Soundid)
    sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
 
    self:SendWeaponAnim(ACT_VM_IDLE)
@@ -129,10 +132,10 @@ function SWEP:FirePulse(force_fwd, force_up)
 
 end
 
-local CHARGE_FORCE_FWD_MIN = 1000
-local CHARGE_FORCE_FWD_MAX = 3500
-local CHARGE_FORCE_UP_MIN = 1000
-local CHARGE_FORCE_UP_MAX = 3500
+local CHARGE_FORCE_FWD_MIN = 200
+local CHARGE_FORCE_FWD_MAX = 900
+local CHARGE_FORCE_UP_MIN = 200
+local CHARGE_FORCE_UP_MAX = 900
 function SWEP:ChargedAttack()
    local charge = math.Clamp(self:GetCharge(), 0, 1)
    

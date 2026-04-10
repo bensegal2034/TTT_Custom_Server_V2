@@ -55,7 +55,7 @@ SWEP.AllowDrop = true
 SWEP.IsSilent = false
 SWEP.NoSights = true
 SWEP.UseHands = false
-SWEP.CanBuy = {ROLE_DETECTIVE}
+SWEP.CanBuy = {ROLE_DETECTIVE, ROLE_TRAITOR}
 SWEP.TPClipSize = satmteleportcharges:GetInt()
 --SWEP.TPDefaultClip = 1
 

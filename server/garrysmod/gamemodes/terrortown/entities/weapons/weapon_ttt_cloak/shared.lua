@@ -89,7 +89,7 @@ end
 hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
     local wep = ply:GetActiveWeapon()
     
-    if IsValid(ply) and not(ply == LocalPlayer()) and IsValid(wep) and wep:GetClass() == "weapon_ttt_cloak" then
+    if IsValid(ply) and not(ply == LocalPlayer()) and IsValid(wep) and wep:GetClass() == "weapon_ttt_cloak" and LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
         if wep:GetCloaked() then
             local dist = 1500
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())

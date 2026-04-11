@@ -22,8 +22,8 @@ if SERVER then
   resource.AddFile("sound/ss13/punch4.mp3")
   resource.AddFile("sound/ss13/punchmiss.mp3")
   resource.AddWorkshop("653258161")
-end
-	LANG.AddToLanguage("english", "horn_name", "Boltgun")
+
+  LANG.AddToLanguage("english", "horn_name", "Boltgun")
 	LANG.AddToLanguage("english", "horn_desc", "Sound the horn of war!\n\nBlow the horn to give *ALL* nearby players several buffs, including a damage bonus, speed bonus, and headshot resistance!\nlasts for 15 seconds and consumed on use.")
 
 	SWEP.PrintName = "Herald's Horn"

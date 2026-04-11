@@ -149,7 +149,7 @@ function SWEP:place_sniper(tracedata)
         ent:SetRenderMode( RENDERMODE_TRANSALPHA )
         ent:Fire( "alpha", 0, 0 )
 
-        timer.Simple(5, function()
+        timer.Simple(2, function()
             if tempent:IsValid() and tempent:IsAlive() then
                 ent:Spawn()
                 if GetConVar("ttt_combine_sniper_rotate"):GetBool() then

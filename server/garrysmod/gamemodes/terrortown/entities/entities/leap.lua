@@ -9,7 +9,7 @@ ENT.LeapNum = 1
 
 if CLIENT then
 	function leapStandsSetting1(panel)	
-		check = panel:NumSlider("Cooldown on Leaph\n0 will remove cooldown", "leap_Cooldowng",0,60 )
+		check = panel:NumSlider("Cooldown on Leaph\n0 will remove cooldown", "leap_Cooldowng",0,30 )
 		check:SetValue(10)		
 		check = panel:KeyBinder("Bind for Leap", "leap_bindg" )
 		

@@ -28,7 +28,7 @@ end
 
 SWEP.Base = "weapon_tttbase"
 SWEP.Kind = WEAPON_CAMERA
-SWEP.CanBuy = {ROLE_DETECTIVE}
+SWEP.CanBuy = {}
 SWEP.LimitedStock = true
 SWEP.AutoSpawnable = false
 -- 

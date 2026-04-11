@@ -20,67 +20,69 @@ if SERVER then
 			for i, ent in ipairs(ents.FindByClass( "amongus_spawner" )) do
 				for _, ply in ipairs( player.GetAll()) do
 					local ownerTeam = ent:GetOwner():GetRole()
-					if ply:Alive() and ply:GetRole() != ownerTeam then
-						local dis = 0.01905 * ((ply:GetPos() - ent:GetPos()):Length() - ply:BoundingRadius())
-						local maxDis = GetConVar("ttt_amongus_range"):GetFloat()
-						if dis < maxDis then
-						
-							local t = {
-								start = ply:GetPos() + Vector(0,0,30),
-								endpos = ent:GetPos() + Vector(0,0,30),
-								filter = {ent,ply}
-							}
-							local tr = util.TraceLine(t)
+					if ply:Alive() then
+						if ownerTeam == 0 or ply:GetRole() != ownerTeam then
+							local dis = 0.01905 * ((ply:GetPos() - ent:GetPos()):Length() - ply:BoundingRadius())
+							local maxDis = GetConVar("ttt_amongus_range"):GetFloat()
+							if dis < maxDis then
+							
+								local t = {
+									start = ply:GetPos() + Vector(0,0,30),
+									endpos = ent:GetPos() + Vector(0,0,30),
+									filter = {ent,ply}
+								}
+								local tr = util.TraceLine(t)
 
-							if not tr.Hit then 
-								local amongus = ents.Create( "npc_amongus_zombine" )
+								if not tr.Hit then 
+									local amongus = ents.Create( "npc_amongus_zombine" )
 
 
-								if IsValid( amongus ) then
-									
-									local spawnereasd = false
-									local pos = ent:GetPos() + Vector(0,0,2)
-									local offsets = {Vector(0,0,0)}
-
-									for i = 0, 360, 15 do
-										table.insert( offsets, Vector( math.sin( i ), math.cos( i ), 0 ) )
-									end
-
-									local midsize = Vector( 34, 34, 76 )
-									local tstart   = pos + Vector( 0, 0, midsize.z / 2 )
-
-									for i = 1, #offsets do
-										local o = offsets[ i ]
-										local v = tstart + o * midsize * 1.5
-
-										t = {
-											start = v,
-											endpos = v,
-											filter = ent,
-											mins = midsize / -2,
-											maxs = midsize / 2
-										}
-										tr = util.TraceHull( t )
-
-										if not tr.Hit then 
-											spawnereasd = ( v - Vector( 0, 0, midsize.z/2 ) )
-											break
-										end
+									if IsValid( amongus ) then
 										
-									end 
-								
-								
-								
-									if spawnereasd == false then
-										amongus:Remove()
-									else
-										ent:EmitSound("Amongus_Appear")
-										amongus:SetOwner(ent:GetOwner())
-										amongus:SetPos( spawnereasd )
-										amongus:SetAngles((ply:GetPos()- spawnereasd):Angle())
-										amongus:Spawn()									
+										local spawnereasd = false
+										local pos = ent:GetPos() + Vector(0,0,2)
+										local offsets = {Vector(0,0,0)}
+
+										for i = 0, 360, 15 do
+											table.insert( offsets, Vector( math.sin( i ), math.cos( i ), 0 ) )
+										end
+
+										local midsize = Vector( 34, 34, 76 )
+										local tstart   = pos + Vector( 0, 0, midsize.z / 2 )
+
+										for i = 1, #offsets do
+											local o = offsets[ i ]
+											local v = tstart + o * midsize * 1.5
+
+											t = {
+												start = v,
+												endpos = v,
+												filter = ent,
+												mins = midsize / -2,
+												maxs = midsize / 2
+											}
+											tr = util.TraceHull( t )
+
+											if not tr.Hit then 
+												spawnereasd = ( v - Vector( 0, 0, midsize.z/2 ) )
+												break
+											end
+											
+										end 
+									
+									
+									
+										if spawnereasd == false then
+											amongus:Remove()
+										else
+											ent:EmitSound("Amongus_Appear")
+											amongus:SetOwner(ent:GetOwner())
+											amongus:SetPos( spawnereasd )
+											amongus:SetAngles((ply:GetPos()- spawnereasd):Angle())
+											amongus:Spawn()									
+										end
+										ent:Remove()
 									end
-									ent:Remove()
 								end
 							end
 						end
@@ -187,33 +189,35 @@ if CLIENT then
 			
 			for _, ent in ipairs(ents.FindByClass( "amongus_spawner" )) do
 				local ownerTeam = ent:GetOwner():GetRole()
-				if ply:GetRole() == ownerTeam then
-					local screenPos = (ent:GetPos() + Vector(0,0,30)):ToScreen()
-					if screenPos.visible then
-						local DisText = tostring(math.floor(0.01905 * (ply:GetPos() - ent:GetPos()):Length()))
-						surface.SetMaterial( Material( "vgui/amongus_icon" ) )
-						surface.SetDrawColor( 255, 255, 255, 150 )
-						surface.DrawTexturedRect( screenPos.x - 30, screenPos.y - 30, 60, 60 )
-						local font = "TargetIDSmall"
-						local text = "(HIDDEN)"
-						surface.SetFont(font)
-						
-						local w, h = surface.GetTextSize(text)
-						local x = screenPos.x
-						local y = screenPos.y + 34
-						
-						draw.SimpleText(text, font, x - w/2 + 1,  y + 1, Color(0,0,0,150))
-						draw.SimpleText(text, font, x - w/2, y,  Color(255,0,0,150))
-						
-						text = DisText.."m"
-						w, h = surface.GetTextSize(text)
-						
-						y = y + h + 4
-						
-						draw.SimpleText(text, font, x - w/2 + 1,  y + 1, Color(0,0,0,150))
-						draw.SimpleText(text, font, x - w/2, y, Color(255,0,0,150))				
-						
-						
+				if ownerTeam != 0 or ply == ent:GetOwner() then
+					if ply:GetRole() == ownerTeam then
+						local screenPos = (ent:GetPos() + Vector(0,0,30)):ToScreen()
+						if screenPos.visible then
+							local DisText = tostring(math.floor(0.01905 * (ply:GetPos() - ent:GetPos()):Length()))
+							surface.SetMaterial( Material( "vgui/amongus_icon" ) )
+							surface.SetDrawColor( 255, 255, 255, 150 )
+							surface.DrawTexturedRect( screenPos.x - 30, screenPos.y - 30, 60, 60 )
+							local font = "TargetIDSmall"
+							local text = "(HIDDEN)"
+							surface.SetFont(font)
+							
+							local w, h = surface.GetTextSize(text)
+							local x = screenPos.x
+							local y = screenPos.y + 34
+							
+							draw.SimpleText(text, font, x - w/2 + 1,  y + 1, Color(0,0,0,150))
+							draw.SimpleText(text, font, x - w/2, y,  Color(255,0,0,150))
+							
+							text = DisText.."m"
+							w, h = surface.GetTextSize(text)
+							
+							y = y + h + 4
+							
+							draw.SimpleText(text, font, x - w/2 + 1,  y + 1, Color(0,0,0,150))
+							draw.SimpleText(text, font, x - w/2, y, Color(255,0,0,150))				
+							
+							
+						end
 					end
 				end
 			end	

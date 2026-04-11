@@ -22,7 +22,7 @@ SWEP.DrawCrosshair		= false
 SWEP.Primary.ClipSize		 = 2
 SWEP.Primary.DefaultClip	 = 2
 SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo		 = "AlyxGun"
+SWEP.Primary.Ammo		 = ""
 SWEP.Primary.Delay = 0.2
 SWEP.UseHands = true
 SWEP.DeploySpeed = 10
@@ -200,7 +200,6 @@ function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end 
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
-	self:TakePrimaryAmmo(1)
 	self:HealthDrop()
 end
 
@@ -273,7 +272,7 @@ function SWEP:HealthDrop()
 				support.turret.Owner = ply:Nick()
 
 				support.turret:Spawn()
-
+				self:TakePrimaryAmmo(1)
 
 
 

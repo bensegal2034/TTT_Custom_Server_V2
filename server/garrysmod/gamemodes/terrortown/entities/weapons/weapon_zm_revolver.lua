@@ -84,10 +84,10 @@ SWEP.WeaponID              = AMMO_DEAGLE
 SWEP.ViewModelFlip         = true
 
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
-SWEP.Primary.Recoil        = 12
+SWEP.Primary.Recoil        = 6
 SWEP.Primary.Damage        = 10
 SWEP.Primary.Delay         = 0.6
-SWEP.Primary.Cone          = 0.08
+SWEP.Primary.Cone          = 0.02
 SWEP.Primary.ClipSize      = 8
 SWEP.Primary.ClipMax       = 36
 SWEP.Primary.DefaultClip   = 16
@@ -180,6 +180,7 @@ end
 
 -- Add some zoom to ironsights for this gun
 function SWEP:SecondaryAttack()
+   --[[
    if not self.IronSightsPos then return end
    if self:GetNextSecondaryFire() > CurTime() then return end
    
@@ -200,7 +201,7 @@ function SWEP:SecondaryAttack()
          self:SetIsScoped(false)
          self.IsScoped = false
       end
-   end
+   end]]--
 end
 
 function SWEP:PreDrop()
@@ -236,18 +237,6 @@ function SWEP:Holster()
       self:SetIsScoped(false)
    end
    return true
-end
-
-function SWEP:Think()
-   self.BaseClass.Think(self)
-   if CLIENT then
-      self.IsScoped = self:GetIsScoped()
-   end
-   if self.IsScoped then
-      self.Primary.Cone = 0.005
-   else
-      self.Primary.Cone = .08
-   end
 end
 
 if CLIENT then
@@ -323,11 +312,11 @@ hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo
       
       local att = dmginfo:GetAttacker()
       if target:IsPlayer() and IsValid(target) then
-         timer.Simple(1.5, function()
+         timer.Simple(0.75, function()
             local maxhp = target:GetMaxHealth()
             local curhp = target:Health()
             local dmg = DamageInfo()
-            local poisondmg = math.min(((maxhp-curhp)/3),20)
+            local poisondmg = math.min(((maxhp-curhp)*0.85),35)
             dmg:SetDamage(poisondmg)
             dmg:SetAttacker(att)
             dmg:SetInflictor(weapon)
@@ -343,7 +332,6 @@ hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo
             effectdata:SetColor(0)
             effectdata:SetRadius( 0 )
             util.Effect( "AntlionGib", effectdata )
-            
             
             target:EmitSound( "player/geiger3.wav", 75, 100, 1, CHAN_ITEM )
          end)

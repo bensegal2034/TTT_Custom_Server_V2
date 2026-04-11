@@ -7,7 +7,7 @@ if ( SERVER ) then
 	resource.AddFile( "sound/weapons/leap/warden.wav" )
 end
 
-CreateConVar( "leap_Cooldowng", "45", {FCVAR_LUA_SERVER}) 
+CreateConVar( "leap_Cooldowng", "30", {FCVAR_LUA_SERVER}) 
 if CLIENT then 
 	CreateClientConVar( "leap_bindg", KEY_F, true, true, "Key" ) 
 end
@@ -95,7 +95,7 @@ hook.Add("HUDPaint", "DrawLeapHud", function()
 		local boxSizeH = 64
 		local outlineScalar = 0
 		local shadowOffset = 2
-		local x = (ScrW() - boxSizeW) * 0.108
+		local x = (ScrW() - boxSizeW) * 0.142
 		local y = (ScrH() - boxSizeH) * 0.993
 		
 		surface.SetMaterial(leapIcon)
@@ -105,18 +105,18 @@ hook.Add("HUDPaint", "DrawLeapHud", function()
 		surface.SetDrawColor(255, 255, 255, 255)
 		surface.DrawTexturedRect(x, y, boxSizeW, boxSizeH)
 		surface.SetDrawColor(0, 0, 0, 255)
-		surface.DrawOutlinedRect((ScrW() - boxSizeW - outlineScalar) * 0.108, (ScrH() - boxSizeH - outlineScalar) * 0.993, boxSizeW + outlineScalar, boxSizeH + outlineScalar, 2)
+		surface.DrawOutlinedRect((ScrW() - boxSizeW - outlineScalar) * 0.142, (ScrH() - boxSizeH - outlineScalar) * 0.993, boxSizeW + outlineScalar, boxSizeH + outlineScalar, 2)
 
 		if not(leapTimer == 0) then
 			surface.SetDrawColor(255, 0, 0, 100)
-			surface.DrawRect((ScrW() - boxSizeW - outlineScalar) * 0.108, (ScrH() - boxSizeH - outlineScalar) * 0.993, boxSizeW + outlineScalar, boxSizeH + outlineScalar)
+			surface.DrawRect((ScrW() - boxSizeW - outlineScalar) * 0.142, (ScrH() - boxSizeH - outlineScalar) * 0.993, boxSizeW + outlineScalar, boxSizeH + outlineScalar)
 
 			local leapTimerStr = tostring(math.Truncate(leapTimer, 0))
 			local textW, textH = surface.GetTextSize(leapTimerStr)
 			if leapTimer < 10 then
-				textX = (ScrW() - (textW / 2)) * 0.115
+				textX = (ScrW() - (textW / 2)) * 0.151
 			else
-				textX = (ScrW() - (textW / 2)) * 0.113
+				textX = (ScrW() - (textW / 2)) * 0.147
 			end
 			local textY = (ScrH() - (textH / 2)) * 0.971
 

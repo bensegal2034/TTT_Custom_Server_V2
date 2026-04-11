@@ -171,6 +171,14 @@ function SWEP:Equip()
 		end
 end
 
+function SWEP:Think()
+	self:CalcViewModel()
+	if self:Clip1() <= 0 then
+		if SERVER then
+			self:Remove()
+		end
+	end
+end
 
 if CLIENT then
 

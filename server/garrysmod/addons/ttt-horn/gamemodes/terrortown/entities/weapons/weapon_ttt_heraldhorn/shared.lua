@@ -22,10 +22,7 @@ if SERVER then
   resource.AddFile("sound/ss13/punch4.mp3")
   resource.AddFile("sound/ss13/punchmiss.mp3")
   resource.AddWorkshop("653258161")
-
-  LANG.AddToLanguage("english", "horn_name", "Boltgun")
-	LANG.AddToLanguage("english", "horn_desc", "Sound the horn of war!\n\nBlow the horn to give *ALL* nearby players several buffs, including a damage bonus, speed bonus, and headshot resistance!\nlasts for 15 seconds and consumed on use.")
-
+end
 	SWEP.PrintName = "Herald's Horn"
 	SWEP.Slot = 6
 	SWEP.Icon = "vgui/ttt/icon_heraldhorn"
@@ -40,7 +37,6 @@ if SERVER then
 		type = "item_weapon",
 		desc = "Grants Speed and Damage buffs to nearby players!"
 	}
-end
 
 -- always derive from weapon_tttbase
 SWEP.Base = "weapon_tttbase"
@@ -87,7 +83,7 @@ SWEP.AmmoEnt = "item_box_buckshot_ttt"
 SWEP.AllowDrop = true
 
 -- Sets what roles are allowed to purchase this item.
-SWEP.CanBuy = { ROLE_DETECTIVE }
+SWEP.CanBuy = { }
 -- If true, can only be bought once
 SWEP.LimitedStock = true
 

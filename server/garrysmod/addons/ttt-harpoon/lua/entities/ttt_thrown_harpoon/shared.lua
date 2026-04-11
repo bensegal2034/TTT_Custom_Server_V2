@@ -99,7 +99,7 @@ function ENT:PhysicsCollide(data, phys)
 		return
 	end
 	
-	pain = (data.Speed/4)
+	pain = (data.Speed/2)
 	
 	if (gmod.GetGamemode().Name == "Murderthon 9000") or GetConVar("DebugM9K"):GetBool() then
 		pain = 900

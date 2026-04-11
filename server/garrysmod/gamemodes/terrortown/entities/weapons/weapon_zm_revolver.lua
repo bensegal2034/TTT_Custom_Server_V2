@@ -244,7 +244,7 @@ function SWEP:Think()
       self.IsScoped = self:GetIsScoped()
    end
    if self.IsScoped then
-      self.Primary.Cone = 0.01
+      self.Primary.Cone = 0.005
    else
       self.Primary.Cone = .08
    end

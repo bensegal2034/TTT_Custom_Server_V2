@@ -24,7 +24,7 @@ if SERVER then --Server-side console variables
 	AddCSLuaFile( "shared.lua" )
 
 	--Console variables
-	CreateConVar("bee_innodamage", "10", FCVAR_NOTIFY + FCVAR_ARCHIVE)
+	CreateConVar("bee_innodamage", "20", FCVAR_NOTIFY + FCVAR_ARCHIVE)
 	CreateConVar("bee_traitordamage", "5", FCVAR_NOTIFY + FCVAR_ARCHIVE)
 
 	CreateConVar("bee_concurrent", "12", FCVAR_NOTIFY + FCVAR_ARCHIVE)

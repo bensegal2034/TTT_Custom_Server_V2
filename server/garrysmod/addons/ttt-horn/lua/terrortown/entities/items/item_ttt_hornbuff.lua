@@ -1,29 +1,5 @@
 local plymeta = FindMetaTable("Player")
-if SERVER then
-	AddCSLuaFile()
-    resource.AddFile("materials/models/weapons/anonyma/bikehorn.vmt")
-    resource.AddFile("materials/models/weapons/anonyma/bikehorn.vtf")
-    resource.AddFile("materials/models/weapons/anonyma/bikehornclown.vmt")
-    resource.AddFile("materials/models/weapons/anonyma/bikehornclown.vtf")
-    resource.AddFile("materials/vgui/icon_heraldhorn.vmt")
-    resource.AddFile("materials/vgui/icon_heraldhorn.vtf")
-    resource.AddFile("materials/vgui/hud_blue_bull.png")
-    resource.AddFile("materials/vgui/hud_hornbuff_ttt2.png")
-    resource.AddFile("models/weapons/anonyma/c_bikehorn.mdl")
-    resource.AddFile("models/weapons/anonyma/w_bikehorn.mdl")
-    resource.AddFile("sound/herald_horn_blow.ogg")
-    resource.AddFile("sound/herald_horn_buff.ogg")
-    resource.AddFile("sound/herald_horn_expire.ogg")
-    resource.AddFile("sound/ss13/bikehorn1.mp3")
-    resource.AddFile("sound/ss13/bikehorn2.mp3")
-    resource.AddFile("sound/ss13/bikehorn3.mp3")
-    resource.AddFile("sound/ss13/punch1.mp3")
-    resource.AddFile("sound/ss13/punch2.mp3")
-    resource.AddFile("sound/ss13/punch3.mp3")
-    resource.AddFile("sound/ss13/punch4.mp3")
-    resource.AddFile("sound/ss13/punchmiss.mp3")
-	resource.AddWorkshop("653258161")
-end
+
 
 ITEM.hud  = Material("vgui/ttt/perks/hud_hornbuff_ttt2.png")
 ITEM.EquipMenuData = {

@@ -80,6 +80,7 @@ end)
 if SERVER then
     util.AddNetworkString("ClientBumped")
     net.Receive("ClientBumped", function(len, ply)
+        --print(ply:Nick() .. " bumped cloaked player!")
         local wep = net.ReadEntity()
         wep:SetBumped(true)
         wep:SetBumpTimer(CurTime() + 3)
@@ -87,27 +88,49 @@ if SERVER then
 end
 
 hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
+    -- this hook will run every time the game client wants to draw a player on the screen, for each player
+    -- "ply" is the player we're drawing.
+    -- returning true hides this player (aka they are not drawn), returning false will show the player (they are drawn).
+
     local wep = ply:GetActiveWeapon()
-    
-    if IsValid(ply) and not(ply == LocalPlayer()) and IsValid(wep) and wep:GetClass() == "weapon_ttt_cloak" and LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+
+    -- valid checks because gmod sucks
+    if IsValid(ply) and
+    IsValid(wep) and 
+    not(ply == LocalPlayer()) and -- this hook will run on the local player, we don't care about ourselves
+    wep:GetClass() == "weapon_ttt_cloak" then -- only care about people holding the cloak (aka players who need to be hidden/shown)
         if wep:GetCloaked() then
             local dist = 1500
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
-            local shouldReveal = distCalc > dist
+            local fullCloak = distCalc > dist
+            local cloakAmmoBlinkThreshold = 5
+
+            if wep:GetBumped() or wep:GetRecentlyDeployed() then return end
+
+            if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
+                if wep:GetCloakAmmo() > cloakAmmoBlinkThreshold then
+                    return true -- skip distance check for spectators, always hide
+                else
+                    return -- we don't want spectators to execute this next part so return out regardless
+                end
+            end
             
-            if wep:GetBumped() then return false end
-            
-            if wep:GetRecentlyDeployed() then return false end
-            
-            if wep:GetCloakAmmo() > 5 then
-                if not(shouldReveal) then
+            if wep:GetCloakAmmo() > cloakAmmoBlinkThreshold then
+                if not(fullCloak) then
                     net.Start("ClientBumped")
                     net.WriteEntity(wep)
                     net.SendToServer()
                 end
-                return shouldReveal
+
+                -- i know this line looks really fucking stupid at face value
+                -- however the purpose is to explicitly return "true" and only "true",
+                -- otherwise we don't return a value at all.
+                -- tbh i'm unsure if this matters but i would rather not fuck with anything by returning a value when i don't need to be
+                if fullCloak then
+                    return fullCloak
+                end
             else
-                return false
+                return
             end
         end
     end

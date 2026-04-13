@@ -1,15 +1,12 @@
 if ( SERVER ) then
 	AddCSLuaFile()
-	resource.AddFile("materials/vgui/ttt/icon_leap.vmt")
-	resource.AddFile("materials/vgui/ttt/icon_leap.vtf")
-	resource.AddFile( "sound/weapons/leap/leap_jump.wav" )
-	resource.AddFile( "sound/weapons/leap/leap_land.wav" )
-	resource.AddFile( "sound/weapons/leap/warden.wav" )
+	resource.AddFile("materials/vgui/ttt/icon_hourglass.vmt")
+	resource.AddFile("materials/vgui/ttt/icon_hourglass.vtf")
 end
 
-CreateConVar( "leap_Cooldowng", "30", {FCVAR_LUA_SERVER}) 
+CreateConVar( "hourglass_Cooldowng", "60", {FCVAR_LUA_SERVER}) 
 if CLIENT then 
-	CreateClientConVar( "leap_bindg", KEY_F, true, true, "Key" ) 
+	CreateClientConVar( "hourglass_bindg", KEY_F, true, true, "Key" ) 
 end
 
 SWEP.Category		= "DEADLOCK"
@@ -21,14 +18,14 @@ SWEP.AdminOnly = false
 
 SWEP.Kind = 78
 if CLIENT then
-	SWEP.PrintName          = "Majestic Leap"
+	SWEP.PrintName          = "Zhonya's Hourglass"
 	SWEP.Slot               = 98
-	SWEP.Icon = "vgui/ttt/icon_leap"
+	SWEP.Icon = "vgui/ttt/icon_hourglass"
 end
 -- Text shown in the equip menu
 SWEP.EquipMenuData = {
 	type = "Weapon",
-	desc = "This will change the world.\n\nPress F to activate leap"
+	desc = "Temporarily prevents you from taking damage, attacking or speaking\n\nPress F to activate phase out"
 };
 
 SWEP.CanBuy = {ROLE_DETECTIVE}
@@ -45,7 +42,7 @@ SWEP.HitDistance = 40
 SWEP.Damage = 0
 
 if SERVER then
-	util.AddNetworkString( "leap" )
+	util.AddNetworkString( "hourglass" )
 end
 
 
@@ -87,10 +84,10 @@ function SWEP:OnDrop()
 	self:Remove() -- You can't drop fists-
 end
 
-local leapIcon = Material("vgui/ttt/icon_leap")
-hook.Add("HUDPaint", "DrawLeapHud", function()
+local hourglassIcon = Material("vgui/ttt/icon_hourglass")
+hook.Add("HUDPaint", "DrawHourglassHud", function()
 	if not(LocalPlayer().HasWeapon) then return end
-	if LocalPlayer():HasWeapon("weapon_ttt_leap") then
+	if LocalPlayer():HasWeapon("weapon_ttt_hourglass") then
 		local boxSizeW = 64
 		local boxSizeH = 64
 		local outlineScalar = 0
@@ -98,9 +95,9 @@ hook.Add("HUDPaint", "DrawLeapHud", function()
 		local x = (ScrW() - boxSizeW) * 0.142
 		local y = (ScrH() - boxSizeH) * 0.993
 		
-		surface.SetMaterial(leapIcon)
+		surface.SetMaterial(hourglassIcon)
 		
-		local leapTimer = math.max(LocalPlayer():GetNWFloat("leapat",CurTime()) - CurTime(), 0)
+		local leapTimer = math.max(LocalPlayer():GetNWFloat("hourglassat",CurTime()) - CurTime(), 0)
 		
 		surface.SetDrawColor(255, 255, 255, 255)
 		surface.DrawTexturedRect(x, y, boxSizeW, boxSizeH)
@@ -132,13 +129,13 @@ hook.Add("HUDPaint", "DrawLeapHud", function()
 	end
 end)
 
-hook.Add("TTTPrepareRound", "ResetLeapCooldown", function()
+hook.Add("TTTPrepareRound", "ResetHourglassCooldown", function()
 	if SERVER then
 		local rf = RecipientFilter()
 		rf:AddAllPlayers()
 		players = rf:GetPlayers()
 		for i = 1, #players do
-			players[i]:SetNWFloat("leapat",0)
+			players[i]:SetNWFloat("hourglassat",0)
 		end
 	end
 end)

@@ -134,3 +134,14 @@ hook.Add("HUDPaint", "DrawWhiplashHud", function()
 		end
 	end
 end)
+
+hook.Add("TTTPrepareRound", "ResetGrappleCooldown", function()
+	if SERVER then
+		local rf = RecipientFilter()
+		rf:AddAllPlayers()
+		players = rf:GetPlayers()
+		for i = 1, #players do
+			players[i]:SetNWFloat("linat",0)
+		end
+	end
+end)

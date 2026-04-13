@@ -61,7 +61,7 @@ SWEP.Spawnable = true
 
 SWEP.CanBuy = {ROLE_TRAITOR, ROLE_DETECTIVE} 
 SWEP.LimitedStock = false
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_JARATE
 
 SWEP.UseHands			= true
 SWEP.ViewModelFlip		= false

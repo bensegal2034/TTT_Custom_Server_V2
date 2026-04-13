@@ -50,12 +50,14 @@ function ENT:ZipZap(v)
 					break
 				end
 		end
+		if IsValid(v:GetActiveWeapon()) and v:GetActiveWeapon().AllowDrop then
+			v:DropWeapon(v:GetActiveWeapon())
+		end
 		
 		local vweapons = v:GetWeapons()
 		local curhealth = v:Health()
 		local curammo = v:GetActiveWeapon():Clip1()
 		local curwep = v:GetActiveWeapon():GetClass()
-		
 		respawnweapons = {}		
 	    
 	    for a, b in pairs( vweapons ) do

@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/weapons/shark_idol/shark_idol_particle"
+	"$additive" 1
+	"$vertexcolor" 1
+}

@@ -105,7 +105,7 @@ SWEP.Secondary.Ammo 		= "none"
 if TTT == true then
 
 	SWEP.Base = "weapon_tttbase"
-	SWEP.Kind = WEAPON_EQUIP2
+	SWEP.Kind = WEAPON_HANDCUFFS
 	 
 	SWEP.EquipMenuData = {
 		  name = "Riot Shield",

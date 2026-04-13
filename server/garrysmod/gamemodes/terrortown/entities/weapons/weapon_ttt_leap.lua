@@ -19,7 +19,7 @@ SWEP.Spawnable = false
 SWEP.AutoSpawnable = false
 SWEP.AdminOnly = false
 
-SWEP.Kind = 78
+SWEP.Kind = WEAPON_ABILITY
 if CLIENT then
 	SWEP.PrintName          = "Majestic Leap"
 	SWEP.Slot               = 98

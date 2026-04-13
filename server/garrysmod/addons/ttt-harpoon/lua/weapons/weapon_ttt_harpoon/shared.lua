@@ -697,7 +697,7 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire(CurTime()+1/(self.Primary.RPM/60))
 	self.Weapon:EmitSound(Sound("Weapon_Knife.Slash"))
 	self.Weapon:SendWeaponAnim( ACT_VM_DRAW )
-	timer.Simple(0.35, function()
+	timer.Simple(0.6, function()
 		if self.Owner:IsValid() and self.Owner:Alive() then
 			self:FireRocket()
 			self.Weapon:TakePrimaryAmmo(1)

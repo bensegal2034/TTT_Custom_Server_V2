@@ -82,7 +82,7 @@ function ENT:StartBomb()
         if self:GetNWBool("CanBeUsed") then
             -- Add activation delay
             self:SetNWBool("ActivationStarted", true)
-            self:SetNWFloat("ActivationTime", CurTime() + .75)
+            self:SetNWFloat("ActivationTime", CurTime() + .3)
             
             -- Play charging sound
             self:EmitSound("ambient/machines/thumper_startup1.wav", 75, 100, 0.25)

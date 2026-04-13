@@ -52,7 +52,7 @@ SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK_SILENCED;
 SWEP.ReloadAnim = ACT_VM_RELOAD_SILENCED;
 
 --- TTT config values
-SWEP.CanBuy = {ROLE_TRAITOR};
+SWEP.CanBuy = {};
 
 SWEP.Kind = WEAPON_MUTER;
 SWEP.AutoSpawnable = false;

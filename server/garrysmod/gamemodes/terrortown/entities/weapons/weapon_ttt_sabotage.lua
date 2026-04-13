@@ -26,7 +26,7 @@ SWEP.Primary.Ammo = "none"
 SWEP.AmmoEnt = ""
 SWEP.PrintName = "Sabotage"
 
-SWEP.Kind = WEAPON_EQUIP
+SWEP.Kind = WEAPON_SABOTAGE
 SWEP.Slot = 7
 
 SWEP.ViewModel = "models/weapons/gamefreak/v_buddyfinder.mdl"

@@ -1,6 +1,6 @@
 
 CreateConVar( "frest_Cooldowng", 10, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Cooldown on  Whiplash" ) 
-CreateConVar( "frest_range", 2000, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "How long you can Phaseshift" )
+CreateConVar( "frest_range", 2000, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "How far you can grapple" )
 if CLIENT then 
 CreateClientConVar( "frest_bindg", KEY_F, true, true, "Key" ) 
 end
@@ -106,7 +106,7 @@ if !IsValid(ply:GetNWEntity("lina")) and ply:GetNWFloat("linat",CurTime()) <= Cu
 				stando:SetOwner(ply)
 				stando:Spawn()
 				ply:SetNWEntity("lina",stando)
-				ply:SetNWFloat("linat",CurTime()+GetConVar("frest_Cooldowng"):GetInt())
+				ply:SetNWFloat("linat",CurTime()+0.25)
 			end 
 		end
 

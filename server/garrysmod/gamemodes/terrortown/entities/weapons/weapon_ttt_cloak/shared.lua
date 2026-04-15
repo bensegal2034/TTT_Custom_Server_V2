@@ -40,7 +40,7 @@ SWEP.Primary.Recoil= 0
 SWEP.Primary.Damage= 0
 SWEP.Primary.NumShots= 1
 SWEP.Primary.Cone= 0
-SWEP.Primary.ClipSize = 40
+SWEP.Primary.ClipSize = 60
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.Automatic   = false
 SWEP.Primary.Ammo         = "none"
@@ -77,13 +77,35 @@ hook.Add("TTTPlayerSpeedModifier", "CloakSpeed", function(ply,slowed,mv)
     end
 end)
 
+hook.Add("EntityTakeDamage", "BlinkOnShootCloakedPly", function(target, dmg)
+    if SERVER and target.GetActiveWeapon then -- unsure if this hook runs on client? dont want it to so adding if server block at start
+        local wep = target:GetActiveWeapon()
+        local atk = dmg:GetAttacker()
+        -- cant go lower than this on bumpTime as will cause flickering if target is repeatedly damaged
+        -- presumably this is network related since using network var to track bumped state
+        local bumpTime = 1.2
+
+        if IsValid(target) and
+        IsValid(wep) and
+        IsValid(atk) and
+        target:IsPlayer() and
+        (atk:IsPlayer() or atk:IsNPC()) and -- we only blink for player or npc inflicted damage. dont blink cloaked players on taking environmental damage
+        wep:GetClass() == "weapon_ttt_cloak" then
+            wep:SetBumped(true)
+            wep:SetBumpTimer(CurTime() + bumpTime)
+        end
+    end
+end)
+
 if SERVER then
     util.AddNetworkString("ClientBumped")
     net.Receive("ClientBumped", function(len, ply)
         --print(ply:Nick() .. " bumped cloaked player!")
         local wep = net.ReadEntity()
+        local bumpTime = 3
+
         wep:SetBumped(true)
-        wep:SetBumpTimer(CurTime() + 3)
+        wep:SetBumpTimer(CurTime() + bumpTime)
     end)
 end
 
@@ -137,12 +159,14 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
 end)
 
 function SWEP:Think()
-    if self:GetBumped() then
-        if CurTime() >= self:GetBumpTimer() then
-            if SERVER then self:SetBumped(false) end
+    if SERVER then
+        if self:GetBumped() then
+            if CurTime() >= self:GetBumpTimer() then
+                self:SetBumped(false)
+            end
         end
     end
-    
+        
     if self:GetRecentlyDeployed() then
         if CurTime() >= self:GetDeployTimer() then
             if SERVER then self:SetRecentlyDeployed(false) end
@@ -162,7 +186,7 @@ function SWEP:Think()
     if self:GetDoRecharge() then
         if (self:GetCloakAmmo() < self:GetMaxCloakAmmo()) then
             if SERVER then self:SetRechargeTimer(self:GetRechargeTimer() + 1) end
-            if self:GetRechargeTimer() >= 7 then
+            if self:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
                 if SERVER then self:SetCloakAmmo(self:GetCloakAmmo() + 1) end
                 --self:SetClip1(self:Clip1() + 1)
                 if SERVER then self:SetRechargeTimer(0) end
@@ -190,8 +214,6 @@ end
 
 function SWEP:Initialize()
     if SERVER then
-        local cloakAmmo = 40
-        
         self:SetCloaked(false)
         self:SetDoRecharge(false)
         self:SetRechargeTimer(0)
@@ -201,8 +223,8 @@ function SWEP:Initialize()
         self:SetRecentlyDeployed(false)
         self:SetDeployTimer(0)
         
-        self:SetCloakAmmo(cloakAmmo)
-        self:SetMaxCloakAmmo(cloakAmmo)
+        self:SetCloakAmmo(self.Primary.ClipSize)
+        self:SetMaxCloakAmmo(self.Primary.ClipSize)
     end
     
     self:CallOnRemove("UnCloak", function(ent)

@@ -49,6 +49,8 @@ SWEP.AllowDrop = false
 
 SWEP.LastOwner = nil
 
+SWEP.DeployTimerAmt = 0.75
+
 function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Cloaked")
     self:NetworkVar("Bool", "DoRecharge")
@@ -159,23 +161,30 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
 end)
 
 function SWEP:Think()
+
+    -- deploy timer logic
+    if self:GetRecentlyDeployed() then
+        if CurTime() >= self:GetDeployTimer() then
+            self.LastOwner:SetMaterial("sprites/heatwave")
+            self:SetMaterial("sprites/heatwave")
+
+            self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
+            self:SetColor(Color(255, 255, 255, 255))
+
+            if SERVER then self:SetRecentlyDeployed(false) end
+        end
+    end
+
     if SERVER then
+        -- bumped timer logic
         if self:GetBumped() then
             if CurTime() >= self:GetBumpTimer() then
                 self:SetBumped(false)
             end
         end
-    end
-        
-    if self:GetRecentlyDeployed() then
-        if CurTime() >= self:GetDeployTimer() then
-            if SERVER then self:SetRecentlyDeployed(false) end
-        end
-    end
-    
-    if SERVER then
-        local vel = self.LastOwner:GetVelocity():LengthSqr()
 
+        -- movement logic
+        local vel = self.LastOwner:GetVelocity():LengthSqr()
         if vel <= 1500 then
             self:SetDoRecharge(true)
         else
@@ -238,15 +247,31 @@ end
 
 function SWEP:Cloak()
     if not(self:GetCloaked()) and IsValid(self.LastOwner) then
-        self.LastOwner:SetColor( Color(255, 255, 255, 3) ) 			
-        self.LastOwner:SetMaterial( "sprites/heatwave" )
-        self:SetMaterial("sprites/heatwave")
+        self.LastOwner:SetRenderMode(1)
+        self:SetRenderMode(1)
+        self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
+        self:SetColor(Color(255, 255, 255, 255))
         sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
         self.LastOwner:SetNWBool("disguised", true)
+
+        -- TODO: apply this dope ass fade effect to the decloak + maybe also bumps
+        
+        local repeatDeployTimerAmt = math.Round(self.DeployTimerAmt / engine.TickInterval())
+        local alphaMinusAmt = 255 / repeatDeployTimerAmt
+        local alphaCurrent = 255
+
+        timer.Create("DeployCloak" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
+            alphaCurrent = math.Clamp(alphaCurrent - alphaMinusAmt, 0, 255)
+
+            self.LastOwner:SetColor(Color(255, 255, 255, alphaCurrent)) 
+            self:SetColor(Color(255, 255, 255, alphaCurrent))
+            
+            --print(self.LastOwner:GetColor(), self:GetColor())
+        end)
         
         if SERVER then
             self:SetRecentlyDeployed(true)
-            self:SetDeployTimer(CurTime() + 0.75)
+            self:SetDeployTimer(CurTime() + self.DeployTimerAmt)
             self:SetCloaked(true)
         end
     end
@@ -254,8 +279,12 @@ end
 
 function SWEP:UnCloak()
     if self:GetCloaked() and IsValid(self.LastOwner) then
+        self.LastOwner:SetRenderMode(0)
+        self:SetRenderMode(0)
         self.LastOwner:SetMaterial("models/glass")
         self:SetMaterial("models/glass")
+        self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
+        self:SetColor(Color(255, 255, 255, 255))	
         sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
         self.LastOwner:SetNWBool("disguised", false)
         
@@ -287,7 +316,7 @@ function SWEP:PreDrop()
     end
 end
 
-function SWEP:OnDrop() --Hopefully this'll work
+function SWEP:OnDrop()
     self:Remove()
 end
 

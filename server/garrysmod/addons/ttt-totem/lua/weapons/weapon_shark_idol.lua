@@ -1,6 +1,30 @@
 if SERVER then
 	AddCSLuaFile()
 	AddCSLuaFile("effects/shark_idol_sparks.lua")
+	resource.AddFile("materials/entities/weapon_shark_idol.png")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol.vmt")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_dead.vmt")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_dead_diffuse.vtf")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_diffuse.vtf")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_golden_immortality.vmt")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_golden_immortality.vtf")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_iridescence.vtf")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_normal.vtf")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_particle.vmt")
+	resource.AddFile("materials/models/weapons/shark_idol/shark_idol_particle.vtf")
+	resource.AddFile("materials/vgui/ttt/icon_shark_idol.vmt")
+	resource.AddFile("materials/vgui/ttt/icon_shark_idol.vtf")
+	resource.AddFile("materials/vgui/ttt/shop-icon-replacements/color-coded buy menu icons/weapon_shark_idol.png")
+	resource.AddFile("models/weapons/sharxcalibur.mdl")
+	resource.AddFile("models/weapons/v_shark_idol.mdl")
+	resource.AddFile("models/weapons/w_shark_idol.mdl")
+	resource.AddFile("models/weapons/w_sharxcalibur.mdl")
+	resource.AddFile("sound/shark_idol_activate.wav")
+	resource.AddFile("sound/shark_idol_hit01.wav")
+	resource.AddFile("sound/shark_idol_hit02.wav")
+	resource.AddFile("sound/shark_idol_swing.wav")
+	resource.AddFile("sound/sharxcalibur_hit.wav")
+
 end
 
 SWEP.PrintName       		= "Shark Idol"
@@ -64,13 +88,6 @@ local function killbon(ply)
 		local Forward = Vector(1,0,0)
 		local ang = ply:EyeAngles()
 		Forward:Rotate(ang)
-		ent:SetModel( "models/weapons/w_shark_idol.mdl" )
-		ent:SetPos( ply:GetShootPos() + Forward * 40 + Vector(0,0,1)*-10 )
-		ent:SetAngles( ang + Angle(90,30,0) )
-		ent:Spawn() 	
-		ent:Activate()
-		ent:SetMaterial("models/weapons/shark_idol/shark_idol_dead")
-		ent:GetPhysicsObject():SetVelocity( ply:GetVelocity() + Vector(0,0,0) + Forward * 3000)
 		ply:EmitSound("Weapon_MegaPhysCannon.Drop")
 		ply.bonInvLast = nil
 		ply:SetMaterial(ply.ori_Material)
@@ -177,9 +194,6 @@ function SWEP:Reload()
 end	
 
 function SWEP:Precache()
-	util.PrecacheSound( "ben_death01" )
-	util.PrecacheSound( "ben_death02" )
-	util.PrecacheSound( "ben_death03" )
 	util.PrecacheSound( "shark_idol_activate" )
 	util.PrecacheSound( "shark_idol_hit01" )
 	util.PrecacheSound( "shark_idol_hit02" )
@@ -296,7 +310,7 @@ if CLIENT then
 
    	SWEP.EquipMenuData = {
       		type="Melee Weapon/Passive effect item",
-      		desc = "Will sacrifice it's life to save yours if equipped.\n\nWill become a projectile after activation"
+      		desc = "Will sacrifice it's life to save yours if equipped."
    	};
 
 end

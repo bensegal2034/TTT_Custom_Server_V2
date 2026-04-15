@@ -58,6 +58,7 @@ function ENT:ZipZap(v)
 		local curhealth = v:Health()
 		local curammo = v:GetActiveWeapon():Clip1()
 		local curwep = v:GetActiveWeapon():GetClass()
+		local curcredits = v:GetCredits()
 		respawnweapons = {}		
 	    
 	    for a, b in pairs( vweapons ) do
@@ -75,6 +76,7 @@ function ENT:ZipZap(v)
       		    v:UnSpectate()
         		v:Spawn()
         		v:SetHealth( curhealth - 20 )
+				v:SetCredits(curcredits)
   		    end
   		    
   		   for a,b in pairs( respawnweapons ) do

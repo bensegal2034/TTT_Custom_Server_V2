@@ -321,8 +321,10 @@ function SWEP:OnDrop()
 end
 
 hook.Add("TTTPrepareRound", "UnCloakAll",function()
-    for k, v in pairs(player.GetAll()) do
-        v:SetMaterial("models/glass")
+    for _, ply in pairs(player.GetAll()) do
+        ply:SetRenderMode(0)
+        ply:SetColor(Color(255, 255, 255, 255))
+        ply:SetMaterial("models/glass")
     end
 end
 )

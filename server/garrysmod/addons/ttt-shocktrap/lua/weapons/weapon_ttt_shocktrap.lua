@@ -43,7 +43,7 @@ SWEP.NoSights = true
 
 -- Shop Stuff
 SWEP.Kind = WEAPON_SHOCKTRAP -- Slot 8. Get rid of the 2 for slot 7.
-SWEP.CanBuy = {ROLE_DETECTIVE} -- Or ROLE_TRAITOR for traitors to buy. Separate with comma for both.
+SWEP.CanBuy = {} -- Or ROLE_TRAITOR for traitors to buy. Separate with comma for both.
 SWEP.LimitedStock = false -- Change to false if you want a minefield.
 SWEP.WeaponID = AMMO_SHOCKTRAP
 

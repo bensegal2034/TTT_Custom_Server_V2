@@ -25,7 +25,7 @@ SWEP.Spawnable= false
 SWEP.AdminSpawnable= true
 SWEP.HoldType = "slam"
 
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_CLOAK
 SWEP.CanBuy = {ROLE_TRAITOR}
 
 SWEP.ViewModelFOV= 60

@@ -19,7 +19,7 @@ SWEP.Spawnable = false
 SWEP.AutoSpawnable = false
 SWEP.AdminOnly = false
 
-SWEP.Kind = 78
+SWEP.Kind = WEAPON_ABILITY
 if CLIENT then
 	SWEP.PrintName          = "Majestic Leap"
 	SWEP.Slot               = 98
@@ -128,6 +128,17 @@ hook.Add("HUDPaint", "DrawLeapHud", function()
 			surface.SetTextColor(255, 255, 255)
 			surface.SetTextPos(textX, textY)
 			surface.DrawText(leapTimerStr)
+		end
+	end
+end)
+
+hook.Add("TTTPrepareRound", "ResetLeapCooldown", function()
+	if SERVER then
+		local rf = RecipientFilter()
+		rf:AddAllPlayers()
+		players = rf:GetPlayers()
+		for i = 1, #players do
+			players[i]:SetNWFloat("leapat",0)
 		end
 	end
 end)

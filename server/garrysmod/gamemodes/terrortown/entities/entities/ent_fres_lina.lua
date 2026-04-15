@@ -1,4 +1,7 @@
 AddCSLuaFile()
+
+CreateConVar( "frest_Velocity", 4000, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Distance Whiplash travels" ) 
+
 ENT.Type = "anim"
 
 ENT.Editable = false
@@ -37,7 +40,7 @@ function ENT:Initialize()
 
 		local phys = self:GetPhysicsObject()
 		if IsValid(phys) then
-			if SERVER then self:SetShootDir(self.Owner:GetAimVector() * 1500) end
+			if SERVER then self:SetShootDir(self.Owner:GetAimVector() * GetConVar("frest_Velocity"):GetInt()) end
 			phys:SetVelocity(self:GetShootDir())
 		end
 	end
@@ -61,6 +64,9 @@ function ENT:PhysicsCollide(data, phys)
 		self:SetMoveType(MOVETYPE_NONE)
 		self.sound = self.Owner:EmitSound("loops.wav", 75, 100, 1, CHAN_AUTO)
 		self.tim = CurTime() + 1.1
+		ply = self:GetOwner()
+		ply:SetNWFloat("linat",CurTime()+GetConVar("frest_Cooldowng"):GetInt())
+		ply.ShouldReduceFallDamage = CurTime()
 	end
 end
 

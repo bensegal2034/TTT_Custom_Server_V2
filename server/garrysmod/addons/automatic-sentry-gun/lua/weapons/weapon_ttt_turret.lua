@@ -35,7 +35,7 @@ SWEP.Secondary.Delay = 0.2
 
 -- This is special equipment
 
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_TURRET
 SWEP.CanBuy = {ROLE_TRAITOR}
 SWEP.Spawnable = true
 SWEP.LimitedStock = true

@@ -247,7 +247,6 @@ function SWEP:PrimaryAttack()
 	end
 
 	self:ShootBullet(0, 1, 0, self.Primary.Ammo, 1, 1)
-	self:TakePrimaryAmmo(1)
 	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK_SILENCED)
 	ply:SetAnimation( PLAYER_ATTACK1 )
 
@@ -285,7 +284,6 @@ hook.Add("PostEntityTakeDamage", "TrackerNoBlood", function(ent, dmginfo, wasDam
 	if
 		not IsValid(dmginfo:GetAttacker())
 		or not dmginfo:GetAttacker():IsPlayer()
-		or not IsPlayer(ent)
 		or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
 		or not GetRoundState() == ROUND_ACTIVE
 		or not wasDamageTaken
@@ -297,5 +295,7 @@ hook.Add("PostEntityTakeDamage", "TrackerNoBlood", function(ent, dmginfo, wasDam
 
 	if weapon:GetClass() == "weapon_ttt_tracker" then
       dmginfo:IsDamageType(DMG_DIRECT)
+      weapon:TakePrimaryAmmo(1)
+      print("a")
    end
 end)

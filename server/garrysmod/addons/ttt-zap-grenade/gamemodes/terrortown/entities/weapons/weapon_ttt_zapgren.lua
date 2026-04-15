@@ -55,7 +55,7 @@ SWEP.TopMaterial 		= 'zapgrenade/zap_grenade_top'
 
 SWEP.Kind = WEAPON_ZAP
 SWEP.AutoSpawnable = false
-SWEP.CanBuy                 = {ROLE_DETECTIVE}
+SWEP.CanBuy                 = {}
 SWEP.LimitedStock           = false
 
 SWEP.NoCook = false

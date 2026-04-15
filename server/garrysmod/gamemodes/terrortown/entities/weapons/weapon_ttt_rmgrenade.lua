@@ -7,7 +7,7 @@ resource.AddFile("materials/VGUI/ttt/icon_redmatter.vmt")
 
 SWEP.Base				= "weapon_tttbasegrenade"
 
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_REDMATTER
 SWEP.WeaponID = AMMO_MOLOTOV
 
 SWEP.HoldType			= "grenade"

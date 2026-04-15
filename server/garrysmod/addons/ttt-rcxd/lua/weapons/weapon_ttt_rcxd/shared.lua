@@ -25,7 +25,7 @@ SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 
-SWEP.Kind = WEAPON_EQUIP2
+SWEP.Kind = WEAPON_RCXD
 SWEP.CanBuy = {ROLE_TRAITOR}
 SWEP.LimitedStock = true
 SWEP.CanDrop = false

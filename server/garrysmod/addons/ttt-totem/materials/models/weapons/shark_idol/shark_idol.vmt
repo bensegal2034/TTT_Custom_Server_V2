@@ -1,0 +1,18 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models/weapons/shark_idol/shark_idol_diffuse"
+	"$bumpmap" "models/weapons/shark_idol/shark_idol_normal"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmaptint" "[ .1 .1 .1 ]"
+	"$envmapconstrast" "1"
+	"$nodecal" "1"
+	"$model" "1"
+	"$surfaceprop"  "metal"
+	"$selfillum" 1
+	"$phong"     "1"
+	"$phongexponent"  "10"
+	"$phongboost"   "4"
+	"$phongfresnelranges"   "[1 .7 .3]"
+	"$phongwarptexture"  "models/weapons/shark_idol/shark_idol_iridescence"
+}

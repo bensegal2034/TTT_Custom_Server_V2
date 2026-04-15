@@ -138,8 +138,8 @@ if CLIENT then
         local endPos = startPos + self:GetRight() * KAPKAN_CONFIG.LaserLength
 
         render.SetMaterial(laserMat)
-        render.DrawBeam(startPos, endPos, 2, 0, 1, Color(255, 50, 50, 30))
-        render.DrawBeam(startPos, endPos, 4, 0, 1, Color(255, 100, 100, 30))
+        render.DrawBeam(startPos, endPos, 2, 0, 1, Color(255, 50, 50, 20))
+        render.DrawBeam(startPos, endPos, 4, 0, 1, Color(255, 100, 100, 20))
 
         render.SetMaterial(dotMat)
         render.DrawSprite(endPos, 0, 0, Color(255, 100, 100, 0.1))

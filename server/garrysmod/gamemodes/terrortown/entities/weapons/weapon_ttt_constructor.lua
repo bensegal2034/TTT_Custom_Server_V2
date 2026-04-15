@@ -27,7 +27,7 @@ if CLIENT then
    SWEP.SlotPos			= 2
 	SWEP.EquipMenuData = {
 		type = "item_weapon",
-		desc = "Place Boxes."
+		desc = "Primary Attack to place boxes\nSecondary Attack to place barrels"
 	};
    SWEP.Icon = "vgui/ttt/icon_constructor"
 
@@ -100,6 +100,27 @@ function SWEP:PrimaryAttack()
 	end
 end
 
+function SWEP:SecondaryAttack()
+
+	local tr = self.Owner:GetEyeTrace()
+    local tracedata = {}
+
+    tracedata.pos = tr.HitPos + Vector(0,0,0)
+
+    // The rest is only done on the server
+    if (!SERVER) then return end
+
+	if self:Clip1() > 0 then
+
+		self:TakePrimaryAmmo(2)
+		//self:EmitSound( SWEP.Primary.Sound )
+
+        place( "models/props_c17/oildrum001.mdl", tracedata)
+
+	else
+		//self.weapon:EmitSound( "Empty" )
+	end
+end
 
 function place( model_file, tracedata )
 

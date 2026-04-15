@@ -41,7 +41,7 @@ SWEP.ViewModelFlip  = false
 SWEP.ViewModelFOV   = 90
 SWEP.ViewModel      = "models/katharsmodels/handcuffs/handcuffs-1.mdl"
 SWEP.WorldModel     = "models/katharsmodels/handcuffs/handcuffs-1.mdl"
-SWEP.Kind           = WEAPON_EQUIP2
+SWEP.Kind           = WEAPON_HANDCUFFS
 SWEP.CanBuy         = { ROLE_DETECTIVE }
 
 

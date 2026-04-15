@@ -74,6 +74,9 @@ if SERVER then
          else
             ply:SetVelocity(Vector(forward.r * (pushforce),forward.y * (pushforce),0))
          end
+
+         -- let ttt know victim was pushed for better handling of fall deaths using this gun
+         ply.was_pushed = {att=dmginfo:GetAttacker(), t=CurTime(), wep="weapon_ttt_sawedoff"}
       end
    end)
 end

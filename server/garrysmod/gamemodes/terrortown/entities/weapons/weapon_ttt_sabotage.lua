@@ -104,7 +104,7 @@ end
 
 hook.Add("TTTPrepareRound", "UnmuteAllSabo", function()
     for _, ply in pairs(player.GetAll()) do
-        muteply:SetNWBool("SaboMuted", false)
+        ply:SetNWBool("SaboMuted", false)
     end
 end
 )

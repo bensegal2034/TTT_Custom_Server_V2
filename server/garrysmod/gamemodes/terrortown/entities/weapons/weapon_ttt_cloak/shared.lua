@@ -12,7 +12,7 @@ if( CLIENT ) then
     
     SWEP.EquipMenuData = {
         type = "item_weapon",
-        desc = "Hold it to become invisible.\nYou will be semi-visible for less than a second after deploying.\nDrains ammo while moving: stand still to regen ammo.\nYou will become semi-visible with no ammo.\nYou will also become semi-visible for a couple seconds if someone bumps into you.\nTaking out your gun again after holstering the device will make you unable to shoot for less than a second."
+        desc = "Hold it to become invisible.\nYou will be semi-visible for 0.75 seconds after deploying.\nDrains ammo while moving: stand still to pause ammo drain.\nYou will decloak with no ammo.\nYou will also become semi-visible for a couple seconds if someone bumps into you. This penalty also applies if you take damage from a player or NPC.\nTaking out your weapon after holstering the device will make you unable to fire for 1.5 seconds."
     };
     
 end
@@ -40,16 +40,17 @@ SWEP.Primary.Recoil= 0
 SWEP.Primary.Damage= 0
 SWEP.Primary.NumShots= 1
 SWEP.Primary.Cone= 0
-SWEP.Primary.ClipSize = 60
+SWEP.Primary.ClipSize = 150
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.Automatic   = false
 SWEP.Primary.Ammo         = "none"
 SWEP.NoSights = true
-SWEP.AllowDrop = false
+SWEP.AllowDrop = true
 
 SWEP.LastOwner = nil
 
 SWEP.DeployTimerAmt = 0.75
+SWEP.UncloakTimerAmt = 1.5
 
 function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Cloaked")
@@ -59,15 +60,14 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Bumped")
     self:NetworkVar("Int", "BumpTimer")
     self:NetworkVar("Int", "CloakAmmo")
-    self:NetworkVar("Int", "MaxCloakAmmo")
     self:NetworkVar("Bool", "RecentlyDeployed")
     self:NetworkVar("Int", "DeployTimer")
     
     --[[
-    self:NetworkVarNotify("Cloaked", function(name, old, new)
-    print(tostring(name) .. " | " .. tostring(new))
-end)
-]]--
+        self:NetworkVarNotify("Cloaked", function(name, old, new)
+        print(tostring(name) .. " | " .. tostring(new))
+        end)
+    ]]--
 end
 
 hook.Add("TTTPlayerSpeedModifier", "CloakSpeed", function(ply,slowed,mv)
@@ -109,6 +109,37 @@ if SERVER then
         wep:SetBumped(true)
         wep:SetBumpTimer(CurTime() + bumpTime)
     end)
+end
+
+function SWEP:DrawHUD()
+	if CLIENT then
+        local maxCloakAmmo = self.Primary.ClipSize
+		local cloakAmmo = self:GetCloakAmmo()
+		local x = math.floor(ScrW() / 2.0)
+		local y = math.floor(ScrH() / 2.0)
+		local barLength = maxCloakAmmo
+		local yOffset = 35
+		local yOffsetText = 3
+		local yOffsetDurability = 10
+		local shadowOffset = 2
+
+		-- local attackTime = self.Weapon:GetNextPrimaryFire() - self.Primary.Delay
+		-- local secondsUntilCooldown  = CurTime() - attackTime
+		-- local maxCloakAmmo = (1 - secondsUntilCooldown / self.Primary.Delay) * barLength
+        draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
+        draw.RoundedBox(10, x - (cloakAmmo / 2), y + yOffset, cloakAmmo, 30, Color(255, 0, 0, 200))
+        
+        surface.SetFont("HealthAmmo")
+        local textW, textH = surface.GetTextSize(tostring(cloakAmmo))
+        surface.SetTextColor(0, 0, 0, 255)
+        surface.SetTextPos(x - (textW / 2) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
+        surface.DrawText(tostring(cloakAmmo))
+        surface.SetTextColor(255, 255, 255)
+        surface.SetTextPos(x - (textW / 2), y + yOffset + yOffsetText)
+        surface.DrawText(tostring(cloakAmmo))
+        
+        self.BaseClass.DrawHUD(self)
+   	end
 end
 
 hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
@@ -165,12 +196,29 @@ function SWEP:Think()
     -- deploy timer logic
     if self:GetRecentlyDeployed() then
         if CurTime() >= self:GetDeployTimer() then
-            self.LastOwner:SetMaterial("sprites/heatwave")
+            -- yes this owner stuff is terrible im well aware
+            -- the problem is that sometimes the owner ent isn't valid
+            -- meaning i use a separate var to "hold" a reference to the owner ent instead of getting it dynamically through self:GetOwner()
+            -- this "held" reference is the self.LastOwner var and is updated whenever the owner changes
+            -- but i have to check to make sure i have 1 valid reference which results in this mess. could probably be done better but this does work it's just not pretty
+            
+            -- additionally, the reason one is valid and the other isn't is because of hook ordering:
+            -- SWEP:OwnerChanged() seems to run "late" and therefore self.LastOwner isn't valid but self:GetOwner() is
+            -- because we haven't updated self.LastOwner yet through SWEP:OwnerChanged()
+            if not(IsValid(self.LastOwner)) then
+                local owner = self:GetOwner()
+                if not(IsValid(owner)) then
+                    print("ERROR: Could not set material and color params for recently cloaked player!")
+                else
+                    owner:SetMaterial("sprites/heatwave")
+                    owner:SetColor(Color(255, 255, 255, 255))
+                end
+            else
+                self.LastOwner:SetMaterial("sprites/heatwave")
+                self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
+            end
             self:SetMaterial("sprites/heatwave")
-
-            self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
             self:SetColor(Color(255, 255, 255, 255))
-
             if SERVER then self:SetRecentlyDeployed(false) end
         end
     end
@@ -192,15 +240,16 @@ function SWEP:Think()
         end
     end
 
+    -- Deprecated behavior: cloak no longer recharges
     if self:GetDoRecharge() then
-        if (self:GetCloakAmmo() < self:GetMaxCloakAmmo()) then
-            if SERVER then self:SetRechargeTimer(self:GetRechargeTimer() + 1) end
-            if self:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
-                if SERVER then self:SetCloakAmmo(self:GetCloakAmmo() + 1) end
-                --self:SetClip1(self:Clip1() + 1)
-                if SERVER then self:SetRechargeTimer(0) end
-            end
-        end
+        -- if (self:GetCloakAmmo() < self.Primary.ClipSize) then
+        --     if SERVER then self:SetRechargeTimer(self:GetRechargeTimer() + 1) end
+        --     if self:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
+        --         if SERVER then self:SetCloakAmmo(self:GetCloakAmmo() + 1) end
+        --         --self:SetClip1(self:Clip1() + 1)
+        --         if SERVER then self:SetRechargeTimer(0) end
+        --     end
+        -- end
     else
         if (self:GetCloakAmmo() > 0) then
             if SERVER then self:SetDrainTimer(self:GetDrainTimer() + 1) end
@@ -210,6 +259,10 @@ function SWEP:Think()
                 if SERVER then self:SetDrainTimer(0) end
             end
         end
+    end
+
+    if (self:GetCloakAmmo() == 0) then
+        self:UnCloak()
     end
     
     self:SetClip1(self:GetCloakAmmo())
@@ -233,7 +286,6 @@ function SWEP:Initialize()
         self:SetDeployTimer(0)
         
         self:SetCloakAmmo(self.Primary.ClipSize)
-        self:SetMaxCloakAmmo(self.Primary.ClipSize)
     end
     
     self:CallOnRemove("UnCloak", function(ent)
@@ -246,21 +298,24 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:Cloak()
-    if not(self:GetCloaked()) and IsValid(self.LastOwner) then
+    --print("Cloak triggered!")
+    if not(self:GetCloaked()) and IsValid(self.LastOwner) and self:GetCloakAmmo() > 0 then
         self.LastOwner:SetRenderMode(1)
         self:SetRenderMode(1)
         self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
         self:SetColor(Color(255, 255, 255, 255))
         sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
         self.LastOwner:SetNWBool("disguised", true)
-
-        -- TODO: apply this dope ass fade effect to the decloak + maybe also bumps
         
-        local repeatDeployTimerAmt = math.Round(self.DeployTimerAmt / engine.TickInterval())
-        local alphaMinusAmt = 255 / repeatDeployTimerAmt
+        local repeatDeployTimerAmt = math.Round(self.DeployTimerAmt / engine.TickInterval()) + 1
+        local alphaMinusAmt = math.Round(255 / repeatDeployTimerAmt, 0)
         local alphaCurrent = 255
 
-        timer.Create("DeployCloak" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
+        if timer.Exists("UncloakFade" .. self:EntIndex()) then
+            timer.Remove("UncloakFade" .. self:EntIndex())
+        end
+
+        timer.Create("DeployCloakFade" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
             alphaCurrent = math.Clamp(alphaCurrent - alphaMinusAmt, 0, 255)
 
             self.LastOwner:SetColor(Color(255, 255, 255, alphaCurrent)) 
@@ -278,19 +333,50 @@ function SWEP:Cloak()
 end
 
 function SWEP:UnCloak()
+    --print("UnCloak triggered!")
     if self:GetCloaked() and IsValid(self.LastOwner) then
-        self.LastOwner:SetRenderMode(0)
-        self:SetRenderMode(0)
-        self.LastOwner:SetMaterial("models/glass")
-        self:SetMaterial("models/glass")
-        self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
-        self:SetColor(Color(255, 255, 255, 255))	
-        sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
-        self.LastOwner:SetNWBool("disguised", false)
+        -- if you read the owner comment above this is even more heinous
+        -- the reason i gotta do this is because self (the cloak) gets dereferenced if it's getting deleted
+        -- meaning, i can't reference self.LastOwner. so i hold a reference to the owner with a local variable in this function. that reference stays around so i can use it later
+        -- again, not pretty. but it works
+        local owner = self.LastOwner
+        local cloak = self
+        owner:SetMaterial("")
+        owner:SetColor(Color(255, 255, 255, 0)) 
+        if IsValid(cloak) then cloak:SetColor(Color(255, 255, 255, 0)) end
+        sound.Play("AlyxEMP.Discharge", owner:GetPos(), 140, 100, 1)
+        owner:SetNWBool("disguised", false)
         
-        for _, wep in ipairs(self.LastOwner:GetWeapons()) do
-            wep:SetNextPrimaryFire(CurTime() + 1.5)
+        for _, wep in ipairs(owner:GetWeapons()) do
+            -- allowed to shoot only when cloak finishes uncloaking
+            -- provides a visual indicator for when the traitor will be able to attack
+            -- this is supposed to make it hard to decloak on top of someone and meatshot/headshot them
+            wep:SetNextPrimaryFire(CurTime() + self.UncloakTimerAmt)
         end
+
+        local repeatUncloakTimerAmt = math.Round(self.UncloakTimerAmt / engine.TickInterval()) + 1
+        local alphaPlusAmt = math.Round(255 / repeatUncloakTimerAmt, 0)
+        local alphaCurrent = 0
+        local runTime = 0
+
+        if timer.Exists("DeployCloakFade" .. self:EntIndex()) then
+            timer.Remove("DeployCloakFade" .. self:EntIndex())
+        end
+
+        timer.Create("UncloakFade" .. self:EntIndex(), 0, repeatUncloakTimerAmt, function()
+            alphaCurrent = math.Clamp(alphaCurrent + alphaPlusAmt, 0, 255)
+            runTime = runTime + 1
+
+            owner:SetColor(Color(255, 255, 255, alphaCurrent))
+            if IsValid(cloak) then cloak:SetColor(Color(255, 255, 255, alphaCurrent)) end
+
+            if runTime >= repeatUncloakTimerAmt then
+                owner:SetRenderMode(0)
+                if IsValid(cloak) then cloak:SetRenderMode(0) end
+            end
+            
+            --print(alphaCurrent, repeatUncloakTimerAmt, alphaPlusAmt, runTime)
+        end)
         
         if SERVER then
             self:SetCloaked(false)
@@ -299,11 +385,15 @@ function SWEP:UnCloak()
 end
 
 function SWEP:Deploy()
+    --print("Deploy triggered!")
     self:Cloak()
 end
 
 function SWEP:Holster()
-    if self:GetCloaked() then
+    --print("Holster triggered!")
+    -- Holster() seems to run when an ent is unloaded on client specifically
+    -- Therefore we only call UnCloak serverside because otherwise clients will randomly call it and play the cloak noise when they unload players with a cloak equipped
+    if self:GetCloaked() and SERVER then
         self:UnCloak()
     end
     
@@ -311,12 +401,14 @@ function SWEP:Holster()
 end
 
 function SWEP:PreDrop()
+    --print("PreDrop triggered!")
     if self:GetCloaked() then
         self:UnCloak()
     end
 end
 
 function SWEP:OnDrop()
+    --print("OnDrop triggered!")
     self:Remove()
 end
 
@@ -324,7 +416,7 @@ hook.Add("TTTPrepareRound", "UnCloakAll",function()
     for _, ply in pairs(player.GetAll()) do
         ply:SetRenderMode(0)
         ply:SetColor(Color(255, 255, 255, 255))
-        ply:SetMaterial("models/glass")
+        ply:SetMaterial("")
     end
 end
 )

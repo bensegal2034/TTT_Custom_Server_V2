@@ -37,6 +37,10 @@ SWEP.Primary.ClipSize = 1;
 SWEP.Primary.ClipMax = 1;
 SWEP.Primary.DefaultClip = 1;
 
+hook.Add("OnPlayerChat", "NoTalkDuringCommsSabo", function(ply)
+	return ply:GetNWBool("SaboMuted", false)
+end)
+
 function SWEP:PrimaryAttack()
     if not IsFirstTimePredicted() then return end
     if not self:CanPrimaryAttack() then return end
@@ -50,18 +54,18 @@ function SWEP:PrimaryAttack()
 
     for _, muteply in ipairs(player.GetAll()) do
         muteply:PrintMessage(HUD_PRINTCENTER, "Shhhh...");
+        muteply:SetNWBool("SaboMuted", true)
         hook.Run("MutePlayer", muteply, muteTime);
         if CLIENT then
             surface.PlaySound("weapons/sabotage/sabo3.wav")
         end
         timer.Simple(muteTime, function()
-            if not IsValid(muteply) 
-            or not muteply:Alive() then 
-                return 
+            if not IsValid(muteply) then
+                -- can't fix sabomuted var if ent not valid
+                return
             end
-            if CLIENT then
-                surface.PlaySound("weapons/sabotage/sabo_end.wav")
-            end
+            muteply:SetNWBool("SaboMuted", false)
+            if CLIENT then surface.PlaySound("weapons/sabotage/sabo_end.wav") end
         end)
     end
     if SERVER then
@@ -71,7 +75,7 @@ function SWEP:PrimaryAttack()
                 if not IsValid(owner)
                 or not owner:Alive() then
                     return
-                else 
+                else
                     owner:PrintMessage(HUD_PRINTTALK, "Comms Restored! All players unmuted!");
                 end
             end)
@@ -97,3 +101,10 @@ function SWEP:DoSATMAnimation(bool)
 		end
 	end)
 end
+
+hook.Add("TTTPrepareRound", "UnmuteAllSabo", function()
+    for _, ply in pairs(player.GetAll()) do
+        muteply:SetNWBool("SaboMuted", false)
+    end
+end
+)

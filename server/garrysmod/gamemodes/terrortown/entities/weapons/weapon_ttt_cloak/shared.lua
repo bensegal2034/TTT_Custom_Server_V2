@@ -289,7 +289,7 @@ function SWEP:UnCloak()
         self.LastOwner:SetNWBool("disguised", false)
         
         for _, wep in ipairs(self.LastOwner:GetWeapons()) do
-            wep:SetNextPrimaryFire(CurTime() + 0.5)
+            wep:SetNextPrimaryFire(CurTime() + 1.5)
         end
         
         if SERVER then

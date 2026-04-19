@@ -480,14 +480,14 @@ hook.Add("PreDrawEffects", "DrawThroughSmoke", function()
 		if LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and LocalPlayer():GetObserverTarget() == ply then
 			continue
 		end
-
+		
 		-- Skip cloaked players
-		local wep = ply:GetActiveWeapon()
-		if IsValid(wep) and wep:GetClass() == "weapon_ttt_cloak" then
-			if not(wep:GetBumped()) or not(wep:GetRecentlyDeployed()) then
-				continue
-			end
-		end
+		-- local wep = ply:GetActiveWeapon()
+		-- if IsValid(wep) and wep:GetClass() == "weapon_ttt_cloak" then
+		-- 	if not(wep:GetBumped()) or not(wep:GetRecentlyDeployed()) then
+		-- 		continue
+		-- 	end
+		-- end
 		
 		-- Create a clientside only copy of the player model to make yellow
 		local entity = ClientsideModel(ply:GetModel())

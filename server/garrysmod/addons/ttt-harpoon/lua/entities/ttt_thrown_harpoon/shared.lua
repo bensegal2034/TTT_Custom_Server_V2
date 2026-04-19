@@ -150,7 +150,7 @@ end
 ---------------------------------------------------------*/
 function ENT:Use(activator, caller) 
 	print(self:GetOwner())
-	if (activator:IsPlayer()) and activator == self:GetOwner() then
+	if (activator:IsPlayer()) then
 		if activator:GetWeapon("weapon_ttt_harpoon") == NULL then
 			activator:Give("weapon_ttt_harpoon")
 			self.Entity:Remove()

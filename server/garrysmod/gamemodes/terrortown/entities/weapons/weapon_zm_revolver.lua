@@ -104,9 +104,10 @@ SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/v_deagle_scope_custom.mdl"
+SWEP.ViewModel             = "models/weapons/cstrike/c_pist_deagle.mdl"
 SWEP.FakeWorldModel        = nil
-SWEP.WorldModel            = "models/weapons/w_deagle_scope_custom.mdl"
+SWEP.WorldModel            = "models/weapons/w_pist_deagle.mdl"
+
 
 SWEP.IronSightsPos         = Vector( 5, -15, -2 )
 SWEP.IronSightsAng         = Vector( 2.6, 1.37, 3.5 )

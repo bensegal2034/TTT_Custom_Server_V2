@@ -40,7 +40,8 @@ if detCvar:GetBool() and traCvar:GetBool() then
 elseif detCvar:GetBool() then
     SWEP.CanBuy = {ROLE_DETECTIVE}
 elseif traCvar:GetBool() then
-    SWEP.CanBuy = {ROLE_TRAITOR}
+    --Temp disabling sniper summoner until fixed (needs to be made killable, bug preventing actual sniper from spawning has been fixed)
+    --SWEP.CanBuy = {ROLE_TRAITOR}
 end
 
 SWEP.AutoSpawnable = false
@@ -149,8 +150,8 @@ function SWEP:place_sniper(tracedata)
         ent:SetRenderMode( RENDERMODE_TRANSALPHA )
         ent:Fire( "alpha", 0, 0 )
 
-        timer.Simple(2, function()
-            if tempent:IsValid() and tempent:IsAlive() then
+        timer.Simple(.5, function()
+            if tempent:IsValid() and tempent:Alive() then
                 ent:Spawn()
                 if GetConVar("ttt_combine_sniper_rotate"):GetBool() then
                     timer.Create("CombineSniperRotate" .. ent:EntIndex(), 0.1, 0, function()

@@ -159,7 +159,7 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
             local dist = 1500
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
             local fullCloak = distCalc > dist
-            local cloakAmmoBlinkThreshold = 5
+            local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
 
             if wep:GetBumped() or wep:GetRecentlyDeployed() then return end
 

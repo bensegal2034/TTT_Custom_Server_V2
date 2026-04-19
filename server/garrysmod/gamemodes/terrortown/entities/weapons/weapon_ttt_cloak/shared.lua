@@ -19,6 +19,7 @@ end
 
 SWEP.Author= "dot_dash"
 
+-- TODO: Can't pick up cloak after it is dropped other than by pressing E. Fix somehow?
 
 SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable= false
@@ -263,6 +264,7 @@ function SWEP:Think()
 
     if (self:GetCloakAmmo() == 0) then
         self:UnCloak()
+        if SERVER then self:Remove() end
     end
     
     self:SetClip1(self:GetCloakAmmo())
@@ -343,7 +345,10 @@ function SWEP:UnCloak()
         local cloak = self
         owner:SetMaterial("")
         owner:SetColor(Color(255, 255, 255, 0)) 
-        if IsValid(cloak) then cloak:SetColor(Color(255, 255, 255, 0)) end
+        if IsValid(cloak) then 
+            cloak:SetColor(Color(255, 255, 255, 0))
+            cloak:SetMaterial("")
+        end
         sound.Play("AlyxEMP.Discharge", owner:GetPos(), 140, 100, 1)
         owner:SetNWBool("disguised", false)
         
@@ -405,11 +410,6 @@ function SWEP:PreDrop()
     if self:GetCloaked() then
         self:UnCloak()
     end
-end
-
-function SWEP:OnDrop()
-    --print("OnDrop triggered!")
-    self:Remove()
 end
 
 hook.Add("TTTPrepareRound", "UnCloakAll",function()

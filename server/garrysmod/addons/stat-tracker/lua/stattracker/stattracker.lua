@@ -172,7 +172,7 @@ hook.Add("PostEntityTakeDamage", "TrackSWEPDamage", function(entTakingDamage, dm
     local damageDealt = dmg:GetDamage()
     
     if damageDealt < 0 then
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FREAK THE FUCK OUT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" .. wepName .. " DID NEGATIVE DAMAGE")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FREAK THE FUCK OUT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" .. wepName .. " DID NEGATIVE DAMAGE! DAMAGE VALUE: " .. tostring(damageDealt))
     end
 
     if totalDamage[wepName] ~= nil then

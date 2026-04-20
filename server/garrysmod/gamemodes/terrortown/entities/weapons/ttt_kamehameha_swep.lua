@@ -7,7 +7,7 @@ SWEP.Kind 				= WEAPON_KAMEHAMEHA
 SWEP.CanBuy = { ROLE_TRAITOR }
 SWEP.LimitedStock 		= true
 SWEP.InLoadoutFor 		= nil
-SWEP.AllowDrop = false
+SWEP.AllowDrop = true
 SWEP.IsSilent = false
 SWEP.AutoSpawnable = false
 SWEP.HoldType = "normal"
@@ -23,8 +23,8 @@ SWEP.ShowViewModel = true
 SWEP.ShowWorldModel = false
 SWEP.FiresUnderwater = true
 
-SWEP.MaxCharge = 50
-SWEP.ChargeTime = 50
+SWEP.MaxCharge = 30
+SWEP.ChargeTime = 30
 SWEP.SoundPlayed = false
 
 --
@@ -107,7 +107,7 @@ function SWEP:Initialize()
 	self.addhp = 0
 	self.timehp = 0
 	self:SetWeaponHoldType( "normal" )
-	self:SetChargeTime(50)
+	self:SetChargeTime(self.MaxCharge)
 end
 
 function SWEP:DoImpactEffect( trace, damageType )
@@ -124,16 +124,16 @@ function SWEP:SecondaryAttack()end
 
 function SWEP:Think()
 	if not(self:GetWeaponActive()) then
-		if (self:GetChargeTime() <= 50) then
+		if (self:GetChargeTime() <= self.MaxCharge) then
 			self.WeaponTimer = self.WeaponTimer + 1
-			if self.WeaponTimer >= 1 then
+			if self.WeaponTimer >= 7 then
 				if SERVER then
 					self.ChargeTime = self.ChargeTime + 1
 					self:SetChargeTime(self.ChargeTime)
 				end
 				self.ChargeTime = self:GetChargeTime()
 				if CLIENT then
-					if self.ChargeTime == 49 and not self.SoundPlayed then
+					if self.ChargeTime == (self.MaxCharge - 1) and not self.SoundPlayed then
 						local owner = self:GetOwner()
 						local num = math.random(1,3)
 						local soundStr = "weapons/shoot/goku" .. tostring(num) .. ".wav"       
@@ -184,13 +184,14 @@ function SWEP:PrimaryAttack()
 		end
 			
 		if (self.Weapon:Clip1() < 1) then return end
-		if (self.ChargeTime < 50) then return end
+		if (self.ChargeTime < self.MaxCharge) then return end
 			if SERVER then self:SetWeaponActive(true) end
 			for k, v in pairs( player.GetAll( ) ) do
 			v:ConCommand( "play weapons/shoot/kamehame.wav\n" )
 			end
 		--sound.Play("weapons/shoot/kamehame.wav", Vector(0,0,0),180)
 		self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK )
+		self.AllowDrop = false
 		if CLIENT then
 			self.SoundPlayed = false
 		end
@@ -199,12 +200,16 @@ function SWEP:PrimaryAttack()
 				ply:Freeze(false) 
 				self:TakePrimaryAmmo(1)
 				self.ChargeTime = 0
+				self.AllowDrop = true
 				if SERVER then
 					self:SetChargeTime(self.ChargeTime)
+					self:SetWeaponActive(false) 
+					if self:Clip1() <= 0 then
+						self:Remove()
+					end
 				end
-				if SERVER then self:SetWeaponActive(false) end
-				end
-			end)
+			end
+		end)
 		timer.Simple(3.4, function()
 			if ply:Alive() then
 				ply:Freeze(true)

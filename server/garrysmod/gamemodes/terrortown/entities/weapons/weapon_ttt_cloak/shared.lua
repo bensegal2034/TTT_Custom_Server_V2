@@ -124,9 +124,6 @@ function SWEP:DrawHUD()
 		local yOffsetDurability = 10
 		local shadowOffset = 2
 
-		-- local attackTime = self.Weapon:GetNextPrimaryFire() - self.Primary.Delay
-		-- local secondsUntilCooldown  = CurTime() - attackTime
-		-- local maxCloakAmmo = (1 - secondsUntilCooldown / self.Primary.Delay) * barLength
         draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
         draw.RoundedBox(10, x - (cloakAmmo / 2), y + yOffset, cloakAmmo, 30, Color(255, 0, 0, 200))
         
@@ -284,7 +281,7 @@ function SWEP:Initialize()
         self:SetDrainTimer(0)
         self:SetBumped(false)
         self:SetBumpTimer(0)
-        self:SetRecentlyDeployed(false)
+        self:SetRecentlyDeployed(false) 
         self:SetDeployTimer(0)
         
         self:SetCloakAmmo(self.Primary.ClipSize)
@@ -357,6 +354,7 @@ function SWEP:UnCloak()
             -- provides a visual indicator for when the traitor will be able to attack
             -- this is supposed to make it hard to decloak on top of someone and meatshot/headshot them
             wep:SetNextPrimaryFire(CurTime() + self.UncloakTimerAmt)
+            wep:SetNextSecondaryFire(CurTime() + self.UncloakTimerAmt)
         end
 
         local repeatUncloakTimerAmt = math.Round(self.UncloakTimerAmt / engine.TickInterval()) + 1

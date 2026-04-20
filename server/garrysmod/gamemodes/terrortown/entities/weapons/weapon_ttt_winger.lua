@@ -102,10 +102,13 @@ function SWEP:Initialize()
 end
 
 function SWEP:Deploy()
+	local timeUntilFire = 0.5
 	self:SetWeaponHoldType(self.HoldType)
 	self:SendWeaponAnim(ACT_VM_DRAW)
-	self:SetNextPrimaryFire(CurTime() + 0.5)
-	self:SetNextSecondaryFire(CurTime() + 0.5)
+	if (self:GetNextPrimaryFire() - CurTime()) < timeUntilFire then
+		self:SetNextPrimaryFire(CurTime() + timeUntilFire)
+		self:SetNextSecondaryFire(CurTime() + timeUntilFire)
+	end
 	self.Reloading = 0
 	self.ReloadingTimer = CurTime()
 	self.Idle = 0
@@ -126,6 +129,7 @@ function SWEP:Holster()
 end
 
 function SWEP:PrimaryAttack()
+	if self:GetNextPrimaryFire() >= CurTime() or self:GetNextSecondaryFire() >= CurTime() then return end
 	if self:Clip1() <= 0 and self:Ammo1() <= 0 then
 		self:EmitSound("Weapon_Pistol.ClipEmpty")
 		self:SetNextPrimaryFire(CurTime() + 0.2)

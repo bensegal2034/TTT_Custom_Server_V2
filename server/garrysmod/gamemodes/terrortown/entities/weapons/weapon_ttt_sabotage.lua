@@ -57,7 +57,7 @@ function SWEP:PrimaryAttack()
         muteply:SetNWBool("SaboMuted", true)
         hook.Run("MutePlayer", muteply, muteTime);
         if CLIENT then
-            surface.PlaySound("weapons/sabotage/sabo3.wav")
+            muteply:EmitSound("weapons/sabotage/sabo3.wav", 75, 100, 1, CHAN_WEAPON)
         end
         timer.Simple(muteTime, function()
             if not IsValid(muteply) then
@@ -65,19 +65,14 @@ function SWEP:PrimaryAttack()
                 return
             end
             muteply:SetNWBool("SaboMuted", false)
-            if CLIENT then surface.PlaySound("weapons/sabotage/sabo_end.wav") end
+            if CLIENT then muteply:EmitSound("weapons/sabotage/sabo_end.wav", 75, 100, 1, CHAN_WEAPON) end
         end)
     end
     if SERVER then
         if IsValid(owner) then
-            owner:PrintMessage(HUD_PRINTTALK, "Comms Sabotaged! All players muted for 15 seconds.");
+            PrintMessage(HUD_PRINTTALK, "Comms Sabotaged! All players muted for 15 seconds.");
             timer.Simple(muteTime, function()
-                if not IsValid(owner)
-                or not owner:Alive() then
-                    return
-                else
-                    owner:PrintMessage(HUD_PRINTTALK, "Comms Restored! All players unmuted!");
-                end
+                PrintMessage(HUD_PRINTTALK, "Comms Restored! All players unmuted!");
             end)
         end
     end

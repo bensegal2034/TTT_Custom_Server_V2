@@ -54,6 +54,7 @@ end
 
 function SWEP:Initialize()
 	self:SetHoldType( "normal" )
+	self:AddHUDHelp("Press F to activate hourglass with any weapon equipped!", false)
 end 
 
 function SWEP:PrimaryAttack()

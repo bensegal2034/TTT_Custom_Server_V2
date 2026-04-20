@@ -19,7 +19,12 @@ end
 
 SWEP.Author= "dot_dash"
 
--- TODO: Can't pick up cloak after it is dropped other than by pressing E. Fix somehow?
+-- TODOS
+-- 1) Can't pick up cloak after it is dropped other than by pressing E. Fix somehow?
+-- 2) Deploy HUD timer is a little buggy because it doesn't quite get shut off before the network var
+-- flips back around to false. Would be cool if I could get it to switch off in time
+-- 3) Swapping to scar from the cloak looks buggy only on local client. For others it is fine.
+-- No idea how to fix this but would be cool if I could make it look right
 
 SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable= false
@@ -112,6 +117,49 @@ if SERVER then
     end)
 end
 
+hook.Add("HUDPaint", "DrawCloakSwapHud", function()
+	if not(LocalPlayer().HasWeapon) or not(LocalPlayer().GetActiveWeapon) then return end
+	if LocalPlayer():HasWeapon("weapon_ttt_cloak") and 
+    LocalPlayer():GetNWBool("CloakSwitchPenaltyActive", false) and 
+    LocalPlayer():GetActiveWeapon() != "weapon_ttt_cloak" then
+        local cloak = nil 
+        for _, wep in ipairs(LocalPlayer():GetWeapons()) do
+            if wep:GetClass() == "weapon_ttt_cloak" then
+                cloak = wep
+            end
+        end
+        if not(IsValid(cloak)) then return end
+
+		local x = math.floor(ScrW() / 2.0)
+		local y = math.floor(ScrH() / 2.0)
+		local barLength = 100
+		local yOffset = 35
+		local yOffsetText = 3
+		local yOffsetDurability = 10
+		local shadowOffset = 2
+        local activeWep = LocalPlayer():GetActiveWeapon()
+        local wepLastShootTime = activeWep:LastShootTime()
+        local timeUntilFire = math.Clamp(activeWep:GetNextPrimaryFire() - CurTime(), 0, math.huge)
+        local decloakTime = cloak.UncloakTimerAmt
+        local cooldownPercentage = (1 - timeUntilFire / decloakTime) * barLength
+        local cooldownPercentageStr = tostring(math.Truncate(cooldownPercentage, 0)) .. "%"
+
+        --print(activeWep:LastShootTime())
+
+        draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
+        draw.RoundedBox(10, x - (cooldownPercentage / 2), y + yOffset, cooldownPercentage, 30, Color(255, 0, 0, 200))
+        
+        surface.SetFont("HealthAmmo")
+        local textW, textH = surface.GetTextSize(cooldownPercentageStr)
+        surface.SetTextColor(0, 0, 0, 255)
+        surface.SetTextPos(x - (textW / 2) + shadowOffset, y + yOffset + yOffsetText + shadowOffset)
+        surface.DrawText(cooldownPercentageStr)
+        surface.SetTextColor(255, 255, 255)
+        surface.SetTextPos(x - (textW / 2), y + yOffset + yOffsetText)
+        surface.DrawText(cooldownPercentageStr)
+    end
+end)
+
 function SWEP:DrawHUD()
 	if CLIENT then
         local maxCloakAmmo = self.Primary.ClipSize
@@ -190,7 +238,6 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
 end)
 
 function SWEP:Think()
-
     -- deploy timer logic
     if self:GetRecentlyDeployed() then
         if CurTime() >= self:GetDeployTimer() then
@@ -312,6 +359,7 @@ function SWEP:Cloak()
 
         if timer.Exists("UncloakFade" .. self:EntIndex()) then
             timer.Remove("UncloakFade" .. self:EntIndex())
+            self.LastOwner:SetNWBool("CloakSwitchPenaltyActive", false)
         end
 
         timer.Create("DeployCloakFade" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
@@ -356,6 +404,7 @@ function SWEP:UnCloak()
             wep:SetNextPrimaryFire(CurTime() + self.UncloakTimerAmt)
             wep:SetNextSecondaryFire(CurTime() + self.UncloakTimerAmt)
         end
+        owner:SetNWBool("CloakSwitchPenaltyActive", true)
 
         local repeatUncloakTimerAmt = math.Round(self.UncloakTimerAmt / engine.TickInterval()) + 1
         local alphaPlusAmt = math.Round(255 / repeatUncloakTimerAmt, 0)
@@ -375,6 +424,7 @@ function SWEP:UnCloak()
 
             if runTime >= repeatUncloakTimerAmt then
                 owner:SetRenderMode(0)
+                owner:SetNWBool("CloakSwitchPenaltyActive", false)
                 if IsValid(cloak) then cloak:SetRenderMode(0) end
             end
             
@@ -415,6 +465,7 @@ hook.Add("TTTPrepareRound", "UnCloakAll",function()
         ply:SetRenderMode(0)
         ply:SetColor(Color(255, 255, 255, 255))
         ply:SetMaterial("")
+        ply:SetNWBool("CloakSwitchPenaltyActive", false)
     end
 end
 )

@@ -122,13 +122,15 @@ hook.Add("HUDPaint", "DrawCloakSwapHud", function()
 	if LocalPlayer():HasWeapon("weapon_ttt_cloak") and 
     LocalPlayer():GetNWBool("CloakSwitchPenaltyActive", false) and 
     LocalPlayer():GetActiveWeapon() != "weapon_ttt_cloak" then
-        local cloak = nil 
+        local cloak = nil
+        local wepTbl = util.JSONToTable(LocalPlayer():GetNW2String("DeployTimerTbl", "{}"))
         for _, wep in ipairs(LocalPlayer():GetWeapons()) do
             if wep:GetClass() == "weapon_ttt_cloak" then
                 cloak = wep
             end
         end
-        if not(IsValid(cloak)) then return end
+        
+        if not(IsValid(cloak)) or table.IsEmpty(wepTbl) then return end
 
 		local x = math.floor(ScrW() / 2.0)
 		local y = math.floor(ScrH() / 2.0)
@@ -138,13 +140,13 @@ hook.Add("HUDPaint", "DrawCloakSwapHud", function()
 		local yOffsetDurability = 10
 		local shadowOffset = 2
         local activeWep = LocalPlayer():GetActiveWeapon()
-        local wepLastShootTime = activeWep:LastShootTime()
-        local timeUntilFire = math.Clamp(activeWep:GetNextPrimaryFire() - CurTime(), 0, math.huge)
+        local wepLastPrimFire = activeWep:GetNextPrimaryFire()
+        local timeUntilFire = math.Clamp(wepLastPrimFire - CurTime(), 0, math.huge)
         local decloakTime = cloak.UncloakTimerAmt
         local cooldownPercentage = (1 - timeUntilFire / decloakTime) * barLength
         local cooldownPercentageStr = tostring(math.Truncate(cooldownPercentage, 0)) .. "%"
 
-        --print(activeWep:LastShootTime())
+        if wepTbl[activeWep:GetClass()] == math.Truncate(wepLastPrimFire, 0) then return end
 
         draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
         draw.RoundedBox(10, x - (cooldownPercentage / 2), y + yOffset, cooldownPercentage, 30, Color(255, 0, 0, 200))
@@ -307,8 +309,10 @@ function SWEP:Think()
     end
 
     if (self:GetCloakAmmo() == 0) then
-        self:UnCloak()
-        if SERVER then self:Remove() end
+        if SERVER then
+            self:UnCloak()
+            self:Remove() 
+        end
     end
     
     self:SetClip1(self:GetCloakAmmo())
@@ -335,7 +339,7 @@ function SWEP:Initialize()
     end
     
     self:CallOnRemove("UnCloak", function(ent)
-        ent:UnCloak()
+        if SERVER then ent:UnCloak() end
     end)
 end
 
@@ -360,6 +364,7 @@ function SWEP:Cloak()
         if timer.Exists("UncloakFade" .. self:EntIndex()) then
             timer.Remove("UncloakFade" .. self:EntIndex())
             self.LastOwner:SetNWBool("CloakSwitchPenaltyActive", false)
+            self.LastOwner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
         end
 
         timer.Create("DeployCloakFade" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
@@ -388,6 +393,7 @@ function SWEP:UnCloak()
         -- again, not pretty. but it works
         local owner = self.LastOwner
         local cloak = self
+        local wepTbl = {}
         owner:SetMaterial("")
         owner:SetColor(Color(255, 255, 255, 0)) 
         if IsValid(cloak) then 
@@ -403,8 +409,11 @@ function SWEP:UnCloak()
             -- this is supposed to make it hard to decloak on top of someone and meatshot/headshot them
             wep:SetNextPrimaryFire(CurTime() + self.UncloakTimerAmt)
             wep:SetNextSecondaryFire(CurTime() + self.UncloakTimerAmt)
+            wepTbl[tostring(wep:GetClass())] = tostring(math.Truncate(wep:GetNextPrimaryFire(), 0))
         end
+        
         owner:SetNWBool("CloakSwitchPenaltyActive", true)
+        owner:SetNW2String("DeployTimerTbl", util.TableToJSON(wepTbl))
 
         local repeatUncloakTimerAmt = math.Round(self.UncloakTimerAmt / engine.TickInterval()) + 1
         local alphaPlusAmt = math.Round(255 / repeatUncloakTimerAmt, 0)
@@ -425,21 +434,20 @@ function SWEP:UnCloak()
             if runTime >= repeatUncloakTimerAmt then
                 owner:SetRenderMode(0)
                 owner:SetNWBool("CloakSwitchPenaltyActive", false)
+                owner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
                 if IsValid(cloak) then cloak:SetRenderMode(0) end
             end
             
             --print(alphaCurrent, repeatUncloakTimerAmt, alphaPlusAmt, runTime)
         end)
         
-        if SERVER then
-            self:SetCloaked(false)
-        end
+        if SERVER then self:SetCloaked(false) end
     end
 end
 
 function SWEP:Deploy()
     --print("Deploy triggered!")
-    self:Cloak()
+    if SERVER then self:Cloak() end
 end
 
 function SWEP:Holster()
@@ -455,7 +463,7 @@ end
 
 function SWEP:PreDrop()
     --print("PreDrop triggered!")
-    if self:GetCloaked() then
+    if self:GetCloaked() and SERVER then
         self:UnCloak()
     end
 end
@@ -466,6 +474,7 @@ hook.Add("TTTPrepareRound", "UnCloakAll",function()
         ply:SetColor(Color(255, 255, 255, 255))
         ply:SetMaterial("")
         ply:SetNWBool("CloakSwitchPenaltyActive", false)
+        ply:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
     end
 end
 )

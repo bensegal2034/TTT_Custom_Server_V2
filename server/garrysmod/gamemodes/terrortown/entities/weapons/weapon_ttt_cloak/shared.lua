@@ -332,7 +332,7 @@ function SWEP:Cloak()
 
         if timer.Exists("UncloakFade" .. self:EntIndex()) then
             timer.Remove("UncloakFade" .. self:EntIndex())
-            print("Removing active UncloakFade timer!")
+            --print("Removing active UncloakFade timer!")
             self.LastOwner:SetNWBool("CloakSwitchPenaltyActive", false)
             self.LastOwner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
         end
@@ -361,7 +361,7 @@ function SWEP:Cloak()
                 self:SetColor(Color(255, 255, 255, 255))
             end
             
-            print(self.LastOwner:GetColor())
+            --print(self.LastOwner:GetColor())
         end)
         
         if SERVER then self:SetCloaked(true)end

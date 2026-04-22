@@ -111,7 +111,7 @@ function SWEP:Initialize()
 		local luckRoll = math.random(1,6)
 		if luckRoll == 1 or luckRoll == 2 then
 			local luckRoll = math.random(1,6)
-			print("Rerolling")
+			--print("Rerolling")
 		end
 		self:SetHoldingAces(luckRoll)
 	end
@@ -168,7 +168,7 @@ function SWEP:Reload()
 		local luckRoll = math.random(1,6)
 		if luckRoll == 1 or luckRoll == 2 then
 			local luckRoll = math.random(1,6)
-			print("Rerolling")
+			--print("Rerolling")
 		end
 		self:SetHoldingAces(luckRoll)
 	end

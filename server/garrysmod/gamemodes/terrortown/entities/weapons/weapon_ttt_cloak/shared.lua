@@ -66,7 +66,6 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Bumped")
     self:NetworkVar("Int", "BumpTimer")
     self:NetworkVar("Int", "CloakAmmo")
-    self:NetworkVar("Bool", "RecentlyDeployed")
     self:NetworkVar("Int", "DeployTimer")
     
     --[[
@@ -135,7 +134,7 @@ hook.Add("HUDPaint", "DrawCloakSwapHud", function()
 		local x = math.floor(ScrW() / 2.0)
 		local y = math.floor(ScrH() / 2.0)
 		local barLength = 100
-		local yOffset = 35
+		local yOffset = -50
 		local yOffsetText = 3
 		local yOffsetDurability = 10
 		local shadowOffset = 2
@@ -169,7 +168,7 @@ function SWEP:DrawHUD()
 		local x = math.floor(ScrW() / 2.0)
 		local y = math.floor(ScrH() / 2.0)
 		local barLength = maxCloakAmmo
-		local yOffset = 35
+		local yOffset = -50
 		local yOffsetText = 3
 		local yOffsetDurability = 10
 		local shadowOffset = 2
@@ -208,7 +207,7 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
             local fullCloak = distCalc > dist
             local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
 
-            if wep:GetBumped() or wep:GetRecentlyDeployed() then return end
+            if wep:GetBumped() or timer.Exists("DeployCloakFade" .. wep:EntIndex()) then return end
 
             if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
                 if wep:GetCloakAmmo() > cloakAmmoBlinkThreshold then
@@ -240,36 +239,6 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
 end)
 
 function SWEP:Think()
-    -- deploy timer logic
-    if self:GetRecentlyDeployed() then
-        if CurTime() >= self:GetDeployTimer() then
-            -- yes this owner stuff is terrible im well aware
-            -- the problem is that sometimes the owner ent isn't valid
-            -- meaning i use a separate var to "hold" a reference to the owner ent instead of getting it dynamically through self:GetOwner()
-            -- this "held" reference is the self.LastOwner var and is updated whenever the owner changes
-            -- but i have to check to make sure i have 1 valid reference which results in this mess. could probably be done better but this does work it's just not pretty
-            
-            -- additionally, the reason one is valid and the other isn't is because of hook ordering:
-            -- SWEP:OwnerChanged() seems to run "late" and therefore self.LastOwner isn't valid but self:GetOwner() is
-            -- because we haven't updated self.LastOwner yet through SWEP:OwnerChanged()
-            if not(IsValid(self.LastOwner)) then
-                local owner = self:GetOwner()
-                if not(IsValid(owner)) then
-                    print("ERROR: Could not set material and color params for recently cloaked player!")
-                else
-                    owner:SetMaterial("sprites/heatwave")
-                    owner:SetColor(Color(255, 255, 255, 255))
-                end
-            else
-                self.LastOwner:SetMaterial("sprites/heatwave")
-                self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
-            end
-            self:SetMaterial("sprites/heatwave")
-            self:SetColor(Color(255, 255, 255, 255))
-            if SERVER then self:SetRecentlyDeployed(false) end
-        end
-    end
-
     if SERVER then
         -- bumped timer logic
         if self:GetBumped() then
@@ -332,7 +301,6 @@ function SWEP:Initialize()
         self:SetDrainTimer(0)
         self:SetBumped(false)
         self:SetBumpTimer(0)
-        self:SetRecentlyDeployed(false) 
         self:SetDeployTimer(0)
         
         self:SetCloakAmmo(self.Primary.ClipSize)
@@ -360,32 +328,47 @@ function SWEP:Cloak()
         local repeatDeployTimerAmt = math.Round(self.DeployTimerAmt / engine.TickInterval()) + 1
         local alphaMinusAmt = math.Round(255 / repeatDeployTimerAmt, 0)
         local alphaCurrent = 255
+        local runTime = 0
 
         if timer.Exists("UncloakFade" .. self:EntIndex()) then
             timer.Remove("UncloakFade" .. self:EntIndex())
+            print("Removing active UncloakFade timer!")
             self.LastOwner:SetNWBool("CloakSwitchPenaltyActive", false)
             self.LastOwner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
         end
 
         timer.Create("DeployCloakFade" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
             alphaCurrent = math.Clamp(alphaCurrent - alphaMinusAmt, 0, 255)
+            runTime = runTime + 1
 
             self.LastOwner:SetColor(Color(255, 255, 255, alphaCurrent)) 
             self:SetColor(Color(255, 255, 255, alphaCurrent))
+
+            if runTime >= repeatDeployTimerAmt then
+                if not(IsValid(self.LastOwner)) then
+                    local owner = self:GetOwner()
+                    if not(IsValid(owner)) then
+                        print("ERROR: Could not set material and color params for recently cloaked player!")
+                    else
+                        owner:SetMaterial("sprites/heatwave")
+                        owner:SetColor(Color(255, 255, 255, 255))
+                    end
+                else
+                    self.LastOwner:SetMaterial("sprites/heatwave")
+                    self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
+                end
+                self:SetMaterial("sprites/heatwave")
+                self:SetColor(Color(255, 255, 255, 255))
+            end
             
-            --print(self.LastOwner:GetColor(), self:GetColor())
+            print(self.LastOwner:GetColor())
         end)
         
-        if SERVER then
-            self:SetRecentlyDeployed(true)
-            self:SetDeployTimer(CurTime() + self.DeployTimerAmt)
-            self:SetCloaked(true)
-        end
+        if SERVER then self:SetCloaked(true)end
     end
 end
 
 function SWEP:UnCloak()
-    --print("UnCloak triggered!")
     if self:GetCloaked() and IsValid(self.LastOwner) then
         -- if you read the owner comment above this is even more heinous
         -- the reason i gotta do this is because self (the cloak) gets dereferenced if it's getting deleted
@@ -448,6 +431,8 @@ end
 function SWEP:Deploy()
     --print("Deploy triggered!")
     if SERVER then self:Cloak() end
+
+    return true
 end
 
 function SWEP:Holster()

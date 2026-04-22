@@ -300,6 +300,8 @@ function SWEP:Deploy()
         local soundStr = "gn_carbine/equip_" .. tostring(math.random(1, 3)) .. ".wav"
         owner:EmitSound(soundStr, 0, 100, 1, CHAN_WEAPON) // don't play equip to everyone
     end
+    
+    return true
 end
 
 function SWEP:PrimaryAttack(worldsnd)

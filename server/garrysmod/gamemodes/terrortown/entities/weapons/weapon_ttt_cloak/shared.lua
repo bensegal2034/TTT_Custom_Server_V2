@@ -21,10 +21,7 @@ SWEP.Author= "dot_dash"
 
 -- TODOS
 -- 1) Can't pick up cloak after it is dropped other than by pressing E. Fix somehow?
--- 2) Deploy HUD timer is a little buggy because it doesn't quite get shut off before the network var
--- flips back around to false. Would be cool if I could get it to switch off in time
--- 3) Swapping to scar from the cloak looks buggy only on local client. For others it is fine.
--- No idea how to fix this but would be cool if I could make it look right
+-- 2) Deploy timer hud bugs out if weapon is reloaded while hud element is active
 
 SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable= false

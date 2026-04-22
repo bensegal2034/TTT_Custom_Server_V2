@@ -66,6 +66,8 @@ local function IdentifyBody(ply, rag)
          roletext = "body_found_t"
       elseif role == ROLE_DETECTIVE then
          roletext = "body_found_d"
+      elseif role == ROLE_ROOK then
+         roletext = "body_found_r"
       else
          roletext = "body_found_i"
       end

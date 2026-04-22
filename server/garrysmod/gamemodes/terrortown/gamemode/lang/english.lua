@@ -49,6 +49,7 @@ L.body_found       = "{finder} found the body of {victim}. {role}"
 L.body_found_t     = "They were a Traitor!"
 L.body_found_d     = "They were a Detective."
 L.body_found_i     = "They were Innocent."
+L.body_found_r     = "They were a Rook!"
 
 L.body_confirm     = "{finder} confirmed the death of {victim}."
 
@@ -177,6 +178,7 @@ L.search_nick   = "This is the body of {player}."
 L.search_role_t = "This person was a Traitor!"
 L.search_role_d = "This person was a Detective."
 L.search_role_i = "This person was an innocent terrorist."
+L.search_role_r = "This person was a Rook!"
 
 L.search_words  = "Something tells you some of this person's last words were: '{lastwords}'"
 L.search_armor  = "They were wearing nonstandard body armor."

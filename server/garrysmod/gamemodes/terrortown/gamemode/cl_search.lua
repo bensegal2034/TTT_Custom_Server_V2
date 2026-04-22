@@ -56,7 +56,7 @@ local TypeToMat = {
    eq_armor="armor",
    eq_radar="radar",
    eq_disg="disguise",
-   role={[ROLE_TRAITOR]="traitor", [ROLE_DETECTIVE]="det", [ROLE_INNOCENT]="inno"},
+   role={[ROLE_TRAITOR]="traitor", [ROLE_DETECTIVE]="det", [ROLE_INNOCENT]="inno", [ROLE_ROOK]="rook"},
    c4="code",
    dmg=DmgToMat,
    wep=WeaponToIcon,
@@ -106,6 +106,8 @@ function PreprocSearch(raw)
             search[t].text = T("search_role_t")
          elseif d == ROLE_DETECTIVE then
             search[t].text = T("search_role_d")
+         elseif d == ROLE_ROOK then
+            search[t].text = T("search_role_r")
          else
             search[t].text = T("search_role_i")
          end

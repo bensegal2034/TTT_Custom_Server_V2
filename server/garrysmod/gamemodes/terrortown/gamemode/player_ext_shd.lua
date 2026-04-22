@@ -7,7 +7,6 @@ local math = math
 
 function plymeta:IsTerror() return self:Team() == TEAM_TERROR end
 function plymeta:IsSpec() return self:Team() == TEAM_SPEC end
-function plymeta:IsRook() return self:Team() == TEAM_ROOK end
 
 AccessorFunc(plymeta, "role", "Role", FORCE_NUMBER)
 

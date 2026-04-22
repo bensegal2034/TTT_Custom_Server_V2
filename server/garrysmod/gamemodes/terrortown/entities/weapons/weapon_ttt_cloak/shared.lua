@@ -43,7 +43,7 @@ SWEP.Primary.Recoil= 0
 SWEP.Primary.Damage= 0
 SWEP.Primary.NumShots= 1
 SWEP.Primary.Cone= 0
-SWEP.Primary.ClipSize = 150
+SWEP.Primary.ClipSize = 170
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.Automatic   = false
 SWEP.Primary.Ammo         = "none"
@@ -52,8 +52,8 @@ SWEP.AllowDrop = true
 
 SWEP.LastOwner = nil
 
-SWEP.DeployTimerAmt = 0.75
-SWEP.UncloakTimerAmt = 1.5
+local CLOAK_TIME = 0.75
+local UNCLOAK_TIME = 1.5
 
 function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Cloaked")
@@ -66,10 +66,10 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Int", "DeployTimer")
     
     --[[
-        self:NetworkVarNotify("Cloaked", function(name, old, new)
-        print(tostring(name) .. " | " .. tostring(new))
-        end)
-    ]]--
+    self:NetworkVarNotify("Cloaked", function(name, old, new)
+    print(tostring(name) .. " | " .. tostring(new))
+end)
+]]--
 end
 
 hook.Add("TTTPlayerSpeedModifier", "CloakSpeed", function(ply,slowed,mv)
@@ -88,7 +88,7 @@ hook.Add("EntityTakeDamage", "BlinkOnShootCloakedPly", function(target, dmg)
         -- cant go lower than this on bumpTime as will cause flickering if target is repeatedly damaged
         -- presumably this is network related since using network var to track bumped state
         local bumpTime = 1.2
-
+        
         if IsValid(target) and
         IsValid(wep) and
         IsValid(atk) and
@@ -107,43 +107,99 @@ if SERVER then
         --print(ply:Nick() .. " bumped cloaked player!")
         local wep = net.ReadEntity()
         local bumpTime = 3
-
+        
         wep:SetBumped(true)
         wep:SetBumpTimer(CurTime() + bumpTime)
     end)
 end
 
-hook.Add("HUDPaint", "DrawCloakSwapHud", function()
-	if not(LocalPlayer().HasWeapon) or not(LocalPlayer().GetActiveWeapon) then return end
-	if LocalPlayer():HasWeapon("weapon_ttt_cloak") and 
-    LocalPlayer():GetNWBool("CloakSwitchPenaltyActive", false) and 
-    LocalPlayer():GetActiveWeapon() != "weapon_ttt_cloak" then
-        local cloak = nil
-        local wepTbl = util.JSONToTable(LocalPlayer():GetNW2String("DeployTimerTbl", "{}"))
-        for _, wep in ipairs(LocalPlayer():GetWeapons()) do
-            if wep:GetClass() == "weapon_ttt_cloak" then
-                cloak = wep
-            end
-        end
-        
-        if not(IsValid(cloak)) or table.IsEmpty(wepTbl) then return end
+-- BEGIN FUCKED UP EVIL RENDERING CODE FOR MAKING VIEWMODELS TRANSPARENT
+-- i did not make this, workshop link here: https://steamcommunity.com/sharedfiles/filedetails/?id=3013272490
+-- with that being said, i modified it to suit setting specific players' viewmodel alpha for spectating & normal gameplay
+if CLIENT then
+    local renderTarget = GetRenderTargetEx("transvm_rt",
+    ScrW(), ScrH(),
+    RT_SIZE_FULL_FRAME_BUFFER,
+    MATERIAL_RT_DEPTH_SEPARATE,
+    bit.bor(2,256),
+    0,
+    IMAGE_FORMAT_BGRA8888
+)
 
-		local x = math.floor(ScrW() / 2.0)
-		local y = math.floor(ScrH() / 2.0)
-		local barLength = 100
-		local yOffset = -60
-		local yOffsetText = 3
-		local yOffsetDurability = 10
-		local shadowOffset = 2
+local transMaterial = CreateMaterial("transvm_mat","UnlitGeneric", {
+    ["$basetexture"] = "transvm_rt",
+    ["$translucent"] = 1,
+    ["$alpha"] = 1
+})
+
+local function DrawRT()
+    local alpha = 1
+    if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+        alpha = math.Clamp(LocalPlayer():GetNWFloat("ViewmodelAlpha", 1), 0, 1)
+    elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+        alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("ViewmodelAlpha", 1), 0, 1)
+    end
+    if alpha < 1 then
+        transMaterial:SetFloat("$alpha", alpha)
+        render.SetMaterial(transMaterial)
+        render.DrawScreenQuad()
+    end
+end
+
+hook.Add("PreDrawViewModels","TransViewModelStart", function()
+    local alpha = 1
+    if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+        alpha = math.Clamp(LocalPlayer():GetNWFloat("ViewmodelAlpha", 1), 0, 1)
+    elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+        alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("ViewmodelAlpha", 1), 0, 1)
+    end
+    if alpha < 1 then
+        render.PushRenderTarget(renderTarget)
+        render.SetWriteDepthToDestAlpha(false)
+        render.Clear(0,0,0,0,true,true)
+    end
+end)
+
+hook.Add("PreDrawEffects","TransViewModelEnd", function()
+    local alpha = 1
+    if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+        alpha = math.Clamp(LocalPlayer():GetNWFloat("ViewmodelAlpha", 1), 0, 1)
+    elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+        alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("ViewmodelAlpha", 1), 0, 1)
+    end
+    if alpha < 1 then
+        local curRT = render.GetRenderTarget()
+        if curRT && curRT:GetName() == renderTarget:GetName() then
+            render.PopRenderTarget()
+            render.SetWriteDepthToDestAlpha(true)
+            
+            DrawRT()
+        end
+    end
+end)
+end
+-- END EVIL RENDERING CODE
+
+hook.Add("HUDPaint", "DrawCloakSwapHud", function()
+    if LocalPlayer():GetNWBool("CloakSwitchPenaltyActive", false) and IsValid(LocalPlayer():GetActiveWeapon()) then
+        local wepTbl = util.JSONToTable(LocalPlayer():GetNW2String("DeployTimerTbl", "{}"))
+        
+        local x = math.floor(ScrW() / 2.0)
+        local y = math.floor(ScrH() / 2.0)
+        local barLength = 100
+        local yOffset = -60
+        local yOffsetText = 3
+        local yOffsetDurability = 10
+        local shadowOffset = 2
         local activeWep = LocalPlayer():GetActiveWeapon()
         local wepLastPrimFire = activeWep:GetNextPrimaryFire()
         local timeUntilFire = math.Clamp(wepLastPrimFire - CurTime(), 0, math.huge)
-        local decloakTime = cloak.UncloakTimerAmt
+        local decloakTime = UNCLOAK_TIME
         local cooldownPercentage = (1 - timeUntilFire / decloakTime) * barLength
         local cooldownPercentageStr = tostring(math.Truncate(cooldownPercentage, 0)) .. "%"
-
+        
         if wepTbl[activeWep:GetClass()] == math.Truncate(wepLastPrimFire, 0) then return end
-
+        
         draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
         draw.RoundedBox(10, x - (cooldownPercentage / 2), y + yOffset, cooldownPercentage, 30, Color(255, 0, 0, 200))
         
@@ -159,17 +215,17 @@ hook.Add("HUDPaint", "DrawCloakSwapHud", function()
 end)
 
 function SWEP:DrawHUD()
-	if CLIENT then
+    if CLIENT then
         local maxCloakAmmo = self.Primary.ClipSize
-		local cloakAmmo = self:GetCloakAmmo()
-		local x = math.floor(ScrW() / 2.0)
-		local y = math.floor(ScrH() / 2.0)
-		local barLength = maxCloakAmmo
-		local yOffset = -60
-		local yOffsetText = 3
-		local yOffsetDurability = 10
-		local shadowOffset = 2
-
+        local cloakAmmo = self:GetCloakAmmo()
+        local x = math.floor(ScrW() / 2.0)
+        local y = math.floor(ScrH() / 2.0)
+        local barLength = maxCloakAmmo
+        local yOffset = -60
+        local yOffsetText = 3
+        local yOffsetDurability = 10
+        local shadowOffset = 2
+        
         draw.RoundedBox(10, x - (barLength / 2), y + yOffset, barLength, 30, Color(20, 20, 20, 200))
         draw.RoundedBox(10, x - (cloakAmmo / 2), y + yOffset, cloakAmmo, 30, Color(255, 0, 0, 200))
         
@@ -183,16 +239,16 @@ function SWEP:DrawHUD()
         surface.DrawText(tostring(cloakAmmo))
         
         self.BaseClass.DrawHUD(self)
-   	end
+    end
 end
 
 hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
     -- this hook will run every time the game client wants to draw a player on the screen, for each player
     -- "ply" is the player we're drawing.
     -- returning true hides this player (aka they are not drawn), returning false will show the player (they are drawn).
-
+    
     local wep = ply:GetActiveWeapon()
-
+    
     -- valid checks because gmod sucks
     if IsValid(ply) and
     IsValid(wep) and 
@@ -203,9 +259,9 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
             local fullCloak = distCalc > dist
             local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
-
+            
             if wep:GetBumped() or timer.Exists("DeployCloakFade" .. wep:EntIndex()) then return end
-
+            
             if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
                 if wep:GetCloakAmmo() > cloakAmmoBlinkThreshold then
                     return true -- skip distance check for spectators, always hide
@@ -220,7 +276,7 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
                     net.WriteEntity(wep)
                     net.SendToServer()
                 end
-
+                
                 -- i know this line looks really fucking stupid at face value
                 -- however the purpose is to explicitly return "true" and only "true",
                 -- otherwise we don't return a value at all.
@@ -235,54 +291,69 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
     end
 end)
 
-function SWEP:Think()
-    if SERVER then
-        -- bumped timer logic
-        if self:GetBumped() then
-            if CurTime() >= self:GetBumpTimer() then
-                self:SetBumped(false)
+hook.Add("Think", "CloakGlobalThink", function()
+    for _, ply in pairs(player.GetAll()) do
+        if ply:HasWeapon("weapon_ttt_cloak") and ply:GetActiveWeapon():GetClass() == "weapon_ttt_cloak" then
+            local cloak = nil
+            for _, wep in ipairs(ply:GetWeapons()) do
+                if wep:GetClass() == "weapon_ttt_cloak" then
+                    cloak = wep
+                end
             end
-        end
-
-        -- movement logic
-        local vel = self.LastOwner:GetVelocity():LengthSqr()
-        if vel <= 1500 then
-            self:SetDoRecharge(true)
-        else
-            self:SetDoRecharge(false)
-        end
-    end
-
-    -- Deprecated behavior: cloak no longer recharges
-    if self:GetDoRecharge() then
-        -- if (self:GetCloakAmmo() < self.Primary.ClipSize) then
-        --     if SERVER then self:SetRechargeTimer(self:GetRechargeTimer() + 1) end
-        --     if self:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
-        --         if SERVER then self:SetCloakAmmo(self:GetCloakAmmo() + 1) end
-        --         --self:SetClip1(self:Clip1() + 1)
-        --         if SERVER then self:SetRechargeTimer(0) end
-        --     end
-        -- end
-    else
-        if (self:GetCloakAmmo() > 0) then
-            if SERVER then self:SetDrainTimer(self:GetDrainTimer() + 1) end
-            if self:GetDrainTimer() >= 7 then
-                if SERVER then self:SetCloakAmmo(self:GetCloakAmmo() - 1) end
-                --self:SetClip1(self:Clip1() - 1)
-                if SERVER then self:SetDrainTimer(0) end
+            
+            if not(IsValid(cloak)) then return end
+            
+            -- BEGIN CLOAK THINK
+            
+            if SERVER then
+                -- bumped timer logic
+                if cloak:GetBumped() then
+                    if CurTime() >= cloak:GetBumpTimer() then
+                        cloak:SetBumped(false)
+                    end
+                end
+                
+                -- movement logic
+                local vel = cloak.LastOwner:GetVelocity():LengthSqr()
+                if vel <= 1500 then
+                    cloak:SetDoRecharge(true)
+                else
+                    cloak:SetDoRecharge(false)
+                end
             end
-        end
-    end
+            
+            -- Deprecated behavior: cloak no longer recharges
+            if cloak:GetDoRecharge() then
+                -- if (cloak:GetCloakAmmo() < cloak.Primary.ClipSize) then
+                --     if SERVER then cloak:SetRechargeTimer(cloak:GetRechargeTimer() + 1) end
+                --     if cloak:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
+                --         if SERVER then cloak:SetCloakAmmo(cloak:GetCloakAmmo() + 1) end
+                --         --cloak:SetClip1(cloak:Clip1() + 1)
+                --         if SERVER then cloak:SetRechargeTimer(0) end
+                --     end
+                -- end
+            else
+                if (cloak:GetCloakAmmo() > 0) then
+                    if SERVER then cloak:SetDrainTimer(cloak:GetDrainTimer() + 1) end
+                    if cloak:GetDrainTimer() >= 7 then
+                        if SERVER then cloak:SetCloakAmmo(cloak:GetCloakAmmo() - 1) end
+                        --cloak:SetClip1(cloak:Clip1() - 1)
+                        if SERVER then cloak:SetDrainTimer(0) end
+                    end
+                end
+            end
+            
+            if (cloak:GetCloakAmmo() == 0) then
+                if SERVER then
+                    cloak:UnCloak()
+                    cloak:Remove() 
+                end
+            end
 
-    if (self:GetCloakAmmo() == 0) then
-        if SERVER then
-            self:UnCloak()
-            self:Remove() 
+            cloak:SetClip1(cloak:GetCloakAmmo())
         end
     end
-    
-    self:SetClip1(self:GetCloakAmmo())
-end
+end)
 
 function SWEP:OwnerChanged()
     if IsValid(self:GetOwner()) then
@@ -319,28 +390,33 @@ function SWEP:Cloak()
         self:SetRenderMode(1)
         self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
         self:SetColor(Color(255, 255, 255, 255))
+        self.LastOwner:SetNWFloat("ViewmodelAlpha", 1)
         sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
         self.LastOwner:SetNWBool("disguised", true)
         
-        local repeatDeployTimerAmt = math.Round(self.DeployTimerAmt / engine.TickInterval()) + 1
-        local alphaMinusAmt = math.Round(255 / repeatDeployTimerAmt, 0)
-        local alphaCurrent = 255
+        local repeatDeployTimerAmt = math.Round(CLOAK_TIME / engine.TickInterval()) + 1
+        local colorAlphaMinusAmt = math.Round(255 / repeatDeployTimerAmt, 0)
+        local colorAlphaCurrent = 255
+        local vmAlphaMinusAmt = 1 / repeatDeployTimerAmt
+        local vmAlphaCurrent = 1
         local runTime = 0
-
+        
         if timer.Exists("UncloakFade" .. self:EntIndex()) then
             timer.Remove("UncloakFade" .. self:EntIndex())
             --print("Removing active UncloakFade timer!")
             self.LastOwner:SetNWBool("CloakSwitchPenaltyActive", false)
             self.LastOwner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
         end
-
+        
         timer.Create("DeployCloakFade" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
-            alphaCurrent = math.Clamp(alphaCurrent - alphaMinusAmt, 0, 255)
+            colorAlphaCurrent = math.Clamp(colorAlphaCurrent - colorAlphaMinusAmt, 0, 255)
+            vmAlphaCurrent = math.Clamp(vmAlphaCurrent - vmAlphaMinusAmt, 0, 1)
             runTime = runTime + 1
-
-            self.LastOwner:SetColor(Color(255, 255, 255, alphaCurrent)) 
-            self:SetColor(Color(255, 255, 255, alphaCurrent))
-
+            
+            self.LastOwner:SetColor(Color(255, 255, 255, colorAlphaCurrent)) 
+            self:SetColor(Color(255, 255, 255, colorAlphaCurrent))
+            self.LastOwner:SetNWFloat("ViewmodelAlpha", vmAlphaCurrent)
+            
             if runTime >= repeatDeployTimerAmt then
                 if not(IsValid(self.LastOwner)) then
                     local owner = self:GetOwner()
@@ -380,6 +456,7 @@ function SWEP:UnCloak()
             cloak:SetColor(Color(255, 255, 255, 0))
             cloak:SetMaterial("")
         end
+        owner:SetNWFloat("ViewmodelAlpha", 0)
         sound.Play("AlyxEMP.Discharge", owner:GetPos(), 140, 100, 1)
         owner:SetNWBool("disguised", false)
         
@@ -387,30 +464,34 @@ function SWEP:UnCloak()
             -- allowed to shoot only when cloak finishes uncloaking
             -- provides a visual indicator for when the traitor will be able to attack
             -- this is supposed to make it hard to decloak on top of someone and meatshot/headshot them
-            wep:SetNextPrimaryFire(CurTime() + self.UncloakTimerAmt)
-            wep:SetNextSecondaryFire(CurTime() + self.UncloakTimerAmt)
+            wep:SetNextPrimaryFire(CurTime() + UNCLOAK_TIME)
+            wep:SetNextSecondaryFire(CurTime() + UNCLOAK_TIME)
             wepTbl[tostring(wep:GetClass())] = tostring(math.Truncate(wep:GetNextPrimaryFire(), 0))
         end
         
         owner:SetNWBool("CloakSwitchPenaltyActive", true)
         owner:SetNW2String("DeployTimerTbl", util.TableToJSON(wepTbl))
-
-        local repeatUncloakTimerAmt = math.Round(self.UncloakTimerAmt / engine.TickInterval()) + 1
+        
+        local repeatUncloakTimerAmt = math.Round(UNCLOAK_TIME / engine.TickInterval()) + 1
         local alphaPlusAmt = math.Round(255 / repeatUncloakTimerAmt, 0)
-        local alphaCurrent = 0
+        local vmAlphaPlusAmt = 1 / repeatUncloakTimerAmt
+        local vmAlphaCurrent = 0
+        local colorAlphaCurrent = 0
         local runTime = 0
-
+        
         if timer.Exists("DeployCloakFade" .. self:EntIndex()) then
             timer.Remove("DeployCloakFade" .. self:EntIndex())
         end
-
+        
         timer.Create("UncloakFade" .. self:EntIndex(), 0, repeatUncloakTimerAmt, function()
-            alphaCurrent = math.Clamp(alphaCurrent + alphaPlusAmt, 0, 255)
+            colorAlphaCurrent = math.Clamp(colorAlphaCurrent + alphaPlusAmt, 0, 255)
+            vmAlphaCurrent = math.Clamp(vmAlphaCurrent + vmAlphaPlusAmt, 0, 1)
             runTime = runTime + 1
-
-            owner:SetColor(Color(255, 255, 255, alphaCurrent))
-            if IsValid(cloak) then cloak:SetColor(Color(255, 255, 255, alphaCurrent)) end
-
+            
+            owner:SetColor(Color(255, 255, 255, colorAlphaCurrent))
+            owner:SetNWFloat("ViewmodelAlpha", vmAlphaCurrent)
+            if IsValid(cloak) then cloak:SetColor(Color(255, 255, 255, colorAlphaCurrent)) end
+            
             if runTime >= repeatUncloakTimerAmt then
                 owner:SetRenderMode(0)
                 owner:SetNWBool("CloakSwitchPenaltyActive", false)
@@ -418,7 +499,7 @@ function SWEP:UnCloak()
                 if IsValid(cloak) then cloak:SetRenderMode(0) end
             end
             
-            --print(alphaCurrent, repeatUncloakTimerAmt, alphaPlusAmt, runTime)
+            --print(colorAlphaCurrent, repeatUncloakTimerAmt, alphaPlusAmt, runTime)
         end)
         
         if SERVER then self:SetCloaked(false) end
@@ -428,7 +509,7 @@ end
 function SWEP:Deploy()
     --print("Deploy triggered!")
     if SERVER then self:Cloak() end
-
+    
     return true
 end
 
@@ -456,7 +537,7 @@ hook.Add("TTTPrepareRound", "UnCloakAll",function()
         ply:SetColor(Color(255, 255, 255, 255))
         ply:SetMaterial("")
         ply:SetNWBool("CloakSwitchPenaltyActive", false)
+        ply:SetNWFloat("ViewmodelAlpha", 1)
         ply:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
     end
-end
-)
+end)

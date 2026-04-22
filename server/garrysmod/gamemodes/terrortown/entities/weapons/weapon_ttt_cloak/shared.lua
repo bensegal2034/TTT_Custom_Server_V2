@@ -131,7 +131,7 @@ hook.Add("HUDPaint", "DrawCloakSwapHud", function()
 		local x = math.floor(ScrW() / 2.0)
 		local y = math.floor(ScrH() / 2.0)
 		local barLength = 100
-		local yOffset = -50
+		local yOffset = -60
 		local yOffsetText = 3
 		local yOffsetDurability = 10
 		local shadowOffset = 2
@@ -165,7 +165,7 @@ function SWEP:DrawHUD()
 		local x = math.floor(ScrW() / 2.0)
 		local y = math.floor(ScrH() / 2.0)
 		local barLength = maxCloakAmmo
-		local yOffset = -50
+		local yOffset = -60
 		local yOffsetText = 3
 		local yOffsetDurability = 10
 		local shadowOffset = 2

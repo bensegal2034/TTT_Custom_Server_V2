@@ -315,7 +315,12 @@ function SWEP:DrawHUD(...)
 		local x = math.floor(ScrW() / 2.0)
 		local y = math.floor(ScrH() / 2.0)
 		local barLength = 100
-		local yOffset = 35
+		local yOffset = 0
+		if LocalPlayer():HasWeapon("weapon_ttt_cloak") then
+			yOffset = -100
+		else
+			yOffset = -60
+		end
 		local yOffsetText = 3
 		local yOffsetDurability = 10
 		local shadowOffset = 2

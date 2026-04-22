@@ -7,15 +7,18 @@ local math = math
 
 function plymeta:IsTerror() return self:Team() == TEAM_TERROR end
 function plymeta:IsSpec() return self:Team() == TEAM_SPEC end
+function plymeta:IsRook() return self:Team() == TEAM_ROOK end
 
 AccessorFunc(plymeta, "role", "Role", FORCE_NUMBER)
 
 -- Role access
 function plymeta:GetTraitor() return self:GetRole() == ROLE_TRAITOR end
 function plymeta:GetDetective() return self:GetRole() == ROLE_DETECTIVE end
+function plymeta:GetRook() return self:GetRole() == ROLE_ROOK end
 
 plymeta.IsTraitor = plymeta.GetTraitor
 plymeta.IsDetective = plymeta.GetDetective
+plymeta.IsRook = plymeta.GetRook
 
 function plymeta:IsSpecial() return self:GetRole() != ROLE_INNOCENT end
 
@@ -29,12 +32,14 @@ function plymeta:IsRole(role) return self:GetRole() == role end
 function plymeta:IsActiveRole(role) return self:IsRole(role) and self:IsActive() end
 function plymeta:IsActiveTraitor() return self:IsActiveRole(ROLE_TRAITOR) end
 function plymeta:IsActiveDetective() return self:IsActiveRole(ROLE_DETECTIVE) end
+function plymeta:IsActiveRook() return self:IsActiveRole(ROLE_ROOK) end
 function plymeta:IsActiveSpecial() return self:IsSpecial() and self:IsActive() end
 
 local role_strings = {
    [ROLE_TRAITOR]   = "traitor",
    [ROLE_INNOCENT]  = "innocent",
-   [ROLE_DETECTIVE] = "detective"
+   [ROLE_DETECTIVE] = "detective",
+   [ROLE_ROOK] = "rook"
 };
 
 local GetRTranslation = CLIENT and LANG.GetRawTranslation or util.passthrough

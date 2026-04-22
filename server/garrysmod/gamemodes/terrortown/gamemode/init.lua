@@ -111,6 +111,7 @@ CreateConVar("ttt_namechange_kick", "1", FCVAR_NOTIFY)
 CreateConVar("ttt_namechange_bantime", "10")
 
 local ttt_detective = CreateConVar("ttt_sherlock_mode", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY)
+local ttt_rook = CreateConVar("ttt_rook_mode", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY)
 local ttt_minply = CreateConVar("ttt_minimum_players", "2", FCVAR_ARCHIVE + FCVAR_NOTIFY)
 
 -- debuggery
@@ -236,6 +237,7 @@ end
 -- I don't like it any more than you do, dear reader.
 function GM:SyncGlobals()
    SetGlobalBool("ttt_detective", ttt_detective:GetBool())
+   SetGlobalBool("ttt_rook", ttt_detective:GetBool())
    SetGlobalBool("ttt_haste", ttt_haste:GetBool())
    SetGlobalInt("ttt_time_limit_minutes", GetConVar("ttt_time_limit_minutes"):GetInt())
    SetGlobalBool("ttt_highlight_admins", GetConVar("ttt_highlight_admins"):GetBool())
@@ -856,7 +858,7 @@ end
 function GM:TTTCheckForWin()
    if ttt_dbgwin:GetBool() then return WIN_NONE end
 
-   if GAMEMODE.MapWin == WIN_TRAITOR or GAMEMODE.MapWin == WIN_INNOCENT then
+   if GAMEMODE.MapWin == WIN_TRAITOR or GAMEMODE.MapWin == WIN_INNOCENT or GAMEMODE.MapWin == WIN_ROOK then
       local mw = GAMEMODE.MapWin
       GAMEMODE.MapWin = WIN_NONE
       return mw
@@ -864,6 +866,7 @@ function GM:TTTCheckForWin()
 
    local traitor_alive = false
    local innocent_alive = false
+   local rook_alive = false
    for k,v in ipairs(player.GetAll()) do
       if v:Alive() and v:IsTerror() then
          if v:GetTraitor() then
@@ -878,11 +881,13 @@ function GM:TTTCheckForWin()
       end
    end
 
-   if traitor_alive and not innocent_alive then
+   if traitor_alive and not innocent_alive and not rook_alive then
       return WIN_TRAITOR
-   elseif not traitor_alive and innocent_alive then
+   elseif not traitor_alive and innocent_alive and not rook_alive then
       return WIN_INNOCENT
-   elseif not innocent_alive then
+   elseif rook_alive and not innocent_alive and not traitor_alive then
+      return WIN_ROOK
+   elseif not innocent_alive and not rook_alive then
       -- ultimately if no one is alive, traitors win
       return WIN_TRAITOR
    end
@@ -916,7 +921,8 @@ function SelectRoles()
    local prev_roles = {
       [ROLE_INNOCENT] = {},
       [ROLE_TRAITOR] = {},
-      [ROLE_DETECTIVE] = {}
+      [ROLE_DETECTIVE] = {},
+      [ROLE_ROOK] = {}
    };
 
    if not GAMEMODE.LastRole then GAMEMODE.LastRole = {} end

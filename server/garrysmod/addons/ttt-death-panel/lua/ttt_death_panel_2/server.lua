@@ -102,7 +102,9 @@ local function playerdeath(victim, attacker, killinfo)
 
     if IsValid(attacker) and attacker:IsPlayer() then
         role = (attacker.GetBaseRole and attacker:GetBaseRole() or (CR_VERSION and attacker:GetRole()) or attacker:GetRole()) + 1
-
+        print(role)
+        print(attacker.GetBaseRole)
+        print(attacker:GetRole())
         -- If the role started as hidden, don't reveal the player's role
         if hiddenRole then
             role = ROLE_NONE

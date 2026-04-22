@@ -9,7 +9,8 @@ GM.PickupHistoryCorner  = surface.GetTextureID( "gui/corner8" )
 local pickupclr = {
    [ROLE_INNOCENT]  = Color(55, 170, 50, 255),
    [ROLE_TRAITOR]   = Color(180, 50, 40, 255),
-   [ROLE_DETECTIVE] = Color(50, 60, 180, 255)
+   [ROLE_DETECTIVE] = Color(50, 60, 180, 255),
+   [ROLE_ROOK] = Color(160, 50, 160, 255)
 }
 
 local function joeCheck()

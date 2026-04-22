@@ -381,7 +381,7 @@ local function DeathPanel(ply, role, hits, totaldmg, cause, causer, killstreak, 
     local rolecol = yellow
 
     if not CR_VERSION then
-        rolecol = ({Color(32, 180, 16), Color(192, 40, 32), Color(16, 96, 192), Color(136, 152, 16),})[role] or yellow
+        rolecol = ({Color(32, 180, 16), Color(192, 40, 32), Color(16, 96, 192), Color(160, 50, 160), Color(136, 152, 16),})[role] or yellow
     else
         if detectiveTeam then
             rolecol = COLOR_DETECTIVE["simple"]
@@ -389,8 +389,8 @@ local function DeathPanel(ply, role, hits, totaldmg, cause, causer, killstreak, 
             rolecol = COLOR_INNOCENT["simple"]
         elseif TRAITOR_ROLES[role - 1] then
             rolecol = COLOR_TRAITOR["simple"]
-        elseif JESTER_ROLES[role - 1] then
-            rolecol = COLOR_JESTER["simple"]
+        elseif ROOK_ROLES[role - 1] then
+            rolecol = COLOR_ROOK["simple"]
         elseif INDEPENDENT_ROLES[role - 1] then
             rolecol = COLOR_INDEPENDENT["simple"]
         elseif MONSTER_ROLES[role - 1] then
@@ -429,7 +429,7 @@ local function DeathPanel(ply, role, hits, totaldmg, cause, causer, killstreak, 
         local rolename = "A mysterious person"
 
         if not CR_VERSION then
-            rolename = LANG.TryTranslation(({"innocent", "traitor", "detective", "Spectator"})[role])
+            rolename = LANG.TryTranslation(({"innocent", "traitor", "detective", "Rook", "Spectator" })[role])
         else
             rolename = ROLE_STRINGS[role - 1]
         end

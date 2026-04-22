@@ -41,7 +41,8 @@ local function GetLoadoutWeapons(r)
       local tbl = {
          [ROLE_INNOCENT] = {},
          [ROLE_TRAITOR]  = {},
-         [ROLE_DETECTIVE]= {}
+         [ROLE_DETECTIVE]= {},
+         [ROLE_ROOK] = {}
       };
 
       for k, w in pairs(weapons.GetList()) do
@@ -341,7 +342,16 @@ end
 local function OrderEquipment(ply, cmd, args)
    if not IsValid(ply) or #args != 1 then return end
 
-   if not (ply:IsActiveTraitor() or ply:IsActiveDetective()) then return end
+   print("a")
+   print(ply:GetRole())
+
+   if not (ply:IsActiveTraitor() or ply:IsActiveDetective()) then 
+      if not ply:GetRole() == 3 then
+         return
+      end 
+   end
+   
+   print("b")
 
    -- no credits, can't happen when buying through menu as button will be off
    if ply:GetCredits() < 1 then return end

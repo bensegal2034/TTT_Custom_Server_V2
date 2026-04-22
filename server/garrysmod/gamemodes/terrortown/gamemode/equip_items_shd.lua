@@ -68,6 +68,11 @@ EquipmentItems = {
          desc     = "item_disg_desc"
       }
    };
+
+   [ROLE_ROOK] = {
+
+   };
+   
 };
 
 

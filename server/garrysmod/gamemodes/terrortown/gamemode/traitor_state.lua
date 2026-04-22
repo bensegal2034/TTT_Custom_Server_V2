@@ -153,6 +153,14 @@ local function force_detective(ply)
 end
 concommand.Add("ttt_force_detective", force_detective, nil, nil, FCVAR_CHEAT)
 
+local function force_rook(ply)
+   ply:SetRole(ROLE_ROOK)
+   ply:SetTeam(ROLE_ROOK)
+   SendFullStateUpdate()
+end
+concommand.Add("ttt_force_rook", force_rook, nil, nil, FCVAR_CHEAT)
+
+
 
 local function force_spectate(ply, cmd, arg)
    if IsValid(ply) then

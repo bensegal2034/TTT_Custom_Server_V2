@@ -339,8 +339,9 @@ hook.Add("Think", "CloakGlobalThink", function()
                     -- if (cloak:GetCloakAmmo() < cloak.Primary.ClipSize) then
                     --     cloak:SetRechargeTimer(cloak:GetRechargeTimer() + 1)
                     --     if cloak:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
-                    --         cloak:SetCloakAmmo(cloak:GetCloakAmmo() + 1)
-                    --         --cloak:SetClip1(cloak:Clip1() + 1)
+                    --         local ammoNum = cloak:GetCloakAmmo() + 1
+                    --         cloak:SetCloakAmmo(ammoNum)
+                    --         cloak:SetClip1(ammoNum)
                     --         cloak:SetRechargeTimer(0)
                     --     end
                     -- end
@@ -348,8 +349,9 @@ hook.Add("Think", "CloakGlobalThink", function()
                     if (cloak:GetCloakAmmo() > 0) then
                         cloak:SetDrainTimer(cloak:GetDrainTimer() + 1)
                         if cloak:GetDrainTimer() >= 7 then
-                            cloak:SetCloakAmmo(cloak:GetCloakAmmo() - 1)
-                            --cloak:SetClip1(cloak:Clip1() - 1)
+                            local ammoNum = cloak:GetCloakAmmo() - 1
+                            cloak:SetCloakAmmo(ammoNum)
+                            cloak:SetClip1(ammoNum)
                             cloak:SetDrainTimer(0)
                         end
                     end
@@ -413,8 +415,6 @@ hook.Add("Think", "CloakGlobalThink", function()
                         end
                     end
                 end
-                
-                cloak:SetClip1(cloak:GetCloakAmmo())
             end
         end
     end
@@ -442,6 +442,7 @@ function SWEP:Initialize()
         
         self:SetCloakAmmo(self.Primary.ClipSize)
     end
+    self:SetClip1(self.Primary.ClipSize)
     
     self:CallOnRemove("UnCloak", function(ent)
         if SERVER then ent:UnCloak() end

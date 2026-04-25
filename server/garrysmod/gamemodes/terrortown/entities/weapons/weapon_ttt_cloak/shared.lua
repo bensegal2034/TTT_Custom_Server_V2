@@ -50,10 +50,9 @@ SWEP.Primary.Ammo         = "none"
 SWEP.NoSights = true
 SWEP.AllowDrop = true
 
-SWEP.LastOwner = nil
-
 local CLOAK_TIME = 0.75
 local UNCLOAK_TIME = 1.5
+local CLOAK_BUMP_DIST = 1500
 
 function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Cloaked")
@@ -64,12 +63,11 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Int", "BumpTimer")
     self:NetworkVar("Int", "CloakAmmo")
     self:NetworkVar("Int", "DeployTimer")
+    self:NetworkVar("Entity", "LastOwner")
     
-    --[[
-    self:NetworkVarNotify("Cloaked", function(name, old, new)
-    print(tostring(name) .. " | " .. tostring(new))
-end)
-]]--
+    -- self:NetworkVarNotify("Bumped", function(name, old, new)
+    --     print("Bumped changed to " .. tostring(new))
+    -- end)
 end
 
 hook.Add("TTTPlayerSpeedModifier", "CloakSpeed", function(ply,slowed,mv)
@@ -101,15 +99,29 @@ hook.Add("EntityTakeDamage", "BlinkOnShootCloakedPly", function(target, dmg)
     end
 end)
 
+-- net message stuff
+
 if SERVER then
     util.AddNetworkString("ClientBumped")
+    util.AddNetworkString("RemoveCloakVFX")
+
     net.Receive("ClientBumped", function(len, ply)
         --print(ply:Nick() .. " bumped cloaked player!")
-        local wep = net.ReadEntity()
+        local cloak = net.ReadEntity()
         local bumpTime = 3
         
-        wep:SetBumped(true)
-        wep:SetBumpTimer(CurTime() + bumpTime)
+        cloak:SetBumped(true)
+        cloak:SetBumpTimer(CurTime() + bumpTime)
+    end)
+end
+
+if CLIENT then
+    net.Receive("RemoveCloakVFX", function(len)
+        local vm = LocalPlayer():GetViewModel()
+        local vmHands = LocalPlayer():GetHands()
+
+        vm:SetMaterial("")
+        vmHands:SetMaterial("")
     end)
 end
 
@@ -244,6 +256,7 @@ end
 
 hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
     -- this hook will run every time the game client wants to draw a player on the screen, for each player
+    -- this hook does NOT run for the local player because they don't draw themselves
     -- "ply" is the player we're drawing.
     -- returning true hides this player (aka they are not drawn), returning false will show the player (they are drawn).
     
@@ -252,15 +265,13 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
     -- valid checks because gmod sucks
     if IsValid(ply) and
     IsValid(wep) and 
-    not(ply == LocalPlayer()) and -- this hook will run on the local player, we don't care about ourselves
     wep:GetClass() == "weapon_ttt_cloak" then -- only care about people holding the cloak (aka players who need to be hidden/shown)
         if wep:GetCloaked() then
-            local dist = 1500
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
-            local fullCloak = distCalc > dist
+            local fullCloak = distCalc > CLOAK_BUMP_DIST
             local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
             
-            if wep:GetBumped() or timer.Exists("DeployCloakFade" .. wep:EntIndex()) then return end
+            if wep:GetBumped() or timer.Exists("UncloakFade" .. wep:EntIndex()) or timer.Exists("DeployCloakFade" .. wep:EntIndex()) then return end
             
             if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
                 if wep:GetCloakAmmo() > cloakAmmoBlinkThreshold then
@@ -304,60 +315,117 @@ hook.Add("Think", "CloakGlobalThink", function()
             if not(IsValid(cloak)) then return end
             
             -- BEGIN CLOAK THINK
-            
             if SERVER then
                 -- bumped timer logic
                 if cloak:GetBumped() then
                     if CurTime() >= cloak:GetBumpTimer() then
                         cloak:SetBumped(false)
+                        -- reset client viewmodel alpha to 0 for bump vfx
+                        cloak:GetLastOwner():SetNWFloat("ViewmodelAlpha", 0)
                     end
                 end
                 
                 -- movement logic
-                local vel = cloak.LastOwner:GetVelocity():LengthSqr()
+                local vel = cloak:GetLastOwner():GetVelocity():LengthSqr()
                 if vel <= 1500 then
                     cloak:SetDoRecharge(true)
                 else
                     cloak:SetDoRecharge(false)
                 end
-            end
-            
-            -- Deprecated behavior: cloak no longer recharges
-            if cloak:GetDoRecharge() then
-                -- if (cloak:GetCloakAmmo() < cloak.Primary.ClipSize) then
-                --     if SERVER then cloak:SetRechargeTimer(cloak:GetRechargeTimer() + 1) end
-                --     if cloak:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
-                --         if SERVER then cloak:SetCloakAmmo(cloak:GetCloakAmmo() + 1) end
-                --         --cloak:SetClip1(cloak:Clip1() + 1)
-                --         if SERVER then cloak:SetRechargeTimer(0) end
-                --     end
-                -- end
-            else
-                if (cloak:GetCloakAmmo() > 0) then
-                    if SERVER then cloak:SetDrainTimer(cloak:GetDrainTimer() + 1) end
-                    if cloak:GetDrainTimer() >= 7 then
-                        if SERVER then cloak:SetCloakAmmo(cloak:GetCloakAmmo() - 1) end
-                        --cloak:SetClip1(cloak:Clip1() - 1)
-                        if SERVER then cloak:SetDrainTimer(0) end
+                
+                -- cloak recharge logic
+                -- deprecated behavior: cloak no longer recharges
+                if cloak:GetDoRecharge() then
+                    -- if (cloak:GetCloakAmmo() < cloak.Primary.ClipSize) then
+                    --     cloak:SetRechargeTimer(cloak:GetRechargeTimer() + 1)
+                    --     if cloak:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
+                    --         cloak:SetCloakAmmo(cloak:GetCloakAmmo() + 1)
+                    --         --cloak:SetClip1(cloak:Clip1() + 1)
+                    --         cloak:SetRechargeTimer(0)
+                    --     end
+                    -- end
+                else
+                    if (cloak:GetCloakAmmo() > 0) then
+                        cloak:SetDrainTimer(cloak:GetDrainTimer() + 1)
+                        if cloak:GetDrainTimer() >= 7 then
+                            cloak:SetCloakAmmo(cloak:GetCloakAmmo() - 1)
+                            --cloak:SetClip1(cloak:Clip1() - 1)
+                            cloak:SetDrainTimer(0)
+                        end
                     end
                 end
-            end
-            
-            if (cloak:GetCloakAmmo() == 0) then
-                if SERVER then
+                
+                -- viewmodel bump logic on server
+                if cloak:GetBumped() and cloak:GetLastOwner():GetNWFloat("ViewmodelAlpha", 1) != 1 then
+                    cloak:GetLastOwner():SetNWFloat("ViewmodelAlpha", 1)
+                end
+                
+                -- remove cloak if no ammo
+                if cloak:GetCloakAmmo() == 0 then
                     cloak:UnCloak()
                     cloak:Remove() 
                 end
             end
+            
+            if CLIENT then
+                -- client viewmodel bump logic
+                local doUncloakCloakTimersExist = timer.Exists("UncloakFade" .. cloak:EntIndex()) or timer.Exists("DeployCloakFade" .. cloak:EntIndex())
+                local isLocalPlyCloakerOrCloakSpectator = cloak:GetLastOwner() == LocalPlayer() or (LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and LocalPlayer():GetObserverTarget() == cloak:GetLastOwner())
+                local cloakMat = "sprites/heatwave"
+                local vm = cloak:GetLastOwner():GetViewModel()
+                local vmHands = cloak:GetLastOwner():GetHands()
 
-            cloak:SetClip1(cloak:GetCloakAmmo())
+                if cloak:GetBumped() and
+                not(doUncloakCloakTimersExist) and
+                isLocalPlyCloakerOrCloakSpectator and
+                -- this line necessary to better synchronize client and server so that there isn't weird flickering
+                -- still happens occasionally but is better with this
+                cloak:GetLastOwner():GetNWFloat("ViewmodelAlpha", 1) == 1 then
+                    vm:SetMaterial(cloakMat)
+                    vmHands:SetMaterial(cloakMat)
+                end
+                
+                if not(cloak:GetBumped()) and
+                not(doUncloakCloakTimersExist) and 
+                isLocalPlyCloakerOrCloakSpectator and 
+                cloak:GetLastOwner():GetNWFloat("ViewmodelAlpha", 1) == 0 then
+                    vm:SetMaterial("")
+                    vmHands:SetMaterial("")
+                end
+                
+                -- allow local player to bump
+                if cloak:GetCloaked() and 
+                cloak:GetLastOwner() == LocalPlayer() and  
+                not(doUncloakCloakTimersExist) then
+                    for _, ply in ipairs(player.GetAll()) do
+                        if ply == LocalPlayer() then continue end -- don't trigger bumps on ourselves
+
+                        local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
+                        local fullCloak = distCalc > CLOAK_BUMP_DIST
+                        local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
+                        
+                        if cloak:GetCloakAmmo() > cloakAmmoBlinkThreshold then
+                            if not(fullCloak) then
+                                net.Start("ClientBumped")
+                                net.WriteEntity(cloak)
+                                net.SendToServer()
+                            end
+                        end
+                    end
+                end
+                
+                cloak:SetClip1(cloak:GetCloakAmmo())
+            end
         end
     end
 end)
 
 function SWEP:OwnerChanged()
-    if IsValid(self:GetOwner()) then
-        self.LastOwner = self:GetOwner()
+    if SERVER then
+        local newOwner = self:GetOwner()
+        if IsValid(newOwner) then
+            self:SetLastOwner(newOwner)
+        end
     end
 end
 
@@ -370,6 +438,7 @@ function SWEP:Initialize()
         self:SetBumped(false)
         self:SetBumpTimer(0)
         self:SetDeployTimer(0)
+        self:SetLastOwner(nil)
         
         self:SetCloakAmmo(self.Primary.ClipSize)
     end
@@ -385,14 +454,20 @@ end
 
 function SWEP:Cloak()
     --print("Cloak triggered!")
-    if not(self:GetCloaked()) and IsValid(self.LastOwner) and self:GetCloakAmmo() > 0 then
-        self.LastOwner:SetRenderMode(1)
+    if not(self:GetCloaked()) and IsValid(self:GetLastOwner()) and self:GetCloakAmmo() > 0 then
+        local owner = self:GetLastOwner()
+
+        -- tell client to reset vfx in order to prepare for cloak
+        net.Start("RemoveCloakVFX")
+        net.Send(owner)
+
+        owner:SetRenderMode(1)
         self:SetRenderMode(1)
-        self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
+        owner:SetColor(Color(255, 255, 255, 255)) 
         self:SetColor(Color(255, 255, 255, 255))
-        self.LastOwner:SetNWFloat("ViewmodelAlpha", 1)
-        sound.Play("AlyxEMP.Discharge", self.LastOwner:GetPos(), 140, 100, 1)
-        self.LastOwner:SetNWBool("disguised", true)
+        owner:SetNWFloat("ViewmodelAlpha", 1)
+        sound.Play("AlyxEMP.Discharge", owner:GetPos(), 140, 100, 1)
+        owner:SetNWBool("disguised", true)
         
         local repeatDeployTimerAmt = math.Round(CLOAK_TIME / engine.TickInterval()) + 1
         local colorAlphaMinusAmt = math.Round(255 / repeatDeployTimerAmt, 0)
@@ -404,8 +479,8 @@ function SWEP:Cloak()
         if timer.Exists("UncloakFade" .. self:EntIndex()) then
             timer.Remove("UncloakFade" .. self:EntIndex())
             --print("Removing active UncloakFade timer!")
-            self.LastOwner:SetNWBool("CloakSwitchPenaltyActive", false)
-            self.LastOwner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
+            owner:SetNWBool("CloakSwitchPenaltyActive", false)
+            owner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
         end
         
         timer.Create("DeployCloakFade" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
@@ -413,12 +488,12 @@ function SWEP:Cloak()
             vmAlphaCurrent = math.Clamp(vmAlphaCurrent - vmAlphaMinusAmt, 0, 1)
             runTime = runTime + 1
             
-            self.LastOwner:SetColor(Color(255, 255, 255, colorAlphaCurrent)) 
+            owner:SetColor(Color(255, 255, 255, colorAlphaCurrent)) 
             self:SetColor(Color(255, 255, 255, colorAlphaCurrent))
-            self.LastOwner:SetNWFloat("ViewmodelAlpha", vmAlphaCurrent)
+            owner:SetNWFloat("ViewmodelAlpha", vmAlphaCurrent)
             
             if runTime >= repeatDeployTimerAmt then
-                if not(IsValid(self.LastOwner)) then
+                if not(IsValid(owner)) then
                     local owner = self:GetOwner()
                     if not(IsValid(owner)) then
                         print("ERROR: Could not set material and color params for recently cloaked player!")
@@ -427,14 +502,14 @@ function SWEP:Cloak()
                         owner:SetColor(Color(255, 255, 255, 255))
                     end
                 else
-                    self.LastOwner:SetMaterial("sprites/heatwave")
-                    self.LastOwner:SetColor(Color(255, 255, 255, 255)) 
+                    owner:SetMaterial("sprites/heatwave")
+                    owner:SetColor(Color(255, 255, 255, 255)) 
                 end
                 self:SetMaterial("sprites/heatwave")
                 self:SetColor(Color(255, 255, 255, 255))
             end
             
-            --print(self.LastOwner:GetColor())
+            --print(self:GetLastOwner():GetColor())
         end)
         
         if SERVER then self:SetCloaked(true)end
@@ -442,14 +517,19 @@ function SWEP:Cloak()
 end
 
 function SWEP:UnCloak()
-    if self:GetCloaked() and IsValid(self.LastOwner) then
+    if self:GetCloaked() and IsValid(self:GetLastOwner()) then
         -- if you read the owner comment above this is even more heinous
         -- the reason i gotta do this is because self (the cloak) gets dereferenced if it's getting deleted
-        -- meaning, i can't reference self.LastOwner. so i hold a reference to the owner with a local variable in this function. that reference stays around so i can use it later
+        -- meaning, i can't reference self:GetLastOwner(). so i hold a reference to the owner with a local variable in this function. that reference stays around so i can use it later
         -- again, not pretty. but it works
-        local owner = self.LastOwner
+        local owner = self:GetLastOwner()
         local cloak = self
         local wepTbl = {}
+
+        -- tell client to reset vfx in order to prepare for decloak
+        net.Start("RemoveCloakVFX")
+        net.Send(owner)
+
         owner:SetMaterial("")
         owner:SetColor(Color(255, 255, 255, 0)) 
         if IsValid(cloak) then 

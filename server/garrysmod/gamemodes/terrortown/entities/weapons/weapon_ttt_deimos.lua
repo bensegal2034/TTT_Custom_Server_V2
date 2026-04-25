@@ -97,15 +97,32 @@ if SERVER then
 	net.Receive("Deimos_SetTrack", function(len, ply)
 		-- Clear out current ping
 		if ActivePings[ply] then
+			local trackedPly = ActivePings[ply]
+			
 			net.Start("Deimos_UpdateLocation")
-			net.WriteEntity(ActivePings[ply])
+			net.WriteEntity(trackedPly)
 			net.WriteBool(false)
 			net.Send(ply)
 
 			net.Start("Deimos_UpdateLocation")
 			net.WriteEntity(ply)
 			net.WriteBool(false)
-			net.Send(ActivePings[ply])
+			net.Send(trackedPly)
+			
+			-- Clear pings for spectators observing either the tracked player or the tracker on switching ping targets
+			for _, specply in ipairs(player.GetAll()) do
+				if specply:GetObserverMode() != OBS_MODE_NONE and (specply:GetObserverTarget() == ply or specply:GetObserverTarget() == trackedPly) then
+					net.Start("Deimos_UpdateLocation")
+					net.WriteEntity(trackedPly)
+					net.WriteBool(false)
+					net.Send(specply)
+					
+					net.Start("Deimos_UpdateLocation")
+					net.WriteEntity(ply)
+					net.WriteBool(false)
+					net.Send(specply)
+				end
+			end
 		end
 
 		local enableTrack = net.ReadBool()
@@ -358,6 +375,21 @@ if SERVER then
 			net.WriteEntity(owner)
 			net.WriteBool(false)
 			net.Send(tracked)
+			
+			-- Clear pings for spectators observing either the tracked player or the tracker on death
+			for _, specply in ipairs(player.GetAll()) do
+				if specply:GetObserverMode() != OBS_MODE_NONE and (specply:GetObserverTarget() == owner or specply:GetObserverTarget() == tracked) then
+					net.Start("Deimos_UpdateLocation")
+					net.WriteEntity(tracked)
+					net.WriteBool(false)
+					net.Send(specply)
+					
+					net.Start("Deimos_UpdateLocation")
+					net.WriteEntity(owner)
+					net.WriteBool(false)
+					net.Send(specply)
+				end
+			end
 
 			ActivePings[owner] = nil
 		end

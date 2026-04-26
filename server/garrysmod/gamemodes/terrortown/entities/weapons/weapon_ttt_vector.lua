@@ -1,5 +1,5 @@
 if SERVER then
-	AddCSLuaFile()
+   AddCSLuaFile()
    resource.AddFile( "sound/weapons/kriss/boltpull.mp3" )
    resource.AddFile( "sound/weapons/kriss/clipin.mp3" )
    resource.AddFile( "sound/weapons/kriss/clipout.mp3" )
@@ -38,69 +38,65 @@ end
 SWEP.HoldType = "ar2"
 
 if CLIENT then
-
+   
    SWEP.PrintName = "Vector"
    SWEP.Slot = 2
-
+   
    SWEP.Icon = "vgui/ttt/lykrast/icon_ap_vector"
 end
 
 sound.Add({
-	name = 			"kriss_vector.Single",
-	channel = 		CHAN_USER_BASE+10,
-	volume = 		1.0,
-	sound = 			"weapons/Kriss/ump45-1.wav"
+   name = 			"kriss_vector.Single",
+   channel = 		CHAN_USER_BASE+10,
+   volume = 		1.0,
+   sound = 			"weapons/Kriss/ump45-1.wav"
 })
 
 sound.Add({
-	name = 			"kriss_vector.Magrelease",
-	channel = 		CHAN_ITEM,
-	volume = 		1.0,
-	sound = 			"weapons/Kriss/magrel.mp3"
+   name = 			"kriss_vector.Magrelease",
+   channel = 		CHAN_ITEM,
+   volume = 		1.0,
+   sound = 			"weapons/Kriss/magrel.mp3"
 })
 
 sound.Add({
-	name = 			"kriss_vector.Clipout",
-	channel = 		CHAN_ITEM,
-	volume = 		1.0,
-	sound = 			"weapons/Kriss/clipout.mp3"
+   name = 			"kriss_vector.Clipout",
+   channel = 		CHAN_ITEM,
+   volume = 		1.0,
+   sound = 			"weapons/Kriss/clipout.mp3"
 })
 
 sound.Add({
-	name = 			"kriss_vector.Clipin",
-	channel = 		CHAN_ITEM,
-	volume = 		1.0,
-	sound = 			"weapons/Kriss/clipin.mp3"
+   name = 			"kriss_vector.Clipin",
+   channel = 		CHAN_ITEM,
+   volume = 		1.0,
+   sound = 			"weapons/Kriss/clipin.mp3"
 })
 
 
 sound.Add({
-	name = 			"kriss_vector.Boltpull",
-	channel = 		CHAN_ITEM,
-	volume = 		1.0,
-	sound = 			"weapons/Kriss/boltpull.mp3"
+   name = 			"kriss_vector.Boltpull",
+   channel = 		CHAN_ITEM,
+   volume = 		1.0,
+   sound = 			"weapons/Kriss/boltpull.mp3"
 })
 
 sound.Add({
-	name = 			"kriss_vector.unfold",
-	channel = 		CHAN_ITEM,
-	volume = 		1.0,
-	sound = 			"weapons/Kriss/unfold.mp3"
+   name = 			"kriss_vector.unfold",
+   channel = 		CHAN_ITEM,
+   volume = 		1.0,
+   sound = 			"weapons/Kriss/unfold.mp3"
 })
+
+local COL_DEFAULT = Color(255, 255, 255, 255)
+local COL_GREEN = Color(0,255,0,255)
 
 hook.Add("TTTPrepareRound", "ResetVectorColor", function()
-    if SERVER then
-        local rf = RecipientFilter()
-        local colDefault = Color(255,255,255,255)
-        rf:AddAllPlayers()
-        players = rf:GetPlayers()
-        for i = 1, #players do
-            players[i]:GetViewModel():SetColor(colDefault)
-            players[i]:SetColor(colDefault)
-        end
-    end
+   for _, ply in pairs(player.GetAll()) do
+      ply:GetViewModel():SetColor(COL_DEFAULT)
+      ply:SetColor(COL_DEFAULT)
+   end
 end)
-
 
 SWEP.Base = "weapon_tttbase"
 
@@ -140,8 +136,7 @@ SWEP.SecondaryDelay = 0.05
 
 function SWEP:SetupDataTables()
    self:NetworkVar( "Int", 0, "WeaponState" )
-end   
-
+end
 
 function SWEP:Initialize()
    self:SetDeploySpeed( 0.8 )
@@ -157,26 +152,26 @@ end
 
 function SWEP:PrimaryAttack(worldsnd)   
    if not self:CanPrimaryAttack() then return end
-
+   
    if not worldsnd then
       self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
    elseif SERVER then
       sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
    end
-
-      self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
-      self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
-      self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-      self:SetNextSecondaryFire( CurTime() + self.SecondaryDelay )
-      local owner = self:GetOwner()
-      if SERVER then
-         TakeDamage(owner, 2, owner, self)
-      end
+   
+   self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
+   self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+   self:SetNextSecondaryFire( CurTime() + self.SecondaryDelay )
+   local owner = self:GetOwner()
+   if SERVER then
+      TakeDamage(owner, 2, owner, self)
+   end
    self:TakePrimaryAmmo( 1 )
-
+   
    local owner = self.Owner
    if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
-
+   
    owner:ViewPunch( Angle( math.Rand(-0.2,-0.1) * self.Primary.Recoil, math.Rand(-0.1,0.1) *self.Primary.Recoil, 0 ) )
 end
 
@@ -188,26 +183,24 @@ function SWEP:SecondaryAttack()
          self.StateValue = 1
       end
       local effectdata = EffectData()
-		effectdata:SetOrigin( self.Owner:GetPos() )
-		effectdata:SetNormal( self.Owner:GetPos() )
-		effectdata:SetMagnitude( 0.5 )
-		effectdata:SetScale( 0.5 )
-	   util.Effect( "VortDispel", effectdata)
+      effectdata:SetOrigin( self.Owner:GetPos() )
+      effectdata:SetNormal( self.Owner:GetPos() )
+      effectdata:SetMagnitude( 0.5 )
+      effectdata:SetScale( 0.5 )
+      util.Effect( "VortDispel", effectdata)
       self:EmitSound("weapons/kriss/on.wav")
       self.Primary.Cone = math.min(self.Primary.ConeSaved, (self.Owner:Health() / 1500))
-      local colGreen = Color(0,255,0,255)
-      self:SetColor(colGreen)
-      self:GetOwner():GetViewModel():SetColor(colGreen)
-      self:GetOwner():SetColor(colGreen)
+      self:SetColor(COL_GREEN)
+      self:GetOwner():GetViewModel():SetColor(COL_GREEN)
+      self:GetOwner():SetColor(COL_GREEN)
    elseif (self.StateValue == 1) then
       if SERVER then
          self.StateValue = 0
       end
       self:EmitSound("weapons/kriss/off.wav")
-      local colDefault = Color(255,255,255,255)
-      self:SetColor(colDefault)
-      self:GetOwner():GetViewModel():SetColor(colDefault)
-      self:GetOwner():SetColor(colDefault)
+      self:SetColor(COL_DEFAULT)
+      self:GetOwner():GetViewModel():SetColor(COL_DEFAULT)
+      self:GetOwner():SetColor(COL_DEFAULT)
       self.Primary.Cone = self.Primary.ConeSaved
    end
 end
@@ -223,16 +216,16 @@ end
 function SWEP:PreDrop()
    if SERVER and IsValid(self:GetOwner()) and self.Primary.Ammo != "none" then
       local ammo = self:Ammo1()
-
+      
       -- Do not drop ammo if we have another gun that uses this type
       for _, w in ipairs(self:GetOwner():GetWeapons()) do
          if IsValid(w) and w != self and w:GetPrimaryAmmoType() == self:GetPrimaryAmmoType() then
             ammo = 0
          end
       end
-
+      
       self.StoredAmmo = ammo
-
+      
       if ammo > 0 then
          self:GetOwner():RemoveAmmo(ammo, self.Primary.Ammo)
       end
@@ -243,11 +236,10 @@ end
 DEFINE_BASECLASS( SWEP.Base )
 function SWEP:Holster(...)
    if (self.StateValue == 1) then
-      local colDefault = Color(255,255,255,255)
       if IsValid(self:GetOwner()) then
-         self:SetColor(colDefault)
-         self:GetOwner():GetViewModel():SetColor(colDefault)
-         self:GetOwner():SetColor(colDefault)
+         self:SetColor(COL_DEFAULT)
+         self:GetOwner():GetViewModel():SetColor(COL_DEFAULT)
+         self:GetOwner():SetColor(COL_DEFAULT)
       end
       self.Primary.Cone = self.Primary.ConeSaved
    end
@@ -258,10 +250,9 @@ end
 function SWEP:Deploy()
    self:SetIronsights(false)
    if (self.StateValue == 1) then
-      local colGreen = Color(0,255,0,255)
-      self:SetColor(colGreen)
-      self:GetOwner():GetViewModel():SetColor(colGreen)
-      self:GetOwner():SetColor(colGreen)
+      self:SetColor(COL_GREEN)
+      self:GetOwner():GetViewModel():SetColor(COL_GREEN)
+      self:GetOwner():SetColor(COL_GREEN)
       self.Primary.Cone = self.Primary.ConeSaved
    end
    return true
@@ -274,16 +265,16 @@ function SWEP:GetPrimaryCone()
 end
 
 if SERVER then
-	hook.Add("DoPlayerDeath", "VectorHealOnKill", function(victim, attacker, dmginfo)
-		if
-			not IsValid(dmginfo:GetAttacker())
-			or not dmginfo:GetAttacker():IsPlayer()
-			or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-		then
-			return
-		end
-		local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-
+   hook.Add("DoPlayerDeath", "VectorHealOnKill", function(victim, attacker, dmginfo)
+      if
+      not IsValid(dmginfo:GetAttacker())
+      or not dmginfo:GetAttacker():IsPlayer()
+      or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
+      then
+         return
+      end
+      local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+      
       if weapon:GetClass() == "weapon_ttt_vector" then
          attacker:SetHealth(attacker:Health()+20)
          if attacker:Health() > 100 then

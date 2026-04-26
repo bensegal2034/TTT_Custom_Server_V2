@@ -138,6 +138,30 @@ function SWEP:SetupDataTables()
    self:NetworkVar( "Int", 0, "WeaponState" )
 end
 
+-- this ALMOST works and looks cool but sadly does not function
+-- because of a weird issue where black "ghost" versions of the local client's viewmodels will render when the halo is turned on/off.
+-- example here: https://i.imgur.com/hxxi4UA.png
+-- i would still like to use this code someday so i'm leaving it here but currently it is broken
+-- hook.Add("PreDrawHalos", "VectorGlow", function()
+--    if CLIENT then
+--       local blur = 5
+--       local entsToHalo = {}
+--       for _, ply in pairs(player.GetAll()) do
+--          local wep = ply:GetActiveWeapon()
+         
+--          if IsValid(ply) and
+--          IsValid(wep) and 
+--          ply != LocalPlayer() and
+--          wep:GetClass() == "weapon_ttt_vector" and wep:GetWeaponState() == 1 then
+--             table.insert(entsToHalo, ply)
+--             table.insert(entsToHalo, wep)
+--          end
+--       end
+      
+--       halo.Add(entsToHalo, Color(0, 255, 0), blur, blur, 2, true, false)
+--    end
+-- end)
+
 function SWEP:Initialize()
    self:SetDeploySpeed( 0.8 )
    function TakeDamage( victim, damage, attacker, inflictor )

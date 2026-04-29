@@ -9,7 +9,7 @@ local math = math
 RADAR = {}
 RADAR.targets = {}
 RADAR.enable = false
-RADAR.duration = 45
+RADAR.duration = 30
 RADAR.endtime = 0
 RADAR.bombs = {}
 RADAR.bombs_count = 0
@@ -240,9 +240,9 @@ local function ReceiveRadarScan()
       local r = net.ReadUInt(2)
 
       local pos = Vector()
-      pos.x = net.ReadInt(32)
-      pos.y = net.ReadInt(32)
-      pos.z = net.ReadInt(32)
+      pos.x = net.ReadInt(15)
+      pos.y = net.ReadInt(15)
+      pos.z = net.ReadInt(15)
 
       table.insert(RADAR.targets, {role=r, pos=pos})
    end
@@ -276,7 +276,7 @@ function RADAR.CreateMenu(parent, frame)
    dscan:SetSize(bw, bh)
    dscan:SetText(GetTranslation("radar_scan"))
    dscan.DoClick = function(s)
-                      s:SetDisabled(true)
+                      s:SetEnabled(false)
                       RunConsoleCommand("ttt_radar_scan")
                       frame:Close()
                    end
@@ -299,9 +299,9 @@ function RADAR.CreateMenu(parent, frame)
 
    dform.Think = function(s)
                     if RADAR.enable or not owned then
-                       dscan:SetDisabled(true)
+                       dscan:SetEnabled(false)
                     else
-                       dscan:SetDisabled(false)
+                       dscan:SetEnabled(true)
                     end
                  end
 

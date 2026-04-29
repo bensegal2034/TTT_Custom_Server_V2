@@ -11,22 +11,14 @@ local GetPTranslation = LANG.GetParamTranslation
 local GetLang = LANG.GetUnsafeLanguageTable
 local interp = string.Interp
 
-local function joeCheck()
-   if not IsValid(LocalPlayer()) then 
-      return false 
-   else 
-      return LocalPlayer():SteamID64() == "" 
-   end
-end
-
 -- Fonts
-surface.CreateFont("TraitorState", {font = "Trebuchet24",
+surface.CreateFont("TraitorState", {font = "Tahoma",
                                     size = 28,
                                     weight = 1000})
-surface.CreateFont("TimeLeft",     {font = "Trebuchet24",
+surface.CreateFont("TimeLeft",     {font = "Tahoma",
                                     size = 24,
                                     weight = 800})
-surface.CreateFont("HealthAmmo",   {font = "Trebuchet24",
+surface.CreateFont("HealthAmmo",   {font = "Tahoma",
                                     size = 24,
                                     weight = 750})
 -- Color presets
@@ -44,19 +36,19 @@ local health_colors = {
    border = COLOR_WHITE,
    background = Color(100, 25, 25, 222),
    fill = Color(200, 50, 50, 250)
-};
+}
 
 local ammo_colors = {
    border = COLOR_WHITE,
    background = Color(20, 20, 5, 222),
    fill = Color(205, 155, 0, 255)
-};
+}
 
 
 -- Modified RoundedBox
 local Tex_Corner8 = surface.GetTextureID( "gui/corner8" )
 local function RoundedMeter( bs, x, y, w, h, color)
-   surface.SetDrawColor(clr(color))
+   surface.SetDrawColor( color.r, color.g, color.b, color.a )
 
    surface.DrawRect( x+bs, y, w-bs*2, h )
    surface.DrawRect( x, y+bs, bs, h-bs*2 )
@@ -97,7 +89,7 @@ local roundstate_string = {
    [ROUND_PREP]   = "round_prep",
    [ROUND_ACTIVE] = "round_active",
    [ROUND_POST]   = "round_post"
-};
+}
 
 -- Returns player's ammo information
 local function GetAmmo(ply)
@@ -112,7 +104,6 @@ local function GetAmmo(ply)
 end
 
 local function DrawBg(x, y, width, height, client)
-   if joeCheck() then return end
    -- Traitor area sizes
    local th = 30
    local tw = 170
@@ -154,7 +145,6 @@ local margin = 10
 
 -- Paint punch-o-meter
 local function PunchPaint(client)
-   if joeCheck() then return end
    local L = GetLang()
    local punch = client:GetNWFloat("specpunches", 0)
 
@@ -186,7 +176,6 @@ end
 local key_params = { usekey = Key("+use", "USE") }
 
 local function SpecHUDPaint(client)
-   if joeCheck() then return end
    local L = GetLang() -- for fast direct table lookups
 
    -- Draw round state
@@ -225,7 +214,6 @@ end
 local ttt_health_label = CreateClientConVar("ttt_health_label", "0", true)
 
 local function InfoPaint(client)
-   if joeCheck() then return end
    local L = GetLang()
 
    local width = 250
@@ -331,7 +319,6 @@ end
 
 -- Paints player status HUD element in the bottom left
 function GM:HUDPaint()
-   if joeCheck() then return end
    local client = LocalPlayer()
 
    if hook.Call( "HUDShouldDraw", GAMEMODE, "TTTTargetID" ) then
@@ -383,7 +370,6 @@ end
 -- Hide the standard HUD stuff
 local hud = {["CHudHealth"] = true, ["CHudBattery"] = true, ["CHudAmmo"] = true, ["CHudSecondaryAmmo"] = true}
 function GM:HUDShouldDraw(name)
-   if joeCheck() then return end
    if hud[name] then return false end
 
    return self.BaseClass.HUDShouldDraw(self, name)

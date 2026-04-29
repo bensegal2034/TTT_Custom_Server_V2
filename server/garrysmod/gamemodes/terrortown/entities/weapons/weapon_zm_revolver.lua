@@ -121,46 +121,46 @@ function SWEP:SetupDataTables()
    self:NetworkVar("Float", 3, "IronsightsTime")
 end
 
-if CLIENT then
-   function SWEP:DrawWorldModel()
-      if not(IsValid(self.FakeWorldModel)) then
-         self.FakeWorldModel = ClientsideModel(self.WorldModel)
-      end
+-- if CLIENT then
+--    function SWEP:DrawWorldModel()
+--       if not(IsValid(self.FakeWorldModel)) then
+--          self.FakeWorldModel = ClientsideModel(self.WorldModel)
+--       end
       
-      if (IsValid(self.Owner)) && LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE && LocalPlayer():GetObserverTarget() == self.Owner then
-         return
-      end
+--       if (IsValid(self.Owner)) && LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE && LocalPlayer():GetObserverTarget() == self.Owner then
+--          return
+--       end
       
-      -- Settings...
-      self.FakeWorldModel:SetSkin(1)
-      self.FakeWorldModel:SetNoDraw(true)
-      local _Owner = self:GetOwner()
+--       -- Settings...
+--       self.FakeWorldModel:SetSkin(1)
+--       self.FakeWorldModel:SetNoDraw(true)
+--       local _Owner = self:GetOwner()
       
-      if (IsValid(_Owner)) then
-         -- Specify a good position
-         local offsetVec = Vector(1, -1, -1)
-         local offsetAng = Angle(180, 180, 0)
+--       if (IsValid(_Owner)) then
+--          -- Specify a good position
+--          local offsetVec = Vector(1, -1, -1)
+--          local offsetAng = Angle(180, 180, 0)
          
-         local boneid = _Owner:LookupBone("ValveBiped.Bip01_R_Hand") -- Right Hand
-         if !boneid then return end
+--          local boneid = _Owner:LookupBone("ValveBiped.Bip01_R_Hand") -- Right Hand
+--          if !boneid then return end
          
-         local matrix = _Owner:GetBoneMatrix(boneid)
-         if !matrix then return end
+--          local matrix = _Owner:GetBoneMatrix(boneid)
+--          if !matrix then return end
          
-         local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
+--          local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
          
-         self.FakeWorldModel:SetPos(newPos)
-         self.FakeWorldModel:SetAngles(newAng)
+--          self.FakeWorldModel:SetPos(newPos)
+--          self.FakeWorldModel:SetAngles(newAng)
          
-         self.FakeWorldModel:SetupBones()
-      else
-         self.FakeWorldModel:SetPos(self:GetPos())
-         self.FakeWorldModel:SetAngles(self:GetAngles())
-      end
+--          self.FakeWorldModel:SetupBones()
+--       else
+--          self.FakeWorldModel:SetPos(self:GetPos())
+--          self.FakeWorldModel:SetAngles(self:GetAngles())
+--       end
       
-      self.FakeWorldModel:DrawModel()
-   end
-end
+--       self.FakeWorldModel:DrawModel()
+--    end
+-- end
 
 function SWEP:SetZoom(state)
    if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then

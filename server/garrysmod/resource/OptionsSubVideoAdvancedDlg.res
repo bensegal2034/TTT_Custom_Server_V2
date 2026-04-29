@@ -475,6 +475,8 @@
 	}
 	"Bloom"
 	{
+		"visible"		"0" // GMOD: This is not tied to anything?
+
 		"ControlName"		"CCvarToggleCheckButton"
 		"fieldName"		"Bloom"
 		"xpos"		"170"

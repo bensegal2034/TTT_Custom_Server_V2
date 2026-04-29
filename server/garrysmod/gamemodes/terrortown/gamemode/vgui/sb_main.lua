@@ -18,7 +18,7 @@ surface.CreateFont("cool_small", {font = "coolvetica",
 surface.CreateFont("cool_large", {font = "coolvetica",
                                   size = 24,
                                   weight = 400})
-surface.CreateFont("treb_small", {font = "Trebuchet18",
+surface.CreateFont("treb_small", {font = "Tahoma",
                                   size = 14,
                                   weight = 700})
 
@@ -271,7 +271,7 @@ end
 local colors = {
    bg = Color(30,30,30, 235),
    bar = Color(220,180,0,255)
-};
+}
 
 local y_logo_off = 72
 
@@ -408,7 +408,7 @@ function PANEL:UpdateScoreboard( force )
 
    -- Put players where they belong. Groups will dump them as soon as they don't
    -- anymore.
-   for k, p in ipairs(player.GetAll()) do
+   for k, p in player.Iterator() do
       if IsValid(p) then
          local group = ScoreGroup(p)
          if self.ply_groups[group] and not self.ply_groups[group]:HasPlayerRow(p) then

@@ -5,8 +5,8 @@ local PT = LANG.GetParamTranslation
 
 local is_dmg = util.BitSet
 
-local dtt = { search_dmg_crush = DMG_CRUSH, search_dmg_bullet = DMG_BULLET, search_dmg_fall = DMG_FALL, 
-search_dmg_boom = DMG_BLAST, search_dmg_club = DMG_CLUB, search_dmg_drown = DMG_DROWN, search_dmg_stab = DMG_SLASH, 
+local dtt = { search_dmg_crush = DMG_CRUSH, search_dmg_bullet = DMG_BULLET, search_dmg_fall = DMG_FALL,
+search_dmg_boom = DMG_BLAST, search_dmg_club = DMG_CLUB, search_dmg_drown = DMG_DROWN, search_dmg_stab = DMG_SLASH,
 search_dmg_burn = DMG_BURN, search_dmg_tele = DMG_SONIC, search_dmg_car = DMG_VEHICLE }
 
 -- "From his body you can tell XXX"
@@ -138,7 +138,7 @@ function PreprocSearch(raw)
          end
       elseif t == "c4" then
          if d > 0 then
-            search[t].text= PT("search_c4", {num = d})
+            search[t].text = PT("search_c4", {num = d})
          end
       elseif t == "dmg" then
          search[t].text = DmgToText(d)
@@ -175,19 +175,19 @@ function PreprocSearch(raw)
          local num = table.Count(d)
          if num == 1 then
             local vic = Entity(d[1])
-            local dc = d[1] == -1 -- disconnected
+            local dc = d[1] == 0 -- disconnected
             if dc or (IsValid(vic) and vic:IsPlayer()) then
-               search[t].text = PT("search_kills1", {player = (dc and "<Disconnected>" or vic:Nick())})
+               search[t].text = PT("search_kills1", {player = (dc and Format("<%s>", T("disconnected")) or vic:Nick())})
             end
          elseif num > 1 then
             local txt = T("search_kills2") .. "\n"
 
             local nicks = {}
-            for k, idx in pairs(d) do
+            for k, idx in ipairs(d) do
                local vic = Entity(idx)
-               local dc = idx == -1
+               local dc = idx == 0
                if dc or (IsValid(vic) and vic:IsPlayer()) then
-                  table.insert(nicks, (dc and "<Disconnected>" or vic:Nick()))
+                  table.insert(nicks, (dc and Format("<%s>", T("disconnected")) or vic:Nick()))
                end
             end
 
@@ -198,7 +198,7 @@ function PreprocSearch(raw)
 
          search[t].p = 30
       elseif t == "lastid" then
-         if d and d.idx != -1 then
+         if d and d.idx != 0 then
             local ent = Entity(d.idx)
             if IsValid(ent) and ent:IsPlayer() then
                search[t].text = PT("search_eyes", {player = ent:Nick()})
@@ -336,8 +336,8 @@ local function ShowSearchScreen(search_raw)
    dident:SetSize(bw_large, bh)
    dident:SetText(T("search_confirm"))
    local id = search_raw.eidx + search_raw.dtime
-   dident.DoClick = function() RunConsoleCommand("ttt_confirm_death", search_raw.eidx, id) end
-   dident:SetDisabled(client:IsSpec() or (not client:KeyDownLast(IN_WALK)))
+   dident.DoClick = function(s) s:SetEnabled(false) RunConsoleCommand("ttt_confirm_death", search_raw.eidx, id) end
+   dident:SetEnabled(not (client:IsSpec() or (not client:KeyDownLast(IN_WALK))))
 
    local dcall = vgui.Create("DButton", dcont)
    dcall:SetPos(m*2 + bw_large, by)
@@ -346,12 +346,12 @@ local function ShowSearchScreen(search_raw)
    dcall.DoClick = function(s)
                       client.called_corpses = client.called_corpses or {}
                       table.insert(client.called_corpses, search_raw.eidx)
-                      s:SetDisabled(true)
+                      s:SetEnabled(false)
 
                       RunConsoleCommand("ttt_call_detective", search_raw.eidx)
                    end
 
-   dcall:SetDisabled(client:IsSpec() or table.HasValue(client.called_corpses or {}, search_raw.eidx))
+   dcall:SetEnabled(not (client:IsSpec() or table.HasValue(client.called_corpses or {}, search_raw.eidx)))
 
    local dconfirm = vgui.Create("DButton", dcont)
    dconfirm:SetPos(rw - m - bw, by)
@@ -424,14 +424,9 @@ local function StoreSearchResult(search)
    end
 end
 
-local function bitsRequired(num)
-   local bits, max = 0, 1
-   while max <= num do
-      bits = bits + 1
-      max = max + max
-   end
-   return bits
-end
+local bitsRequired = util.BitsRequired
+
+local plyBits = bitsRequired(game.MaxPlayers())
 
 local search = {}
 local function ReceiveRagdollSearch()
@@ -440,7 +435,7 @@ local function ReceiveRagdollSearch()
    -- Basic info
    search.eidx = net.ReadUInt(16)
 
-   search.owner = Entity(net.ReadUInt(8))
+   search.owner = Entity(net.ReadUInt(plyBits))
    if not (IsValid(search.owner) and search.owner:IsPlayer() and (not search.owner:IsTerror())) then
       search.owner = nil
    end
@@ -448,7 +443,7 @@ local function ReceiveRagdollSearch()
    search.nick = net.ReadString()
 
    -- Equipment
-   local eq = net.ReadUInt(16)
+   local eq = net.ReadInt(bitsRequired(EQUIP_MAX, true))
 
    -- All equipment pieces get their own icon
    search.eq_armor = util.BitSet(eq, EQUIP_ARMOR)
@@ -457,30 +452,30 @@ local function ReceiveRagdollSearch()
 
    -- Traitor things
    search.role = net.ReadUInt(2)
-   search.c4 = net.ReadInt(bitsRequired(C4_WIRE_COUNT) + 1)
+   search.c4 = net.ReadUInt(bitsRequired(C4_WIRE_COUNT))
 
    -- Kill info
    search.dmg = net.ReadUInt(30)
    search.wep = net.ReadString()
-   search.head = net.ReadBit() == 1
-   search.dtime = net.ReadInt(16)
-   search.stime = net.ReadInt(16)
+   search.head = net.ReadBool()
+   search.dtime = net.ReadUInt(15)
+   search.stime = net.ReadUInt(15)
 
    -- Players killed
    local num_kills = net.ReadUInt(8)
    if num_kills > 0 then
       search.kills = {}
       for i=1,num_kills do
-         table.insert(search.kills, net.ReadUInt(8))
+         table.insert(search.kills, net.ReadUInt(plyBits))
       end
    else
       search.kills = nil
    end
 
-   search.lastid = {idx=net.ReadUInt(8)}
+   search.lastid = {idx=net.ReadUInt(plyBits)}
 
    -- should we show a menu for this result?
-   search.finder = net.ReadUInt(8)
+   search.finder = net.ReadUInt(plyBits)
 
    search.show = (LocalPlayer():EntIndex() == search.finder)
 
@@ -488,11 +483,11 @@ local function ReceiveRagdollSearch()
    -- last words
    --
    local words = net.ReadString()
-   search.words = (words ~= "") and words or nil
-   
+   search.words = (words != "") and words or nil
+
    hook.Call("TTTBodySearchEquipment", nil, search, eq)
 
-   if search.show then
+   if search.show and hook.Run("TTTShowSearchScreen", search) != false then
       ShowSearchScreen(search)
    end
 

@@ -42,6 +42,23 @@ local mat_dir = "vgui/ttt/"
 EquipmentItems = {
    [ROLE_DETECTIVE] = {
 
+      -- body armor
+      {  id       = EQUIP_ARMOR,
+         loadout  = true, -- default equipment for detectives
+         type     = "item_passive",
+         material = mat_dir .. "icon_armor",
+         name     = "item_armor",
+         desc     = "item_armor_desc"
+      },
+
+      -- radar
+      {  id       = EQUIP_RADAR,
+         type     = "item_active",
+         material = mat_dir .. "icon_radar",
+         name     = "item_radar",
+         desc     = "item_radar_desc"
+      }
+
 
       -- The default TTT equipment uses the language system to allow
       -- translation. Below is an example of how the type, name and desc fields
@@ -55,10 +72,25 @@ EquipmentItems = {
 --         name     = "Body Armor",
 --         desc     = "Reduces bullet damage by 30% when\nyou get hit."
 --      },
-   };
+   },
 
 
    [ROLE_TRAITOR] = {
+      -- body armor
+      {  id       = EQUIP_ARMOR,
+         type     = "item_passive",
+         material = mat_dir .. "icon_armor",
+         name     = "item_armor",
+         desc     = "item_armor_desc"
+      },
+
+      -- radar
+      {  id       = EQUIP_RADAR,
+         type     = "item_active",
+         material = mat_dir .. "icon_radar",
+         name     = "item_radar",
+         desc     = "item_radar_desc"
+      },
 
       -- disguiser
       {  id       = EQUIP_DISGUISE,
@@ -89,8 +121,17 @@ function GetEquipmentItem(role, id)
    end
 end
 
- -- Utility function to register a new Equipment ID
+-- GMod's bitwise library is limited to a 32-bit signed int
+local EQUIP_LIMIT = 2 ^ 31
+
+-- Utility function to register a new Equipment ID
 function GenerateNewEquipmentID()
-   EQUIP_MAX = EQUIP_MAX * 2
+   local new_max = EQUIP_MAX * 2
+
+   if new_max > EQUIP_LIMIT then
+      error("Passive equipment item limit reached. Things may break in strange ways!")
+   end
+
+   EQUIP_MAX = new_max
    return EQUIP_MAX
 end

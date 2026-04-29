@@ -14,7 +14,7 @@ if CLIENT then
    SWEP.EquipMenuData = {
       type = "item_weapon",
       desc = "polter_desc"
-   };
+   }
 
    SWEP.Icon               = "vgui/ttt/icon_polter"
 end
@@ -97,7 +97,7 @@ function SWEP:PreDrop()
    self:SetCharge(0)
 
    -- OnDrop does not happen on client
-   self:CallOnClient("HideGhost", "")
+   self:CallOnClient("HideGhost")
 end
 
 function SWEP:HideGhost()
@@ -116,7 +116,7 @@ function SWEP:PrimaryAttack()
       local ply = self:GetOwner()
       if not IsValid(ply) then return end
 
-      local tr = util.TraceLine({start=ply:GetShootPos(), endpos=ply:GetShootPos() + ply:GetAimVector() * self.MaxRange, filter={ply, self.Entity}, mask=MASK_SOLID})
+      local tr = util.TraceLine({start=ply:GetShootPos(), endpos=ply:GetShootPos() + ply:GetAimVector() * self.MaxRange, filter={ply, self}, mask=MASK_SOLID})
 
       if tr.HitNonWorld and ValidTarget(tr.Entity) and tr.Entity:GetPhysicsObject():IsMoveable() then
 
@@ -144,7 +144,7 @@ function SWEP:SecondaryAttack()
 
       local range = 30000
 
-      local tr = util.TraceLine({start=ply:GetShootPos(), endpos=ply:GetShootPos() + ply:GetAimVector() * range, filter={ply, self.Entity}, mask=MASK_SOLID})
+      local tr = util.TraceLine({start=ply:GetShootPos(), endpos=ply:GetShootPos() + ply:GetAimVector() * range, filter={ply, self}, mask=MASK_SOLID})
 
       if tr.HitNonWorld and ValidTarget(tr.Entity) and tr.Entity:GetPhysicsObject():IsMoveable() then
 
@@ -204,7 +204,7 @@ if SERVER then
    local CHARGE_DELAY = 0.025
 
    function SWEP:Think()
-      self.BaseClass.Think(self)
+      BaseClass.Think(self)
       if not IsValid(self:GetOwner()) then return end
 
       if self.IsCharging and self:GetOwner():KeyDown(IN_ATTACK2) then
@@ -245,7 +245,7 @@ if SERVER then
 end
 
 local function around( val )
-   return math.Round( val * (10 ^ 3) ) / (10 ^ 3);
+   return math.Round( val * (10 ^ 3) ) / (10 ^ 3)
 end
 
 if CLIENT then

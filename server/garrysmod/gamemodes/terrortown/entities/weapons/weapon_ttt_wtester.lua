@@ -16,7 +16,7 @@ if CLIENT then
    SWEP.EquipMenuData = {
       type = "item_weapon",
       desc = "dna_desc"
-   };
+   }
 
    SWEP.Icon               = "vgui/ttt/icon_wtester"
 end
@@ -134,8 +134,8 @@ end
 function SWEP:GatherRagdollSample(ent)
    local sample = ent.killer_sample or {t=0, killer=nil}
    local ply = sample.killer
-   if (not IsValid(ply)) and sample.killer_sid then
-      ply = player.GetBySteamID(sample.killer_sid)
+   if (not IsValid(ply)) and sample.killer_sid64 then
+      ply = player.GetBySteamID64(sample.killer_sid64)
    end
 
 
@@ -326,7 +326,6 @@ if SERVER then
    end
 
    function SWEP:Think()
-      self.BaseClass.Think(self)
       if self:GetCharge() < MAX_CHARGE then
          if self.NextCharge < CurTime() then
             self:SetCharge(math.min(MAX_CHARGE, self:GetCharge() + CHARGE_RATE))
@@ -717,7 +716,7 @@ if CLIENT then
 
       RADAR.samples = {
          {pos = target_pos}
-      };
+      }
 
       RADAR.samples_count = 1
 
@@ -790,9 +789,9 @@ function SWEP:Deploy()
 end
 
 if CLIENT then
-   function SWEP:DrawWorldModel()
+   function SWEP:DrawWorldModel(flags)
       if not IsValid(self:GetOwner()) then
-         self:DrawModel()
+         self:DrawModel(flags)
       end
    end
 end

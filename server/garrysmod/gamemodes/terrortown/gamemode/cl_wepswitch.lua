@@ -41,7 +41,7 @@ local col_active = {
    text = Color(255, 255, 255, 255),
 
    shadow = 255
-};
+}
 
 local col_dark = {
    tip = {
@@ -57,7 +57,7 @@ local col_dark = {
    text = Color(255, 255, 255, 100),
 
    shadow = 100
-};
+}
 
 -- Draw a bar in the style of the the weapon pickup ones
 local round = math.Round

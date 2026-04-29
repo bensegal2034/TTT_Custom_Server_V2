@@ -358,14 +358,6 @@ hook.Add("PrePlayerDraw", "HideCloakedPlys", function(ply, flags)
     end
 end)
 
-hook.Add("PostPlayerDraw", "CloakTransPlayerWorldModel", function(ply)
-    local alpha = ply:GetNWFloat("CloakAlpha", 1)
-
-    render.SetBlend(alpha)
-    ply:DrawModel()
-    render.SetBlend(1)
-end)
-
 hook.Add("Think", "CloakGlobalThink", function()
     for _, ply in pairs(player.GetAll()) do
         if IsValid(ply) and 
@@ -555,6 +547,7 @@ function SWEP:HandleBumpUpdate(name, old, new)
                 owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
 
                 if runTime >= fadeInCycles then
+                    owner:SetNWFloat("CloakAlpha", CLOAK_BUMP_ALPHA_PCT)
                     self:SetBumpFadeIn(false)
                 end
             end)
@@ -579,6 +572,7 @@ function SWEP:HandleBumpUpdate(name, old, new)
                 owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
 
                 if runTime >= fadeOutCycles then
+                    owner:SetNWFloat("CloakAlpha", 0)
                     self:SetBumpFadeOut(false)
                 end
             end)
@@ -635,10 +629,12 @@ function SWEP:Cloak()
                     if not(IsValid(owner)) then
                         print("ERROR: Could not set material and color params for recently cloaked player!")
                     else
+                        owner:SetNWFloat("CloakAlpha", 0)
                         owner:SetColor(Color(r, g, b, 0))
                         owner:SetNWBool("CloakDeployActive", false)
                     end
                 else
+                    owner:SetNWFloat("CloakAlpha", 0)
                     owner:SetColor(Color(r, g, b, 0)) 
                     owner:SetNWBool("CloakDeployActive", false)
                 end
@@ -704,6 +700,7 @@ function SWEP:UnCloak()
             if runTime >= repeatUncloakTimerAmt then
                 owner:SetRenderMode(RENDERMODE_NORMAL)
                 owner:SetNWBool("CloakHolsterActive", false)
+                owner:SetNWFloat("CloakAlpha", 1)
                 owner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
             end
         end)

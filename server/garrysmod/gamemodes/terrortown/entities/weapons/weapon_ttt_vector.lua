@@ -93,7 +93,7 @@ local COL_GREEN = Color(0,255,0,255)
 
 hook.Add("TTTPrepareRound", "ResetVectorColor", function()
    for _, ply in pairs(player.GetAll()) do
-      if IsValid(ply) then
+      if IsValid(ply) and IsValid(ply:GetViewModel()) then
          ply:GetViewModel():SetColor(COL_DEFAULT)
          ply:SetColor(COL_DEFAULT)
       end

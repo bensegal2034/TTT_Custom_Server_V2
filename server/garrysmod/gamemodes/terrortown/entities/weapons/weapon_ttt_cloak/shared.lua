@@ -336,114 +336,119 @@ end)
 
 hook.Add("Think", "CloakGlobalThink", function()
     for _, ply in pairs(player.GetAll()) do
-        if ply:HasWeapon("weapon_ttt_cloak") and ply:GetActiveWeapon():GetClass() == "weapon_ttt_cloak" then
-            local cloak = nil
-            for _, wep in ipairs(ply:GetWeapons()) do
-                if wep:GetClass() == "weapon_ttt_cloak" then
-                    cloak = wep
-                end
-            end
-            
-            if not(IsValid(cloak)) then return end
-            local owner = cloak:GetLastOwner()
-
-            -- BEGIN CLOAK THINK
-            if SERVER then
-                -- bumped timer logic
-                if cloak:GetBumped() then
-                    if CurTime() >= cloak:GetBumpTimer() then
-                        cloak:SetBumped(false)
-                        -- reset client viewmodel alpha to 0 for bump vfx
-                        owner:SetNWFloat("CloakViewModelAlpha", 0)
+        if IsValid(ply) and 
+        IsValid(ply:GetActiveWeapon()) and 
+        ply.GetActiveWeapon and 
+        ply:GetActiveWeapon().GetClass then
+            if ply:HasWeapon("weapon_ttt_cloak") and ply:GetActiveWeapon():GetClass() == "weapon_ttt_cloak" then
+                local cloak = nil
+                for _, wep in ipairs(ply:GetWeapons()) do
+                    if wep:GetClass() == "weapon_ttt_cloak" then
+                        cloak = wep
                     end
                 end
                 
-                -- movement logic
-                local vel = owner:GetVelocity():LengthSqr()
-                if vel <= 1500 then
-                    cloak:SetDoRecharge(true)
-                else
-                    cloak:SetDoRecharge(false)
-                end
-                
-                -- cloak recharge logic
-                -- deprecated behavior: cloak no longer recharges
-                if cloak:GetDoRecharge() then
-                    -- if (cloak:GetCloakAmmo() < cloak.Primary.ClipSize) then
-                    --     cloak:SetRechargeTimer(cloak:GetRechargeTimer() + 1)
-                    --     if cloak:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
-                    --         local ammoNum = cloak:GetCloakAmmo() + 1
-                    --         cloak:SetCloakAmmo(ammoNum)
-                    --         cloak:SetClip1(ammoNum)
-                    --         cloak:SetRechargeTimer(0)
-                    --     end
-                    -- end
-                else
-                    if (cloak:GetCloakAmmo() > 0) then
-                        cloak:SetDrainTimer(cloak:GetDrainTimer() + 1)
-                        if cloak:GetDrainTimer() >= 7 then
-                            local ammoNum = cloak:GetCloakAmmo() - 1
-                            cloak:SetCloakAmmo(ammoNum)
-                            cloak:SetClip1(ammoNum)
-                            cloak:SetDrainTimer(0)
+                if not(IsValid(cloak)) then return end
+                local owner = cloak:GetLastOwner()
+
+                -- BEGIN CLOAK THINK
+                if SERVER then
+                    -- bumped timer logic
+                    if cloak:GetBumped() then
+                        if CurTime() >= cloak:GetBumpTimer() then
+                            cloak:SetBumped(false)
+                            -- reset client viewmodel alpha to 0 for bump vfx
+                            owner:SetNWFloat("CloakViewModelAlpha", 0)
                         end
                     end
+                    
+                    -- movement logic
+                    local vel = owner:GetVelocity():LengthSqr()
+                    if vel <= 1500 then
+                        cloak:SetDoRecharge(true)
+                    else
+                        cloak:SetDoRecharge(false)
+                    end
+                    
+                    -- cloak recharge logic
+                    -- deprecated behavior: cloak no longer recharges
+                    if cloak:GetDoRecharge() then
+                        -- if (cloak:GetCloakAmmo() < cloak.Primary.ClipSize) then
+                        --     cloak:SetRechargeTimer(cloak:GetRechargeTimer() + 1)
+                        --     if cloak:GetRechargeTimer() >= 5 then -- this number controls recharge frequency
+                        --         local ammoNum = cloak:GetCloakAmmo() + 1
+                        --         cloak:SetCloakAmmo(ammoNum)
+                        --         cloak:SetClip1(ammoNum)
+                        --         cloak:SetRechargeTimer(0)
+                        --     end
+                        -- end
+                    else
+                        if (cloak:GetCloakAmmo() > 0) then
+                            cloak:SetDrainTimer(cloak:GetDrainTimer() + 1)
+                            if cloak:GetDrainTimer() >= 7 then
+                                local ammoNum = cloak:GetCloakAmmo() - 1
+                                cloak:SetCloakAmmo(ammoNum)
+                                cloak:SetClip1(ammoNum)
+                                cloak:SetDrainTimer(0)
+                            end
+                        end
+                    end
+                    
+                    -- viewmodel bump logic on server
+                    if cloak:GetBumped() and owner:GetNWFloat("CloakViewModelAlpha", 1) != 1 then
+                        owner:SetNWFloat("CloakViewModelAlpha", 1)
+                    end
+                    
+                    -- remove cloak if no ammo
+                    if cloak:GetCloakAmmo() == 0 then
+                        cloak:UnCloak()
+                        cloak:Remove() 
+                    end
                 end
                 
-                -- viewmodel bump logic on server
-                if cloak:GetBumped() and owner:GetNWFloat("CloakViewModelAlpha", 1) != 1 then
-                    owner:SetNWFloat("CloakViewModelAlpha", 1)
-                end
-                
-                -- remove cloak if no ammo
-                if cloak:GetCloakAmmo() == 0 then
-                    cloak:UnCloak()
-                    cloak:Remove() 
-                end
-            end
-            
-            if CLIENT then
-                -- client viewmodel bump logic
-                local deployOrHolsterActive = owner:GetNWBool("CloakDeployActive", false) or owner:GetNWBool("CloakHolsterActive", false)
-                local isLocalPlyCloakerOrCloakSpectator = owner == LocalPlayer() or (LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and LocalPlayer():GetObserverTarget() == owner)
-                local cloakMat = "sprites/heatwave"
-                local vm = owner:GetViewModel()
-                local vmHands = owner:GetHands()
-                
-                if cloak:GetBumped() and
-                not(deployOrHolsterActive) and
-                isLocalPlyCloakerOrCloakSpectator and
-                -- this line necessary to better synchronize client and server so that there isn't weird flickering
-                -- still happens occasionally but is better with this
-                owner:GetNWFloat("CloakViewModelAlpha", 1) == 1 then
-                    vm:SetMaterial(cloakMat)
-                    vmHands:SetMaterial(cloakMat)
-                end
-                
-                if not(cloak:GetBumped()) and
-                not(deployOrHolsterActive) and 
-                isLocalPlyCloakerOrCloakSpectator and 
-                owner:GetNWFloat("CloakViewModelAlpha", 1) == 0 then
-                    vm:SetMaterial("")
-                    vmHands:SetMaterial("")
-                end
-                
-                -- allow local player to bump
-                if cloak:GetCloaked() and 
-                owner == LocalPlayer() and  
-                not(deployOrHolsterActive) then
-                    for _, ply in ipairs(player.GetAll()) do
-                        if ply == LocalPlayer() then continue end -- don't trigger bumps on ourselves
-                        
-                        local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
-                        local fullCloak = distCalc > CLOAK_BUMP_DIST
-                        local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
-                        
-                        if cloak:GetCloakAmmo() > cloakAmmoBlinkThreshold then
-                            if not(fullCloak) then
-                                net.Start("ClientBumped")
-                                net.WriteEntity(cloak)
-                                net.SendToServer()
+                if CLIENT then
+                    -- client viewmodel bump logic
+                    local deployOrHolsterActive = owner:GetNWBool("CloakDeployActive", false) or owner:GetNWBool("CloakHolsterActive", false)
+                    local isLocalPlyCloakerOrCloakSpectator = owner == LocalPlayer() or (LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and LocalPlayer():GetObserverTarget() == owner)
+                    local cloakMat = "sprites/heatwave"
+                    local vm = owner:GetViewModel()
+                    local vmHands = owner:GetHands()
+                    
+                    if cloak:GetBumped() and
+                    not(deployOrHolsterActive) and
+                    isLocalPlyCloakerOrCloakSpectator and
+                    -- this line necessary to better synchronize client and server so that there isn't weird flickering
+                    -- still happens occasionally but is better with this
+                    owner:GetNWFloat("CloakViewModelAlpha", 1) == 1 then
+                        vm:SetMaterial(cloakMat)
+                        vmHands:SetMaterial(cloakMat)
+                    end
+                    
+                    if not(cloak:GetBumped()) and
+                    not(deployOrHolsterActive) and 
+                    isLocalPlyCloakerOrCloakSpectator and 
+                    owner:GetNWFloat("CloakViewModelAlpha", 1) == 0 then
+                        vm:SetMaterial("")
+                        vmHands:SetMaterial("")
+                    end
+                    
+                    -- allow local player to bump
+                    if cloak:GetCloaked() and 
+                    owner == LocalPlayer() and  
+                    not(deployOrHolsterActive) then
+                        for _, ply in ipairs(player.GetAll()) do
+                            if ply == LocalPlayer() then continue end -- don't trigger bumps on ourselves
+                            
+                            local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
+                            local fullCloak = distCalc > CLOAK_BUMP_DIST
+                            local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
+                            
+                            if cloak:GetCloakAmmo() > cloakAmmoBlinkThreshold then
+                                if not(fullCloak) then
+                                    net.Start("ClientBumped")
+                                    net.WriteEntity(cloak)
+                                    net.SendToServer()
+                                end
                             end
                         end
                     end

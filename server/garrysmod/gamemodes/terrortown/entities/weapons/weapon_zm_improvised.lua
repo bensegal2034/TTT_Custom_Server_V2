@@ -1,3 +1,4 @@
+
 AddCSLuaFile()
 
 SWEP.HoldType                = "melee"
@@ -30,7 +31,7 @@ SWEP.Secondary.ClipSize      = -1
 SWEP.Secondary.DefaultClip   = -1
 SWEP.Secondary.Automatic     = true
 SWEP.Secondary.Ammo          = "none"
-SWEP.Secondary.Delay         = 5
+SWEP.Secondary.Delay         = 0.5
 
 SWEP.Kind                    = WEAPON_MELEE
 SWEP.WeaponID                = AMMO_CROWBAR

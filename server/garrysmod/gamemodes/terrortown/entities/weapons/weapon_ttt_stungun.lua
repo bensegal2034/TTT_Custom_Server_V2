@@ -3,8 +3,8 @@ AddCSLuaFile()
 SWEP.HoldType              = "ar2"
 
 if CLIENT then
-   SWEP.PrintName          = "stungun_name"
-   SWEP.Slot               = 6
+   SWEP.PrintName          = "UMP-45"
+   SWEP.Slot               = 2
 
    SWEP.ViewModelFlip      = false
    SWEP.ViewModelFOV       = 54

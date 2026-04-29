@@ -21,7 +21,9 @@ SWEP.Author= "dot_dash"
 
 -- TODOS
 -- > Can't pick up cloak after it is dropped other than by pressing E. Fix somehow?
+
 -- > Deploy timer hud bugs out if weapon is reloaded while hud element is active
+
 -- > Make weapon world models fade in/out alongside the playermodel. Do by:
 -- Using this hook except transAmt needs to be a network variable stored in the player so that it can be dynamically controlled
 -- This is necessary because we are adding a "render override" function to the entity and we can't really change this function easily. So have it reference a network var in order to change the blend amount
@@ -42,10 +44,12 @@ SWEP.Author= "dot_dash"
 --       end
 --    end
 -- end)
+
 -- > Make the "blink" effect when shot not be the material thing, instead fade in/out dynamically at a very low opacity with SetColor.
 -- Begin fade in when shot, fade out after not being shot (GetBumped true/false). World model weapon opacity would need to also follow this system
 -- Potentially make a networked "alpha" variable that is stored on the player to track ALL alpha changes because we have so many (viewmodel alpha, hand alpha, player world model alpha, gun worldmodel alpha.)
 -- Only problem with this is that SetColor goes from 0 to 255 whereas our other alpha systems use 0-1 so would need to convert this network variable to the correct value before applying it
+
 -- > Would be nice to fix all of the "order" issues where one of our visuals flickers because the client and server don't update in time.
 -- Currently cloaking does this, might need to replace deploy player network var with a SWEP network var like it was previously.
 -- Could also potentially entirely overhaul system to use net messages however those are harder to work with :(
@@ -80,6 +84,11 @@ SWEP.AllowDrop = true
 local CLOAK_TIME = 0.75
 local UNCLOAK_TIME = 1.5
 local CLOAK_BUMP_DIST = 1500
+local CLOAK_BUMP_DMG_TIME = 1.2
+local CLOAK_BUMP_COLLIDE_TIME = 3
+local CLOAK_BUMP_FADE_IN_TIME = 0.75
+local CLOAK_BUMP_FADE_OUT_TIME = 0.75
+local CLOAK_BUMP_ALPHA_PCT = 0.12
 
 function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Cloaked")
@@ -88,22 +97,40 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Int", "DrainTimer")
     self:NetworkVar("Bool", "Bumped")
     self:NetworkVar("Int", "BumpTimer")
+    self:NetworkVar("Bool", "BumpFadeIn")
+    self:NetworkVar("Bool", "BumpFadeOut")
     self:NetworkVar("Int", "CloakAmmo")
     self:NetworkVar("Int", "DeployTimer")
     self:NetworkVar("Entity", "LastOwner")
     
     -- PLAYER NETWORK VARS
-    -- GetNWFloat("CloakViewModelAlpha", 1)
+    -- GetNWFloat("CloakAlpha", 1)
     -- GetNWBool("CloakDeployActive", false)
     -- GetNWBool("CloakHolsterActive", false)
     -- GetNW2String("DeployTimerTbl", "{}")
     
-    -- self:NetworkVarNotify("Bumped", function(name, old, new)
-    --     print("Bumped changed to " .. tostring(new))
-    -- end)
+    self:NetworkVarNotify("Bumped", self.HandleBumpUpdate)
 end
 
-hook.Add("TTTPlayerSpeedModifier", "CloakSpeed", function(ply,slowed,mv)
+hook.Add("OnEntityCreated", "CloakTransWorldWepModels", function(ent)
+    if not ent:IsWeapon() then return end
+    
+    ent.RenderOverride = function(self)
+        local owner = self:GetOwner()
+        
+        if IsValid(owner) and
+        owner:GetActiveWeapon() == self then
+            local alpha = owner:GetNWFloat("CloakAlpha", 1)
+            render.SetBlend(alpha)
+            self:DrawModel()
+            render.SetBlend(1)
+        else
+            self:DrawModel()
+        end
+    end
+end)
+
+hook.Add("TTTPlayerSpeedModifier", "CloakSpeed", function(ply, slowed, mv)
     if !IsValid(ply) or !IsValid(ply:GetActiveWeapon()) then
         return
     end
@@ -116,9 +143,6 @@ hook.Add("EntityTakeDamage", "BlinkOnShootCloakedPly", function(target, dmg)
     if SERVER and target.GetActiveWeapon then -- unsure if this hook runs on client? dont want it to so adding if server block at start
         local wep = target:GetActiveWeapon()
         local atk = dmg:GetAttacker()
-        -- cant go lower than this on bumpTime as will cause flickering if target is repeatedly damaged
-        -- presumably this is network related since using network var to track bumped state
-        local bumpTime = 1.2
         
         if IsValid(target) and
         IsValid(wep) and
@@ -127,24 +151,20 @@ hook.Add("EntityTakeDamage", "BlinkOnShootCloakedPly", function(target, dmg)
         (atk:IsPlayer() or atk:IsNPC()) and -- we only blink for player or npc inflicted damage. dont blink cloaked players on taking environmental damage
         wep:GetClass() == "weapon_ttt_cloak" then
             wep:SetBumped(true)
-            wep:SetBumpTimer(CurTime() + bumpTime)
+            wep:SetBumpTimer(CurTime() + CLOAK_BUMP_DMG_TIME)
         end
     end
 end)
-
--- net message stuff
 
 if SERVER then
     util.AddNetworkString("ClientBumped")
     util.AddNetworkString("RemoveCloakVFX")
     
     net.Receive("ClientBumped", function(len, ply)
-        --print(ply:Nick() .. " bumped cloaked player!")
         local cloak = net.ReadEntity()
-        local bumpTime = 3
         
         cloak:SetBumped(true)
-        cloak:SetBumpTimer(CurTime() + bumpTime)
+        cloak:SetBumpTimer(CurTime() + CLOAK_BUMP_COLLIDE_TIME)
     end)
 end
 
@@ -152,9 +172,6 @@ if CLIENT then
     net.Receive("RemoveCloakVFX", function(len)
         local vm = LocalPlayer():GetViewModel()
         local vmHands = LocalPlayer():GetHands()
-        
-        vm:SetMaterial("")
-        vmHands:SetMaterial("")
     end)
 end
 
@@ -163,65 +180,65 @@ end
 -- with that being said, i modified it to suit setting specific players' viewmodel alpha for spectating & normal gameplay
 if CLIENT then
     local renderTarget = GetRenderTargetEx("transvm_rt",
-    ScrW(), ScrH(),
-    RT_SIZE_FULL_FRAME_BUFFER,
-    MATERIAL_RT_DEPTH_SEPARATE,
-    bit.bor(2,256),
-    0,
-    IMAGE_FORMAT_BGRA8888
-)
+        ScrW(), ScrH(),
+        RT_SIZE_FULL_FRAME_BUFFER,
+        MATERIAL_RT_DEPTH_SEPARATE,
+        bit.bor(2,256),
+        0,
+        IMAGE_FORMAT_BGRA8888
+    )
 
-local transMaterial = CreateMaterial("transvm_mat","UnlitGeneric", {
-    ["$basetexture"] = "transvm_rt",
-    ["$translucent"] = 1,
-    ["$alpha"] = 1
-})
+    local transMaterial = CreateMaterial("transvm_mat","UnlitGeneric", {
+        ["$basetexture"] = "transvm_rt",
+        ["$translucent"] = 1,
+        ["$alpha"] = 1
+    })
 
-local function DrawRT()
-    local alpha = 1
-    if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
-        alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakViewModelAlpha", 1), 0, 1)
-    elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
-        alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakViewModelAlpha", 1), 0, 1)
-    end
-    if alpha < 1 then
-        transMaterial:SetFloat("$alpha", alpha)
-        render.SetMaterial(transMaterial)
-        render.DrawScreenQuad()
-    end
-end
-
-hook.Add("PreDrawViewModels","TransViewModelStart", function()
-    local alpha = 1
-    if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
-        alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakViewModelAlpha", 1), 0, 1)
-    elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
-        alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakViewModelAlpha", 1), 0, 1)
-    end
-    if alpha < 1 then
-        render.PushRenderTarget(renderTarget)
-        render.SetWriteDepthToDestAlpha(false)
-        render.Clear(0,0,0,0,true,true)
-    end
-end)
-
-hook.Add("PreDrawEffects","TransViewModelEnd", function()
-    local alpha = 1
-    if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
-        alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakViewModelAlpha", 1), 0, 1)
-    elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
-        alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakViewModelAlpha", 1), 0, 1)
-    end
-    if alpha < 1 then
-        local curRT = render.GetRenderTarget()
-        if curRT && curRT:GetName() == renderTarget:GetName() then
-            render.PopRenderTarget()
-            render.SetWriteDepthToDestAlpha(true)
-            
-            DrawRT()
+    local function DrawRT()
+        local alpha = 1
+        if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+            alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakAlpha", 1), 0, 1)
+        elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+            alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
+        end
+        if alpha < 1 then
+            transMaterial:SetFloat("$alpha", alpha)
+            render.SetMaterial(transMaterial)
+            render.DrawScreenQuad()
         end
     end
-end)
+
+    hook.Add("PreDrawViewModels","TransViewModelStart", function()
+        local alpha = 1
+        if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+            alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakAlpha", 1), 0, 1)
+        elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+            alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
+        end
+        if alpha < 1 then
+            render.PushRenderTarget(renderTarget)
+            render.SetWriteDepthToDestAlpha(false)
+            render.Clear(0,0,0,0,true,true)
+        end
+    end)
+
+    hook.Add("PreDrawEffects","TransViewModelEnd", function()
+        local alpha = 1
+        if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+            alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakAlpha", 1), 0, 1)
+        elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+            alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
+        end
+        if alpha < 1 then
+            local curRT = render.GetRenderTarget()
+            if curRT && curRT:GetName() == renderTarget:GetName() then
+                render.PopRenderTarget()
+                render.SetWriteDepthToDestAlpha(true)
+                
+                DrawRT()
+            end
+        end
+    end)
 end
 -- END EVIL RENDERING CODE
 
@@ -287,7 +304,7 @@ function SWEP:DrawHUD()
     end
 end
 
-hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
+hook.Add("PrePlayerDraw", "HideCloakedPlys", function(ply, flags)
     -- this hook will run every time the game client wants to draw a player on the screen, for each player
     -- this hook does NOT run for the local player because they don't draw themselves
     -- "ply" is the player we're drawing.
@@ -300,10 +317,17 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
     IsValid(wep) and 
     wep:GetClass() == "weapon_ttt_cloak" then -- only care about people holding the cloak (aka players who need to be hidden/shown)
         if wep:GetCloaked() then
+            if wep:GetBumped() or
+            wep:GetBumpFadeIn() or 
+            wep:GetBumpFadeOut() or
+            ply:GetNWBool("CloakDeployActive", false) or 
+            ply:GetNWBool("CloakHolsterActive", false) then
+                return 
+            end
+
             local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
             local fullCloak = distCalc > CLOAK_BUMP_DIST
             local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
-            if wep:GetBumped() or ply:GetNWBool("CloakDeployActive", false) or ply:GetNWBool("CloakHolsterActive", false) then return end
             
             if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
                 if wep:GetCloakAmmo() > cloakAmmoBlinkThreshold then
@@ -334,6 +358,14 @@ hook.Add("PrePlayerDraw", "TTTCloak", function(ply, flags)
     end
 end)
 
+hook.Add("PostPlayerDraw", "CloakTransPlayerWorldModel", function(ply)
+    local alpha = ply:GetNWFloat("CloakAlpha", 1)
+
+    render.SetBlend(alpha)
+    ply:DrawModel()
+    render.SetBlend(1)
+end)
+
 hook.Add("Think", "CloakGlobalThink", function()
     for _, ply in pairs(player.GetAll()) do
         if IsValid(ply) and 
@@ -350,15 +382,13 @@ hook.Add("Think", "CloakGlobalThink", function()
                 
                 if not(IsValid(cloak)) then return end
                 local owner = cloak:GetLastOwner()
-
-                -- BEGIN CLOAK THINK
+                
+                -- ALL CODE HERE TRIGGERS IF CLOAK IS HELD
                 if SERVER then
                     -- bumped timer logic
                     if cloak:GetBumped() then
                         if CurTime() >= cloak:GetBumpTimer() then
                             cloak:SetBumped(false)
-                            -- reset client viewmodel alpha to 0 for bump vfx
-                            owner:SetNWFloat("CloakViewModelAlpha", 0)
                         end
                     end
                     
@@ -395,8 +425,8 @@ hook.Add("Think", "CloakGlobalThink", function()
                     end
                     
                     -- viewmodel bump logic on server
-                    if cloak:GetBumped() and owner:GetNWFloat("CloakViewModelAlpha", 1) != 1 then
-                        owner:SetNWFloat("CloakViewModelAlpha", 1)
+                    if cloak:GetBumped() then
+                        --
                     end
                     
                     -- remove cloak if no ammo
@@ -414,23 +444,23 @@ hook.Add("Think", "CloakGlobalThink", function()
                     local vm = owner:GetViewModel()
                     local vmHands = owner:GetHands()
                     
-                    if cloak:GetBumped() and
-                    not(deployOrHolsterActive) and
-                    isLocalPlyCloakerOrCloakSpectator and
-                    -- this line necessary to better synchronize client and server so that there isn't weird flickering
-                    -- still happens occasionally but is better with this
-                    owner:GetNWFloat("CloakViewModelAlpha", 1) == 1 then
-                        vm:SetMaterial(cloakMat)
-                        vmHands:SetMaterial(cloakMat)
-                    end
+                    -- if cloak:GetBumped() and
+                    -- not(deployOrHolsterActive) and
+                    -- isLocalPlyCloakerOrCloakSpectator and
+                    -- -- this line necessary to better synchronize client and server so that there isn't weird flickering
+                    -- -- still happens occasionally but is better with this
+                    -- owner:GetNWFloat("CloakAlpha", 1) == 1 then
+                    --     vm:SetMaterial(cloakMat)
+                    --     vmHands:SetMaterial(cloakMat)
+                    -- end
                     
-                    if not(cloak:GetBumped()) and
-                    not(deployOrHolsterActive) and 
-                    isLocalPlyCloakerOrCloakSpectator and 
-                    owner:GetNWFloat("CloakViewModelAlpha", 1) == 0 then
-                        vm:SetMaterial("")
-                        vmHands:SetMaterial("")
-                    end
+                    -- if not(cloak:GetBumped()) and
+                    -- not(deployOrHolsterActive) and 
+                    -- isLocalPlyCloakerOrCloakSpectator and 
+                    -- owner:GetNWFloat("CloakAlpha", 1) == 0 then
+                    --     vm:SetMaterial("")
+                    --     vmHands:SetMaterial("")
+                    -- end
                     
                     -- allow local player to bump
                     if cloak:GetCloaked() and 
@@ -463,7 +493,7 @@ function SWEP:OwnerChanged()
         local newOwner = self:GetOwner()
         if IsValid(newOwner) then
             self:SetLastOwner(newOwner)
-            newOwner:SetNWFloat("CloakViewModelAlpha", 1)
+            newOwner:SetNWFloat("CloakAlpha", 1)
             newOwner:SetNWBool("CloakDeployActive", false)
             newOwner:SetNWBool("CloakHolsterActive", false)
             newOwner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
@@ -479,6 +509,8 @@ function SWEP:Initialize()
         self:SetDrainTimer(0)
         self:SetBumped(false)
         self:SetBumpTimer(0)
+        self:SetBumpFadeIn(false)
+        self:SetBumpFadeOut(false)
         self:SetDeployTimer(0)
         self:SetLastOwner(nil)
         
@@ -495,6 +527,65 @@ function SWEP:PrimaryAttack()
     return false
 end
 
+function SWEP:HandleBumpUpdate(name, old, new)
+    if new != old and SERVER then
+        --print("Bumped changed to " .. tostring(new) .. ", from " .. tostring(old))
+        local bumped = new
+        local owner = self:GetLastOwner()
+        local fadeInOutTimersActive = timer.Exists("CloakBumpFadeIn" .. self:EntIndex()) or timer.Exists("CloakBumpFadeOut" .. self:EntIndex())
+        local runTime = 0
+
+        if bumped and self:GetCloaked() then
+            local fadeInCycles = math.Round(CLOAK_BUMP_FADE_IN_TIME / engine.TickInterval()) + 1
+            local alphaPlusAmt = CLOAK_BUMP_ALPHA_PCT / fadeInCycles
+            local cloakAlphaCurrent = 0
+            
+            if fadeInOutTimersActive then
+                timer.Remove("CloakBumpFadeIn" .. self:EntIndex())
+                timer.Remove("CloakBumpFadeOut" .. self:EntIndex())
+            end
+
+            self:SetBumpFadeIn(true)
+            
+            timer.Create("CloakBumpFadeIn" .. self:EntIndex(), 0, fadeInCycles, function()
+                cloakAlphaCurrent = math.Clamp(cloakAlphaCurrent + alphaPlusAmt, 0, CLOAK_BUMP_ALPHA_PCT)
+                runTime = runTime + 1
+                owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
+                local r, g, b, a = owner:GetColor():Unpack()
+                owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
+
+                if runTime >= fadeInCycles then
+                    self:SetBumpFadeIn(false)
+                end
+            end)
+
+        elseif not(bumped) and self:GetCloaked() then
+            local fadeOutCycles = math.Round(CLOAK_BUMP_FADE_OUT_TIME / engine.TickInterval()) + 1
+            local alphaMinusAmt = CLOAK_BUMP_ALPHA_PCT / fadeOutCycles
+            local cloakAlphaCurrent = CLOAK_BUMP_ALPHA_PCT
+            
+            if fadeInOutTimersActive then
+                timer.Remove("CloakBumpFadeIn" .. self:EntIndex())
+                timer.Remove("CloakBumpFadeOut" .. self:EntIndex())
+            end
+
+            self:SetBumpFadeOut(true)
+            
+            timer.Create("CloakBumpFadeOut" .. self:EntIndex(), 0, fadeOutCycles, function()
+                cloakAlphaCurrent = math.Clamp(cloakAlphaCurrent - alphaMinusAmt, 0, CLOAK_BUMP_ALPHA_PCT)
+                runTime = runTime + 1
+                owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
+                local r, g, b, a = owner:GetColor():Unpack()
+                owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
+
+                if runTime >= fadeOutCycles then
+                    self:SetBumpFadeOut(false)
+                end
+            end)
+        end
+    end
+end
+
 function SWEP:Cloak()
     --print("Cloak triggered!")
     if not(self:GetCloaked()) and IsValid(self:GetLastOwner()) and self:GetCloakAmmo() > 0 then
@@ -504,17 +595,16 @@ function SWEP:Cloak()
         net.Start("RemoveCloakVFX")
         net.Send(owner)
         
-        owner:SetRenderMode(1)
-        owner:SetColor(Color(255, 255, 255, 255))
-        owner:SetNWFloat("CloakViewModelAlpha", 1)
+        owner:SetRenderMode(RENDERMODE_TRANSCOLOR)
+        local r, g, b, a = owner:GetColor():Unpack()
+        owner:SetColor(Color(r, g, b, 255))
+        owner:SetNWFloat("CloakAlpha", 1)
         sound.Play("AlyxEMP.Discharge", owner:GetPos(), 140, 100, 1)
         owner:SetNWBool("disguised", true)
         
         local repeatDeployTimerAmt = math.Round(CLOAK_TIME / engine.TickInterval()) + 1
-        local colorAlphaMinusAmt = math.Round(255 / repeatDeployTimerAmt, 0)
-        local colorAlphaCurrent = 255
-        local vmAlphaMinusAmt = 1 / repeatDeployTimerAmt
-        local vmAlphaCurrent = 1
+        local alphaMinusAmt = 1 / repeatDeployTimerAmt
+        local cloakAlphaCurrent = 1
         local runTime = 0
         
         if timer.Exists("UncloakFade" .. self:EntIndex()) then
@@ -526,38 +616,36 @@ function SWEP:Cloak()
         
         -- about to begin fading out so set deploy active now
         owner:SetNWBool("CloakDeployActive", true)
-
+        
         timer.Create("DeployCloakFade" .. self:EntIndex(), 0, repeatDeployTimerAmt, function()
-            colorAlphaCurrent = math.Clamp(colorAlphaCurrent - colorAlphaMinusAmt, 0, 255)
-            vmAlphaCurrent = math.Clamp(vmAlphaCurrent - vmAlphaMinusAmt, 0, 1)
+            cloakAlphaCurrent = math.Clamp(cloakAlphaCurrent - alphaMinusAmt, 0, 1)
             runTime = runTime + 1
             
-            owner:SetColor(Color(255, 255, 255, colorAlphaCurrent))
-            owner:SetNWFloat("CloakViewModelAlpha", vmAlphaCurrent)
+            owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
+            local r, g, b, a = owner:GetColor():Unpack()
+            owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
+            --print(owner:GetNWFloat("CloakAlpha", 1))
             
             --print(owner:GetColor(), owner:GetRenderMode())
             
             if runTime >= repeatDeployTimerAmt then
+                local r, g, b, a = owner:GetColor():Unpack()
                 if not(IsValid(owner)) then
                     local owner = self:GetOwner()
                     if not(IsValid(owner)) then
                         print("ERROR: Could not set material and color params for recently cloaked player!")
                     else
-                        owner:SetMaterial("sprites/heatwave")
-                        owner:SetColor(Color(255, 255, 255, 255))
+                        owner:SetColor(Color(r, g, b, 0))
                         owner:SetNWBool("CloakDeployActive", false)
                     end
                 else
-                    owner:SetMaterial("sprites/heatwave")
-                    owner:SetColor(Color(255, 255, 255, 255)) 
+                    owner:SetColor(Color(r, g, b, 0)) 
                     owner:SetNWBool("CloakDeployActive", false)
                 end
             end
-            
-            --print(self:GetLastOwner():GetColor())
         end)
         
-        if SERVER then self:SetCloaked(true)end
+        if SERVER then self:SetCloaked(true) end
     end
 end
 
@@ -575,9 +663,9 @@ function SWEP:UnCloak()
         net.Start("RemoveCloakVFX")
         net.Send(owner)
         
-        owner:SetMaterial("")
-        owner:SetColor(Color(255, 255, 255, 0))
-        owner:SetNWFloat("CloakViewModelAlpha", 0)
+        local r, g, b, a = owner:GetColor():Unpack()
+        owner:SetColor(Color(r, g, b, 0))
+        owner:SetNWFloat("CloakAlpha", 0)
         sound.Play("AlyxEMP.Discharge", owner:GetPos(), 140, 100, 1)
         owner:SetNWBool("disguised", false)
         
@@ -593,35 +681,31 @@ function SWEP:UnCloak()
         owner:SetNW2String("DeployTimerTbl", util.TableToJSON(wepTbl))
         
         local repeatUncloakTimerAmt = math.Round(UNCLOAK_TIME / engine.TickInterval()) + 1
-        local alphaPlusAmt = math.Round(255 / repeatUncloakTimerAmt, 0)
-        local vmAlphaPlusAmt = 1 / repeatUncloakTimerAmt
-        local vmAlphaCurrent = 0
-        local colorAlphaCurrent = 0
+        local alphaPlusAmt = 1 / repeatUncloakTimerAmt
+        local cloakAlphaCurrent = 0
         local runTime = 0
         
         if timer.Exists("DeployCloakFade" .. self:EntIndex()) then
             timer.Remove("DeployCloakFade" .. self:EntIndex())
         end
-
+        
         -- about to begin fading in so set holster active now
         owner:SetNWBool("CloakHolsterActive", true)
         
         timer.Create("UncloakFade" .. self:EntIndex(), 0, repeatUncloakTimerAmt, function()
-            colorAlphaCurrent = math.Clamp(colorAlphaCurrent + alphaPlusAmt, 0, 255)
-            vmAlphaCurrent = math.Clamp(vmAlphaCurrent + vmAlphaPlusAmt, 0, 1)
+            cloakAlphaCurrent = math.Clamp(cloakAlphaCurrent + alphaPlusAmt, 0, 1)
             runTime = runTime + 1
             
-            owner:SetColor(Color(255, 255, 255, colorAlphaCurrent))
-            owner:SetNWFloat("CloakViewModelAlpha", vmAlphaCurrent)
+            owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
+            local r, g, b, a = owner:GetColor():Unpack()
+            owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
+            --print(owner:GetNWFloat("CloakAlpha", 1))
             
             if runTime >= repeatUncloakTimerAmt then
-                owner:SetRenderMode(0)
+                owner:SetRenderMode(RENDERMODE_NORMAL)
                 owner:SetNWBool("CloakHolsterActive", false)
                 owner:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
-                if IsValid(cloak) then cloak:SetRenderMode(0) end
             end
-            
-            --print(colorAlphaCurrent, repeatUncloakTimerAmt, alphaPlusAmt, runTime)
         end)
         
         if SERVER then self:SetCloaked(false) end
@@ -655,12 +739,11 @@ end
 
 hook.Add("TTTPrepareRound", "UnCloakAll",function()
     for _, ply in pairs(player.GetAll()) do
-        ply:SetRenderMode(0)
+        ply:SetRenderMode(RENDERMODE_NORMAL)
         ply:SetColor(Color(255, 255, 255, 255))
-        ply:SetMaterial("")
         ply:SetNWBool("CloakDeployActive", false)
         ply:SetNWBool("CloakHolsterActive", false)
-        ply:SetNWFloat("CloakViewModelAlpha", 1)
+        ply:SetNWFloat("CloakAlpha", 1)
         ply:SetNW2String("DeployTimerTbl", util.TableToJSON({}))
     end
 end)

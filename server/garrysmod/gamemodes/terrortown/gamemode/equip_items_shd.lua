@@ -99,8 +99,13 @@ EquipmentItems = {
          name     = "item_disg",
          desc     = "item_disg_desc"
       }
-   }
-}
+   };
+
+   [ROLE_ROOK] = {
+
+   };
+   
+};
 
 
 -- Search if an item is in the equipment table of a given role, and return it if

@@ -21,7 +21,7 @@ SWEP.ViewModelFlip      = true
 
 SWEP.Base = "weapon_tttbase"
 SWEP.Kind = WEAPON_BAZINGA
-SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.CanBuy = { ROLE_TRAITOR, ROLE_ROOK}
 SWEP.AutoSpawnable = false
 SWEP.InLoadoutFor = nil
 SWEP.AllowDrop = true

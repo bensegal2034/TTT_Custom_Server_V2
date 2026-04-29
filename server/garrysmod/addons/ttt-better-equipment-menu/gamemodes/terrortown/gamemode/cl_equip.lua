@@ -276,7 +276,28 @@ if not TTT2 then
 						RepeatingCredits = false,
 						CanCollectCredits = true,
 						HasShop = true
+					},
+					[ROLE_ROOK] = {
+						ID = ROLE_ROOK,
+						Rolename = "Rook",
+						String = "rook",
+						IsGood = true,
+						IsEvil = false,
+						IsSpecial = true,
+						Creditsforkills = true,
+						ShortString = "rk",
+						Short = "r",
+						IsDefault = true,
+						DefaultColor = Color(255, 0, 255),
+						winning_team = WIN_ROOK,
+						drawtargetidcircle = true,
+						targetidcolor = COLOR_PINK,
+						AllowTeamChat = true,
+						RepeatingCredits = false,
+						CanCollectCredits = true,
+						HasShop = true
 					}
+
 				}
 			end
 
@@ -961,7 +982,8 @@ vgui.Register("EquipSelect", PANEL, "DPanelSelect")
 -- TODO: make set of global role colour defs, these are same as wepswitch
 local color_slot = {
 	[ROLE_TRAITOR] = Color(180, 50, 40, 255), -- color slot
-	[ROLE_DETECTIVE] = Color(50, 60, 180, 255)-- color slot
+	[ROLE_DETECTIVE] = Color(50, 60, 180, 255),-- color slot
+	[ROLE_ROOK] = Color(160, 50, 160, 255)
 }
 
 function AddRoleEquipColors(Role) -- For compatibillity with TTT Vote + Totem

@@ -25,7 +25,7 @@ SWEP.Secondary.Automatic    = false
 SWEP.Secondary.Ammo         = "none"
 
 SWEP.Kind                   = WEAPON_UNARMED
-SWEP.InLoadoutFor           = {ROLE_INNOCENT, ROLE_TRAITOR, ROLE_DETECTIVE}
+SWEP.InLoadoutFor           = {ROLE_INNOCENT, ROLE_TRAITOR, ROLE_DETECTIVE, ROLE_ROOK}
 
 SWEP.AllowDelete            = false
 SWEP.AllowDrop              = false

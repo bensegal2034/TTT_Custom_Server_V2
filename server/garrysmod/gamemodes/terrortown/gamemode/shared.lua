@@ -16,6 +16,7 @@ ROUND_POST   = 4
 ROLE_INNOCENT  = 0
 ROLE_TRAITOR   = 1
 ROLE_DETECTIVE = 2
+ROLE_ROOK      = 3
 ROLE_NONE = ROLE_INNOCENT
 
 -- Game event log defs
@@ -34,6 +35,7 @@ WIN_NONE      = 1
 WIN_TRAITOR   = 2
 WIN_INNOCENT  = 3
 WIN_TIMELIMIT = 4
+WIN_ROOK = 5
 
 -- Weapon categories, you can only carry one of each
 WEAPON_NONE   = 0
@@ -159,6 +161,7 @@ include("equip_items_shd.lua")
 include("radio_shd.lua")
 
 function DetectiveMode() return GetGlobalBool("ttt_detective", false) end
+function RookMode() return GetGlobalBool("ttt_rook", false) end
 function HasteMode() return GetGlobalBool("ttt_haste", false) end
 
 -- Create teams

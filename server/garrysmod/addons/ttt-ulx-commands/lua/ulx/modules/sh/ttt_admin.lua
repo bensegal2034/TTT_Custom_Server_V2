@@ -24,6 +24,7 @@ function updateRoles()
     table.insert(ulx.target_role,"traitor")
     table.insert(ulx.target_role,"detective")
     table.insert(ulx.target_role,"innocent")
+	table.insert(ulx.target_role,"rook")
 end
 hook.Add( ULib.HOOK_UCLCHANGED, "ULXRoleNamesUpdate", updateRoles )
 updateRoles()
@@ -272,6 +273,7 @@ function ulx.force( calling_ply, target_plys, target_role, should_silent )
 	    if target_role ==  "traitor"   or target_role == "t" then role, role_grammar, role_string, role_credits = ROLE_TRAITOR,   "a ",  "traitor",   starting_credits end
 	    if target_role ==  "detective" or target_role == "d" then role, role_grammar, role_string, role_credits = ROLE_DETECTIVE, "a ",  "detective", starting_credits end
 	    if target_role ==  "innocent"  or target_role == "i" then role, role_grammar, role_string, role_credits = ROLE_INNOCENT,  "an ", "innocent",  0                end
+		if target_role ==  "rook" or target_role == "r" then role, role_grammar, role_string, role_credits = ROLE_ROOK, "a", "rook", starting_credits end
 	    
 	    for i=1, #target_plys do
 			local v = target_plys[ i ]
@@ -323,7 +325,8 @@ function GetLoadoutWeapons(r)
 	local tbl = {
 		[ROLE_INNOCENT] = {},
 		[ROLE_TRAITOR]  = {},
-		[ROLE_DETECTIVE]= {}
+		[ROLE_DETECTIVE]= {},
+		[ROLE_ROOK] = {}
 	};
 	for k, w in pairs(weapons.GetList()) do
 		if w and type(w.InLoadoutFor) == "table" then

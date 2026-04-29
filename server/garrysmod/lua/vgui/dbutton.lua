@@ -118,8 +118,7 @@ function PANEL:PerformLayoutImage()
 		end
 
 		-- For center alignments, reduce the inset of the image, so the text appears more centered visually
-		-- GMOD TODO: Get rid of self.GetContentAlignment after some update past April 2025
-		local alignment = self.GetContentAlignment and self:GetContentAlignment() or 0
+		local alignment = self:GetContentAlignment()
 		if ( alignment == 8 || alignment == 5 || alignment == 2 ) then
 			self:SetTextInset( self.m_Image:GetWide() + 4, 0 )
 		else

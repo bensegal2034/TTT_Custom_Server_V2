@@ -47,7 +47,7 @@ end
 local function RoleChatMsg(sender, role, msg)
    net.Start("TTT_RoleChat")
       net.WriteUInt(role, 2)
-      net.WriteEntity(sender)
+      net.WritePlayer(sender)
       net.WriteString(msg)
    net.Send(GetRoleFilter(role))
 end
@@ -55,7 +55,7 @@ end
 
 -- Round start info popup
 function ShowRoundStartPopup()
-   for k, v in ipairs(player.GetAll()) do
+   for k, v in player.Iterator() do
       if IsValid(v) and v:Team() == TEAM_TERROR and v:Alive() then
          v:ConCommand("ttt_cl_startpopup")
       end
@@ -64,7 +64,7 @@ end
 
 local function GetPlayerFilter(pred)
    local filter = {}
-   for k, v in ipairs(player.GetAll()) do
+   for k, v in player.Iterator() do
       if IsValid(v) and pred(v) then
          table.insert(filter, v)
       end
@@ -255,7 +255,6 @@ local function MuteTeam(ply, cmd, args)
 
    -- remove all ifs
    LANG.Msg(ply, MuteModes[t])
-   
 end
 concommand.Add("ttt_mute_team", MuteTeam)
 
@@ -266,22 +265,24 @@ local LastWordContext = {
    [KILL_SUICIDE] = " *kills self*",
    [KILL_FALL] = " *SPLUT*",
    [KILL_BURN] = " *crackle*"
-};
+}
 
 local function LastWordsMsg(ply, words)
    -- only append "--" if there's no ending interpunction
    local final = string.match(words, "[\\.\\!\\?]$") != nil
 
    -- add optional context relating to death type
-   local context = LastWordContext[ply.death_type] or ""
+   local death_type = ply.death_type
+   local context = LastWordContext[death_type] or ""
    local lastWordsStr = words .. (final and "" or "--") .. context
 
-   net.Start("TTT_LastWordsMsg")
-      net.WriteEntity(ply)
-      net.WriteString(lastWordsStr)
-   net.Broadcast()
-
-   hook.Run("TTTLastWordsMsg", ply, lastWordsStr)
+   if hook.Run("TTTLastWordsMsg", ply, lastWordsStr, words, death_type) != true then
+      net.Start("TTT_LastWordsMsg")
+         net.WritePlayer(ply)
+         net.WriteString(words)
+         net.WriteUInt(death_type, 2)
+      net.Broadcast()
+   end
 end
 
 local function LastWords(ply, cmd, args)
@@ -369,7 +370,7 @@ local function RadioCommand(ply, cmd, args)
       end
 
       net.Start("TTT_RadioMsg")
-         net.WriteEntity(ply)
+         net.WritePlayer(ply)
          net.WriteString(msg_name)
          net.WriteString(name)
          if rag_name then

@@ -58,7 +58,7 @@ local checkers = {
    [3] = HasEquipment,
    [4] = HasNade,
    [5] = HasAny
-};
+}
 
 function ENT:GetWeaponChecker(check)
    if isstring(check) then
@@ -79,7 +79,7 @@ function ENT:TestWeapons(weptype)
       return 0
    end
 
-   for _,ply in ipairs(player.GetAll()) do
+   for _,ply in player.Iterator() do
       if IsValid(ply) and ply:IsTerror() then
          local pos = ply:GetPos()
          local center = ply:LocalToWorld(ply:OBBCenter())

@@ -1,27 +1,13 @@
 -- a much requested darker scoreboard
-local function joeCheck()
-   if not IsValid(LocalPlayer()) then 
-      return false 
-   else 
-      return LocalPlayer():SteamID64() == "" 
-   end
-end
-
-local table = table
-local surface = surface
-local draw = draw
-local math = math
-local team = team
 
 local namecolor = {
    admin = Color(220, 180, 0, 255)
-};
+}
 
 include("vgui/sb_main.lua")
 
 sboard_panel = nil
 local function ScoreboardRemove()
-   if joeCheck() then return end
    if sboard_panel then
       sboard_panel:Remove()
       sboard_panel = nil
@@ -30,14 +16,12 @@ end
 hook.Add("TTTLanguageChanged", "RebuildScoreboard", ScoreboardRemove)
 
 function GM:ScoreboardCreate()
-   if joeCheck() then return end
    ScoreboardRemove()
 
    sboard_panel = vgui.Create("TTTScoreboard")
 end
 
 function GM:ScoreboardShow()
-   if joeCheck() then return end
    self.ShowScoreboard = true
 
    if not sboard_panel then
@@ -53,7 +37,6 @@ function GM:ScoreboardShow()
 end
 
 function GM:ScoreboardHide()
-   if joeCheck() then return end
    self.ShowScoreboard = false
 
    gui.EnableScreenClicker(false)
@@ -64,11 +47,9 @@ function GM:ScoreboardHide()
 end
 
 function GM:GetScoreboardPanel()
-   if joeCheck() then return end
    return sboard_panel
 end
 
 function GM:HUDDrawScoreBoard()
-   if joeCheck() then return end
    -- replaced by panel version
 end

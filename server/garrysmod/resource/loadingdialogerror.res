@@ -68,6 +68,26 @@
 		"command"		"Cancel"
 		"Default"		"0"
 	}
+	"CopyButton"
+	{
+		"ControlName"		"Button"
+		"fieldName"		"CopyButton"
+		"xpos"		"200"
+		"ypos"		"388"
+		"wide"		"72"
+		"tall"		"24"
+		"autoResize"		"0"
+		"pinCorner"		"0"
+		"visible"		"1"
+		"enabled"		"1"
+		"tabPosition"		"0"
+		"labelText"		"#GameUI_Copy"
+		"textAlignment"		"west"
+		"dulltext"		"0"
+		"brighttext"		"0"
+		"command"		"Copy"
+		"Default"		"0"
+	}
 	"Divider1"
 	{
 		"ControlName"		"Divider"

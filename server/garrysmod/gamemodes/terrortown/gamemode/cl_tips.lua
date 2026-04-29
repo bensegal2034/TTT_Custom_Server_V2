@@ -13,7 +13,7 @@ PANEL.Colors = {
    default = COLOR_LGRAY,
    hover = COLOR_WHITE,
    press = COLOR_RED
-};
+}
 
 function PANEL:Paint()
    -- parent panel will deal with the normal bg, we only need to worry about
@@ -54,7 +54,7 @@ local tip_params = {
    [30] = {zoomkey = Key("+zoom", "the 'Suit Zoom' key")},
    [31] = {duckkey = Key("+duck", "DUCK")},
    [36] = {helpkey = Key("+gm_showhelp", "F1")},
-};
+}
 
 PANEL = {}
 
@@ -209,9 +209,6 @@ function PANEL:Paint()
 end
 
 function PANEL:Think()
-   if IsValid(LocalPlayer()) then 
-      self:SetVisible(not LocalPlayer():SteamID64() == "")
-   end 
    if self.NextSwitch < CurTime() then
       self:NextTip(true)
    end

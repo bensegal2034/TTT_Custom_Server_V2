@@ -3,8 +3,8 @@ AddCSLuaFile()
 SWEP.HoldType              = "ar2"
 
 if CLIENT then
-   SWEP.PrintName          = "UMP-45"
-   SWEP.Slot               = 2
+   SWEP.PrintName          = "stungun_name"
+   SWEP.Slot               = 6
 
    SWEP.ViewModelFlip      = false
    SWEP.ViewModelFOV       = 54
@@ -12,7 +12,7 @@ if CLIENT then
    SWEP.EquipMenuData = {
       type = "item_weapon",
       desc = "ump_desc"
-   };
+   }
 
    SWEP.Icon               = "vgui/ttt/icon_ump"
    SWEP.IconLetter         = "q"

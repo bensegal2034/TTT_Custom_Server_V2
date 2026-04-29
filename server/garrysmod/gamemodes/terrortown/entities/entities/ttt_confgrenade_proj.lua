@@ -16,7 +16,7 @@ local function PushPullRadius(pos, pusher)
    for k, target in ipairs(ents.FindInSphere(pos, radius)) do
       if IsValid(target) then
          local tpos = target:LocalToWorld(target:OBBCenter())
-         local dir = (tpos - pos):GetNormal()
+         local dir = (tpos - pos):GetNormalized()
          local phys = target:GetPhysicsObject()
 
          if target:IsPlayer() and (not target:IsFrozen()) and ((not target.was_pushed) or target.was_pushed.t != CurTime()) then
@@ -39,18 +39,23 @@ local function PushPullRadius(pos, pusher)
 
             target:SetVelocity(vel)
 
-            local eyeang = target:EyeAngles()
-            local j = 80
-            eyeang.pitch = math.Clamp(eyeang.pitch + math.Rand(-j, j), -180, 180)
-            eyeang.yaw = math.Clamp(eyeang.yaw + math.Rand(-j, j), -180, 180)
-            if target != pusher then target:SetEyeAngles(eyeang) end
-
             target.was_pushed = {att=pusher, t=CurTime(), wep="weapon_ttt_confgrenade"}
 
          elseif IsValid(phys) then
             phys:ApplyForceCenter(dir * -1 * phys_force)
          end
       end
+   end
+
+   local phexp = ents.Create("env_physexplosion")
+   if IsValid(phexp) then
+      phexp:SetPos(pos)
+      phexp:SetKeyValue("magnitude", 100) --max
+      phexp:SetKeyValue("radius", radius)
+      -- 1 = no dmg, 2 = push ply, 4 = push radial, 8 = los, 16 = viewpunch
+      phexp:SetKeyValue("spawnflags", 1 + 2 + 16)
+      phexp:Spawn()
+      phexp:Fire("Explode", "", 0.2)
    end
 end
 

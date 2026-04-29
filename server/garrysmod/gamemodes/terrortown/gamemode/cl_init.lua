@@ -8,7 +8,7 @@ surface.CreateFont("TabLarge",    {font = "Tahoma",
                                    size = 13,
                                    weight = 700,
                                    shadow = true, antialias = false})
-surface.CreateFont("Trebuchet22", {font = "Trebuchet MS",
+surface.CreateFont("Trebuchet22", {font = "Tahoma",
                                    size = 22,
                                    weight = 900})
 
@@ -110,7 +110,7 @@ local function RoundStateChange(o, n)
       CLSCORE:ClearPanel()
 
       -- people may have died and been searched during prep
-      for _, p in ipairs(player.GetAll()) do
+      for _, p in player.Iterator() do
          p.search_result = nil
       end
 
@@ -135,7 +135,7 @@ local function RoundStateChange(o, n)
    end
 
    -- whatever round state we get, clear out the voice flags
-   for k,v in ipairs(player.GetAll()) do
+   for k,v in player.Iterator() do
       v.traitor_gvoice = false
    end
 end
@@ -148,7 +148,7 @@ CreateConVar("ttt_cl_soundcues", "0", FCVAR_ARCHIVE)
 local cues = {
    Sound("ttt/thump01e.mp3"),
    Sound("ttt/thump02e.mp3")
-};
+}
 local function PlaySoundCue()
    if GetConVar("ttt_cl_soundcues"):GetBool() then
       surface.PlaySound(table.Random(cues))
@@ -227,7 +227,7 @@ function GM:ClearClientState()
 
    VOICE.InitBattery()
 
-   for _, p in ipairs(player.GetAll()) do
+   for _, p in player.Iterator() do
       if IsValid(p) then
          p.sb_tag = nil
          p:SetRole(ROLE_INNOCENT)
@@ -261,7 +261,6 @@ function GM:CleanUpMap()
 
    -- This cleans up decals since GMod v100
    game.CleanUpMap()
-   --local removed = util.RemoveDecalsAt(Vector(0, 0, 0), math.huge, 0, false)
 end
 
 -- server tells us to call this when our LocalPlayer has spawned

@@ -53,7 +53,7 @@ end
 
 function util.GetAlivePlayers()
    local alive = {}
-   for k, p in ipairs(player.GetAll()) do
+   for k, p in player.Iterator() do
       if IsValid(p) and p:Alive() and p:IsTerror() then
          table.insert(alive, p)
       end
@@ -94,7 +94,7 @@ end
 util.Capitalize = string.Capitalize
 
 -- Color unpacking
-function clr(color) return color.r, color.g, color.b, color.a; end
+function clr(color) return color.r, color.g, color.b, color.a end
 
 if CLIENT then
    -- Is screenpos on screen?
@@ -292,8 +292,9 @@ function IsRagdoll(ent)
 end
 
 local band = bit.band
+local tobit = bit.tobit
 function util.BitSet(val, bit)
-   return band(val, bit) == bit
+   return band(val, bit) == tobit(bit)
 end
 
 if CLIENT then
@@ -303,7 +304,7 @@ if CLIENT then
       wounded = Color(230, 215, 10, 255),
       badwound= Color(255, 140, 0, 255),
       death   = Color(255, 0, 0, 255)
-   };
+   }
 
    function util.HealthToString(health, maxhealth)
       maxhealth = maxhealth or 100
@@ -327,7 +328,7 @@ if CLIENT then
       med  = Color(245, 220, 60, 255),
       low  = Color(255, 180, 0, 255),
       min  = Color(255, 130, 0, 255),
-   };
+   }
 
    function util.KarmaToString(karma)
       local maxkarma = GetGlobalInt("ttt_karma_max", 1000)
@@ -357,13 +358,28 @@ end
 -- Like string.FormatTime but simpler (and working), always a string, no hour
 -- support
 function util.SimpleTime(seconds, fmt)
-	if not seconds then seconds = 0 end
+   if not seconds then seconds = 0 end
 
-    local ms = (seconds - math.floor(seconds)) * 100
-    seconds = math.floor(seconds)
-    local s = seconds % 60
-    seconds = (seconds - s) / 60
-    local m = seconds % 60
+   local ms = (seconds - math.floor(seconds)) * 100
+   seconds = math.floor(seconds)
+   local s = seconds % 60
+   seconds = (seconds - s) / 60
+   local m = seconds % 60
 
-    return string.format(fmt, m, s, ms)
+   return string.format(fmt, m, s, ms)
+end
+
+-- Returns the number of bits required to network an integer
+function util.BitsRequired(num, signed)
+   local bits, max = 0, 1
+   while max <= num do
+      bits = bits + 1
+      max = max + max
+   end
+
+   if signed then
+      bits = math.min(bits + 1, 32)
+   end
+
+   return bits
 end

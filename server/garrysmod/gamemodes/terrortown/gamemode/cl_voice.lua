@@ -6,9 +6,26 @@ local GetTranslation = LANG.GetTranslation
 local GetPTranslation = LANG.GetParamTranslation
 local string = string
 
+local LastWordContext = {
+   [KILL_SUICIDE] = "words_suicide",
+   [KILL_FALL] = "words_fall",
+   [KILL_BURN] = "words_burn"
+}
+
 local function LastWordsRecv()
-   local sender = net.ReadEntity()
+   local sender = net.ReadPlayer()
    local words  = net.ReadString()
+   local death_type = net.ReadUInt(2)
+
+   -- only append "--" if there's no ending interpunction
+   local final = string.match(words, "[\\.\\!\\?]$") != nil
+   local lastWordsStr = words .. (final and " " or "-- ")
+
+   -- add optional context relating to death type
+   if death_type != KILL_NORMAL then
+      local context = LastWordContext[death_type] or ""
+      lastWordsStr = lastWordsStr .. Format("*%s*", GetTranslation(context))
+   end
 
    local was_detective = IsValid(sender) and sender:IsDetective()
    local nick = IsValid(sender) and sender:Nick() or "<Unknown>"
@@ -18,14 +35,14 @@ local function LastWordsRecv()
                 was_detective and Color(50, 200, 255) or Color(0, 200, 0),
                 nick,
                 COLOR_WHITE,
-                ": " .. words)
+                ": " .. lastWordsStr)
 end
 net.Receive("TTT_LastWordsMsg", LastWordsRecv)
 
 local function RoleChatRecv()
    -- virtually always our role, but future equipment might allow listening in
    local role = net.ReadUInt(2)
-   local sender = net.ReadEntity()
+   local sender = net.ReadPlayer()
    if not IsValid(sender) then return end
 
    local text = net.ReadString()
@@ -48,6 +65,15 @@ local function RoleChatRecv()
    end
 end
 net.Receive("TTT_RoleChat", RoleChatRecv)
+
+function GM:GetTeamColor(ent)
+   -- don't reveal that a player has died when they happen to chat or voicechat at the moment of death
+   if LocalPlayer():IsTerror() and ent:IsPlayer() then
+      return hook.Run("GetTeamNumColor", TEAM_TERROR)
+   end
+
+   return BaseClass.GetTeamColor(self, ent)
+end
 
 -- special processing for certain special chat types
 function GM:ChatText(idx, name, text, type)
@@ -73,19 +99,19 @@ local function AddDetectiveText(ply, text)
 end
 
 function GM:OnPlayerChat(ply, text, teamchat, dead)
-   if not IsValid(ply) then return BaseClass.OnPlayerChat(self, ply, text, teamchat, dead) end 
-   
+   if not IsValid(ply) then return BaseClass.OnPlayerChat(self, ply, text, teamchat, dead) end
+
    if ply:IsActiveDetective() then
       AddDetectiveText(ply, text)
       return true
    end
-   
+
    local team = ply:Team() == TEAM_SPEC
-   
+
    if team and not dead then
       dead = true
    end
-   
+
    if teamchat and ((not team and not ply:IsSpecial()) or team) then
       teamchat = false
    end
@@ -136,7 +162,7 @@ RADIO.Commands = {
    {cmd="traitor",  text="quick_traitor", format=true},
    {cmd="innocent", text="quick_inno", format=true},
    {cmd="check",    text="quick_check", format=false}
-};
+}
 
 local radioframe = nil
 
@@ -164,8 +190,8 @@ function RADIO:ShowRadioCommands(state)
          radioframe:SetKeyboardInputEnabled(false)
 
          radioframe:CenterVertical()
-         
-         
+
+
          -- This is not how you should do things
          radioframe.ForceResize = function(s)
                                      local w, label = 0, nil
@@ -362,7 +388,7 @@ concommand.Add("ttt_radio", RadioCommand, RadioComplete)
 
 
 local function RadioMsgRecv()
-   local sender = net.ReadEntity()
+   local sender = net.ReadPlayer()
    local msg    = net.ReadString()
    local param  = net.ReadString()
 
@@ -406,7 +432,7 @@ local radio_gestures = {
    quick_see     = ACT_GMOD_GESTURE_WAVE,
    quick_check   = ACT_SIGNAL_GROUP,
    quick_suspect = ACT_SIGNAL_HALT
-};
+}
 
 function GM:PlayerSentRadioCommand(ply, name, target)
    local act = radio_gestures[name]
@@ -431,7 +457,7 @@ local function VoiceNotifyThink(pnl)
    if not (IsValid(pnl) and LocalPlayer() and IsValid(pnl.ply)) then return end
    if not (GetGlobalBool("ttt_locational_voice", false) and (not pnl.ply:IsSpec()) and (pnl.ply != LocalPlayer())) then return end
    if LocalPlayer():IsActiveTraitor() && pnl.ply:IsActiveTraitor() then return end
-   
+
    local d = LocalPlayer():GetPos():Distance(pnl.ply:GetPos())
 
    pnl:SetAlpha(math.max(-0.1 * d + 255, 15))
@@ -466,7 +492,7 @@ function GM:PlayerStartVoice( ply )
    local pnl = g_VoicePanelList:Add("VoiceNotify")
    pnl:Setup(ply)
    pnl:Dock(TOP)
-   
+
    local oldThink = pnl.Think
    pnl.Think = function( self )
                   oldThink( self )
@@ -573,7 +599,7 @@ local MuteText = {
    [MUTE_TERROR] = "mute_living",
    [MUTE_ALL]    = "mute_all",
    [MUTE_SPEC]   = "mute_specs"
-};
+}
 
 local function SetMuteState(state)
    if MutedState then

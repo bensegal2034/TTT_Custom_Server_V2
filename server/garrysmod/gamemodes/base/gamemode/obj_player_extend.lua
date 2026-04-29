@@ -84,6 +84,8 @@ function meta:PhysgunUnfreeze()
 
 		end
 
+
+
 		return UnfrozenObjects
 
 	end
@@ -120,7 +122,7 @@ function meta:UnfreezePhysicsObjects()
 			if ( IsValid( v.phys ) && !v.phys:IsMoveable() ) then
 
 				-- We need to freeze/unfreeze all physobj's in jeeps to stop it spazzing
-				if ( v.ent:GetClass() == "prop_vehicle_jeep" || v.ent:GetClass() == "prop_vehicle_apc" ) then
+				if ( v.ent:GetClass() == "prop_vehicle_jeep" ) then
 
 					-- How many physics objects we have
 					local objects = v.ent:GetPhysicsObjectCount()
@@ -208,4 +210,13 @@ function meta:GetEyeTraceNoCursor()
 	self.PlayerAimTrace = tr
 
 	return tr
+end
+
+local oldGetAimVector = meta.GetAimVector
+
+function meta:GetAimVector()
+	if IsValid(self:GetActiveWeapon()) and self:GetActiveWeapon():GetClass() == "weapon_ttt_scarh" then
+		return self:GetActiveWeapon():CalcAimVector(self)
+	end
+	return oldGetAimVector(self)
 end

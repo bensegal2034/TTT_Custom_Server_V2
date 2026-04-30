@@ -778,13 +778,6 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
          local s = wep:GetHeadshotMultiplier(ply, dmginfo) or 2
          dmginfo:ScaleDamage(s)
       end
-   elseif (hitgroup == HITGROUP_LEFTARM or
-           hitgroup == HITGROUP_RIGHTARM or
-           hitgroup == HITGROUP_LEFTLEG or
-           hitgroup == HITGROUP_RIGHTLEG or
-           hitgroup == HITGROUP_GEAR ) then
-
-      dmginfo:ScaleDamage(0.55)
    end
 
    -- Keep ignite-burn damage etc on old levels

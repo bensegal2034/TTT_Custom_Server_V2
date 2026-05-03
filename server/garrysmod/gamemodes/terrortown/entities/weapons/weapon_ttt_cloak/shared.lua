@@ -24,36 +24,6 @@ SWEP.Author= "dot_dash"
 
 -- > Deploy timer hud bugs out if weapon is reloaded while hud element is active
 
--- > Make weapon world models fade in/out alongside the playermodel. Do by:
--- Using this hook except transAmt needs to be a network variable stored in the player so that it can be dynamically controlled
--- This is necessary because we are adding a "render override" function to the entity and we can't really change this function easily. So have it reference a network var in order to change the blend amount
--- Also only run when we should be fading in/out. Might need to be here might need to be somewhere else
--- hook.Add("OnEntityCreated", "TransparentActiveWeaponOverride", function(ent)
---    if not ent:IsWeapon() then return end
-
---    ent.RenderOverride = function(self)
---       local owner = self:GetOwner()
-
---       if IsValid(owner) and owner:IsPlayer() and owner:GetActiveWeapon() == self then
---          local transAmt = 0.1372549020
---          render.SetBlend(transAmt)
---          self:DrawModel()
---          render.SetBlend(1)
---       else
---          self:DrawModel()
---       end
---    end
--- end)
-
--- > Make the "blink" effect when shot not be the material thing, instead fade in/out dynamically at a very low opacity with SetColor.
--- Begin fade in when shot, fade out after not being shot (GetBumped true/false). World model weapon opacity would need to also follow this system
--- Potentially make a networked "alpha" variable that is stored on the player to track ALL alpha changes because we have so many (viewmodel alpha, hand alpha, player world model alpha, gun worldmodel alpha.)
--- Only problem with this is that SetColor goes from 0 to 255 whereas our other alpha systems use 0-1 so would need to convert this network variable to the correct value before applying it
-
--- > Would be nice to fix all of the "order" issues where one of our visuals flickers because the client and server don't update in time.
--- Currently cloaking does this, might need to replace deploy player network var with a SWEP network var like it was previously.
--- Could also potentially entirely overhaul system to use net messages however those are harder to work with :(
-
 SWEP.Base = "weapon_tttbase"
 SWEP.Spawnable= false
 SWEP.AdminSpawnable= true

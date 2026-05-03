@@ -591,12 +591,13 @@ function SWEP:Cloak()
             cloakAlphaCurrent = math.Clamp(cloakAlphaCurrent - alphaMinusAmt, 0, 1)
             runTime = runTime + 1
             
-            owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
-            local r, g, b, a = owner:GetColor():Unpack()
-            owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
-            --print(owner:GetNWFloat("CloakAlpha", 1))
-            
-            --print(owner:GetColor(), owner:GetRenderMode())
+            if IsValid(owner) then
+                owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
+                local r, g, b, a = owner:GetColor():Unpack()
+                owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
+                --print(owner:GetNWFloat("CloakAlpha", 1))
+            end
+                --print(owner:GetColor(), owner:GetRenderMode())
             
             if runTime >= repeatDeployTimerAmt then
                 local r, g, b, a = owner:GetColor():Unpack()
@@ -668,10 +669,12 @@ function SWEP:UnCloak()
             cloakAlphaCurrent = math.Clamp(cloakAlphaCurrent + alphaPlusAmt, 0, 1)
             runTime = runTime + 1
             
-            owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
-            local r, g, b, a = owner:GetColor():Unpack()
-            owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
-            --print(owner:GetNWFloat("CloakAlpha", 1))
+            if IsValid(owner) then
+                owner:SetNWFloat("CloakAlpha", cloakAlphaCurrent)
+                local r, g, b, a = owner:GetColor():Unpack()
+                owner:SetColor(Color(r, g, b, cloakAlphaCurrent * 255))
+                --print(owner:GetNWFloat("CloakAlpha", 1))
+            end
             
             if runTime >= repeatUncloakTimerAmt then
                 owner:SetRenderMode(RENDERMODE_NORMAL)

@@ -196,12 +196,18 @@ if CLIENT then
 
     local function DrawRT()
         local alpha = 1
+        local wep = LocalPlayer():GetActiveWeapon()
         if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
             alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakAlpha", 1), 0, 1)
         elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
             alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
         end
-        if alpha < 1 then
+        if alpha < 1 and IsValid(wep) then
+            if wep:GetClass() == "weapon_ttt_cloak" then
+                if wep:GetBumped() then
+                    alpha = math.Clamp(alpha * 3, 0, 1)
+                end
+            end
             transMaterial:SetFloat("$alpha", alpha)
             render.SetMaterial(transMaterial)
             render.DrawScreenQuad()
@@ -416,9 +422,9 @@ hook.Add("Think", "CloakGlobalThink", function()
                         end
                     end
                     
-                    -- viewmodel bump logic on server
+                    -- remove decals from bumped plys
                     if cloak:GetBumped() then
-                        --
+                        owner:RemoveAllDecals()
                     end
                     
                     -- remove cloak if no ammo
@@ -521,7 +527,7 @@ end
 
 function SWEP:HandleBumpUpdate(name, old, new)
     if new != old and SERVER then
-        --print("Bumped changed to " .. tostring(new) .. ", from " .. tostring(old))
+        print("Bumped changed to " .. tostring(new) .. ", from " .. tostring(old))
         local bumped = new
         local owner = self:GetLastOwner()
         local fadeInOutTimersActive = timer.Exists("CloakBumpFadeIn" .. self:EntIndex()) or timer.Exists("CloakBumpFadeOut" .. self:EntIndex())

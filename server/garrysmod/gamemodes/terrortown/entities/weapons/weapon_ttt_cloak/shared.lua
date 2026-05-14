@@ -60,8 +60,6 @@ local CLOAK_BUMP_FADE_IN_TIME = 0.75
 local CLOAK_BUMP_FADE_OUT_TIME = 0.75
 local CLOAK_BUMP_ALPHA_PCT = 0.12
 
-local lp = LocalPlayer()
-
 function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Cloaked")
     self:NetworkVar("Bool", "DoRecharge")
@@ -160,11 +158,11 @@ if CLIENT then
 
     local function DrawRT()
         local alpha = 1
-        local wep = lp:GetActiveWeapon()
-        if lp:GetObserverMode() == OBS_MODE_NONE then
-            alpha = math.Clamp(lp:GetNWFloat("CloakAlpha", 1), 0, 1)
-        elseif lp:GetObserverMode() == OBS_MODE_IN_EYE and IsValid(lp:GetObserverTarget()) then
-            alpha = math.Clamp(lp:GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
+        local wep = LocalPlayer():GetActiveWeapon()
+        if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+            alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakAlpha", 1), 0, 1)
+        elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+            alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
         end
         if alpha < 1 and IsValid(wep) then
             if wep:GetClass() == "weapon_ttt_cloak" then
@@ -180,10 +178,10 @@ if CLIENT then
 
     hook.Add("PreDrawViewModels","TransViewModelStart", function()
         local alpha = 1
-        if lp:GetObserverMode() == OBS_MODE_NONE then
-            alpha = math.Clamp(lp:GetNWFloat("CloakAlpha", 1), 0, 1)
-        elseif lp:GetObserverMode() == OBS_MODE_IN_EYE and IsValid(lp:GetObserverTarget()) then
-            alpha = math.Clamp(lp:GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
+        if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+            alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakAlpha", 1), 0, 1)
+        elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+            alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
         end
         if alpha < 1 then
             render.PushRenderTarget(renderTarget)
@@ -194,10 +192,10 @@ if CLIENT then
 
     hook.Add("PreDrawEffects","TransViewModelEnd", function()
         local alpha = 1
-        if lp:GetObserverMode() == OBS_MODE_NONE then
-            alpha = math.Clamp(lp:GetNWFloat("CloakAlpha", 1), 0, 1)
-        elseif lp:GetObserverMode() == OBS_MODE_IN_EYE and IsValid(lp:GetObserverTarget()) then
-            alpha = math.Clamp(lp:GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
+        if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
+            alpha = math.Clamp(LocalPlayer():GetNWFloat("CloakAlpha", 1), 0, 1)
+        elseif LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and IsValid(LocalPlayer():GetObserverTarget()) then
+            alpha = math.Clamp(LocalPlayer():GetObserverTarget():GetNWFloat("CloakAlpha", 1), 0, 1)
         end
         if alpha < 1 then
             local curRT = render.GetRenderTarget()
@@ -213,8 +211,8 @@ end
 -- END EVIL RENDERING CODE
 
 hook.Add("HUDPaint", "DrawCloakSwapHud", function()
-    if lp:GetNWBool("CloakHolsterActive", false) and IsValid(lp:GetActiveWeapon()) then
-        local wepTbl = util.JSONToTable(lp:GetNW2String("DeployTimerTbl", "{}"))
+    if LocalPlayer():GetNWBool("CloakHolsterActive", false) and IsValid(LocalPlayer():GetActiveWeapon()) then
+        local wepTbl = util.JSONToTable(LocalPlayer():GetNW2String("DeployTimerTbl", "{}"))
         
         local x = math.floor(ScrW() / 2.0)
         local y = math.floor(ScrH() / 2.0)
@@ -222,7 +220,7 @@ hook.Add("HUDPaint", "DrawCloakSwapHud", function()
         local yOffset = -60
         local yOffsetText = 3
         local shadowOffset = 2
-        local activeWep = lp:GetActiveWeapon()
+        local activeWep = LocalPlayer():GetActiveWeapon()
         local wepLastPrimFire = activeWep:GetNextPrimaryFire()
         local timeUntilFire = math.Clamp(wepLastPrimFire - CurTime(), 0, math.huge)
         local decloakTime = UNCLOAK_TIME
@@ -293,11 +291,11 @@ hook.Add("PrePlayerDraw", "HideCloakedPlys", function(ply, flags)
                 return 
             end
 
-            local distCalc = lp:GetPos():DistToSqr(ply:GetPos())
+            local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
             local fullCloak = distCalc > CLOAK_BUMP_DIST
             local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
             
-            if lp:GetObserverMode() != OBS_MODE_NONE then
+            if LocalPlayer():GetObserverMode() != OBS_MODE_NONE then
                 if wep:GetCloakAmmo() > cloakAmmoBlinkThreshold then
                     return true -- skip distance check for spectators, always hide
                 else
@@ -399,16 +397,16 @@ hook.Add("Think", "CloakGlobalThink", function()
                 if CLIENT then
                     -- client viewmodel bump logic
                     local deployOrHolsterActive = owner:GetNWBool("CloakDeployActive", false) or owner:GetNWBool("CloakHolsterActive", false)
-                    local isLocalPlyCloakerOrCloakSpectator = owner == lp or (lp:GetObserverMode() == OBS_MODE_IN_EYE and lp:GetObserverTarget() == owner)
+                    local isLocalPlyCloakerOrCloakSpectator = owner == LocalPlayer() or (LocalPlayer():GetObserverMode() == OBS_MODE_IN_EYE and LocalPlayer():GetObserverTarget() == owner)
                     
                     -- allow local player to bump
                     if cloak:GetCloaked() and 
-                    owner == lp and  
+                    owner == LocalPlayer() and  
                     not(deployOrHolsterActive) then
                         for _, ply in ipairs(player.GetAll()) do
-                            if ply == lp then continue end -- don't trigger bumps on ourselves
+                            if ply == LocalPlayer() then continue end -- don't trigger bumps on ourselves
                             
-                            local distCalc = lp:GetPos():DistToSqr(ply:GetPos())
+                            local distCalc = LocalPlayer():GetPos():DistToSqr(ply:GetPos())
                             local fullCloak = distCalc > CLOAK_BUMP_DIST
                             local cloakAmmoBlinkThreshold = 1 -- allow bumps only when cloak has ammo
                             

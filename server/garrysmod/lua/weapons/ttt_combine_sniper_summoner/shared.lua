@@ -55,7 +55,7 @@ SWEP.Weight = 7
 SWEP.DrawAmmo = true
 
 if SERVER then
-    hook.Add("ScalePlayerDamage", "BuffCombineSniperFuckYouGarryNewman", function(target, hitgroup, dmginfo)
+    hook.Add("ScalePlayerDamage", "CombineSniperDamageOutgoing", function(target, hitgroup, dmginfo)
         if not IsValid(dmginfo:GetAttacker()) then return end
         
         if dmginfo:GetAttacker():GetClass() == "npc_sniper" then
@@ -63,7 +63,7 @@ if SERVER then
         end
     end)
     
-    hook.Add("EntityTakeDamage", "CombineSniperDamage", function(target, dmginfo)
+    hook.Add("EntityTakeDamage", "CombineSniperDamageIncoming", function(target, dmginfo)
         if target:IsNPC() and target:GetClass() == "npc_combine_s" and target:IsValid() then
             dmginfo:ScaleDamage(0.25)
         end

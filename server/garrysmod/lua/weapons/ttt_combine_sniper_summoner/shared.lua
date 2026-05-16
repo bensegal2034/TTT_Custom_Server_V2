@@ -227,7 +227,7 @@ function SWEP:place_sniper(tracedata)
         
         realSniper:SetCurrentWeaponProficiency(WEAPON_PROFICIENCY_PERFECT)
         realSniper:SetPos(fakeSniper:GetPos())
-        realSniper:SetNotSolid(true)
+        realSniper:SetNotSolid(true) -- prevents bullet damage from hitting the real one and instead goes to the fake
         realSniper:SetAngles(Angle(pitch, yaw, roll))
         realSniper:DrawShadow(false)
         realSniper:SetMaterial("models/effects/vol_light001")

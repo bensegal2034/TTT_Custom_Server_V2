@@ -840,12 +840,12 @@ function SWEP:FireNeedle()
 		if SERVER then
 			-- find a player or NPC in a wide cone around the reticle
 			local maxHomingDist = 10000
-			local coneDot = 0.88
+			local coneDot = 0.96-- controls size of cone. larger value = smaller cone, smaller value = bigger cone
 			local bestScore = 0 -- used to determine which ent is the best to home onto
 			local targetEnt = nil
 			local steerStrength = 0.13 -- controls homing strength
 			for _, ent in ipairs(ents.FindInSphere(self.Owner:GetShootPos(), maxHomingDist)) do
-				if ent ~= self.Owner and IsValid(ent) and (ent:IsPlayer() or ent:IsNPC()) then
+				if ent ~= self.Owner and IsValid(ent) and (ent:IsPlayer() or ent:IsNPC()) and ent:Alive() and ent:GetObserverMode() == OBS_MODE_NONE then
 					local toEnt = (ent:GetPos() - self.Owner:GetShootPos())
 					local dist = toEnt:Length()
 					if dist > 0 and dist <= maxHomingDist then

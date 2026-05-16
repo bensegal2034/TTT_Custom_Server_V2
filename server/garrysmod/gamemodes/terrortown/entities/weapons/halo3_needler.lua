@@ -831,8 +831,7 @@ function SWEP:Muzzle()
 end
 
 function SWEP:FireNeedle()
-	-- code below for homing is entirely ai written. i have almost no idea how it works
-	-- gork save me
+	-- code below for homing is entirely ai written
 	if IsFirstTimePredicted() then
 		local aim = self.Owner:GetAimVector()
 		local side = aim:Cross(Vector(0, 0, 1))
@@ -842,8 +841,9 @@ function SWEP:FireNeedle()
 			-- find a player or NPC in a wide cone around the reticle
 			local maxHomingDist = 10000
 			local coneDot = 0.88
-			local bestScore = 0
+			local bestScore = 0 -- used to determine which ent is the best to home onto
 			local targetEnt = nil
+			local steerStrength = 0.13 -- controls homing strength
 			for _, ent in ipairs(ents.FindInSphere(self.Owner:GetShootPos(), maxHomingDist)) do
 				if ent ~= self.Owner and IsValid(ent) and (ent:IsPlayer() or ent:IsNPC()) then
 					local toEnt = (ent:GetPos() - self.Owner:GetShootPos())
@@ -859,6 +859,9 @@ function SWEP:FireNeedle()
 								mask = MASK_SHOT
 							})
 							if not IsValid(tr.Entity) or tr.Entity == ent then
+								-- logic to determine the best ent for homing
+								-- currently we use the dot product of the distance to the entity
+								-- which means whatever ent is closest to the owner's shootpos is what we'll home onto
 								local score = dot * (1 / math.max(dist, 1))
 								if score > bestScore then
 									bestScore = score
@@ -896,13 +899,15 @@ function SWEP:FireNeedle()
 					end
 					local phys2 = needle:GetPhysicsObject()
 					if not IsValid(phys2) then timer.Remove(timerName) return end
+					-- math for actually making the needle home onto the selected ent
+					-- basically we aim at the center of the collision bounding box
+					-- then do the math for making the needle point in the correct direction
 					local targetPos = targetEnt:GetPos() + (targetEnt:OBBCenter() or Vector(0, 0, 36))
 					local dir2 = (targetPos - needle:GetPos()):GetNormalized()
 					local currentVel = phys2:GetVelocity()
 					local speed = math.max(currentVel:Length(), 1700)
 					local lead = targetEnt:GetVelocity() * 0.25
 					local desiredVel = dir2 * speed + lead
-					local steerStrength = 0.13 -- this constant appears to control the homing strength
 					phys2:SetVelocity(currentVel + (desiredVel - currentVel) * steerStrength)
 				end)
 			end

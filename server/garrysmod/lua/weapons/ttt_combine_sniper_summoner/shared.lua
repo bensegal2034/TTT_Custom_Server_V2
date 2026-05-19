@@ -67,6 +67,10 @@ if SERVER then
         if target:IsNPC() and target:GetClass() == "npc_combine_s" and target:IsValid() then
             dmginfo:ScaleDamage(0.25)
         end
+
+        if target:IsNPC() and target:GetClass() == "npc_sniper" and target:IsValid() then
+            dmginfo:SetDamage(0)
+        end
     end)
     
     hook.Add("OnNPCKilled", "CombineSniperDeathLink", function(npc, attacker, inflictor)

@@ -69,7 +69,7 @@ SWEP.ViewModelFOV = 60
 SWEP.ViewModel = "models/halo3/v_needler.mdl"
 SWEP.WorldModel = "models/halo3/w_needler.mdl"
 SWEP.ViewModelFlip = false
-SWEP.CanBuy = {}
+SWEP.CanBuy = {ROLE_TRAITOR}
 SWEP.AutoSwitchTo = false
 SWEP.AutoSwitchFrom = false
 SWEP.EquipMenuData = {
@@ -89,8 +89,8 @@ SWEP.Base = "weapon_tttbase"
 SWEP.GrenadeActive = false
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 19
-SWEP.Primary.DefaultClip = 76
-SWEP.Primary.MaxClip = 76
+SWEP.Primary.DefaultClip = 38
+SWEP.Primary.MaxClip = 38
 SWEP.Primary.Ammo = "AlyxGun"
 SWEP.Primary.Automatic = true
 SWEP.Primary.Recoil = 0.15
@@ -845,7 +845,7 @@ function SWEP:FireNeedle()
 			local targetEnt = nil
 			local steerStrength = 0.13 -- controls homing strength
 			for _, ent in ipairs(ents.FindInSphere(self.Owner:GetShootPos(), maxHomingDist)) do
-				if ent ~= self.Owner and IsValid(ent) and (ent:IsPlayer() or ent:IsNPC()) and ent:Alive() and ent:GetObserverMode() == OBS_MODE_NONE then
+				if ent ~= self.Owner and IsValid(ent) and (ent:IsPlayer() or ent:IsNPC()) and ent:Alive() then
 					local toEnt = (ent:GetPos() - self.Owner:GetShootPos())
 					local dist = toEnt:Length()
 					if dist > 0 and dist <= maxHomingDist then

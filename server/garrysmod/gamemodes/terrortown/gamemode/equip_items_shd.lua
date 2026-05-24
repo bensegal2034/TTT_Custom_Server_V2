@@ -42,24 +42,6 @@ local mat_dir = "vgui/ttt/"
 EquipmentItems = {
    [ROLE_DETECTIVE] = {
 
-      -- body armor
-      {  id       = EQUIP_ARMOR,
-         loadout  = true, -- default equipment for detectives
-         type     = "item_passive",
-         material = mat_dir .. "icon_armor",
-         name     = "item_armor",
-         desc     = "item_armor_desc"
-      },
-
-      -- radar
-      {  id       = EQUIP_RADAR,
-         type     = "item_active",
-         material = mat_dir .. "icon_radar",
-         name     = "item_radar",
-         desc     = "item_radar_desc"
-      }
-
-
       -- The default TTT equipment uses the language system to allow
       -- translation. Below is an example of how the type, name and desc fields
       -- would look with explicit non-localized text (which is probably what you
@@ -77,20 +59,6 @@ EquipmentItems = {
 
    [ROLE_TRAITOR] = {
       -- body armor
-      {  id       = EQUIP_ARMOR,
-         type     = "item_passive",
-         material = mat_dir .. "icon_armor",
-         name     = "item_armor",
-         desc     = "item_armor_desc"
-      },
-
-      -- radar
-      {  id       = EQUIP_RADAR,
-         type     = "item_active",
-         material = mat_dir .. "icon_radar",
-         name     = "item_radar",
-         desc     = "item_radar_desc"
-      },
 
       -- disguiser
       {  id       = EQUIP_DISGUISE,

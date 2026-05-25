@@ -1,6 +1,6 @@
 "UserLocalConfigStore"
 {
-	"AppInfoChangeNumber"		"35552066"
+	"AppInfoChangeNumber"		"36099196"
 	"Software"
 	{
 		"valve"
@@ -85,6 +85,21 @@
 					"token"		""
 					"Expires"		"1683534114"
 				}
+				"fastly.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1779755982"
+				}
+				"alibaba.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1779755984"
+				}
+				"steampipe.akamaized.net"
+				{
+					"token"		""
+					"Expires"		"1779755984"
+				}
 			}
 		}
 		"4022"
@@ -95,6 +110,21 @@
 				{
 					"token"		""
 					"Expires"		"1683534006"
+				}
+				"alibaba.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1779755982"
+				}
+				"steampipe.akamaized.net"
+				{
+					"token"		""
+					"Expires"		"1779755985"
+				}
+				"fastly.cdn.steampipe.steamcontent.com"
+				{
+					"token"		""
+					"Expires"		"1779755985"
 				}
 			}
 		}

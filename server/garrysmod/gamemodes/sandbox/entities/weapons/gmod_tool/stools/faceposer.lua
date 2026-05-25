@@ -112,7 +112,8 @@ function TOOL:RightClick( trace )
 		if ( !ent:HasFlexManipulatior() ) then
 			Weight = 0
 		elseif ( i <= FlexNum ) then
-			Weight = ent:GetFlexWeight( i )
+			local min, max = ent:GetFlexBounds( i )
+			Weight = math.Remap( ent:GetFlexWeight( i ), 0, 1, min, max )
 		end
 
 		self:GetOwner():ConCommand( "faceposer_flex" .. i .. " " .. Weight )

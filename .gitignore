@@ -1,6 +1,7 @@
 .vscode/
 .vs/
 server/logs/
+server/garrysmod/logs
 server/userdata/
 server/garrysmod/cache/
 server/depotcache/

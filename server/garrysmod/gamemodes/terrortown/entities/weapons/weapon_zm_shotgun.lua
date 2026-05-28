@@ -269,7 +269,7 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Holster()
-   self:StopLoopingSound(self.Soundid)
+   --self:StopLoopingSound(self.Soundid)
    self.Charging = false
    self.CurrentCharge = 0
    if SERVER then

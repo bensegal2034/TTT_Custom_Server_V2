@@ -200,8 +200,8 @@ function SWEP:Think()
             --adds very light amount of screen shake while charging (specifically after button has been held for a while, to prevent spam click having insane screen shake)
             --i would like to make only the viewmodel shake but this is a temporary solution for vfx
             if self.Primary.Cone < 0.1 then
-               self:StartLoopingSound("Weapon_MegaPhysCannon.HoldSound")
-               self.Soundid = self:StartLoopingSound("Weapon_MegaPhysCannon.HoldSound")
+               --self:StartLoopingSound("Weapon_MegaPhysCannon.HoldSound")
+               --self.Soundid = self:StartLoopingSound("Weapon_MegaPhysCannon.HoldSound")
                util.ScreenShake( Vector(0, 0, 0), 0.015, 0.015, 0.015, 5000 )
             end
          elseif self:GetOwner():KeyReleased(IN_ATTACK) and self.Fired == false then
@@ -235,7 +235,7 @@ function SWEP:PrimaryAttack()
 
    if self.Charging then return end
    
-   self:StopLoopingSound(self.Soundid)
+   --self:StopLoopingSound(self.Soundid)
 
    if self.Primary.Cone < 0.025 then
       self.Primary.Sound = Sound("weapons/slug.wav")

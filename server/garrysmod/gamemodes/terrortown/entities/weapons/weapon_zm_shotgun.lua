@@ -280,8 +280,8 @@ function SWEP:Holster()
 end
 
 function SWEP:PreDrop()
-   self:StopLoopingSound(self.Soundid)
-   self:StopLoopingSound(self.Soundid)
+   --self:StopLoopingSound(self.Soundid)
+   --self:StopLoopingSound(self.Soundid)
    self.Charging = false
    self.CurrentCharge = 0
    if SERVER then

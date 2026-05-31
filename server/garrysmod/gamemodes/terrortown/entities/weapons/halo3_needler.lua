@@ -59,11 +59,11 @@ SWEP.Purpose = "Halo 3 Needler ported to Garry's Mod"
 SWEP.Instructions = "Primary to shoot, Hold use and press Primary to throw grenades. Secondary to melee."
 SWEP.Category = "Halo 3 Tags"
 SWEP.Spawnable = true
-SWEP.AutoSpawnable = false
+SWEP.AutoSpawnable = true
 SWEP.AdminSpawnable = true
 SWEP.DamageType = "True"
 SWEP.AdminOnly = false
-SWEP.Kind = WEAPON_NEEDLER
+SWEP.Kind = WEAPON_HEAVY
 SWEP.Icon = "vgui/ttt/icon_needler.mdl"
 SWEP.ViewModelFOV = 60
 SWEP.ViewModel = "models/halo3/v_needler.mdl"
@@ -78,7 +78,7 @@ SWEP.EquipMenuData = {
 }
 
 SWEP.AllowDrop = true
-SWEP.Slot = 6
+SWEP.Slot = 2
 SWEP.SlotPos = 1
 SWEP.UseHands = false
 SWEP.HoldType = "Revolver"
@@ -89,16 +89,16 @@ SWEP.Base = "weapon_tttbase"
 SWEP.GrenadeActive = false
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 19
-SWEP.Primary.DefaultClip = 38
-SWEP.Primary.MaxClip = 38
-SWEP.Primary.Ammo = "AlyxGun"
+SWEP.Primary.ClipMax = 76
+SWEP.Primary.DefaultClip = 57
+SWEP.Primary.Ammo = "Pistol"
+SWEP.Primary.AmmoEnt = "item_ammo_pistol_ttt"
 SWEP.Primary.Automatic = true
 SWEP.Primary.Recoil = 0.15
 SWEP.Primary.Delay = 0.13
 SWEP.Secondary.ClipSize = 0
 SWEP.Secondary.DefaultClip = 0
 SWEP.Secondary.Automatic = false
-SWEP.Secondary.Ammo = "Niko663HaloSWEPS.Grenades"
 if CLIENT then
 	SWEP.WepSelectIcon = surface.GetTextureID("vgui/entities/halo3_needler")
 	killicon.Add("halo3_needler", "VGUI/hud/halo3_needler", color_white)
@@ -840,7 +840,7 @@ function SWEP:FireNeedle()
 		if SERVER then
 			-- find a player or NPC in a wide cone around the reticle
 			local maxHomingDist = 10000
-			local coneDot = 0.96-- controls size of cone. larger value = smaller cone, smaller value = bigger cone
+			local coneDot = 0.98-- controls size of cone. larger value = smaller cone, smaller value = bigger cone
 			local bestScore = 0 -- used to determine which ent is the best to home onto
 			local targetEnt = nil
 			local steerStrength = 0.13 -- controls homing strength

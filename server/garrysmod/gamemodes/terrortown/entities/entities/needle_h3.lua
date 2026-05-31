@@ -14,7 +14,7 @@ if SERVER then
 		self:SetSolid(SOLID_VPHYSICS)
 		self:PhysicsInit(MOVETYPE_VPHYSICS)
 		self:SetMoveType(MOVETYPE_VPHYSICS)
-		self:SetSolidFlags(FSOLID_TRIGGER)
+		self:SetSolidFlags(bit.bor(FSOLID_TRIGGER, FSOLID_NOT_SOLID))
 		
 		local phys = self:GetPhysicsObject()
 		if (IsValid(phys)) then
@@ -217,7 +217,7 @@ if SERVER then
 		end
 		
 		function ENT:SuperCombineH3()
-			
+			local DMG_NUM = 200
 			local effectdata = EffectData()
 			effectdata:SetOrigin(self:GetPos())
 			effectdata:SetNormal(Vector(0,0,1))
@@ -234,8 +234,9 @@ if SERVER then
 			DistantFire:SetMaxHealth(95)
 			DistantFire:Spawn()
 			DistantFire:Activate()
+
 			EmitSound( "Halo3_Needler.SuperCombine", self:GetPos(),  self:EntIndex(), CHAN_STATIC, 1, 82 )
-			util.BlastDamage(self, self:OwnerGet(), self:GetPos(), 150, 5)
+			util.BlastDamage(self, self:OwnerGet(), self:GetPos(), 150, DMG_NUM)
 			util.ScreenShake(self:GetPos(), 250, 250, 1.25, 250)
 			SafeRemoveEntity(self)
 		end
@@ -244,15 +245,18 @@ if SERVER then
 		end
 		
 		function ENT:Touch(ent)
+			local EXPLOSION_NUM = 13
+			local NEEDLE_DMG = 3
+
 			if !self.Owner:IsPlayer() then
 				targetforward = 12
 			else
 				targetforward = 0
 			end
-			if ent:IsNPC() and ent != self.Owner and ent:GetClass() != "npc_combinegunship" and ent:GetClass() != "npc_strider" and ent:GetClass() != "npc_turret_floor" and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) < 6 ) and IsValid(ent) then
+			if ent:IsNPC() and ent != self.Owner and ent:GetClass() != "npc_combinegunship" and ent:GetClass() != "npc_strider" and ent:GetClass() != "npc_turret_floor" and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) < EXPLOSION_NUM ) and IsValid(ent) then
 				self.FakePredicted = true
 				if self.FakePredicted == false then SafeRemoveEntity(self) end
-				ent:TakeDamage(6.15,self:OwnerGet(),self)
+				ent:TakeDamage(NEEDLE_DMG,self:OwnerGet(),self)
 				self:EmitSound("halo3/needler_impact_player_" .. math.random(1, 2) .. ".ogg")
 				self:StopSound("Halo3_Needler.FlyBy")
 				local needle = ents.Create( "needle_inactive_h3" )
@@ -263,10 +267,10 @@ if SERVER then
 				needle:Spawn()
 				needle:Activate()
 				SafeRemoveEntity(self)
-			elseif ent:IsPlayer() and ent != self.Owner and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) < 6 )  and IsValid(ent) then
+			elseif ent:IsPlayer() and ent != self.Owner and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) < EXPLOSION_NUM )  and IsValid(ent) then
 				self.FakePredicted = true
 				if self.FakePredicted == false then SafeRemoveEntity(self) end
-				ent:TakeDamage(6.25,self:OwnerGet(),self)
+				ent:TakeDamage(NEEDLE_DMG,self:OwnerGet(),self)
 				self:EmitSound("halo3/needler_impact_player_" .. math.random(1, 2) .. ".ogg")
 				self:StopSound("Halo3_Needler.FlyBy")
 				local needle = ents.Create( "needle_inactive_h3" )
@@ -282,20 +286,20 @@ if SERVER then
 				needle:Spawn()
 				needle:Activate()
 				SafeRemoveEntity(self)
-			elseif ent:IsNPC() and ent != self.Owner and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) >= 6 ) and IsValid(ent) then
+			elseif ent:IsNPC() and ent != self.Owner and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) >= EXPLOSION_NUM ) and IsValid(ent) then
 				self.FakePredicted = true
 				if self.FakePredicted == false then SafeRemoveEntity(self) end
 				self:SuperCombineH3()
 				self:StopSound("Halo3_Needler.FlyBy")
-			elseif ent:IsPlayer() and ent != self.Owner and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) >= 6 ) and IsValid(ent) then
+			elseif ent:IsPlayer() and ent != self.Owner and self.FakePredicted == false and ( ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) >= EXPLOSION_NUM ) and IsValid(ent) then
 				self.FakePredicted = true
 				if self.FakePredicted == false then SafeRemoveEntity(self) end
 				self:SuperCombineH3()
 				self:StopSound("Halo3_Needler.FlyBy")
-			elseif ent:IsNextBot() and ent != self.Owner and ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) < 6 and IsValid(ent) and self.FakePredicted == false then
+			elseif ent:IsNextBot() and ent != self.Owner and ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) < EXPLOSION_NUM and IsValid(ent) and self.FakePredicted == false then
 				self.FakePredicted = true
 				if self.FakePredicted == false then SafeRemoveEntity(self) end
-				ent:TakeDamage(6.15,self:OwnerGet(),self)
+				ent:TakeDamage(NEEDLE_DMG,self:OwnerGet(),self)
 				self:EmitSound("halo3/needler_impact_player_" .. math.random(1, 2) .. ".ogg")
 				self:StopSound("Halo3_Needler.FlyBy")
 				local needle = ents.Create( "needle_inactive_h3" )
@@ -306,7 +310,7 @@ if SERVER then
 				needle:Spawn()
 				needle:Activate()
 				SafeRemoveEntity(self)
-			elseif ent:IsNextBot() and ent != self.Owner and ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) >= 6 and IsValid(ent) and self.FakePredicted == false then
+			elseif ent:IsNextBot() and ent != self.Owner and ent:GetNW2Int( "Niko663HaloSWEPSNeedles" ) >= EXPLOSION_NUM and IsValid(ent) and self.FakePredicted == false then
 				self.FakePredicted = true
 				if self.FakePredicted == false then SafeRemoveEntity(self) end
 				self:SuperCombineH3()

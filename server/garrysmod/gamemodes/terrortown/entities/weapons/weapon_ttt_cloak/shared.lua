@@ -37,6 +37,7 @@ SWEP.ViewModelFlip = false
 SWEP.ViewModel      = "models/weapons/c_slam.mdl"
 SWEP.WorldModel      = "models/weapons/w_slam.mdl"
 SWEP.UseHands	= true
+SWEP.LimitedStock = true
 
 --- PRIMARY FIRE ---
 SWEP.Primary.Delay = 0.5

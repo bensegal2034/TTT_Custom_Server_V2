@@ -89,10 +89,11 @@ SWEP.Base = "weapon_tttbase"
 SWEP.GrenadeActive = false
 SWEP.Primary.TakeAmmo = 1
 SWEP.Primary.ClipSize = 19
-SWEP.Primary.ClipMax = 76
+SWEP.Primary.ClipMax = 95
 SWEP.Primary.DefaultClip = 57
-SWEP.Primary.Ammo = "Pistol"
-SWEP.Primary.AmmoEnt = "item_ammo_pistol_ttt"
+SWEP.Primary.Ammo = "pistol"
+SWEP.Secondary.Ammo = "pistol"
+SWEP.AmmoEnt = "item_ammo_pistol_ttt"
 SWEP.Primary.Automatic = true
 SWEP.Primary.Recoil = 0.15
 SWEP.Primary.Delay = 0.13
@@ -104,7 +105,6 @@ if CLIENT then
 	killicon.Add("halo3_needler", "VGUI/hud/halo3_needler", color_white)
 end
 
-SWEP.IsEquipment = true
 SWEP.CSMuzzleFlashes = false
 sound.Add({
 	name = "Halo3_Needler.Deploy",
@@ -161,10 +161,6 @@ sound.Add({
 	soundlevel = 80,
 	sound = "halo3/needler_dryfire.ogg"
 })
-
-function SWEP:IsEquipment()
-	return WEPS.IsEquipment(self)
-end
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "NextIdle")

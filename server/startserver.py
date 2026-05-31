@@ -15,13 +15,11 @@ def start(test):
         '+maxplayers',
         '7',
         '-allowlocalhttp',
-        '-dev',
-        '4',
         '-debug',
         '+gamemode',
         'terrortown',
         '+map',
-        f"{'ttt_apehouse_d' if test else random.choice(maps)}",
+        f"{'ttt_crackhouse' if test else random.choice(maps)}",
         '+sv_setsteamaccount',
         '85BFBDC8B9CA97217304A337729A25C8'
     ]

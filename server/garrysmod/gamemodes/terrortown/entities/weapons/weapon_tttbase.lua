@@ -342,11 +342,10 @@ end
 
 -- Shooting functions largely copied from weapon_cs_base
 function SWEP:PrimaryAttack(worldsnd)
+   if not self:CanPrimaryAttack() then return end
 
    self:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
    self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-
-   if not self:CanPrimaryAttack() then return end
 
    if not worldsnd then
       self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )

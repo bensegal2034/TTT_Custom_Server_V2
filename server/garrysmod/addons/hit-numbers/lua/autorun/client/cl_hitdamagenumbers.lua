@@ -3,14 +3,6 @@ local initialized = false
 local lastcurtime = 0
 local on          = true
 
-local function joeCheck()
-	if not IsValid(LocalPlayer()) then 
-	   return false 
-	else 
-	   return LocalPlayer():SteamID64() == "" 
-	end
- end 
-
 local debugger = {}
 debugger.enabled     = false
 debugger.tickms      = 0
@@ -192,7 +184,6 @@ end )
 
 -- Called when an indicator should be created for this player.
 net.Receive( "hdn_spawn", function()
-	if joeCheck() then return end
 	if not on then return end
 	
 	-- Get damage type and amount.
@@ -298,8 +289,6 @@ end )
 
 -- Update indicators.
 hook.Add( "Tick", "hdn_updateInds", function()
-
-	if joeCheck() then return end
 	if not on then return end
 	if debugger.enabled then debugger.ticktimer = SysTime() end
 	
@@ -342,7 +331,6 @@ end )
 
 -- Render the 3D indicators.
 hook.Add( "PostDrawTranslucentRenderables", "hdn_drawInds", function()
-	if joeCheck() then return end
 	if not on then return end
 	if not initialized then return end
 	if #indicators == 0 then return end
@@ -398,7 +386,6 @@ end )
 
 
 hook.Add( "HUDPaint", "hdn_debugHUD", function()
-	if joeCheck() then return end
 	if not on then return end
 	if not debugger.enabled then return end
 	

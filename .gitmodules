@@ -16,3 +16,6 @@
 [submodule "server/garrysmod/addons/ulib"]
 	path = server/garrysmod/addons/ulib
 	url = https://github.com/TeamUlysses/ulib
+[submodule "server/garrysmod/addons/glowlib"]
+	path = server/garrysmod/addons/glowlib
+	url = https://github.com/bloodycop6385/glowlib

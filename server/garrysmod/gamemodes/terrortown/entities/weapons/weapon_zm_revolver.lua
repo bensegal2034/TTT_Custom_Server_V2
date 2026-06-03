@@ -51,6 +51,20 @@ local COMBO_SHOOT_DELAY = 0.1
 local NO_COMBO_SHOOT_DELAY = 0.6
 local RECOIL_NO_COMBO = 6
 local RECOIL_COMBO = 3
+local COMBO_TIMER_AMT_SEC = 10
+local EMOTES = {
+   ":3",
+   ":)",
+   ":D",
+   ":P",
+   ":>",
+   "xd",
+   "uwu",
+   "owo",
+   ":O",
+   ":3c",
+   "c:"
+}
 
 sound.Add({
    name = "Weapon_OSHIT.Magout",
@@ -125,9 +139,9 @@ SWEP.WorldModel            = "models/weapons/w_pist_deagle.mdl"
 SWEP.IronSightsPos         = Vector( 5, -15, -2 )
 SWEP.IronSightsAng         = Vector( 2.6, 1.37, 3.5 )
 
--- TODO:
--- make combo bodyshot damage 50
--- combo expires on timer (~10 sec), continuing combo adds the base timer value (10 sec) onto the timer
+SWEP.EmoteTimer = 0 
+SWEP.CurrentEmote = ":3"
+SWEP.GlowList = {}
 
 function SWEP:SetupDataTables()
    self:NetworkVar("Bool", 1, "IsScoped")
@@ -135,6 +149,8 @@ function SWEP:SetupDataTables()
    self:NetworkVar("Float", 3, "IronsightsTime")
    self:NetworkVar("Bool", "ComboActive")
    self:NetworkVar("Int", "ComboScore")
+   self:NetworkVar("Float", "ComboTimer")
+   self:NetworkVar("Int", "ScreenRandom")
    
    self:NetworkVarNotify("ComboScore", self.HandleComboUpdate)
 end
@@ -150,6 +166,8 @@ function SWEP:Initialize()
    self.BaseClass.Initialize(self)
    self:SetComboActive(false)
    self:SetComboScore(0)
+   self:SetComboTimer(0)
+   self:SetScreenRandom(0)
 end
 
 -- gun hud 3d2d stuff stolen from this addon: https://steamcommunity.com/sharedfiles/filedetails/?id=2860986215
@@ -172,59 +190,17 @@ function SWEP:Think()
             ),
             size = 0.02,
             draw_func = function(weapon)
-               local width = 65
-               local height = 38
-
-               local x = (width / 2) * -1
-               local y = (height / 2) * -1
-               local bgColor = Color(15, 15, 15, 255)
-               local rainbow = HSVToColor((CurTime() * 180) % 360, 1, 1)
-               local comboActive = weapon:GetComboActive()
-               local comboReady = weapon:Clip1() == weapon:GetMaxClip1()
-               
-               draw.RoundedBox(4, x, y, width, height, Color(15, 15, 15, 255))
-               
-               if comboReady or comboActive then
-                  surface.SetDrawColor(rainbow)
-               else
-                  surface.SetDrawColor(Color(255, 0, 0, 255))
-               end
-               
-               surface.DrawOutlinedRect(x, y, width, height)
-               
-               if comboActive then
-                  draw.SimpleText(
-                     "COMBO: " .. tostring(weapon:GetComboScore()),
-                     "Trebuchet18",
-                     0, 0,
-                     rainbow,
-                     TEXT_ALIGN_CENTER,
-                     TEXT_ALIGN_CENTER
-                  )
-               elseif comboReady then
-                  draw.SimpleText(
-                     "READY",
-                     "Trebuchet18",
-                     0, 0,
-                     Color(0, 255, 0, 255),
-                     TEXT_ALIGN_CENTER,
-                     TEXT_ALIGN_CENTER
-                  )
-               else
-                  draw.SimpleText(
-                     "INACTIVE",
-                     "Trebuchet18",
-                     0, 0,
-                     Color(255, 0, 0, 255),
-                     TEXT_ALIGN_CENTER,
-                     TEXT_ALIGN_CENTER
-                  )
-               end
+               weapon:DrawScreen()
             end
          }
       }
    end
 
+   if SERVER then
+      if self:GetComboActive() then
+         if CurTime() >= self:GetComboTimer() then self:ResetCombo() end
+      end
+   end
 end
 
 if CLIENT then
@@ -308,6 +284,112 @@ if CLIENT then
 		return pos, ang
 	end
 end
+
+function SWEP:GetNextEmote()
+   if CurTime() >= self.EmoteTimer then
+      local currentEmote = self.CurrentEmote
+      local newEmote = nil
+      repeat
+         newEmote = EMOTES[math.random(#EMOTES)]
+      until newEmote != currentEmote
+      self.CurrentEmote = newEmote
+      self.EmoteTimer = CurTime() + 1
+   end
+
+   return self.CurrentEmote
+end
+
+function SWEP:DrawScreen()
+   local width = 65
+   local height = 38
+
+   local x = (width / 2) * -1
+   local y = (height / 2) * -1
+   local bgColor = Color(15, 15, 15, 255)
+   local rainbow = HSVToColor((CurTime() * 180) % 360, 1, 1)
+   local font = "DefaultBold"
+   local comboActive = self:GetComboActive()
+   local comboReady = self:Clip1() == self:GetMaxClip1()
+   local comboScore = self:GetComboScore()
+   local comboTimerStr = "TIMER: " .. tostring(math.Truncate(self:GetComboTimer() - CurTime(), 0))
+   local comboScoreStr = nil
+   local displayStr = nil
+   local scoreThreshold = 2
+
+   if comboActive then
+      -- setup final display string
+      comboScoreStr = "COMBO: " .. tostring(self:GetComboScore())
+      if comboScore == 2 then
+         comboScoreStr = comboScoreStr .. "!!"
+      elseif comboScore > 2 then
+         comboScoreStr = comboScoreStr .. "\n" .. self:GetNextEmote()
+      end
+
+      displayStr = comboScoreStr .. "\n" .. comboTimerStr
+   end
+   
+   if comboActive and comboScore > scoreThreshold then
+      draw.RoundedBox(4, x, y, width, height, rainbow)
+   else
+      draw.RoundedBox(4, x, y, width, height, Color(15, 15, 15, 255))
+   end
+   
+   if comboReady or comboActive then
+      surface.SetDrawColor(rainbow)
+   else
+      surface.SetDrawColor(Color(255, 0, 0, 255))
+   end
+   
+   surface.DrawOutlinedRect(x, y, width, height)
+   
+   if comboActive then
+      if comboScore > scoreThreshold then
+         draw.DrawText(
+            displayStr,
+            font,
+            0, -21,
+            Color(255, 255, 255, 255),
+            TEXT_ALIGN_CENTER
+         )
+      else
+         draw.DrawText(
+            displayStr,
+            font,
+            0, -14,
+            rainbow,
+            TEXT_ALIGN_CENTER
+         )
+      end
+   elseif comboReady then
+      draw.SimpleText(
+         "READY",
+         font,
+         0, 0,
+         Color(0, 255, 0, 255),
+         TEXT_ALIGN_CENTER,
+         TEXT_ALIGN_CENTER
+      )
+   else
+      if self:GetScreenRandom() == 10 then
+         draw.DrawText(
+            "YOU MISSED \nTHAT ONE\nTRY ANOTHER",
+            "CreditsOutroText",
+            0, -14,
+            Color(255, 0, 0, 255),
+            TEXT_ALIGN_CENTER
+         )
+      else
+         draw.SimpleText(
+            "INACTIVE",
+            font,
+            0, 0,
+            Color(255, 0, 0, 255),
+            TEXT_ALIGN_CENTER,
+            TEXT_ALIGN_CENTER
+         )
+      end
+   end
+end
 -- end evil 3d2d rendering/hud code
 
 function SWEP:PrimaryAttack( worldsnd )
@@ -367,14 +449,31 @@ function SWEP:ComboCallback(ply, tr, dmginfo)
    -- is a combo already active or was the first shot of the mag a headshot?
    (self:Clip1() == self:GetMaxClip1() or self:GetComboActive()) and 
    -- only run on server
-   SERVER
+   SERVER and
+   -- only care about shots that actually hit an entity
+   IsValid(tr.Entity)
    then
-      if not self:GetComboActive() then self:SetComboActive(true) end
+      if not self:GetComboActive() 
+      then 
+         self:SetComboActive(true)
+         self:SetComboTimer(CurTime() + COMBO_TIMER_AMT_SEC) 
+      else
+         self:SetComboTimer(self:GetComboTimer() + COMBO_TIMER_AMT_SEC)
+      end
       self:SetComboScore(self:GetComboScore() + 1)
       
       self:SetNextPrimaryFire(CurTime() + COMBO_SHOOT_DELAY)
       self.Primary.Recoil = RECOIL_COMBO
+      dmginfo:SetDamage(tr.Entity:GetMaxHealth())
    else
+      -- reward combos that end with a bodyshot with the same damage as a non combo headshot (45)
+      if ((tr.HitGroup == HITGROUP_STOMACH or tr.HitGroup == HITGROUP_CHEST) and self:GetComboActive())
+      -- this is here because headshots should always do 45 damage at base 
+      or tr.HitGroup == HITGROUP_HEAD then
+         dmginfo:SetDamage(45)
+      else
+         self:SetScreenRandom(math.random(0, 10))
+      end
       self:ResetCombo()
    end
 end
@@ -412,37 +511,8 @@ function SWEP:ResetCombo()
    end
 end
 
-hook.Add("ScalePlayerDamage", "DeagleCombo", function(target, hitgroup, dmginfo)
-   if
-   not IsValid(dmginfo:GetAttacker())
-   or not dmginfo:GetAttacker():IsPlayer()
-   or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-   then
-      return
-   end
-   
-   local wep = dmginfo:GetAttacker():GetActiveWeapon()
-   
-   if wep:GetClass() == "weapon_zm_revolver" then
-      if wep:GetComboActive() then
-         if hitgroup == HITGROUP_HEAD then
-            dmginfo:SetDamage(target:GetMaxHealth())
-         end
-      elseif hitgroup == HITGROUP_HEAD then
-         dmginfo:SetDamage(45)
-      end
-   end
-end)
-
 function SWEP:PreDrop()
-   self:SetZoom(false)
-   self:SetIronsights(false)
-   self.IsScoped = false
    self:ResetCombo()
-   if SERVER then
-      self.IsScoped = false
-      self:SetIsScoped(false)
-   end
    return self.BaseClass.PreDrop(self)
 end
 
@@ -451,17 +521,9 @@ function SWEP:Reload()
    if self:Clip1() >= self:GetMaxClip1() then return end
    self:DefaultReload( ACT_VM_RELOAD )
    self:ResetCombo()
-   if SERVER then
-      self.IsScoped = false
-      self:SetIsScoped(false)
-   end
 end
 
 function SWEP:Holster()
    self:ResetCombo()
-   if SERVER then
-      self.IsScoped = false
-      self:SetIsScoped(false)
-   end
    return true
 end

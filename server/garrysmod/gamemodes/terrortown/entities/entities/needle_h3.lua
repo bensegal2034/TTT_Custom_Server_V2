@@ -14,7 +14,11 @@ if SERVER then
 		self:SetSolid(SOLID_VPHYSICS)
 		self:PhysicsInit(MOVETYPE_VPHYSICS)
 		self:SetMoveType(MOVETYPE_VPHYSICS)
+		// currently this makes needles entirely ignore walls.
+		// TODO: make that not happen
+		// probably need a section in touch to spawn a needle_inactive_h3 when we collide with a wall, then delete ourselves (the active needle_h3)
 		self:SetSolidFlags(bit.bor(FSOLID_TRIGGER, FSOLID_NOT_SOLID))
+
 		
 		local phys = self:GetPhysicsObject()
 		if (IsValid(phys)) then

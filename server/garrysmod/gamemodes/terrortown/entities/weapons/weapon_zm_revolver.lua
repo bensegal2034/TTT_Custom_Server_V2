@@ -46,12 +46,47 @@ resource.AddFile("sound/deaglecombo/combo08.wav")
 resource.AddFile("sound/deaglecombo/comboloss01.wav")
 resource.AddFile("sound/deaglecombo/comboloss02.wav")
 resource.AddFile("sound/deaglecombo/comboloss03.wav")
+resource.AddFile("materials/models/weapons/v_models/pist_zapper/zapper_envmap_alpha.vtf")
+resource.AddFile("materials/models/weapons/v_models/pist_zapper/zapper_world.vmt")
+resource.AddFile("materials/models/weapons/v_models/pist_zapper/zapper_sheet.vtf")
+resource.AddFile("materials/models/weapons/v_models/pist_zapper/zapper_sheet.vmt")
+resource.AddFile("materials/vgui/entities/weapon_zapper.vtf")
+resource.AddFile("materials/vgui/entities/weapon_zapper.vmt")
+resource.AddFile("models/weapons/w_pist_nesz.dx90.vtx")
+resource.AddFile("models/weapons/w_pist_nesz.dx80.vtx")
+resource.AddFile("models/weapons/v_pvp_neslg.dx90.vtx")
+resource.AddFile("models/weapons/v_pvp_neslg.dx80.vtx")
+resource.AddFile("models/weapons/v_pist_nesz.dx90.vtx")
+resource.AddFile("models/weapons/v_pist_nesz.dx80.vtx")
+resource.AddFile("sound/weapons/zapper/deploy12.wav")
+resource.AddFile("sound/weapons/zapper/deploy11.wav")
+resource.AddFile("models/weapons/w_pist_nesz.sw.vtx")
+resource.AddFile("models/weapons/v_pvp_neslg.sw.vtx")
+resource.AddFile("models/weapons/v_pist_nesz.sw.vtx")
+resource.AddFile("sound/weapons/zapper/ironout.wav")
+resource.AddFile("sound/weapons/zapper/reload.wav")
+resource.AddFile("sound/weapons/zapper/ironin.wav")
+resource.AddFile("sound/weapons/zapper/ironin.mp3")
+resource.AddFile("sound/weapons/zapper/shoot.wav")
+resource.AddFile("sound/weapons/zapper/shoot01.wav")
+resource.AddFile("sound/weapons/zapper/shoot02.wav")
+resource.AddFile("sound/weapons/zapper/shoot03.wav")
+resource.AddFile("sound/weapons/zapper/die12.wav")
+resource.AddFile("sound/weapons/zapper/die11.wav")
+resource.AddFile("models/weapons/w_pist_nesz.vvd")
+resource.AddFile("models/weapons/w_pist_nesz.phy")
+resource.AddFile("models/weapons/w_pist_nesz.mdl")
+resource.AddFile("models/weapons/v_pvp_neslg.vvd")
+resource.AddFile("models/weapons/v_pvp_neslg.mdl")
+resource.AddFile("models/weapons/v_pist_nesz.vvd")
+resource.AddFile("models/weapons/v_pist_nesz.mdl")
+resource.AddFile("resource/fonts/PressStart2P.ttf")
 
 local COMBO_SHOOT_DELAY = 0.1
 local NO_COMBO_SHOOT_DELAY = 0.6
 local RECOIL_NO_COMBO = 6
 local RECOIL_COMBO = 3
-local COMBO_TIMER_AMT_SEC = 10
+local COMBO_TIMER_AMT_SEC = 999
 local EMOTES = {
    ":3",
    ":)",
@@ -66,43 +101,13 @@ local EMOTES = {
    "c:"
 }
 
-sound.Add({
-   name = "Weapon_OSHIT.Magout",
-   channel = "CHAN_ITEM",
-   sound = "weapons/deagle/magout.wav" 
-})
-
-sound.Add({
-   name = "Weapon_OSHIT.Magin",
-   channel = "CHAN_ITEM",
-   sound = "weapons/deagle/magin.wav" 
-})
-
-sound.Add({
-   name = "Weapon_OSHIT.SlideForward",
-   channel = "CHAN_ITEM",
-   sound = "weapons/deagle/slideforward.wav" 
-})
-
-sound.Add({
-   name = "Weapon_OSHIT.SlideBack",
-   channel = "CHAN_ITEM",
-   sound = "weapons/deagle/slideback.wav" 
-})
-
-sound.Add({
-   name = "Weapon_OSHIT.Sliderelease",
-   channel = "CHAN_ITEM",
-   sound = "weapons/deagle/sliderelease.wav" 
-})
-
 SWEP.HoldType              = "revolver"
 SWEP.ReloadHoldType        = "pistol"
 
 if CLIENT then
    SWEP.PrintName          = "Deagle"
    SWEP.Slot               = 1
-   SWEP.ViewModelFOV       = 60
+   SWEP.ViewModelFOV       = 75
    SWEP.Icon               = "vgui/ttt/icon_deagle"
 end
 
@@ -110,7 +115,7 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Kind                  = WEAPON_PISTOL
 SWEP.WeaponID              = AMMO_DEAGLE
-SWEP.ViewModelFlip         = false
+SWEP.ViewModelFlip         = true
 
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil        = RECOIL_NO_COMBO
@@ -121,8 +126,6 @@ SWEP.Primary.ClipSize      = 7
 SWEP.Primary.ClipMax       = 36
 SWEP.Primary.DefaultClip   = 16
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Sound         = Sound("Weapon_Deagle.Single")
-SWEP.Secondary.Sound       = Sound("Default.Zoom")
 
 SWEP.DamageType            = "Puncture"
 
@@ -133,15 +136,14 @@ SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_pist_deagle.mdl"
-SWEP.WorldModel            = "models/weapons/w_pist_deagle.mdl"
+SWEP.ViewModel             = "models/weapons/v_pist_nesz.mdl"
+SWEP.WorldModel            = "models/weapons/w_pist_nesz.mdl"
 
 SWEP.IronSightsPos         = Vector( 5, -15, -2 )
 SWEP.IronSightsAng         = Vector( 2.6, 1.37, 3.5 )
 
 SWEP.EmoteTimer = 0 
 SWEP.CurrentEmote = ":3"
-SWEP.GlowList = {}
 
 function SWEP:SetupDataTables()
    self:NetworkVar("Bool", 1, "IsScoped")
@@ -167,45 +169,13 @@ function SWEP:Initialize()
    self:SetComboActive(false)
    self:SetComboScore(0)
    self:SetComboTimer(0)
-   self:SetScreenRandom(0)
+   self:SetScreenRandom(math.random(0, 10))
 end
 
 -- gun hud 3d2d stuff stolen from this addon: https://steamcommunity.com/sharedfiles/filedetails/?id=2860986215
-function SWEP:Think()
-   if CLIENT then
-      self.VElements = {
-         ["screen"] = {
-            type = "Quad",
-            bone = "v_weapon.Deagle_Slide",
-            rel = "",
-            pos = Vector(
-               0, -- left/right
-               -0.48, -- up/down
-               1.8  -- forward/back
-            ),
-            angle = Angle(
-               0, -- pitch
-               0, -- yaw
-               130 -- roll
-            ),
-            size = 0.02,
-            draw_func = function(weapon)
-               weapon:DrawScreen()
-            end
-         }
-      }
-   end
-
-   if SERVER then
-      if self:GetComboActive() then
-         if CurTime() >= self:GetComboTimer() then self:ResetCombo() end
-      end
-   end
-end
-
 if CLIENT then
 	function SWEP:ViewModelDrawn()
-		local vm = self.Owner and self.Owner:GetViewModel()
+		local vm = self:GetOwner() and self:GetOwner():GetViewModel()
 		if not IsValid(vm) then return end
 		if not self.VElements then return end
 
@@ -277,12 +247,228 @@ if CLIENT then
 			pos, ang = m:GetTranslation(), m:GetAngles()
 		end
 
-		if IsValid(self.Owner) and self.Owner:IsPlayer() and ent == self.Owner:GetViewModel() and self.ViewModelFlip then
+		if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() and ent == self:GetOwner():GetViewModel() and self.ViewModelFlip then
 			ang.r = -ang.r
 		end
 
 		return pos, ang
 	end
+
+   -- define our 3d quad that we draw onto
+   SWEP.VElements = {
+      ["screen"] = {
+         type = "Quad",
+         -- where the screen is anchored to on the viewmodel.
+         -- this can be changed further with pos/ang but it will always follow this point
+         -- therefore if this point gets moved around when the viewmodel is doing animations
+         -- the screen will move with it!
+         bone = "v_weapon.p228_Parent",
+         rel = "",
+         pos = Vector(
+            -0.48, -- left/right
+            -3.4, -- up/down
+            -2.66  -- forward/back
+         ),
+         angle = Angle(
+            0, -- pitch
+            180, -- yaw
+            0 -- roll
+         ),
+         size = 0.021, -- scale factor for the 3d quad (used by the rendertarget)
+         draw_func = function(weapon)
+            weapon:DrawScreen()
+         end
+      }
+   }
+
+   local DISPLAY_W = 48
+   local DISPLAY_H = 32
+   local RT_WIDTH = 1536
+   local RT_HEIGHT = 1024
+
+   function SWEP:CreateScreen()
+      if not self.ScreenRenderTarget then
+         self.ScreenRenderTarget = GetRenderTarget(
+            "ComboScreenRenderTarget",
+            RT_WIDTH,
+            RT_HEIGHT
+         )
+      end
+
+      if not self.ScreenMaterial then
+         self.ScreenMaterial = CreateMaterial("ComboScreenMaterial", "UnlitGeneric", {
+            ["$basetexture"] = self.ScreenRenderTarget:GetName(),
+            ["$vertexcolor"] = "1",
+            ["$vertexalpha"] = "1",
+            ["$nolod"] = "1",
+            ["$translucent"] = "1"
+         })
+      end
+   end
+
+   surface.CreateFont("ArcadeMedium", {
+      font = "Press Start 2P",
+      size = 200,
+      weight = 500,
+      antialias = true,
+      extended = true
+   })
+
+   surface.CreateFont("ArcadeLarge", {
+      font = "Press Start 2P",
+      size = 180,
+      weight = 700,
+      antialias = true,
+      extended = true
+   })
+
+   function SWEP:DrawScreenToRT()
+      self:CreateScreen()
+
+      local rainbow = HSVToColor((CurTime() * 180) % 360, 1, 1)
+
+      local comboActive = self:GetComboActive()
+      local comboReady = self:Clip1() == self:GetMaxClip1()
+      local comboScore = self:GetComboScore()
+      local scoreThreshold = 2
+
+      local comboTimerLeft = math.max(0, math.floor((self:GetComboTimer() or CurTime()) - CurTime()))
+      local comboTimerStr = "DISCHARGE\nIN " .. tostring(comboTimerLeft)
+
+      local comboScoreStr = nil
+      if comboActive then
+         comboScoreStr = tostring(comboScore)
+         if comboScore == 2 then
+            comboScoreStr = comboScoreStr .. "!!"
+         elseif comboScore > 2 then
+            comboScoreStr = comboScoreStr .. "\n" .. tostring(self:GetNextEmote())
+         end
+      end
+
+      render.PushRenderTarget(self.ScreenRenderTarget)
+      render.Clear(0, 0, 0, 255, true, true)
+
+      cam.Start2D()
+         local bgColor = Color(15, 15, 15, 255)
+         local x = RT_WIDTH / 2
+         local y = RT_HEIGHT / 2
+         if comboActive and comboScore > scoreThreshold then
+            bgColor = rainbow
+         end
+
+         draw.RoundedBox(12, 0, 0, RT_WIDTH, RT_HEIGHT, bgColor)
+
+         if comboReady or comboActive then
+            surface.SetDrawColor(rainbow)
+         else
+            surface.SetDrawColor(Color(255, 0, 0, 255))
+         end
+         surface.DrawOutlinedRect(0, 0, RT_WIDTH, RT_HEIGHT, 50)
+
+         if comboActive then
+            if comboScore > scoreThreshold then
+               draw.DrawText(
+                  comboScoreStr,
+                  "ArcadeLarge",
+                  x,
+                  y - 40,
+                  color_white,
+                  TEXT_ALIGN_CENTER
+               )
+            else
+               draw.DrawText(
+                  comboScoreStr,
+                  "HealthAmmo",
+                  x,
+                  y - 55,
+                  rainbow,
+                  TEXT_ALIGN_CENTER
+               )
+
+               draw.DrawText(
+                  comboTimerStr,
+                  "CreditsOutroText",
+                  x,
+                  y + 30,
+                  color_white,
+                  TEXT_ALIGN_CENTER
+               )
+            end
+
+         elseif comboReady then
+            draw.DrawText(
+               "CHARGED",
+               "ArcadeLarge",
+               x,
+               y - 100,
+               Color(0, 255, 0, 255),
+               TEXT_ALIGN_CENTER
+            )
+         else
+            if self:GetScreenRandom() == 10 then
+               draw.DrawText(
+                  "YOU MISSED\nTHAT ONE\nTRY ANOTHER",
+                  "ArcadeLarge",
+                  x,
+                  y - 40,
+                  Color(255, 0, 0, 255),
+                  TEXT_ALIGN_CENTER
+               )
+            else
+               draw.SimpleText(
+                  "YOU MISSED",
+                  "ArcadeMedium",
+                  x,
+                  y,
+                  Color(255, 0, 0, 255),
+                  TEXT_ALIGN_CENTER,
+                  TEXT_ALIGN_CENTER
+               )
+               -- draw.DrawText(
+               --    "CHARGE\nLOST",
+               --    "ArcadeLarge",
+               --    x,
+               --    y - 200,
+               --    Color(255, 0, 0, 255),
+               --    TEXT_ALIGN_CENTER
+               -- )
+            end
+         end
+      cam.End2D()
+
+      render.PopRenderTarget()
+   end
+
+   function SWEP:DrawScreen()
+      -- this function draws all of the 2d stuff onto the rt
+      self:DrawScreenToRT()
+      -- then the rt gets drawn onto the 3d quad using the material (texture) we defined earlier
+      surface.SetMaterial(self.ScreenMaterial)
+      surface.SetDrawColor(255, 255, 255, 255)
+      -- this is important!!!
+      -- the reason we are drawing this rect at a "low" resolution is because we already have a very high res texture
+      -- it just gets scaled down to fit the tiny little screen.
+      local u = RT_WIDTH / self.ScreenRenderTarget:Width()
+      local v = RT_HEIGHT / self.ScreenRenderTarget:Height()
+
+      surface.DrawTexturedRectUV(
+         0,
+         0,
+         DISPLAY_W,
+         DISPLAY_H,
+         0,
+         0,
+         u,
+         v
+      )
+
+   -- print(
+   --    RT_WIDTH,
+   --    RT_HEIGHT,
+   --    self.ScreenRenderTarget:Width(),
+   --    self.ScreenRenderTarget:Height()
+   -- )
+   end
 end
 
 function SWEP:GetNextEmote()
@@ -298,99 +484,19 @@ function SWEP:GetNextEmote()
 
    return self.CurrentEmote
 end
+-- end evil 3d2d rendering/hud code
 
-function SWEP:DrawScreen()
-   local width = 65
-   local height = 38
-
-   local x = (width / 2) * -1
-   local y = (height / 2) * -1
-   local bgColor = Color(15, 15, 15, 255)
-   local rainbow = HSVToColor((CurTime() * 180) % 360, 1, 1)
-   local font = "DefaultBold"
-   local comboActive = self:GetComboActive()
-   local comboReady = self:Clip1() == self:GetMaxClip1()
-   local comboScore = self:GetComboScore()
-   local comboTimerStr = "TIMER: " .. tostring(math.Truncate(self:GetComboTimer() - CurTime(), 0))
-   local comboScoreStr = nil
-   local displayStr = nil
-   local scoreThreshold = 2
-
-   if comboActive then
-      -- setup final display string
-      comboScoreStr = "COMBO: " .. tostring(self:GetComboScore())
-      if comboScore == 2 then
-         comboScoreStr = comboScoreStr .. "!!"
-      elseif comboScore > 2 then
-         comboScoreStr = comboScoreStr .. "\n" .. self:GetNextEmote()
+function SWEP:Think()
+   if SERVER then
+      if self:GetComboActive() then
+         if CurTime() >= self:GetComboTimer() then self:ResetCombo() end
       end
 
-      displayStr = comboScoreStr .. "\n" .. comboTimerStr
-   end
-   
-   if comboActive and comboScore > scoreThreshold then
-      draw.RoundedBox(4, x, y, width, height, rainbow)
-   else
-      draw.RoundedBox(4, x, y, width, height, Color(15, 15, 15, 255))
-   end
-   
-   if comboReady or comboActive then
-      surface.SetDrawColor(rainbow)
-   else
-      surface.SetDrawColor(Color(255, 0, 0, 255))
-   end
-   
-   surface.DrawOutlinedRect(x, y, width, height)
-   
-   if comboActive then
-      if comboScore > scoreThreshold then
-         draw.DrawText(
-            displayStr,
-            font,
-            0, -21,
-            Color(255, 255, 255, 255),
-            TEXT_ALIGN_CENTER
-         )
-      else
-         draw.DrawText(
-            displayStr,
-            font,
-            0, -14,
-            rainbow,
-            TEXT_ALIGN_CENTER
-         )
-      end
-   elseif comboReady then
-      draw.SimpleText(
-         "READY",
-         font,
-         0, 0,
-         Color(0, 255, 0, 255),
-         TEXT_ALIGN_CENTER,
-         TEXT_ALIGN_CENTER
-      )
-   else
-      if self:GetScreenRandom() == 10 then
-         draw.DrawText(
-            "YOU MISSED \nTHAT ONE\nTRY ANOTHER",
-            "CreditsOutroText",
-            0, -14,
-            Color(255, 0, 0, 255),
-            TEXT_ALIGN_CENTER
-         )
-      else
-         draw.SimpleText(
-            "INACTIVE",
-            font,
-            0, 0,
-            Color(255, 0, 0, 255),
-            TEXT_ALIGN_CENTER,
-            TEXT_ALIGN_CENTER
-         )
+      if self:Clip1() == self:GetMaxClip1() and self:GetScreenRandom() == 10 then
+         self:SetScreenRandom(0)
       end
    end
 end
--- end evil 3d2d rendering/hud code
 
 function SWEP:PrimaryAttack( worldsnd )
    self.BaseClass.PrimaryAttack( self, worldsnd )
@@ -405,6 +511,10 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    
    self:GetOwner():MuzzleFlash()
    self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+
+   if IsFirstTimePredicted() and SERVER then
+      self:GetOwner():EmitSound("weapons/zapper/shoot0".. math.random(1, 3) .. ".wav")
+   end
    
    local sights = self:GetIronsights()
    
@@ -471,8 +581,9 @@ function SWEP:ComboCallback(ply, tr, dmginfo)
       -- this is here because headshots should always do 45 damage at base 
       or tr.HitGroup == HITGROUP_HEAD then
          dmginfo:SetDamage(45)
+         if self:GetScreenRandom() == 10 then self:SetScreenRandom(0) end
       else
-         self:SetScreenRandom(math.random(0, 10))
+         if self:GetScreenRandom() != 10 then self:SetScreenRandom(math.random(0, 10)) end
       end
       self:ResetCombo()
    end
@@ -526,4 +637,13 @@ end
 function SWEP:Holster()
    self:ResetCombo()
    return true
+end
+
+function SWEP:OnRemove()
+	if CLIENT then
+		if IsValid(self:GetOwner()) then
+			self:GetOwner():EmitSound( "weapons/zapper/die".. math.random( 11, 12 ) .. ".wav" )
+		end
+		return true        
+	end
 end

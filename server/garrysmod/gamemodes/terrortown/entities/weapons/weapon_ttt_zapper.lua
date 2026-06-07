@@ -475,12 +475,10 @@ if CLIENT then
       local comboScore = self:GetComboScore()
       local scoreThreshold = 2
       local finalScoreThreshold = 3
-
       local comboTimerLeft = math.max(0, math.floor((self:GetComboTimer() or CurTime()) - CurTime()))
       local comboTimerStr = "DISCHARGE\nIN " .. tostring(comboTimerLeft)
+      local comboScoreStr = nil
 
-      local comboScoreStr = nil
-      local comboScoreStr = nil
       if comboActive then
          comboScoreStr = tostring(comboScore)
          if comboScore == 2 then
@@ -497,123 +495,123 @@ if CLIENT then
       render.Clear(0, 0, 0, 255, true, true)
 
       cam.Start2D()
-         local bgColor = Color(15, 15, 15, 255)
-         local x = RT_WIDTH / 2
-         local y = RT_HEIGHT / 2
-         if comboActive and comboScore > scoreThreshold then
-            bgColor = rainbow
-         end
+      local bgColor = Color(15, 15, 15, 255)
+      local x = RT_WIDTH / 2
+      local y = RT_HEIGHT / 2
+      if comboActive and comboScore > scoreThreshold then
+         bgColor = rainbow
+      end
 
-         draw.RoundedBox(12, 0, 0, RT_WIDTH, RT_HEIGHT, bgColor)
+      draw.RoundedBox(12, 0, 0, RT_WIDTH, RT_HEIGHT, bgColor)
 
-         if comboReady then
-            surface.SetDrawColor(rainbow)
-         elseif comboActive then
-            if comboScore > scoreThreshold then
-               surface.SetDrawColor(rainbowDiff)
-            else
-               surface.SetDrawColor(rainbow)
-            end
+      if comboReady then
+         surface.SetDrawColor(rainbow)
+      elseif comboActive then
+         if comboScore > scoreThreshold then
+            surface.SetDrawColor(rainbowDiff)
          else
-            surface.SetDrawColor(Color(255, 0, 0, 255))
+            surface.SetDrawColor(rainbow)
          end
-         surface.DrawOutlinedRect(0, 0, RT_WIDTH, RT_HEIGHT, 50)
+      else
+         surface.SetDrawColor(Color(255, 0, 0, 255))
+      end
+      surface.DrawOutlinedRect(0, 0, RT_WIDTH, RT_HEIGHT, 50)
 
-         if comboActive then
-            if comboScore > finalScoreThreshold then
-               draw.DrawText(
-                  comboScoreStr,
-                  "ArcadeMassive",
-                  x,
-                  y - 450,
-                  rainbowDiff,
-                  TEXT_ALIGN_CENTER
-               )
-               draw.DrawText(
-                  self:GetNextEmote(),
-                  "ArcadeLarge",
-                  x,
-                  y - 150,
-                  rainbowDiff,
-                  TEXT_ALIGN_CENTER
-               )
-            elseif comboScore > scoreThreshold then
-               draw.DrawText(
-                  comboScoreStr,
-                  "ArcadeMassive",
-                  x,
-                  y - 250,
-                  color_white,
-                  TEXT_ALIGN_CENTER
-               )
-            else
-               draw.DrawText(
-                  comboScoreStr,
-                  "ArcadeMassive",
-                  x,
-                  y - 300,
-                  rainbow,
-                  TEXT_ALIGN_CENTER
-               )
-            end
-            
-            if comboScore > scoreThreshold then
-               draw.DrawText(
-                     comboTimerStr,
-                     "ArcadeSmall",
-                     x,
-                     y + 180,
-                     color_white,
-                     TEXT_ALIGN_CENTER
-                  )
-            else
-               draw.DrawText(
-                     comboTimerStr,
-                     "ArcadeSmall",
-                     x,
-                     y + 110,
-                     color_white,
-                     TEXT_ALIGN_CENTER
-                  )
-            end
-         elseif comboReady then
+      if comboActive then
+         if comboScore > finalScoreThreshold then
             draw.DrawText(
-               "CHARGED",
+               comboScoreStr,
+               "ArcadeMassive",
+               x,
+               y - 450,
+               rainbowDiff,
+               TEXT_ALIGN_CENTER
+            )
+            draw.DrawText(
+               self:GetNextEmote(),
                "ArcadeLarge",
                x,
-               y - 100,
-               Color(0, 255, 0, 255),
+               y - 150,
+               rainbowDiff,
+               TEXT_ALIGN_CENTER
+            )
+         elseif comboScore > scoreThreshold then
+            draw.DrawText(
+               comboScoreStr,
+               "ArcadeMassive",
+               x,
+               y - 250,
+               color_white,
                TEXT_ALIGN_CENTER
             )
          else
-            if self:GetScreenRandom() == 10 then
-               draw.DrawText(
-                  "YOU MISSED\nTHAT ONE\nTRY ANOTHER",
+            draw.DrawText(
+               comboScoreStr,
+               "ArcadeMassive",
+               x,
+               y - 300,
+               rainbow,
+               TEXT_ALIGN_CENTER
+            )
+         end
+         
+         if comboScore > scoreThreshold then
+            draw.DrawText(
+                  comboTimerStr,
                   "ArcadeSmall",
                   x,
-                  y - 160,
-                  Color(255, 0, 0, 255),
+                  y + 180,
+                  color_white,
                   TEXT_ALIGN_CENTER
                )
-            else
-               draw.DrawText(
-                  "CHARGE\nLOST",
-                  "ArcadeLarge",
+         else
+            draw.DrawText(
+                  comboTimerStr,
+                  "ArcadeSmall",
                   x,
-                  y - 160,
-                  Color(255, 0, 0, 255),
+                  y + 110,
+                  color_white,
                   TEXT_ALIGN_CENTER
                )
-               -- draw.DrawText(
-               --    "CHARGE\nLOST",
-               --    "ArcadeLarge",
-               --    x,
-               --    y - 200,
-               --    Color(255, 0, 0, 255),
-               --    TEXT_ALIGN_CENTER
-               -- )
-            end
          end
+      elseif comboReady then
+         draw.DrawText(
+            "CHARGED",
+            "ArcadeLarge",
+            x,
+            y - 100,
+            Color(0, 255, 0, 255),
+            TEXT_ALIGN_CENTER
+         )
+      else
+         if self:GetScreenRandom() == 10 then
+            draw.DrawText(
+               "YOU MISSED\nTHAT ONE\nTRY ANOTHER",
+               "ArcadeSmall",
+               x,
+               y - 160,
+               Color(255, 0, 0, 255),
+               TEXT_ALIGN_CENTER
+            )
+         else
+            draw.DrawText(
+               "CHARGE\nLOST",
+               "ArcadeLarge",
+               x,
+               y - 160,
+               Color(255, 0, 0, 255),
+               TEXT_ALIGN_CENTER
+            )
+            -- draw.DrawText(
+            --    "CHARGE\nLOST",
+            --    "ArcadeLarge",
+            --    x,
+            --    y - 200,
+            --    Color(255, 0, 0, 255),
+            --    TEXT_ALIGN_CENTER
+            -- )
+         end
+      end
       cam.End2D()
       render.PopRenderTarget()
    end

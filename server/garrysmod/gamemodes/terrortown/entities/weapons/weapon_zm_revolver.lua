@@ -86,7 +86,7 @@ local COMBO_SHOOT_DELAY = 0.1
 local NO_COMBO_SHOOT_DELAY = 0.6
 local RECOIL_NO_COMBO = 6
 local RECOIL_COMBO = 3
-local COMBO_TIMER_AMT_SEC = 999
+local COMBO_TIMER_AMT_SEC = 10
 local EMOTES = {
    ":3",
    ":)",
@@ -306,9 +306,9 @@ if CLIENT then
       end
    end
 
-   surface.CreateFont("ArcadeMedium", {
+   surface.CreateFont("ArcadeSmall", {
       font = "Press Start 2P",
-      size = 200,
+      size = 130,
       weight = 500,
       antialias = true,
       extended = true
@@ -318,6 +318,14 @@ if CLIENT then
       font = "Press Start 2P",
       size = 180,
       weight = 700,
+      antialias = true,
+      extended = true
+   })
+
+   surface.CreateFont("ArcadeMassive", {
+      font = "Press Start 2P",
+      size = 1000,
+      weight = 1000,
       antialias = true,
       extended = true
    })
@@ -336,12 +344,11 @@ if CLIENT then
       local comboTimerStr = "DISCHARGE\nIN " .. tostring(comboTimerLeft)
 
       local comboScoreStr = nil
+      local comboScoreStr = nil
       if comboActive then
          comboScoreStr = tostring(comboScore)
-         if comboScore == 2 then
+         if comboScore >= 2 then
             comboScoreStr = comboScoreStr .. "!!"
-         elseif comboScore > 2 then
-            comboScoreStr = comboScoreStr .. "\n" .. tostring(self:GetNextEmote())
          end
       end
 
@@ -369,32 +376,51 @@ if CLIENT then
             if comboScore > scoreThreshold then
                draw.DrawText(
                   comboScoreStr,
+                  "ArcadeMassive",
+                  x,
+                  y - 450,
+                  color_white,
+                  TEXT_ALIGN_CENTER
+               )
+
+               draw.DrawText(
+                  self:GetNextEmote(),
                   "ArcadeLarge",
                   x,
-                  y - 40,
+                  y - 150,
                   color_white,
                   TEXT_ALIGN_CENTER
                )
             else
                draw.DrawText(
                   comboScoreStr,
-                  "HealthAmmo",
+                  "ArcadeMassive",
                   x,
-                  y - 55,
+                  y - 300,
                   rainbow,
                   TEXT_ALIGN_CENTER
                )
-
-               draw.DrawText(
-                  comboTimerStr,
-                  "CreditsOutroText",
-                  x,
-                  y + 30,
-                  color_white,
-                  TEXT_ALIGN_CENTER
-               )
             end
-
+            
+            if comboScore > scoreThreshold then
+               draw.DrawText(
+                     comboTimerStr,
+                     "ArcadeSmall",
+                     x,
+                     y + 200,
+                     color_white,
+                     TEXT_ALIGN_CENTER
+                  )
+            else
+               draw.DrawText(
+                     comboTimerStr,
+                     "ArcadeSmall",
+                     x,
+                     y + 110,
+                     color_white,
+                     TEXT_ALIGN_CENTER
+                  )
+            end
          elseif comboReady then
             draw.DrawText(
                "CHARGED",
@@ -408,20 +434,19 @@ if CLIENT then
             if self:GetScreenRandom() == 10 then
                draw.DrawText(
                   "YOU MISSED\nTHAT ONE\nTRY ANOTHER",
-                  "ArcadeLarge",
+                  "ArcadeSmall",
                   x,
-                  y - 40,
+                  y - 160,
                   Color(255, 0, 0, 255),
                   TEXT_ALIGN_CENTER
                )
             else
-               draw.SimpleText(
-                  "YOU MISSED",
-                  "ArcadeMedium",
+               draw.DrawText(
+                  "CHARGE\nLOST",
+                  "ArcadeLarge",
                   x,
-                  y,
+                  y - 160,
                   Color(255, 0, 0, 255),
-                  TEXT_ALIGN_CENTER,
                   TEXT_ALIGN_CENTER
                )
                -- draw.DrawText(

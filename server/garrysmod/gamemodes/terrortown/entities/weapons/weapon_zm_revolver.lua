@@ -86,7 +86,9 @@ local COMBO_SHOOT_DELAY = 0.1
 local NO_COMBO_SHOOT_DELAY = 0.6
 local RECOIL_NO_COMBO = 6
 local RECOIL_COMBO = 3
-local COMBO_TIMER_AMT_SEC = 10
+local CONE_COMBO = 0
+local CONE_NO_COMBO = 0.1
+local COMBO_TIMER_AMT_SEC = 30
 local EMOTES = {
    ":3",
    ":)",
@@ -105,7 +107,7 @@ SWEP.HoldType              = "revolver"
 SWEP.ReloadHoldType        = "pistol"
 
 if CLIENT then
-   SWEP.PrintName          = "Deagle"
+   SWEP.PrintName          = "NES Zapper"
    SWEP.Slot               = 1
    SWEP.ViewModelFOV       = 75
    SWEP.Icon               = "vgui/ttt/icon_deagle"
@@ -172,7 +174,170 @@ function SWEP:Initialize()
    self:SetScreenRandom(math.random(0, 10))
 end
 
+function SWEP:Think()
+   if SERVER then
+      if self:GetComboActive() then
+         if CurTime() >= self:GetComboTimer() then self:ResetCombo() end
+      end
+
+      if self:Clip1() == self:GetMaxClip1() and self:GetScreenRandom() == 10 then
+         self:SetScreenRandom(0)
+      end
+   end
+end
+
+function SWEP:PrimaryAttack( worldsnd )
+   self.BaseClass.PrimaryAttack( self, worldsnd )
+   self:SetNextSecondaryFire( CurTime() + 0.1 )
+end
+
+function SWEP:ShootBullet( dmg, recoil, numbul, cone )
+   -- this function is overridden to handle the combo mechanic
+   -- 99% of this code is copypasted from weapon_tttbase
+   -- can't just call it from here either using BaseClass because i need to mess with the bullet.Callback part of the table
+   self:SendWeaponAnim(self.PrimaryAnim)
+   
+   self:GetOwner():MuzzleFlash()
+   self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+
+   if IsFirstTimePredicted() and SERVER then
+      self:GetOwner():EmitSound("weapons/zapper/shoot0".. math.random(1, 3) .. ".wav")
+   end
+   
+   local sights = self:GetIronsights()
+   
+   numbul = numbul or 1
+   cone   = cone   or 0.01
+   
+   local bullet = {}
+   bullet.Num        = numbul
+   bullet.Src        = self:GetOwner():GetShootPos()
+   bullet.Dir        = self:GetOwner():GetAimVector()
+   bullet.Spread     = Vector( cone, cone, 0 )
+   bullet.Tracer     = 1
+   bullet.TracerName = self.Tracer or "Tracer"
+   bullet.Force      = 10
+   bullet.Damage     = dmg
+   bullet.Attacker   = self:GetOwner()
+   bullet.Inflictor  = self
+   bullet.Callback   = function(ply, tr, dmginfo)
+      return self:ComboCallback(ply, tr, dmginfo)
+   end
+   
+   self:GetOwner():FireBullets( bullet )
+   
+   -- Owner can die after firebullets
+   if (not IsValid(self:GetOwner())) or self:GetOwner():IsNPC() or (not self:GetOwner():Alive()) then return end
+   
+   if ((game.SinglePlayer() and SERVER) or
+   ((not game.SinglePlayer()) and CLIENT and IsFirstTimePredicted())) then
+      
+      -- reduce recoil if ironsighting
+      recoil = sights and (recoil * 0.6) or recoil
+      
+      local eyeang = self:GetOwner():EyeAngles()
+      eyeang.pitch = eyeang.pitch - recoil
+      self:GetOwner():SetEyeAngles( eyeang )
+   end
+end
+
+function SWEP:ComboCallback(ply, tr, dmginfo)
+   -- conditions for activating/continuing combo
+   if tr.HitGroup == HITGROUP_HEAD and 
+   -- is a combo already active or was the first shot of the mag a headshot?
+   (self:Clip1() == self:GetMaxClip1() or self:GetComboActive()) and 
+   -- only run on server
+   SERVER and
+   -- only care about shots that actually hit an entity
+   IsValid(tr.Entity)
+   then
+      if not self:GetComboActive() 
+      then 
+         self:SetComboActive(true)
+         self:SetComboTimer(CurTime() + COMBO_TIMER_AMT_SEC) 
+      else
+         self:SetComboTimer(self:GetComboTimer() + COMBO_TIMER_AMT_SEC)
+      end
+      self:SetComboScore(self:GetComboScore() + 1)
+      
+      self:SetNextPrimaryFire(CurTime() + COMBO_SHOOT_DELAY)
+      self.Primary.Recoil = RECOIL_COMBO
+      dmginfo:SetDamage(tr.Entity:GetMaxHealth())
+   else
+      -- reward combos that end with a bodyshot with the same damage as a non combo headshot (45)
+      if ((tr.HitGroup != 0) and self:GetComboActive())
+      -- this is here because headshots should always do 45 damage at base 
+      or tr.HitGroup == HITGROUP_HEAD then
+         dmginfo:SetDamage(45)
+         if self:GetScreenRandom() == 10 then self:SetScreenRandom(0) end
+      else
+         if self:GetScreenRandom() != 10 then self:SetScreenRandom(math.random(0, 10)) end
+      end
+      self:ResetCombo()
+   end
+end
+
+function SWEP:PlayComboSfx(score, scoreOld)
+   if SERVER then return end
+   local soundStr = "deaglecombo/combo"
+   
+   if score < scoreOld and GetRoundState() == ROUND_ACTIVE then
+      if scoreOld == 1 then
+         soundStr = soundStr .. "loss01.wav"
+      elseif scoreOld >= 2 then
+         soundStr = soundStr .. "loss0" .. tostring(math.random(2, 3)) .. ".wav"
+      end
+   else
+      if score == 1 then
+         soundStr = soundStr .. "0" .. tostring(math.random(1, 3)) .. ".wav"
+      elseif score == 2 then
+         soundStr = soundStr .. "0" .. tostring(math.random(4, 5)) .. ".wav"
+      elseif score == 3 then
+         soundStr = soundStr .. "0" .. tostring(math.random(6, 7)) .. ".wav"
+      else
+         soundStr = soundStr .. "08.wav"
+      end
+   end
+   sound.Play(soundStr, self:GetPos(), SNDLVL_NONE, 100, 1)
+end
+
+function SWEP:ResetCombo()
+   if SERVER then
+      self:SetNextPrimaryFire(CurTime() + NO_COMBO_SHOOT_DELAY)
+      self.Primary.Recoil = RECOIL_NO_COMBO
+      self:SetComboActive(false)
+      self:SetComboScore(0)
+   end
+end
+
+function SWEP:PreDrop()
+   self:ResetCombo()
+   return self.BaseClass.PreDrop(self)
+end
+
+function SWEP:Reload()
+   if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
+   if self:Clip1() >= self:GetMaxClip1() then return end
+   self:DefaultReload( ACT_VM_RELOAD )
+   self:ResetCombo()
+end
+
+function SWEP:Holster()
+   self:ResetCombo()
+   return true
+end
+
+function SWEP:OnRemove()
+	if CLIENT then
+		if IsValid(self:GetOwner()) then
+			self:GetOwner():EmitSound( "weapons/zapper/die".. math.random( 11, 12 ) .. ".wav" )
+		end
+		return true        
+	end
+end
+
 -- gun hud 3d2d stuff stolen from this addon: https://steamcommunity.com/sharedfiles/filedetails/?id=2860986215
+-- i also modified it a lot :)
 if CLIENT then
 	function SWEP:ViewModelDrawn()
 		local vm = self:GetOwner() and self:GetOwner():GetViewModel()
@@ -280,7 +445,12 @@ if CLIENT then
          end
       }
    }
-
+   
+   -- NOTE: the resolution of the rendertarget is evil.
+   -- if you change it, sometimes the server needs to be reloaded for it to not bug out.
+   -- also, the resolution of the display needs to match the aspect ratio of the render target's resolution!
+   -- i.e 48 / 32 = 1.5, 1536 / 1024 = 1.5. 
+   -- if that doesn't happen, the display will look worse than it otherwise should.
    local DISPLAY_W = 48
    local DISPLAY_H = 32
    local RT_WIDTH = 1536
@@ -288,6 +458,7 @@ if CLIENT then
 
    function SWEP:CreateScreen()
       if not self.ScreenRenderTarget then
+         -- create our render target. this is the thing that we actually draw to with our 2d function calls
          self.ScreenRenderTarget = GetRenderTarget(
             "ComboScreenRenderTarget",
             RT_WIDTH,
@@ -295,6 +466,7 @@ if CLIENT then
          )
       end
 
+      -- create our material (texture). this is what the render target is drawn onto
       if not self.ScreenMaterial then
          self.ScreenMaterial = CreateMaterial("ComboScreenMaterial", "UnlitGeneric", {
             ["$basetexture"] = self.ScreenRenderTarget:GetName(),
@@ -331,14 +503,16 @@ if CLIENT then
    })
 
    function SWEP:DrawScreenToRT()
+      -- create our rt/material
       self:CreateScreen()
 
       local rainbow = HSVToColor((CurTime() * 180) % 360, 1, 1)
-
+      local rainbowDiff = HSVToColor((CurTime() * 360) % 360, 1, 1)
       local comboActive = self:GetComboActive()
       local comboReady = self:Clip1() == self:GetMaxClip1()
       local comboScore = self:GetComboScore()
       local scoreThreshold = 2
+      local finalScoreThreshold = 3
 
       local comboTimerLeft = math.max(0, math.floor((self:GetComboTimer() or CurTime()) - CurTime()))
       local comboTimerStr = "DISCHARGE\nIN " .. tostring(comboTimerLeft)
@@ -347,11 +521,16 @@ if CLIENT then
       local comboScoreStr = nil
       if comboActive then
          comboScoreStr = tostring(comboScore)
-         if comboScore >= 2 then
+         if comboScore == 2 then
             comboScoreStr = comboScoreStr .. "!!"
+         elseif comboScore == 3 then
+            comboScoreStr = comboScoreStr .. "!!!"
+         elseif comboScore >= 4 then
+            comboScoreStr = comboScoreStr .. "!!!!"
          end
       end
 
+      -- setup the rt to be drawn onto
       render.PushRenderTarget(self.ScreenRenderTarget)
       render.Clear(0, 0, 0, 255, true, true)
 
@@ -365,29 +544,43 @@ if CLIENT then
 
          draw.RoundedBox(12, 0, 0, RT_WIDTH, RT_HEIGHT, bgColor)
 
-         if comboReady or comboActive then
+         if comboReady then
             surface.SetDrawColor(rainbow)
+         elseif comboActive then
+            if comboScore > scoreThreshold then
+               surface.SetDrawColor(rainbowDiff)
+            else
+               surface.SetDrawColor(rainbow)
+            end
          else
             surface.SetDrawColor(Color(255, 0, 0, 255))
          end
          surface.DrawOutlinedRect(0, 0, RT_WIDTH, RT_HEIGHT, 50)
 
          if comboActive then
-            if comboScore > scoreThreshold then
+            if comboScore > finalScoreThreshold then
                draw.DrawText(
                   comboScoreStr,
                   "ArcadeMassive",
                   x,
                   y - 450,
-                  color_white,
+                  rainbowDiff,
                   TEXT_ALIGN_CENTER
                )
-
                draw.DrawText(
                   self:GetNextEmote(),
                   "ArcadeLarge",
                   x,
                   y - 150,
+                  rainbowDiff,
+                  TEXT_ALIGN_CENTER
+               )
+            elseif comboScore > scoreThreshold then
+               draw.DrawText(
+                  comboScoreStr,
+                  "ArcadeMassive",
+                  x,
+                  y - 250,
                   color_white,
                   TEXT_ALIGN_CENTER
                )
@@ -407,7 +600,7 @@ if CLIENT then
                      comboTimerStr,
                      "ArcadeSmall",
                      x,
-                     y + 200,
+                     y + 180,
                      color_white,
                      TEXT_ALIGN_CENTER
                   )
@@ -460,7 +653,6 @@ if CLIENT then
             end
          end
       cam.End2D()
-
       render.PopRenderTarget()
    end
 
@@ -470,12 +662,28 @@ if CLIENT then
       -- then the rt gets drawn onto the 3d quad using the material (texture) we defined earlier
       surface.SetMaterial(self.ScreenMaterial)
       surface.SetDrawColor(255, 255, 255, 255)
-      -- this is important!!!
-      -- the reason we are drawing this rect at a "low" resolution is because we already have a very high res texture
-      -- it just gets scaled down to fit the tiny little screen.
+      -- these are frankly frightening to me. 
+      -- they are here because without them, and the SurfaceDrawTexturedRectUV function call
+      -- the rt (or the material that uses the rt) is not drawn properly on the screen.
+      -- by "not drawn properly": i mean the final image will either be cut off or otherwise incorrect.
+
+      -- from what i understand (as a result of asking chatgpt to explain it for me 💀):
+      -- occasionally, the engine will create a texture using the rendertarget as a base,
+      -- that is not the same size as the rendertarget itself.
+      -- so, we figure out where exactly the actual usable part of the texture is located and then
+      -- only draw the part that we want.
+      -- this is the math that figures that out, 
+      -- then we reference these coordinates when drawing our texture.
       local u = RT_WIDTH / self.ScreenRenderTarget:Width()
       local v = RT_HEIGHT / self.ScreenRenderTarget:Height()
 
+      -- this is important!!!
+      -- the reason we are drawing this rect at a "low" resolution is because we already have a very high res texture
+      -- it just gets scaled down to fit the tiny little screen.
+      -- but, the screen is still high resolution enough to fit nice looking fonts for text.
+      -- this is much better than drawing 20px large fonts which look terrible.
+      -- ofc the final product is still scaled down onto the small screen 
+      -- but this still looks much better than the alternative.
       surface.DrawTexturedRectUV(
          0,
          0,
@@ -510,165 +718,3 @@ function SWEP:GetNextEmote()
    return self.CurrentEmote
 end
 -- end evil 3d2d rendering/hud code
-
-function SWEP:Think()
-   if SERVER then
-      if self:GetComboActive() then
-         if CurTime() >= self:GetComboTimer() then self:ResetCombo() end
-      end
-
-      if self:Clip1() == self:GetMaxClip1() and self:GetScreenRandom() == 10 then
-         self:SetScreenRandom(0)
-      end
-   end
-end
-
-function SWEP:PrimaryAttack( worldsnd )
-   self.BaseClass.PrimaryAttack( self, worldsnd )
-   self:SetNextSecondaryFire( CurTime() + 0.1 )
-end
-
-function SWEP:ShootBullet( dmg, recoil, numbul, cone )
-   -- this function is overridden to handle the combo mechanic
-   -- 99% of this code is copypasted from weapon_tttbase
-   -- can't just call it from here either using BaseClass because i need to mess with the bullet.Callback part of the table
-   self:SendWeaponAnim(self.PrimaryAnim)
-   
-   self:GetOwner():MuzzleFlash()
-   self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
-
-   if IsFirstTimePredicted() and SERVER then
-      self:GetOwner():EmitSound("weapons/zapper/shoot0".. math.random(1, 3) .. ".wav")
-   end
-   
-   local sights = self:GetIronsights()
-   
-   numbul = numbul or 1
-   cone   = cone   or 0.01
-   
-   local bullet = {}
-   bullet.Num        = numbul
-   bullet.Src        = self:GetOwner():GetShootPos()
-   bullet.Dir        = self:GetOwner():GetAimVector()
-   bullet.Spread     = Vector( cone, cone, 0 )
-   bullet.Tracer     = 1
-   bullet.TracerName = self.Tracer or "Tracer"
-   bullet.Force      = 10
-   bullet.Damage     = dmg
-   bullet.Attacker   = self:GetOwner()
-   bullet.Inflictor  = self
-   bullet.Callback   = function(ply, tr, dmginfo)
-      return self:ComboCallback(ply, tr, dmginfo)
-   end
-   
-   self:GetOwner():FireBullets( bullet )
-   
-   -- Owner can die after firebullets
-   if (not IsValid(self:GetOwner())) or self:GetOwner():IsNPC() or (not self:GetOwner():Alive()) then return end
-   
-   if ((game.SinglePlayer() and SERVER) or
-   ((not game.SinglePlayer()) and CLIENT and IsFirstTimePredicted())) then
-      
-      -- reduce recoil if ironsighting
-      recoil = sights and (recoil * 0.6) or recoil
-      
-      local eyeang = self:GetOwner():EyeAngles()
-      eyeang.pitch = eyeang.pitch - recoil
-      self:GetOwner():SetEyeAngles( eyeang )
-   end
-end
-
-function SWEP:ComboCallback(ply, tr, dmginfo)
-   -- conditions for activating/continuing combo
-   if tr.HitGroup == HITGROUP_HEAD and 
-   -- is a combo already active or was the first shot of the mag a headshot?
-   (self:Clip1() == self:GetMaxClip1() or self:GetComboActive()) and 
-   -- only run on server
-   SERVER and
-   -- only care about shots that actually hit an entity
-   IsValid(tr.Entity)
-   then
-      if not self:GetComboActive() 
-      then 
-         self:SetComboActive(true)
-         self:SetComboTimer(CurTime() + COMBO_TIMER_AMT_SEC) 
-      else
-         self:SetComboTimer(self:GetComboTimer() + COMBO_TIMER_AMT_SEC)
-      end
-      self:SetComboScore(self:GetComboScore() + 1)
-      
-      self:SetNextPrimaryFire(CurTime() + COMBO_SHOOT_DELAY)
-      self.Primary.Recoil = RECOIL_COMBO
-      dmginfo:SetDamage(tr.Entity:GetMaxHealth())
-   else
-      -- reward combos that end with a bodyshot with the same damage as a non combo headshot (45)
-      if ((tr.HitGroup == HITGROUP_STOMACH or tr.HitGroup == HITGROUP_CHEST) and self:GetComboActive())
-      -- this is here because headshots should always do 45 damage at base 
-      or tr.HitGroup == HITGROUP_HEAD then
-         dmginfo:SetDamage(45)
-         if self:GetScreenRandom() == 10 then self:SetScreenRandom(0) end
-      else
-         if self:GetScreenRandom() != 10 then self:SetScreenRandom(math.random(0, 10)) end
-      end
-      self:ResetCombo()
-   end
-end
-
-function SWEP:PlayComboSfx(score, scoreOld)
-   if SERVER then return end
-   local soundStr = "deaglecombo/combo"
-   
-   if score < scoreOld and GetRoundState() == ROUND_ACTIVE then
-      if scoreOld == 1 then
-         soundStr = soundStr .. "loss01.wav"
-      elseif scoreOld >= 2 then
-         soundStr = soundStr .. "loss0" .. tostring(math.random(2, 3)) .. ".wav"
-      end
-   else
-      if score == 1 then
-         soundStr = soundStr .. "0" .. tostring(math.random(1, 3)) .. ".wav"
-      elseif score == 2 then
-         soundStr = soundStr .. "0" .. tostring(math.random(4, 5)) .. ".wav"
-      elseif score == 3 then
-         soundStr = soundStr .. "0" .. tostring(math.random(6, 7)) .. ".wav"
-      else
-         soundStr = soundStr .. "08.wav"
-      end
-   end
-   sound.Play(soundStr, self:GetPos(), SNDLVL_NONE, 100, 1)
-end
-
-function SWEP:ResetCombo()
-   if SERVER then
-      self:SetNextPrimaryFire(CurTime() + NO_COMBO_SHOOT_DELAY)
-      self.Primary.Recoil = RECOIL_NO_COMBO
-      self:SetComboActive(false)
-      self:SetComboScore(0)
-   end
-end
-
-function SWEP:PreDrop()
-   self:ResetCombo()
-   return self.BaseClass.PreDrop(self)
-end
-
-function SWEP:Reload()
-   if ( self:Clip1() == self.Primary.ClipSize or self:GetOwner():GetAmmoCount( self.Primary.Ammo ) <= 0 ) then return end
-   if self:Clip1() >= self:GetMaxClip1() then return end
-   self:DefaultReload( ACT_VM_RELOAD )
-   self:ResetCombo()
-end
-
-function SWEP:Holster()
-   self:ResetCombo()
-   return true
-end
-
-function SWEP:OnRemove()
-	if CLIENT then
-		if IsValid(self:GetOwner()) then
-			self:GetOwner():EmitSound( "weapons/zapper/die".. math.random( 11, 12 ) .. ".wav" )
-		end
-		return true        
-	end
-end

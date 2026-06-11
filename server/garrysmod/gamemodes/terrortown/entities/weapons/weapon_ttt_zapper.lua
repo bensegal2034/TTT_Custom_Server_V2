@@ -287,10 +287,10 @@ function SWEP:ComboCallback(ply, tr, dmginfo)
 end
 
 function SWEP:PlayComboSfx(score, scoreOld)
-   if SERVER then return end
+   if SERVER or GetRoundState() != ROUND_ACTIVE then return end
    local soundStr = "deaglecombo/combo"
    
-   if score < scoreOld and GetRoundState() == ROUND_ACTIVE then
+   if score < scoreOld then
       if scoreOld == 1 then
          soundStr = soundStr .. "loss01.wav"
       elseif scoreOld >= 2 then

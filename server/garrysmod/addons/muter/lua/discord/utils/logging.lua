@@ -1,4 +1,4 @@
-CreateConVar("discord_debug", 0, 1, "Print debug messages to console.")
+CreateConVar("discord_debug", 0, 0, "Print debug messages to console.")
 
 local enableDebugLogging = GetConVar("discord_debug"):GetBool()
 

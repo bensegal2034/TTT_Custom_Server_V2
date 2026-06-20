@@ -66,17 +66,17 @@ function unmutePlayer(target_ply)
   end
 
   if not IsValid(target_ply) then
-    print("Requested entity to unmute was not valid")
+    print_debug("Requested entity to unmute was not valid")
     return nil
   end
 
   if not steamIDToDiscordIDConnectionTable[target_ply:SteamID()] then
-    print("Could not look up" .. tostring(target_ply) .. "'s Discord ID from their Steam ID in the lookup table to unmute!")
+    print_debug("Could not look up" .. tostring(target_ply) .. "'s Discord ID from their Steam ID in the lookup table to unmute!")
     return nil
   end
 
   if not isMuted(target_ply) then
-    print(tostring(target_ply) .. "was not muted when attempting to unmute")
+    print_debug(tostring(target_ply) .. "was not muted when attempting to unmute")
     return nil
   end
 
@@ -226,7 +226,7 @@ net.Receive("request_addonVersion", function(len, calling_ply)
 end);
 
 hook.Add("PlayerSay", "discord_PlayerSay", function(target_ply, msg)
-  print("PlayerSay hook called (discord_PlayerSay)");
+  print_debug("PlayerSay hook called (discord_PlayerSay)");
   if (string.sub(msg, 1, 9) ~= "!discord ") then return; end
   tag = string.sub(msg, 10);
   tag_utf8 = "";
@@ -257,7 +257,7 @@ hook.Add("PlayerSay", "discord_PlayerSay", function(target_ply, msg)
 end);
 
 hook.Add("PlayerInitialSpawn", "discord_PlayerInitialSpawn", function(target_ply)
-  print("PlayerInitialSpawn hook called (discord_PlayerInitialSpawn)");
+  print_debug("PlayerInitialSpawn hook called (discord_PlayerInitialSpawn)");
   if (steamIDToDiscordIDConnectionTable[target_ply:SteamID()]) then
     playerMessage("WELCOME_CONNECTED", target_ply);
   else
@@ -287,17 +287,17 @@ hook.Add("PlayerInitialSpawn", "discord_PlayerInitialSpawn", function(target_ply
 end);
 
 hook.Add("ConnectPlayer", "discord_ConnectPlayer", function(target_ply, discordID)
-  print("ConnectPlayer hook called (discord_ConnectPlayer)");
+  print_debug("ConnectPlayer hook called (discord_ConnectPlayer)");
   addConnectionID(target_ply, discordID);
 end);
 
 hook.Add("DisconnectPlayer", "discord_DisconnectPlayer", function(target_ply)
-  print("DisconnectPlayer hook called (discord_DisconnectPlayer)");
+  print_debug("DisconnectPlayer hook called (discord_DisconnectPlayer)");
   removeConnectionID(target_ply);
 end);
 
 hook.Add("MutePlayer", "discord_MutePlayer", function(target_ply, duration)
-  print("MutePlayer hook called (discord_MutePlayer)");
+  print_debug("MutePlayer hook called (discord_MutePlayer)");
   if (duration > 0) then
     mutePlayer(target_ply, duration);
   else
@@ -306,7 +306,7 @@ hook.Add("MutePlayer", "discord_MutePlayer", function(target_ply, duration)
 end);
 
 hook.Add("UnmutePlayer", "discord_UnmutePlayer", function(target_ply)
-  print("UnmutePlayer hook called (discord_UnmutePlayer)");
+  print_debug("UnmutePlayer hook called (discord_UnmutePlayer)");
   -- If the player is dead and the round is still going on, do NOT unmute them
   if (not target_ply:Alive() and commonRoundState() == 1) then
     return nil;
@@ -315,34 +315,34 @@ hook.Add("UnmutePlayer", "discord_UnmutePlayer", function(target_ply)
 end);
 
 hook.Add("PlayerSpawn", "discord_PlayerSpawn", function(target_ply)
-  print("PlayerSpawn hook called (discord_PlayerSpawn)");
+  print_debug("PlayerSpawn hook called (discord_PlayerSpawn)");
   unmutePlayer(target_ply);
 end);
 
 hook.Add("PlayerDisconnected", "discord_PlayerDisconnected", function(target_ply)
-  print("PlayerDisconnected hook called (discord_PlayerDisconnected)");
+  print_debug("PlayerDisconnected hook called (discord_PlayerDisconnected)");
   unmutePlayer(target_ply);
 end);
 
 hook.Add("ShutDown", "discord_ShutDown", function()
-  print("ShutDown hook called (discord_ShutDown)");
+  print_debug("ShutDown hook called (discord_ShutDown)");
   unmutePlayer();
 end);
 
 hook.Add("OnEndRound", "discord_OnEndRound", function()
-  print("OnEndRound hook called (discord_OnEndRound)");
+  print_debug("OnEndRound hook called (discord_OnEndRound)");
   timer.Simple(0.5, function()
     unmutePlayer();
   end);
 end);
 
 hook.Add("OnStartRound", "discord_OnStartRound", function()
-  print("OnStartRound hook called (discord_OnStartRound)");
+  print_debug("OnStartRound hook called (discord_OnStartRound)");
   unmutePlayer();
 end);
 
 hook.Add("PostPlayerDeath", "discord_PostPlayerDeath", function(target_ply)
-  print("PostPlayerDeath hook called (discord_PostPlayerDeath)");
+  print_debug("PostPlayerDeath hook called (discord_PostPlayerDeath)");
   if (commonRoundState() == 1) then
     if (GetConVar("discord_mute_round"):GetBool()) then
       mutePlayer(target_ply);
@@ -355,13 +355,13 @@ end);
 
 -- TTT Specific
 hook.Add("TTTEndRound", "discord_TTTEndRound", function()
-  print("TTTEndRound hook called (discord_TTTEndRound)");
+  print_debug("TTTEndRound hook called (discord_TTTEndRound)");
   timer.Simple(0.1, function()
     unmutePlayer();
   end);
 end);
 
 hook.Add("TTTBeginRound", "discord_TTTBeginRound", function()
-  print("TTTBeginRound hook called (discord_TTTBeginRound)");
+  print_debug("TTTBeginRound hook called (discord_TTTBeginRound)");
   unmutePlayer();
 end);

@@ -51,43 +51,41 @@ if SERVER then
 	end
 	
 	function ENT:Use( activator, caller )
-	end  
+	end 
+
+	function ENT:Pop()
+		local effectdata = EffectData()
+		effectdata:SetOrigin(self:GetPos())
+		effectdata:SetNormal(Vector(0,0,1))
+		effectdata:SetEntity(self)
+		effectdata:SetScale(1)
+		util.Effect( "needler_pop_halo3", effectdata )
+		self:EmitSound("halo3/needler_burst_" .. math.random(1, 2) .. ".ogg")
+
+		local parent = self:GetParent()
+		if IsValid(parent) then
+			-- ensure we don't go below 0 needles with math.max
+			parent:SetNW2Int("HaloNeedles", math.max(parent:GetNW2Int("HaloNeedles", 0) - 1, 0))
+		end
+
+		SafeRemoveEntity(self)
+	end
 	
 	function ENT:Think()
-		
 		if self:WaterLevel() > 0 then
-			local effectdata = EffectData()
-			effectdata:SetOrigin(self:GetPos())
-			effectdata:SetNormal(Vector(0,0,1))
-			effectdata:SetEntity(self)
-			effectdata:SetScale(1)
-			util.Effect( "needler_pop_halo3", effectdata )
-			self:EmitSound("halo3/needler_burst_" .. math.random(1, 2) .. ".ogg")
-			if IsValid(self:GetParent()) and self:GetParent():IsNPC() or self:GetParent():IsPlayer() or self:GetParent():IsNextBot() then self:GetParent():SetNW2Int( "Niko663HaloSWEPSNeedles", self:GetParent():GetNW2Int( "Niko663HaloSWEPSNeedles" ) -1 )
-			end
-			SafeRemoveEntity(self)
+			self:Pop()
 		end
-		
 		
 		if self.NeedlerLifeTime < CurTime() then
-			local effectdata = EffectData()
-			effectdata:SetOrigin(self:GetPos())
-			effectdata:SetNormal(Vector(0,0,1))
-			effectdata:SetEntity(self)
-			effectdata:SetScale(1)
-			util.Effect( "needler_pop_halo3", effectdata )
-			self:EmitSound("halo3/needler_burst_" .. math.random(1, 2) .. ".ogg")
-			if IsValid(self:GetParent()) and self:GetParent():IsNPC() or self:GetParent():IsPlayer() or self:GetParent():IsNextBot() then self:GetParent():SetNW2Int( "Niko663HaloSWEPSNeedles", self:GetParent():GetNW2Int( "Niko663HaloSWEPSNeedles" ) -1 )
+			self:Pop()
+		end
+
+		if IsValid(self:GetParent()) then
+			if not self:GetParent():Alive() then
+				-- pop the needles if the parent dies
+				self:Pop()
 			end
-			SafeRemoveEntity(self)
 		end
-		if self:GetParent():IsNextBot() and self:GetParent():Health() <= 0 then
-			SafeRemoveEntity(self)
-		end
-		if IsValid(self:GetParent()) and self:GetParent().DeadByNeedlerH3 == true then
-			self.NeedlerLifeTime = CurTime()
-		end
-		
 	end
 	
 end

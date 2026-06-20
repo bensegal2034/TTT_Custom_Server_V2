@@ -178,9 +178,9 @@ end
 
 function SWEP:HaloReticle(tr)
 	surface.SetTexture(surface.GetTextureID("vgui/halohud/h3/h3needler"))
-	if IsValid(tr.Entity) and tr.Entity:IsNPC() and self:GetNW2Bool("HaloSWEPSEntIsFriendly") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:IsPlayer() and tr.Entity:Team() == self.Owner:Team() and tr.Entity:Team() ~= TEAM_UNASSIGNED and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:GetNW2Bool("HaloSWEPSEntIsNextBot") == true and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and self:GetNW2Bool("HaloSWEPSEntIsEnemyVehicle") == false and self:GetNW2Bool("HaloSWEPSEntIsOccupiedVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true then
+	if IsValid(tr.Entity) and tr.Entity:IsNPC() and self:GetNW2Bool("HaloSWEPSEntIsFriendly") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:IsPlayer() and tr.Entity:Team() == self.Owner:Team() and tr.Entity:Team() != TEAM_UNASSIGNED and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:GetNW2Bool("HaloSWEPSEntIsNextBot") == true and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and self:GetNW2Bool("HaloSWEPSEntIsEnemyVehicle") == false and self:GetNW2Bool("HaloSWEPSEntIsOccupiedVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true then
 		surface.SetDrawColor(0, 255, 0, 255)
-	elseif IsValid(tr.Entity) and tr.Entity:IsNPC() and self:GetNW2Bool("HaloSWEPSEntIsFriendly") == false and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or tr.Entity:IsPlayer() and tr.Entity:Team() ~= self.Owner:Team() and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:IsPlayer() and tr.Entity:Team() == TEAM_UNASSIGNED and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:GetNW2Bool("HaloSWEPSEntIsNextBot") == true and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") == false and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and self:GetNW2Bool("HaloSWEPSEntIsEnemyVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsOccupiedVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true then
+	elseif IsValid(tr.Entity) and tr.Entity:IsNPC() and self:GetNW2Bool("HaloSWEPSEntIsFriendly") == false and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or tr.Entity:IsPlayer() and tr.Entity:Team() != self.Owner:Team() and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:IsPlayer() and tr.Entity:Team() == TEAM_UNASSIGNED and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and tr.Entity:GetNW2Bool("HaloSWEPSEntIsNextBot") == true and self:GetNW2Bool("HaloSWEPSEntIsFriendlyNB") == false and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true or IsValid(tr.Entity) and self:GetNW2Bool("HaloSWEPSEntIsEnemyVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsOccupiedVehicle") == true and self:GetNW2Bool("HaloSWEPSEntIsVisible") == true then
 		surface.SetDrawColor(255, 0, 0, 255)
 	else
 		surface.SetDrawColor(141, 192, 235, 255)
@@ -190,14 +190,14 @@ function SWEP:HaloReticle(tr)
 end
 
 function SWEP:DrawHUD()
-	if self.Owner:InVehicle() and self.Owner:GetAllowWeaponsInVehicle() == false or GetViewEntity() ~= self.Owner then return end
+	if self.Owner:InVehicle() and self.Owner:GetAllowWeaponsInVehicle() == false or GetViewEntity() != self.Owner then return end
 	local LookTrace = {}
 	LookTrace.start = self.Owner:GetShootPos()
 	LookTrace.endpos = LookTrace.start + (self.Owner:GetAimVector() * 550)
 	LookTrace.filter = function(ent)
 		if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h3" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 			return false
-		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+		elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags != SURF_TRANS and self.Owner:GetEyeTrace().MatType != MAT_GLASS and self.Owner:GetEyeTrace().Contents != 268435458 then
 			return true
 		end
 	end
@@ -213,7 +213,7 @@ function SWEP:DrawHUD()
 		Trace.filter = function(ent)
 			if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h3" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 				return false
-			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags != SURF_TRANS and self.Owner:GetEyeTrace().MatType != MAT_GLASS and self.Owner:GetEyeTrace().Contents != 268435458 then
 				return true
 			end
 		end
@@ -238,7 +238,7 @@ function SWEP:DrawHUD()
 end
 
 function SWEP:Reload()
-	if self:Clip1() ~= self.Primary.ClipSize and self:Ammo1() ~= 0 then
+	if self:Clip1() != self.Primary.ClipSize and self:Ammo1() != 0 then
 		self:SetHoldType("pistol")
 		self:SetNextNeedlerFireRateH3(0)
 		self:SetNextIdle(0)
@@ -273,7 +273,7 @@ function SWEP:Reload()
 end
 
 function SWEP:Deploy()
-	if self:GetNW2Int("NPCClipH3") ~= -1 and self:GetNW2Int("NPCClipH3") < self.Primary.ClipSize then self:SetClip1(self:GetNW2Int("NPCClipH3")) end
+	if self:GetNW2Int("NPCClipH3") != -1 and self:GetNW2Int("NPCClipH3") < self.Primary.ClipSize then self:SetClip1(self:GetNW2Int("NPCClipH3")) end
 	self:SetNW2Int("NPCClipH3", -1)
 	if IsValid(self.Owner:GetViewModel()) then self.Owner:GetViewModel():SetWeaponModel(self.ViewModel, self) end
 	self:SetNW2Bool("DrawnNeedlerH3", true)
@@ -295,7 +295,7 @@ function SWEP:Deploy()
 	self.Primary.Delay = 0.13
 	timer.Create("FakeThink" .. self:EntIndex(), 0, 0, function()
 		if not IsValid(self) or not IsValid(self.Owner) then return end
-		if self:GetSequenceActivity(self:GetSequence()) ~= ACT_VM_RELOAD then self:SetNW2Int("DisplayClipH3", self:Clip1()) end
+		if self:GetSequenceActivity(self:GetSequence()) != ACT_VM_RELOAD then self:SetNW2Int("DisplayClipH3", self:Clip1()) end
 		if self:GetNW2Int("DisplayClipH3") >= 19 then
 			self.Owner:GetViewModel():ManipulateBonePosition(38, Vector(0, 0, 0))
 			self.Owner:GetViewModel():ManipulateBonePosition(39, Vector(0, 0, 0))
@@ -612,7 +612,7 @@ function SWEP:Deploy()
 		LookTrace.filter = function(ent)
 			if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h3" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 				return false
-			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+			elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags != SURF_TRANS and self.Owner:GetEyeTrace().MatType != MAT_GLASS and self.Owner:GetEyeTrace().Contents != 268435458 then
 				return true
 			end
 		end
@@ -621,8 +621,8 @@ function SWEP:Deploy()
 		self.Owner:LagCompensation(true)
 		local looktr = util.TraceLine(LookTrace)
 		self.Owner:LagCompensation(false)
-		if SERVER and IsValid(looktr.Entity) and looktr.Entity:IsNPC() and looktr.Entity:Disposition(self.Owner) == 1 or SERVER and IsValid(looktr.Entity) and looktr.Entity:IsNPC() and looktr.Entity:Disposition(self.Owner) == 2 or SERVER and looktr.Entity:IsPlayer() and looktr.Entity:Team() ~= self.Owner:Team() or SERVER and looktr.Entity:IsPlayer() and looktr.Entity:Team() == TEAM_UNASSIGNED or looktr.Entity:IsNextBot() and looktr.Entity.Enemy == self.Owner and self:EntityIsEnemyVehicle(looktr.Entity) and self:IsVehicleOccupied(looktr.Entity) then
-			if IsValid(self.Owner:GetEyeTrace().Entity) and self.Owner:GetEyeTrace().Entity == looktr.Entity and self.Owner:GetEyeTrace().MatType ~= MAT_GRATE then self:SetNW2Entity("NeedlerTargetH3", looktr.Entity) end
+		if SERVER and IsValid(looktr.Entity) and looktr.Entity:IsNPC() and looktr.Entity:Disposition(self.Owner) == 1 or SERVER and IsValid(looktr.Entity) and looktr.Entity:IsNPC() and looktr.Entity:Disposition(self.Owner) == 2 or SERVER and looktr.Entity:IsPlayer() and looktr.Entity:Team() != self.Owner:Team() or SERVER and looktr.Entity:IsPlayer() and looktr.Entity:Team() == TEAM_UNASSIGNED or looktr.Entity:IsNextBot() and looktr.Entity.Enemy == self.Owner and self:EntityIsEnemyVehicle(looktr.Entity) and self:IsVehicleOccupied(looktr.Entity) then
+			if IsValid(self.Owner:GetEyeTrace().Entity) and self.Owner:GetEyeTrace().Entity == looktr.Entity and self.Owner:GetEyeTrace().MatType != MAT_GRATE then self:SetNW2Entity("NeedlerTargetH3", looktr.Entity) end
 		else
 			self:SetNW2Entity("NeedlerTargetH3", NULL)
 		end
@@ -634,7 +634,7 @@ function SWEP:Deploy()
 			Trace.filter = function(ent)
 				if ent == self or ent == self.Owner or ent:GetClass() == "melee_attack_h3" or ent:GetClass() == "flamethrower_fire_h3" or ent:GetClass() == "flamethrower_fire_h1" then
 					return false
-				elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags ~= SURF_TRANS and self.Owner:GetEyeTrace().MatType ~= MAT_GLASS and self.Owner:GetEyeTrace().Contents ~= 268435458 then
+				elseif ent:IsNPC() or ent:IsPlayer() or ent:IsNextBot() or self.Owner:GetEyeTrace().SurfaceFlags != SURF_TRANS and self.Owner:GetEyeTrace().MatType != MAT_GLASS and self.Owner:GetEyeTrace().Contents != 268435458 then
 					return true
 				end
 			end
@@ -828,86 +828,144 @@ end
 
 function SWEP:FireNeedle()
 	-- code below for homing is entirely ai written
-	if IsFirstTimePredicted() then
-		local aim = self.Owner:GetAimVector()
-		local side = aim:Cross(Vector(0, 0, 1))
-		local up = side:Cross(aim)
-		local pos = self.Owner:GetShootPos() + side * 8.5 + up * -5
-		if SERVER then
-			-- find a player or NPC in a wide cone around the reticle
-			local maxHomingDist = 10000
-			local coneDot = 0.98-- controls size of cone. larger value = smaller cone, smaller value = bigger cone
-			local bestScore = 0 -- used to determine which ent is the best to home onto
-			local targetEnt = nil
-			local steerStrength = 0.13 -- controls homing strength
-			for _, ent in ipairs(ents.FindInSphere(self.Owner:GetShootPos(), maxHomingDist)) do
-				if ent ~= self.Owner and IsValid(ent) and (ent:IsPlayer() or ent:IsNPC()) and ent:Alive() then
-					local toEnt = (ent:GetPos() - self.Owner:GetShootPos())
-					local dist = toEnt:Length()
-					if dist > 0 and dist <= maxHomingDist then
-						local dirToEnt = toEnt:GetNormalized()
-						local dot = aim:Dot(dirToEnt)
-						if dot >= coneDot then
-							local tr = util.TraceLine({
-								start = self.Owner:GetShootPos(),
-								endpos = ent:NearestPoint(self.Owner:GetShootPos()),
-								filter = self.Owner,
-								mask = MASK_SHOT
-							})
-							if not IsValid(tr.Entity) or tr.Entity == ent then
-								-- logic to determine the best ent for homing
-								-- currently we use the dot product of the distance to the entity
-								-- which means whatever ent is closest to the owner's shootpos is what we'll home onto
-								local score = dot * (1 / math.max(dist, 1))
-								if score > bestScore then
-									bestScore = score
-									targetEnt = ent
-								end
+	if not IsFirstTimePredicted() then return end
+
+	local owner = self:GetOwner()
+	if not IsValid(owner) then return end
+
+	local aim = owner:GetAimVector()
+	local side = aim:Cross(Vector(0, 0, 1))
+	local up = side:Cross(aim)
+	local pos =
+    owner:GetShootPos()
+    + owner:GetAimVector() * 24
+    + side * 8.5
+    + up * -5
+	local spawnPos = pos
+
+	if SERVER then
+		-- find a player or NPC in a wide cone around the reticle
+		local maxHomingDist = 10000
+		local coneDot = 0.98
+		local bestScore = 0
+		local targetEnt = nil
+		local steerStrength = 0.13
+
+		for _, ent in ipairs(ents.FindInSphere(owner:GetShootPos(), maxHomingDist)) do
+			if ent != owner and IsValid(ent) 
+			and (ent:IsPlayer() or ent:IsNPC()) 
+			and ent:Alive() then
+				local toEnt = (ent:GetPos() - owner:GetShootPos())
+				local dist = toEnt:Length()
+
+				if dist > 0 and dist <= maxHomingDist then
+					local dirToEnt = toEnt:GetNormalized()
+					local dot = aim:Dot(dirToEnt)
+
+					if dot >= coneDot then
+						local tr = util.TraceLine({
+							start = owner:GetShootPos(),
+							endpos = ent:NearestPoint(owner:GetShootPos()),
+							filter = owner,
+							mask = MASK_SHOT
+						})
+
+						if not IsValid(tr.Entity) or tr.Entity == ent then
+							local score = dot * (1 / math.max(dist, 1))
+							if score > bestScore then
+								bestScore = score
+								targetEnt = ent
 							end
 						end
 					end
 				end
 			end
-
-			local needle = ents.Create("needle_h3")
-			if not IsValid(needle) then return end
-			needle:SetAngles(self.Owner:GetAimVector():Angle(90, 90, 0))
-			needle:SetPos(pos)
-			needle:SetOwner(self.Owner)
-			needle:Spawn()
-			needle.Owner = self.Owner
-			needle:Activate()
-
-			local phys = needle:GetPhysicsObject()
-			if IsValid(phys) then
-				-- always launch the needle toward where the player is looking
-				phys:SetVelocity(self.Owner:GetAimVector() * 1700 + self.Owner:GetUp() * math.random(-22, 22) + self.Owner:GetRight() * math.random(-21, 21))
-			end
-
-			-- attach a homing update if we found a valid target
-			if IsValid(targetEnt) and IsValid(needle) then
-				local timerName = "NeedleHoming" .. needle:EntIndex()
-				if timer.Exists(timerName) then timer.Remove(timerName) end
-				timer.Create(timerName, 0.03, 0, function()
-					if not IsValid(needle) or not IsValid(targetEnt) then
-						timer.Remove(timerName)
-						return
-					end
-					local phys2 = needle:GetPhysicsObject()
-					if not IsValid(phys2) then timer.Remove(timerName) return end
-					-- math for actually making the needle home onto the selected ent
-					-- basically we aim at the center of the collision bounding box
-					-- then do the math for making the needle point in the correct direction
-					local targetPos = targetEnt:GetPos() + (targetEnt:OBBCenter() or Vector(0, 0, 36))
-					local dir2 = (targetPos - needle:GetPos()):GetNormalized()
-					local currentVel = phys2:GetVelocity()
-					local speed = math.max(currentVel:Length(), 1700)
-					local lead = targetEnt:GetVelocity() * 0.25
-					local desiredVel = dir2 * speed + lead
-					phys2:SetVelocity(currentVel + (desiredVel - currentVel) * steerStrength)
-				end)
-			end
 		end
+
+		local needle = ents.Create("needle_h3")
+		if not IsValid(needle) then return end
+
+		needle:SetAngles(owner:GetAimVector():Angle(90, 90, 0))
+		needle:SetPos(pos)
+		needle:SetOwner(owner)
+		needle:Spawn()
+		needle.Owner = owner
+		needle:Activate()
+
+		local timerName = "NeedleHoming" .. needle:EntIndex()
+		if timer.Exists(timerName) then
+			timer.Remove(timerName)
+		end
+
+		-- this is the amount of times we update the needle's position
+		local moveInterval = engine.TickInterval()
+		local baseSpeed = 1700
+
+		local function SpawnInactiveAtImpact(hitPos, hitEnt, hitAng)
+			if not IsValid(needle) then return end
+
+			if hitEnt:IsPlayer() or hitEnt:IsNPC() then
+				needle:Touch(hitEnt)
+			else
+				local inactive = ents.Create("needle_inactive_h3")
+				if IsValid(inactive) then
+					inactive:SetPos(hitPos or needle:GetPos())
+					inactive:SetAngles(hitAng or needle:GetAngles())
+
+					inactive:Spawn()
+					inactive:Activate()
+				end
+			end
+
+			SafeRemoveEntity(needle)
+			timer.Remove(timerName)
+		end
+
+		local currentVel = owner:GetAimVector() * baseSpeed
+
+		timer.Create(timerName, moveInterval, 0, function()
+			if not IsValid(needle) or not IsValid(owner) then
+				timer.Remove(timerName)
+				return
+			end
+
+			-- home toward target if we still have one
+			if IsValid(targetEnt) 
+			and targetEnt:Alive()
+			and owner:Visible(targetEnt) then
+				local targetPos = targetEnt:WorldSpaceCenter()
+					or (targetEnt:GetPos() + Vector(0, 0, 36))
+
+				local dirToTarget = (targetPos - needle:GetPos()):GetNormalized()
+				local speed = math.max(currentVel:Length(), baseSpeed)
+				local lead = targetEnt:GetVelocity() * 0.25
+				local desiredVel = dirToTarget * speed + lead
+
+				currentVel = currentVel + (desiredVel - currentVel) * steerStrength
+			end
+
+			local startPos = needle:GetPos()
+			local move = currentVel * moveInterval
+			local endPos = startPos + move
+
+			local tr = util.TraceHull({
+				start = startPos,
+				endpos = endPos,
+				mins = Vector(-1, -1, -1),
+				maxs = Vector(1, 1, 1),
+				filter = {needle, owner},
+				mask = MASK_SOLID
+			})
+
+			if tr.StartSolid or tr.AllSolid or tr.Hit then
+				needle:SetPos(tr.HitPos)
+				needle:HandleImpact(tr.Entity, tr.HitPos, currentVel:Angle())
+    			return
+			end
+
+			needle:SetPos(endPos)
+			needle:SetAngles(currentVel:Angle())
+		end)
 	end
 end
 
@@ -978,7 +1036,7 @@ function SWEP:OwnerChanged()
 				self.Owner:Give("h3_needler_swep_ai")
 				if IsValid(self.Owner:GetWeapon("h3_needler_swep_ai")) then
 					self.Owner:GetWeapon("h3_needler_swep_ai").PickedUp = true
-					if self:GetNW2Int("NPCClipH3") ~= -1 then
+					if self:GetNW2Int("NPCClipH3") != -1 then
 						self.Owner:GetWeapon("h3_needler_swep_ai"):SetClip1(self:GetNW2Int("NPCClipH3"))
 					else
 						self.Owner:GetWeapon("h3_needler_swep_ai"):SetClip1(self:Clip1())
@@ -998,7 +1056,7 @@ end
 function SWEP:SetNeedlePos()
 	timer.Create("NeedleThink" .. self:EntIndex(), 0, 0, function()
 		if not IsValid(self) or not IsValid(self.Owner) then return end
-		if self:GetSequenceActivity(self:GetSequence()) ~= ACT_VM_RELOAD then self:SetNW2Int("DisplayClipH3", self:Clip1()) end
+		if self:GetSequenceActivity(self:GetSequence()) != ACT_VM_RELOAD then self:SetNW2Int("DisplayClipH3", self:Clip1()) end
 		if self:GetNW2Int("DisplayClipH3") >= 19 then
 			self.Owner:GetViewModel():ManipulateBonePosition(38, Vector(0, 0, 0))
 			self.Owner:GetViewModel():ManipulateBonePosition(39, Vector(0, 0, 0))
@@ -1305,7 +1363,7 @@ end
 
 function SWEP:Think()
 	if self.Owner:InVehicle() and self.Owner:GetAllowWeaponsInVehicle() == false then return end
-	if self:GetNextIdle() ~= 0 and self:GetNextIdle() < CurTime() then
+	if self:GetNextIdle() != 0 and self:GetNextIdle() < CurTime() then
 		self:SendWeaponAnim(ACT_VM_IDLE)
 		self:SetNextIdle(0)
 	end
@@ -1315,13 +1373,13 @@ function SWEP:Think()
 		self.Primary.Delay = 0.13
 	end
 
-	if self:GetNextNeedlerFireRateH3() ~= 0 and self:GetNextNeedlerFireRateH3() < CurTime() then
+	if self:GetNextNeedlerFireRateH3() != 0 and self:GetNextNeedlerFireRateH3() < CurTime() then
 		self:SetNextNeedlerFireRateH3(0)
 		self.Primary.Delay = 0.08
 	end
 
-	if self:GetSequenceActivity(self:GetSequence()) ~= ACT_VM_RELOAD then self:SetNW2Int("DisplayClipH3", self:Clip1()) end
-	if self.NeedlePosThink ~= true then
+	if self:GetSequenceActivity(self:GetSequence()) != ACT_VM_RELOAD then self:SetNW2Int("DisplayClipH3", self:Clip1()) end
+	if self.NeedlePosThink != true then
 		self.NeedlePosThink = true
 		self:SetNeedlePos()
 	end

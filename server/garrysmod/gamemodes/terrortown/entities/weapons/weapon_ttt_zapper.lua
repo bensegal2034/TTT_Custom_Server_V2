@@ -78,7 +78,6 @@ end
 SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Kind                  = WEAPON_PISTOL
-SWEP.WeaponID              = AMMO_DEAGLE
 SWEP.ViewModelFlip         = true
 
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise

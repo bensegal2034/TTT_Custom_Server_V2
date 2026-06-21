@@ -900,27 +900,6 @@ function SWEP:FireNeedle()
 		-- this is the amount of times we update the needle's position
 		local moveInterval = engine.TickInterval()
 		local baseSpeed = 1700
-
-		local function SpawnInactiveAtImpact(hitPos, hitEnt, hitAng)
-			if not IsValid(needle) then return end
-
-			if hitEnt:IsPlayer() or hitEnt:IsNPC() then
-				needle:Touch(hitEnt)
-			else
-				local inactive = ents.Create("needle_inactive_h3")
-				if IsValid(inactive) then
-					inactive:SetPos(hitPos or needle:GetPos())
-					inactive:SetAngles(hitAng or needle:GetAngles())
-
-					inactive:Spawn()
-					inactive:Activate()
-				end
-			end
-
-			SafeRemoveEntity(needle)
-			timer.Remove(timerName)
-		end
-
 		local currentVel = owner:GetAimVector() * baseSpeed
 
 		timer.Create(timerName, moveInterval, 0, function()

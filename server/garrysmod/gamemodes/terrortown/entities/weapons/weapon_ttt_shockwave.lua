@@ -23,7 +23,6 @@ end
 
 SWEP.Base               = "weapon_tttbasegrenade"
 
-SWEP.WeaponID           = AMMO_DISCOMB
 SWEP.Kind               = WEAPON_SHOCKWAVE
 
 --All grenades inherently use this value to determine fuse time, default ttt grenades don't set it and use a default value of 5

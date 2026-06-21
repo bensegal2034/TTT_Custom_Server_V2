@@ -48,7 +48,6 @@ SWEP.CanBuy                = {ROLE_TRAITOR}
 SWEP.LimitedStock          = true
 
 SWEP.Kind                  = WEAPON_PREGNANCY
-SWEP.WeaponID              = AMMO_GLOCK
 
 SWEP.UseHands              = true
 SWEP.ViewModel             = Model("models/weapons/c_357.mdl")

@@ -17,7 +17,6 @@ SWEP.Base               = "weapon_tttbase"
 SWEP.Spawnable = true
 
 SWEP.Kind = WEAPON_HEAVY
-SWEP.WeaponID = AMMO_RIFLE
 
 SWEP.Primary.Delay          = 1.5
 SWEP.Primary.Recoil         = 10

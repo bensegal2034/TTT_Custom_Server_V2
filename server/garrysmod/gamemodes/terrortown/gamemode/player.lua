@@ -13,6 +13,7 @@ CreateConVar("ttt_dyingshot", "0")
 CreateConVar("ttt_killer_dna_range", "550")
 CreateConVar("ttt_killer_dna_basetime", "100")
 
+
 -- First spawn on the server
 function GM:PlayerInitialSpawn( ply )
    if not GAMEMODE.cvar_init then
@@ -1140,4 +1141,25 @@ function GM:PlayerShouldTaunt(ply, actid)
    -- Disable taunts, we don't have a system for them (camera freezing etc).
    -- Mods/plugins that add such a system should override this.
    return false
+end
+
+hook.Add( "PlayerButtonDown", "HelpMenuDown", function( ply, button )
+   if button == ply:GetInfoNum("help_bind",KEY_H) then 
+      if IsValid(ply) and SERVER then
+         ply:SetNWBool("HelpKey", true)
+      end
+   end
+end)
+
+hook.Add( "PlayerButtonUp", "HelpMenuUp", function( ply, button )
+   if button == ply:GetInfoNum("help_bind",KEY_H) then 
+      if IsValid(ply) and SERVER then
+         ply:SetNWBool("HelpKey", false)
+      end
+   end
+end)
+
+function GM:HelpMenu(ply)
+
+   
 end

@@ -213,6 +213,9 @@ end
 
 local ttt_health_label = CreateClientConVar("ttt_health_label", "0", true)
 
+local ttt_helpmenu = CreateClientConVar("help_bind", KEY_H, true)
+
+
 local function InfoPaint(client)
    local L = GetLang()
 
@@ -316,6 +319,18 @@ local function InfoPaint(client)
    end
 
 end
+
+hook.Add( "HUDPaint", "HelpMenuDraw", function()
+   if not(LocalPlayer().GetActiveWeapon) then return end
+   local helpkey = LocalPlayer():GetNWBool("HelpKey", false)
+   if helpkey then
+      local wep = LocalPlayer():GetActiveWeapon()
+      local helpinfo = wep.HelpMenuInfo
+      if helpinfo then
+         local textW, textH = surface.GetTextSize(helpinfo)
+      end
+   end
+end)
 
 -- Paints player status HUD element in the bottom left
 function GM:HUDPaint()

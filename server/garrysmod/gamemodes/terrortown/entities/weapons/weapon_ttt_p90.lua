@@ -12,6 +12,8 @@ end
 -- Always derive from weapon_tttbase
 SWEP.Base = "weapon_tttbase"
 
+SWEP.HelpMenuInfo = "makes you fucking explode"
+
 -- Standard GMod values
 SWEP.HoldType = "smg"
 
@@ -90,7 +92,7 @@ hook.Add("TTTPlayerSpeedModifier", "P90Speed", function(ply,slowed,mv)
       return
    end
    if ply:GetActiveWeapon():GetClass() == "weapon_ttt_p90" then
-      return 1.45
+      return 1.3
    end
 end)
 

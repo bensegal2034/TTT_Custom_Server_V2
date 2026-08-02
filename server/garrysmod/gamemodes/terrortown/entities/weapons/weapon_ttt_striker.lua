@@ -355,6 +355,7 @@ end
 
 
 function SWEP:DrawHUD(...)
+   --hud code i am scared of it i cannot find documentation :)
 	if IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "weapon_ttt_striker" then
 		heatBar:SetProgress((self:GetDisplayHeat())/(self.HeatLimit))
 

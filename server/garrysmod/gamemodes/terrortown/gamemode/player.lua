@@ -1142,24 +1142,3 @@ function GM:PlayerShouldTaunt(ply, actid)
    -- Mods/plugins that add such a system should override this.
    return false
 end
-
-hook.Add( "PlayerButtonDown", "HelpMenuDown", function( ply, button )
-   if button == ply:GetInfoNum("help_bind",KEY_H) then 
-      if IsValid(ply) and SERVER then
-         ply:SetNWBool("HelpKey", true)
-      end
-   end
-end)
-
-hook.Add( "PlayerButtonUp", "HelpMenuUp", function( ply, button )
-   if button == ply:GetInfoNum("help_bind",KEY_H) then 
-      if IsValid(ply) and SERVER then
-         ply:SetNWBool("HelpKey", false)
-      end
-   end
-end)
-
-function GM:HelpMenu(ply)
-
-   
-end

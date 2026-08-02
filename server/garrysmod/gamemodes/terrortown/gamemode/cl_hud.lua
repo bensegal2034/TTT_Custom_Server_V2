@@ -320,15 +320,43 @@ local function InfoPaint(client)
 
 end
 
-hook.Add( "HUDPaint", "HelpMenuDraw", function()
+hook.Add("HUDPaint", "HelpMenuDraw", function()
    if not(LocalPlayer().GetActiveWeapon) then return end
-   local helpkey = LocalPlayer():GetNWBool("HelpKey", false)
-   if helpkey then
-      local wep = LocalPlayer():GetActiveWeapon()
-      local helpinfo = wep.HelpMenuInfo
-      if helpinfo then
-         local textW, textH = surface.GetTextSize(helpinfo)
+   local wep = LocalPlayer():GetActiveWeapon()
+   if not(IsValid(wep)) then
+      -- attempt to get the weapon info from a spectated player
+      -- if there's a valid one
+      local target = LocalPlayer():GetObserverTarget()
+      if LocalPlayer():GetObserverMode() != OBS_MODE_NONE and IsValid(target) then
+         local targetWep = target:GetActiveWeapon()
+         if IsValid(targetWep) then
+            wep = targetWep
+         else
+            -- no point in going further
+            return
+         end
       end
+   end
+   local helpBind = input.LookupBinding("gm_showspare1")
+   if not(helpBind) then return end
+   local helpKeyCode = input.GetKeyCode(helpBind)
+   if input.IsKeyDown(helpKeyCode) and IsValid(wep) then
+      local helpInfo = wep.HelpMenuInfo
+      if not(helpInfo) then
+         helpInfo = "No help text defined for this weapon!\nYell at us to write one :3"
+      end
+      local width, height = ScrW(), ScrH()
+      local shadowOffset = width * 0.001
+      local textW, textH = surface.GetTextSize(helpInfo)
+      local paddingW, paddingH = width * 0.009, height * 0.009
+      local boxW, boxH = textW + paddingW, textH + paddingH
+      local boxX, boxY = width * 0.5 - boxW / 2, height * 0.8 - boxH / 2
+      local textX, textY = boxX + paddingW / 2, boxY + paddingH / 2
+
+      draw.RoundedBox(10, boxX, boxY, boxW, boxH, Color(20, 20, 20, 200))
+
+      draw.DrawText(helpInfo, "HealthAmmo", textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_LEFT)
+      draw.DrawText(helpInfo, "HealthAmmo", textX, textY, Color(255, 255, 255), TEXT_ALIGN_LEFT)
    end
 end)
 

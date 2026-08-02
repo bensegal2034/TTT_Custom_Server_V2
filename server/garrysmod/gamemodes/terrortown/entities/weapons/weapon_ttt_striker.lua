@@ -59,7 +59,7 @@ SWEP.Spawnable = true
 
 SWEP.Kind = WEAPON_HEAVY
 
-SWEP.Primary.Damage        = 4
+SWEP.Primary.Damage        = 2
 SWEP.Primary.NumShots      = 12
 SWEP.Primary.Recoil			= 3
 SWEP.Primary.Cone          = 0.14
@@ -83,11 +83,13 @@ SWEP.IronSightsAng = Vector(2.502, 3.431, 0)
 SWEP.reloadtimer = 0
 
 SWEP.CurrentHeat = 0
-SWEP.HeatLimit = 100
+SWEP.HeatLimit = 120
 SWEP.Ignited = false
 SWEP.CoolingDelay = 0
 SWEP.HeatTimer = 0
 SWEP.BarColor = nil
+SWEP.HeatAmount = 15
+SWEP.CoolingSpeed = 4 --higher number, slower rate
 
 SWEP.IgniteDuration = 2
 
@@ -242,7 +244,7 @@ function SWEP:Think()
 	if CurTime() > self.CoolingDelay and self.CurrentHeat > 0 then
 		if SERVER then
 			self.HeatTimer = self.HeatTimer + 1
-			if self.HeatTimer % 3 == 0 then
+			if self.HeatTimer % self.CoolingSpeed == 0 then
 				self.CurrentHeat = self.CurrentHeat - 1
 				self.Ignited = false
 				self.IgniteDuration = 2
@@ -299,20 +301,43 @@ function SWEP:PrimaryAttack(worldsnd)
 
 	local owner = self:GetOwner()
 	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
-	self.CurrentHeat = self.CurrentHeat + 20
+	self.CurrentHeat = self.CurrentHeat + self.HeatAmount
 	if SERVER then
 		self:SetHeat(self.CurrentHeat)
-		if self:GetHeat() > self.HeatLimit then
-			self.Owner:Ignite(self.IgniteDuration, 2)
-			self.Ignited = true
-			self.IgniteDuration = self.IgniteDuration + 2
-		end
+      if self:GetHeat() > self.HeatLimit - 20 then
+         self.Owner:Ignite(self.IgniteDuration, 2)
+         self.Ignited = true
+         self.IgniteDuration = self.IgniteDuration + 2
+      end
+      if self:GetHeat() > self.HeatLimit then
+         print("AAAA")
+         local sparkdata = EffectData()
+         sparkdata:SetOrigin( self.Owner:GetPos() )
+         sparkdata:SetNormal( self.Owner:GetPos() )
+         sparkdata:SetMagnitude( 8 )
+         sparkdata:SetScale( 1 )
+         sparkdata:SetRadius( 16 )
+         util.Effect( "Sparks", sparkdata )
+         timer.Simple(1, function()
+            if IsValid(self.Owner) then
+               local effectdata = EffectData()
+               effectdata:SetOrigin(self:GetOwner():GetPos())
+               util.Effect("Explosion", effectdata, true, true)
+               util.BlastDamage(self.Owner, self, self.Owner:GetPos(), 0, 999)
+            end
+         end)
+      end
 		if self.CurrentHeat > self.HeatLimit then
 			self:SetDisplayHeat(self.HeatLimit)
 		else
 			self:SetDisplayHeat(self.CurrentHeat)
 		end
 	end
+   if CLIENT then
+      if self:GetHeat() > self.HeatLimit then
+        sound.Play("Grenade_Molotov.Detonate", owner:GetPos(), 140, 100, 1)
+      end
+   end
 	self.CoolingDelay = CurTime() + self.IgniteDuration
 	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 end

@@ -19,7 +19,7 @@ SWEP.ViewModelFlip         = false
 
 SWEP.Primary.Ammo          = "AlyxGun" -- hijack an ammo type we don't use otherwise
 SWEP.Primary.Recoil        = 6
-SWEP.Primary.Damage        = 10
+SWEP.Primary.Damage        = 29
 SWEP.Primary.Delay         = 0.6
 SWEP.Primary.Cone          = 0.02
 SWEP.Primary.ClipSize      = 8
@@ -31,7 +31,7 @@ SWEP.Secondary.Sound       = Sound("Default.Zoom")
 
 SWEP.DamageType            = "Puncture"
 
-SWEP.HeadshotMultiplier    = 8
+SWEP.HeadshotMultiplier    = 3
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
@@ -53,6 +53,29 @@ function SWEP:SetupDataTables()
    self:NetworkVar("Bool", 1, "IsScoped");
    self:NetworkVar("Bool", 3, "IronsightsPredicted")
    self:NetworkVar("Float", 3, "IronsightsTime")
+end
+
+local function ScorchUnderRagdoll(ent)
+   if SERVER then
+      local postbl = {}
+      -- small scorches under limbs
+      for i=0, ent:GetPhysicsObjectCount()-1 do
+         local subphys = ent:GetPhysicsObjectNum(i)
+         if IsValid(subphys) then
+            local pos = subphys:GetPos()
+            util.PaintDown(pos, "FadingScorch", ent)
+
+            table.insert(postbl, pos)
+         end
+      end
+
+      SendScorches(ent, postbl)
+   end
+
+   -- big scorch at center
+   local mid = ent:LocalToWorld(ent:OBBCenter())
+   mid.z = mid.z + 25
+   util.PaintDown(mid, "Scorch", ent)
 end
 
 -- if CLIENT then
@@ -232,44 +255,119 @@ if CLIENT then
 end
 
 
-hook.Add("ScalePlayerDamage", "DeaglePoison", function(target, hitgroup, dmginfo)
-   if
-   not IsValid(dmginfo:GetAttacker())
-   or not dmginfo:GetAttacker():IsPlayer()
-   or not IsValid(dmginfo:GetAttacker():GetActiveWeapon())
-   then
-      return
-   end
-   
-   local weapon = dmginfo:GetAttacker():GetActiveWeapon()
-   
-   if weapon:GetClass() == "weapon_zm_revolver" then
-      
-      local att = dmginfo:GetAttacker()
-      if target:IsPlayer() and IsValid(target) then
-         timer.Simple(0.75, function()
-            local maxhp = target:GetMaxHealth()
-            local curhp = target:Health()
-            local dmg = DamageInfo()
-            local poisondmg = math.min(((maxhp-curhp)*0.85),35)
-            dmg:SetDamage(poisondmg)
-            dmg:SetAttacker(att)
-            dmg:SetInflictor(weapon)
-            dmg:SetDamageForce(Vector(0,0,0))
-            dmg:SetDamageType(DMG_NERVEGAS)
-            target:TakeDamageInfo(dmg)
-            
-            local effectdata = EffectData()
-            effectdata:SetOrigin( target:GetPos() + Vector(0,0,15) )
-            effectdata:SetNormal( Vector(0,0,0) )
-            effectdata:SetMagnitude( 1 )
-            effectdata:SetScale( 0 )
-            effectdata:SetColor(0)
-            effectdata:SetRadius( 0 )
-            util.Effect( "AntlionGib", effectdata )
-            
-            target:EmitSound( "player/geiger3.wav", 75, 100, 1, CHAN_ITEM )
-         end)
+local function RunIgniteTimer(ent, timer_name)
+   if IsValid(ent) and ent:IsOnFire() then
+      if ent:WaterLevel() > 0 then
+         ent:Extinguish()
+      elseif CurTime() > ent.burn_destroy then
+         ent:SetNotSolid(true)
+         ent:Remove()
+      else
+         -- keep on burning
+         return
       end
    end
-end)
+
+   timer.Remove(timer_name) -- stop running timer
+end
+
+local SendScorches
+
+if CLIENT then
+   local function ReceiveScorches()
+      local ent = net.ReadEntity()
+      local num = net.ReadUInt(8)
+      for i=1, num do
+         util.PaintDown(net.ReadVector(), "FadingScorch", ent)
+      end
+
+      if IsValid(ent) then
+         util.PaintDown(ent:LocalToWorld(ent:OBBCenter()), "Scorch", ent)
+      end
+   end
+   net.Receive("TTT_FlareScorch", ReceiveScorches)
+else
+   -- it's sad that decals are so unreliable when drawn serverside, failing to
+   -- draw more often than they work, that I have to do this
+   SendScorches = function(ent, tbl)
+      net.Start("TTT_FlareScorch")
+         net.WriteEntity(ent)
+         net.WriteUInt(#tbl, 8)
+         for _, p in ipairs(tbl) do
+            net.WriteVector(p)
+         end
+      net.Broadcast()
+   end
+
+end
+
+
+function IgniteTarget(att, path, dmginfo)
+   local ent = path.Entity
+   if not IsValid(ent) then return end
+
+   if CLIENT and IsFirstTimePredicted() then
+      if ent:GetClass() == "prop_ragdoll" then
+         ScorchUnderRagdoll(ent)
+      end
+      return
+   end
+
+   if SERVER then
+
+      local dur = ent:IsPlayer() and 3 or 20
+
+      -- disallow if prep or post round
+      if ent:IsPlayer() and (not GAMEMODE:AllowPVP()) then return end
+      ent:Ignite(dur, 20)
+
+      ent.ignite_info = {att=dmginfo:GetAttacker(), infl=dmginfo:GetInflictor()}
+
+      if ent:IsPlayer() then
+         timer.Simple(dur + 0.1, function()
+                                    if IsValid(ent) then
+                                       ent.ignite_info = nil
+                                    end
+                                 end)
+                              end
+   end
+end
+
+function SWEP:ShootBullet( dmg, recoil, numbul, cone )
+
+   self:SendWeaponAnim(self.PrimaryAnim)
+
+   self:GetOwner():MuzzleFlash()
+   self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+
+   local sights = self:GetIronsights()
+
+   numbul = numbul or 1
+   cone   = cone   or 0.01
+
+   local bullet = {}
+   bullet.Num       = 1
+   bullet.Src       = self:GetOwner():GetShootPos()
+   bullet.Dir       = self:GetOwner():GetAimVector()
+   bullet.Spread    = Vector( cone, cone, 0 )
+   bullet.Tracer    = 1
+   bullet.Damage    = self.Primary.Damage
+   bullet.TracerName = self.Tracer
+   bullet.Callback = IgniteTarget
+
+   self:GetOwner():FireBullets( bullet )
+
+   -- Owner can die after firebullets
+   if (not IsValid(self:GetOwner())) or (not self:GetOwner():Alive()) or self:GetOwner():IsNPC() then return end
+
+   if ((game.SinglePlayer() and SERVER) or
+       ((not game.SinglePlayer()) and CLIENT and IsFirstTimePredicted())) then
+
+      -- reduce recoil if ironsighting
+      recoil = sights and (recoil * 0.6) or recoil
+
+      local eyeang = self:GetOwner():EyeAngles()
+      eyeang.pitch = eyeang.pitch - recoil
+      self:GetOwner():SetEyeAngles( eyeang )
+   end
+end

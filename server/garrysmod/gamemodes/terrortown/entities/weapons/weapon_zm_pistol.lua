@@ -16,8 +16,8 @@ SWEP.Kind                  = WEAPON_PISTOL
 SWEP.WeaponID              = AMMO_PISTOL
 
 SWEP.Primary.Recoil        = 1.5
-SWEP.Primary.Damage        = 65
-SWEP.Primary.Delay         = 0.25
+SWEP.Primary.Damage        = 75
+SWEP.Primary.Delay         = 0.2
 SWEP.Primary.Cone          = 0.01
 SWEP.Primary.ClipSize      = 2
 SWEP.Primary.Automatic     = true
@@ -27,7 +27,7 @@ SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.Sound         = Sound( "Weapon_FiveSeven.Single" )
 SWEP.DamageType            = "Puncture"
 
-SWEP.ReloadSpeed = 0.9
+SWEP.ReloadSpeed = 1.2
 
 SWEP.AutoSpawnable         = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"

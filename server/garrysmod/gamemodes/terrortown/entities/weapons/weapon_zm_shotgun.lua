@@ -21,7 +21,7 @@ SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_SHOTGUN
 
 SWEP.Primary.Ammo          = "Buckshot"
-SWEP.Primary.Damage        = 7
+SWEP.Primary.Damage        = 10
 SWEP.Primary.Cone          = 0.17
 SWEP.Primary.Delay         = 0.45
 SWEP.Primary.ClipSize      = 8
@@ -289,4 +289,18 @@ function SWEP:PreDrop()
    end
    self.Primary.Cone = self.SavedPrimaryCone
    self.BaseClass.PreDrop(self)
+end
+
+function SWEP:GetHeadshotMultiplier(victim, dmginfo)
+   local att = dmginfo:GetAttacker()
+   if not IsValid(att) then return 3 end
+
+   local dist = victim:GetPos():Distance(att:GetPos())
+   local d = math.max(0, dist - 140)
+
+   if dist > 450 then
+      return 1.25
+   else
+      return 1.5
+   end
 end

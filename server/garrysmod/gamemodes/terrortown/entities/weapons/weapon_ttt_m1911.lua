@@ -32,10 +32,10 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Kind                  = WEAPON_PISTOL
 
-SWEP.Primary.Recoil        = 1.2
-SWEP.Primary.Damage        = 22
+SWEP.Primary.Recoil        = 1.1
+SWEP.Primary.Damage        = 26
 SWEP.Primary.Delay         = 0.01
-SWEP.Primary.Cone          = 0.04
+SWEP.Primary.Cone          = 0.025
 SWEP.Primary.ClipSize      = 8
 SWEP.Primary.Automatic     = false
 SWEP.ViewModelFlip		   = true

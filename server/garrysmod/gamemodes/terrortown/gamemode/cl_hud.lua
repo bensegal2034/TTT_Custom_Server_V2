@@ -71,7 +71,7 @@ end
 ---- http://wiki.garrysmod.com/?title=Creating_a_HUD
 
 -- Paints a graphical meter bar
-local function PaintBar(x, y, w, h, colors, value)
+function PaintBar(x, y, w, h, colors, value)
    -- Background
    -- slightly enlarged to make a subtle border
    draw.RoundedBox(8, x-1, y-1, w+2, h+2, colors.background)
@@ -134,7 +134,7 @@ end
 local sf = surface
 local dr = draw
 
-local function ShadowedText(text, font, x, y, color, xalign, yalign)
+function ShadowedText(text, font, x, y, color, xalign, yalign)
 
    dr.SimpleText(text, font, x+2, y+2, COLOR_BLACK, xalign, yalign)
 
@@ -320,7 +320,26 @@ local function InfoPaint(client)
 
 end
 
-hook.Add("HUDPaint", "HelpMenuDraw", function()
+function NewlineTextBox(text, font, pctX, pctY, color)
+   -- Draws a text box with shadowed text at a specific percentage of the screen's X and Y coordinates.
+
+   surface.SetFont(font) -- necessary to make GetTextSize return the correct value
+
+   local width, height = ScrW(), ScrH()
+   local shadowOffset = width * 0.001
+   local textW, textH = surface.GetTextSize(text)
+   local paddingW, paddingH = width * 0.009, height * 0.009
+   local boxW, boxH = textW + paddingW, textH + paddingH
+   local boxX, boxY = width * pctX - boxW / 2, height * pctY - boxH / 2
+   local textX, textY = boxX + paddingW / 2 + textW / 2, boxY + paddingH / 2
+
+   draw.RoundedBox(10, boxX, boxY, boxW, boxH, Color(20, 20, 20, 200))
+
+   draw.DrawText(text, font, textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_CENTER)
+   draw.DrawText(text, font, textX, textY, color, TEXT_ALIGN_CENTER)
+end
+
+local function HelpMenu()
    if not(LocalPlayer():GetActiveWeapon():IsValid()) then return end
    if not(LocalPlayer():Alive()) then return end
    local wep = LocalPlayer():GetActiveWeapon()
@@ -347,45 +366,24 @@ hook.Add("HUDPaint", "HelpMenuDraw", function()
          helpInfo = "No help text defined for this weapon!\nYell at us to write one :3"
       end
 
-      surface.SetFont("HealthAmmo") -- necessary to make GetTextSize return the correct value
-
-      local width, height = ScrW(), ScrH()
-      local shadowOffset = width * 0.001
-      local textW, textH = surface.GetTextSize(helpInfo)
-      local paddingW, paddingH = width * 0.009, height * 0.009
-      local boxW, boxH = textW + paddingW, textH + paddingH
-      local boxX, boxY = width * 0.5 - boxW / 2, height * 0.8 - boxH / 2
-      local textX, textY = boxX + paddingW / 2 + textW / 2, boxY + paddingH / 2
-
-      draw.RoundedBox(10, boxX, boxY, boxW, boxH, Color(20, 20, 20, 200))
-
-      draw.DrawText(helpInfo, "HealthAmmo", textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_CENTER)
-      draw.DrawText(helpInfo, "HealthAmmo", textX, textY, Color(255, 255, 255), TEXT_ALIGN_CENTER)
+      NewlineTextBox(helpInfo, "HealthAmmo", 0.5, 0.8, Color(255, 255, 255, 255))
    end
-end)
+end
 
-hook.Add("DrawOverlay", "BindReminder", function()
+local function BindReminder()
    local reminderText = "You do not currently have both your weapon help key and your ability key bound!\nGo to Options > Keyboard > Gamemodes, then bind 'Server customizable spare 1/2' to keys.\nSpare 1 is the weapon help menu bind, Spare 2 is your ability bind."
    local hasHelpBind = input.LookupBinding("gm_showspare1")
    local hasAbilityBind = input.LookupBinding("gm_showspare2")
    
    if !hasHelpBind or !hasAbilityBind then
-      surface.SetFont("HealthAmmo") -- necessary to make GetTextSize return the correct value
-
-      local width, height = ScrW(), ScrH()
-      local shadowOffset = width * 0.001
-      local textW, textH = surface.GetTextSize(reminderText)
-      local paddingW, paddingH = width * 0.009, height * 0.009
-      local boxW, boxH = textW + paddingW, textH + paddingH
-      local boxX, boxY = width * 0.5 - boxW / 2, height * 0.2 - boxH / 2
-      local textX, textY = boxX + paddingW / 2 + textW / 2, boxY + paddingH / 2
-
-      draw.RoundedBox(10, boxX, boxY, boxW, boxH, Color(20, 20, 20, 200))
-
-      draw.DrawText(reminderText, "HealthAmmo", textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_CENTER)
-      draw.DrawText(reminderText, "HealthAmmo", textX, textY, Color(255, 255, 255), TEXT_ALIGN_CENTER)
+      NewlineTextBox(reminderText, "HealthAmmo", 0.5, 0.2, Color(255, 255, 255, 255))
    end
-end)
+end
+
+-- Draw overlay (only used for bind reminder)
+function GM:DrawOverlay()
+   BindReminder()
+end
 
 -- Paints player status HUD element in the bottom left
 function GM:HUDPaint()
@@ -435,6 +433,9 @@ function GM:HUDPaint()
    if hook.Call( "HUDShouldDraw", GAMEMODE, "TTTInfoPanel" ) then
        InfoPaint(client)
    end
+
+   -- Draw weapon help HUD
+   HelpMenu()
 end
 
 -- Hide the standard HUD stuff

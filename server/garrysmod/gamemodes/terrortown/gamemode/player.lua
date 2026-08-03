@@ -13,7 +13,6 @@ CreateConVar("ttt_dyingshot", "0")
 CreateConVar("ttt_killer_dna_range", "550")
 CreateConVar("ttt_killer_dna_basetime", "100")
 
-
 -- First spawn on the server
 function GM:PlayerInitialSpawn( ply )
    if not GAMEMODE.cvar_init then
@@ -1142,3 +1141,57 @@ function GM:PlayerShouldTaunt(ply, actid)
    -- Mods/plugins that add such a system should override this.
    return false
 end
+
+-- if CLIENT then
+--    function GetAbilityKey()
+--       local abilityBind = input.LookupBinding("gm_showspare2")
+--       if not(abilityBind) then return nil end
+--       local abilityKeyCode = input.GetKeyCode(helpBind)
+--       return abilityKeyCode
+--    end
+
+--    net.Receive("TTT_AbilityBindRequest", function()
+--       local key = GetAbilityKey()
+--       net.Start("TTT_AbilityBindResponse")
+--       if IsValid(key) then
+--          net.WriteInt(key)
+--       else
+--          net.WriteInt(BUTTON_CODE_NONE)
+--       end
+--       net.SendToServer()
+--    end)
+-- end
+
+-- if SERVER then
+--    local pendingRequests = {}
+--    function RequestAbilityBind(ply, callback)
+--       pendingRequests[ply] = callback
+
+--       net.Start("TTT_AbilityBindRequest")
+--       net.Send(ply)
+--    end
+
+--    net.Receive("TTT_AbilityBindResponse", function(_, ply)
+--       local key = net.ReadInt()
+--       if pendingRequests[ply] then
+--          -- this runs the callback function corresponding to this player
+--          pendingRequests[ply](key)
+--          -- remove the function from the pending table
+--          pendingRequests[ply] = nil
+--       end
+--    end)
+-- end
+
+-- function GM:GetAbilityBind(ply)
+--    -- Return ability key code bind for the given player
+--    if CLIENT then
+--       if LocalPlayer() == ply then
+--          return GetAbilityKey()
+--       else
+--          -- don't want to implement getting ability bind for other clients as a client
+--          return nil
+--       end
+--    else
+--       RequestAbilityBind(ply, function(key))
+--    end
+-- end

@@ -59,6 +59,10 @@ SWEP.PreviousScopeState = false
 SWEP.IsScoped = false
 SWEP.Velocity = 0.0
 
+SWEP.GlobalSound = true
+SWEP.SoundDelay = 0.8
+SWEP.SoundVolume = 100
+
 function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "JumpVelocity");
    self:NetworkVar("Bool", 1, "IsScoped");
@@ -211,29 +215,6 @@ if CLIENT then
 function SWEP:AdjustMouseSensitivity()
       return (self:GetIronsights() and 0.2) or nil
    end
-end
-
-function SWEP:PrimaryAttack(worldsnd)
-
-   self:SetNextSecondaryFire( CurTime() + 0 )
-   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-
-   if not self:CanPrimaryAttack() then return end
-
-   if not worldsnd then
-      self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
-   elseif SERVER then
-      sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
-   end
-
-   self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
-
-   self:TakePrimaryAmmo( 1 )
-
-   local owner = self:GetOwner()
-   if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
-
-   owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 end
 
 function SWEP:Think()

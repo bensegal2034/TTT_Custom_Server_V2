@@ -88,7 +88,7 @@ SWEP.Primary.ClipSize			= 10		-- Size of a clip
 SWEP.Primary.DefaultClip			= 20	-- Bullets you start with
 SWEP.Primary.MaxClip			= 30
 SWEP.Primary.Recoil 			= 1.8
-SWEP.Primary.Automatic			= false	-- Automatic/Semi Auto
+SWEP.Primary.Automatic			= true	-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "357"	-- pistol, 357, smg1, ar2, buckshot, slam, SniperPenetratedRound, AirboatGun
 SWEP.AmmoEnt               = "item_ammo_357_ttt"
 
@@ -132,6 +132,10 @@ SWEP.SightsPos = Vector(-1.241, -1.476, 0)
 SWEP.SightsAng = Vector(0, 0, 0)
 SWEP.RunSightsPos = Vector(3.934, -5.41, 0)
 SWEP.RunSightsAng = Vector(-11.476, 35, 0)
+
+SWEP.GlobalSound = true
+SWEP.SoundDelay = 0.2
+SWEP.SoundVolume = 75
 
 if GetConVar("M9KDefaultClip") == nil then
 	print("M9KDefaultClip is missing! You may have hit the lua limit!")

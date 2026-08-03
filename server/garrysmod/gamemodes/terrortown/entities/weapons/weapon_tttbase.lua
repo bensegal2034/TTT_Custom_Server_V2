@@ -130,6 +130,9 @@ SWEP.DeploySpeed = 1.4
 SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.ReloadAnim = ACT_VM_RELOAD
 
+SWEP.GlobalSound = false
+SWEP.SoundDelay = 0.8
+
 SWEP.fingerprints = {}
 
 local sparkle = CLIENT and CreateConVar("ttt_crazy_sparks", "0", FCVAR_ARCHIVE)
@@ -340,6 +343,40 @@ if CLIENT then
    end
 end
 
+local LoadedSounds
+if CLIENT then
+	LoadedSounds = {} -- this table caches existing CSoundPatches
+end
+
+local function ReadSound( FileName, ent )
+	local sound
+	local filter
+   local wep = ent:GetActiveWeapon()
+	if SERVER then
+		filter = RecipientFilter()
+		filter:AddAllPlayers()
+	end
+	if SERVER or !LoadedSounds[FileName] then
+		-- The sound is always re-created serverside because of the RecipientFilter.
+		sound = CreateSound( wep, FileName, filter ) -- create the new sound, parented to the weapon being fired
+		if sound then
+			sound:SetSoundLevel( wep.SoundVolume ) -- play everywhere
+			if CLIENT then
+				LoadedSounds[FileName] = { sound, filter } -- cache the CSoundPatch
+			end
+		end
+   end
+	if sound then
+		sound:Play()
+      timer.Simple(wep.SoundDelay, function() 
+         if IsValid(wep) then
+            sound:Stop()
+         end
+      end)
+	end
+	return sound -- useful if you want to stop the sound yourself
+end
+
 -- Shooting functions largely copied from weapon_cs_base
 function SWEP:PrimaryAttack(worldsnd)
    if not self:CanPrimaryAttack() then return end
@@ -348,7 +385,11 @@ function SWEP:PrimaryAttack(worldsnd)
    self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
    if not worldsnd then
-      self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+      if self.GlobalSound then
+         ReadSound(self.Primary.Sound, self.Owner)
+      else
+         self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+      end
    elseif SERVER then
       sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
    end

@@ -55,6 +55,10 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.reloadtimer = 0
 
+SWEP.GlobalSound = true
+SWEP.SoundDelay = 0.6
+SWEP.SoundVolume = 100
+
 function SWEP:Initialize()
    if CLIENT and self:Clip1() == -1 then
       self:SetClip1(self.Primary.DefaultClip)

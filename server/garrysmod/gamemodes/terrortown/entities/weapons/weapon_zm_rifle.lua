@@ -55,6 +55,9 @@ SWEP.DotVisibility = 0
 
 SWEP.IsScoped = false
 
+SWEP.GlobalSound = true
+SWEP.SoundDelay = 0.8
+
 if CLIENT then
    SWEP.HelpMenuInfo = "Charges up bodyshot damage while scoped, up to "..tostring(SWEP.Primary.Damage * 2)
 end
@@ -105,7 +108,7 @@ local function ReadSound( FileName, ent )
    end
 	if sound then
 		sound:Play()
-      timer.Simple(.8, function() 
+      timer.Simple(wep.SoundDelay, function() 
          if IsValid(wep) then
             sound:Stop()
          end
@@ -135,37 +138,12 @@ function SWEP:PrimaryAttack( worldsnd )
    if not self:CanPrimaryAttack() then return end
    local currentClip = self:Clip1() 
    self.Primary.Damage = self.Primary.BaseDamage * self.ChargeMulti
-
+   self.BaseClass.PrimaryAttack( self.Weapon, worldsnd )
    local traceRes = self.Owner:GetEyeTrace()
+   self:SetNextSecondaryFire( CurTime() + 0.1 )
    self.CurrentCharge = 0
    self:SetChargeTime(0)
-
-   self:SetNextSecondaryFire( CurTime() + 0.1 )
-   self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-
-   if not worldsnd then
-      ReadSound(self.Primary.Sound, self.Owner)
-   elseif SERVER then
-      sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
-   end
-
-   self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
-
-   self:TakePrimaryAmmo( 1 )
-
-   local owner = self:GetOwner()
-   if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
-
-   owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
-
-   if game.SinglePlayer() then
-      self:CallOnClient("SPLastShoot")
-   end
-
-
 end
-
-
 
 -- Add some zoom to ironsights for this gun
 function SWEP:SecondaryAttack()

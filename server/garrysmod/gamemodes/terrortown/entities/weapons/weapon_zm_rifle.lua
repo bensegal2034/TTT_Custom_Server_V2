@@ -54,6 +54,10 @@ SWEP.DotVisibility = 0
 
 SWEP.IsScoped = false
 
+if CLIENT then
+   SWEP.HelpMenuInfo = "Charges up bodyshot damage while scoped, up to "..tostring(SWEP.Primary.Damage * 2)
+end
+
 function SWEP:SetupDataTables()
    self:NetworkVar("Int", 0, "ChargeTime")
    self:NetworkVar("Float", 0, "DotSize")

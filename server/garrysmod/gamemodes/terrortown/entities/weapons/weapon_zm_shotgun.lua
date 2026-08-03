@@ -12,6 +12,7 @@ if CLIENT then
    SWEP.ViewModelFOV       = 54
 
    SWEP.Icon               = "vgui/ttt/icon_shotgun"
+   SWEP.HelpMenuInfo       = "Hold Primary Attack to charge and increase accuracy, release to shoot.\nLoses ability to headshot at long ranges."
    SWEP.IconLetter         = "B"
 end
 

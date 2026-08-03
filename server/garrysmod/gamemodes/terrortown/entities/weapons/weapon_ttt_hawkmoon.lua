@@ -37,6 +37,8 @@ if CLIENT then
    SWEP.Slot				= 1
    SWEP.SlotPos			= 1
 
+   SWEP.HelpMenuInfo = "One shot in the chamber deals 5x damage."
+
    SWEP.Icon = "vgui/ttt/lykrast/icon_pp_rbull"
 end
 

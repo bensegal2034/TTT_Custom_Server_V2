@@ -9,6 +9,7 @@ if CLIENT then
    SWEP.PrintName = "Winchester"
 
    SWEP.Slot = 2
+   SWEP.HelpMenuInfo       = "Increases damage with distance."
    SWEP.Icon = "VGUI/ttt/lykrast/icon_sp_winchester"
 end
 

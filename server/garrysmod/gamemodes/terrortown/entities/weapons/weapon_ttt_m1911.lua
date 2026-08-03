@@ -25,6 +25,7 @@ if CLIENT then
    SWEP.Slot               = 1
 
    SWEP.Icon               = "vgui/ttt/icon_pistol"
+   SWEP.HelpMenuInfo       = "Fires as fast as you can click."
    SWEP.IconLetter         = "u"
 end
 

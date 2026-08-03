@@ -7,6 +7,7 @@ if CLIENT then
    SWEP.PrintName = "FN P90"
    SWEP.Slot = 2
    SWEP.Icon = "vgui/ttt/icon_p90"
+   
 end
 
 -- Always derive from weapon_tttbase
@@ -41,6 +42,10 @@ SWEP.WorldModel	= "models/weapons/w_smg_p90.mdl"
 
 SWEP.IronSightsPos = Vector( 5, -15, -2 )
 SWEP.IronSightsAng = Vector( 2.6, 1.37, 3.5 )
+
+if CLIENT then
+   SWEP.HelpMenuInfo = "Increases runspeed by ".. tostring(SWEP.SpeedBoost).."x\nMakes you explode when you die."
+end
 
 --- TTT config values
 
@@ -90,7 +95,8 @@ hook.Add("TTTPlayerSpeedModifier", "P90Speed", function(ply,slowed,mv)
       return
    end
    if ply:GetActiveWeapon():GetClass() == "weapon_ttt_p90" then
-      return 1.3
+      local wep = ply:GetActiveWeapon()
+      return wep.SpeedBoost
    end
 end)
 

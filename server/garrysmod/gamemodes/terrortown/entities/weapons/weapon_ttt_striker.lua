@@ -83,7 +83,7 @@ SWEP.IronSightsAng = Vector(2.502, 3.431, 0)
 SWEP.reloadtimer = 0
 
 SWEP.CurrentHeat = 0
-SWEP.HeatLimit = 120
+SWEP.HeatLimit = 150
 SWEP.Ignited = false
 SWEP.CoolingDelay = 0
 SWEP.HeatTimer = 0
@@ -94,6 +94,10 @@ SWEP.CoolingSpeed = 4 --higher number, slower rate
 SWEP.IgniteDuration = 2
 
 local maxheat = SWEP.HeatLimit
+
+if CLIENT then
+   SWEP.HelpMenuInfo = "Uses heat instead of ammo, which slowly cools down while not firing.\nLights enemies on fire, lights you on fire while firing with above 100 heat.\nFails to shoot and causes a fatal explosion at "..tostring(SWEP.HeatLimit).." heat!!"
+end
 
 function SWEP:SetupDataTables()
 	self:NetworkVar( "Int", 0, "Heat" )
@@ -290,35 +294,31 @@ function SWEP:PrimaryAttack(worldsnd)
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
 	if not self:CanPrimaryAttack() then return end
-
-	if not worldsnd then
-		self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
-	elseif SERVER then
-		sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
-	end
-
-	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+   
+   if self:GetHeat() < self.HeatLimit then
+      if not worldsnd then
+         self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+      elseif SERVER then
+         sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
+      end
+   end   
+   if self:GetHeat() < self.HeatLimit then
+	   self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone() )
+   end
 
 	local owner = self:GetOwner()
 	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
 	self.CurrentHeat = self.CurrentHeat + self.HeatAmount
 	if SERVER then
 		self:SetHeat(self.CurrentHeat)
-      if self:GetHeat() > self.HeatLimit - 20 then
+      if self:GetHeat() > self.HeatLimit * .67 then
          self.Owner:Ignite(self.IgniteDuration, 2)
          self.Ignited = true
          self.IgniteDuration = self.IgniteDuration + 2
       end
       if self:GetHeat() > self.HeatLimit then
          print("AAAA")
-         local sparkdata = EffectData()
-         sparkdata:SetOrigin( self.Owner:GetPos() )
-         sparkdata:SetNormal( self.Owner:GetPos() )
-         sparkdata:SetMagnitude( 8 )
-         sparkdata:SetScale( 1 )
-         sparkdata:SetRadius( 16 )
-         util.Effect( "Sparks", sparkdata )
-         timer.Simple(1, function()
+         timer.Simple(3, function()
             if IsValid(self.Owner) then
                local effectdata = EffectData()
                effectdata:SetOrigin(self:GetOwner():GetPos())
@@ -333,10 +333,15 @@ function SWEP:PrimaryAttack(worldsnd)
 			self:SetDisplayHeat(self.CurrentHeat)
 		end
 	end
-   if CLIENT then
-      if self:GetHeat() > self.HeatLimit then
-        sound.Play("Grenade_Molotov.Detonate", owner:GetPos(), 140, 100, 1)
-      end
+   if self:GetHeat() > self.HeatLimit then
+      local effectdata = EffectData()
+      effectdata:SetOrigin( self:GetPos() )
+      effectdata:SetNormal( Vector(self:GetOwner():EyeAngles()) )
+      effectdata:SetMagnitude( 3 )
+      effectdata:SetScale( 1 )
+      effectdata:SetRadius( 16 )
+      util.Effect( "Sparks", effectdata )
+      self.Owner:EmitSound( "Weapon_Extinguisher.Empty" )
    end
 	self.CoolingDelay = CurTime() + self.IgniteDuration
 	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )

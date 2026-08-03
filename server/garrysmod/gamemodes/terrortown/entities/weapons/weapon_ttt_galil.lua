@@ -56,6 +56,10 @@ SWEP.MaxCharge = 5
 
 SWEP.EffectData = EffectData()
 
+if CLIENT then
+   SWEP.HelpMenuInfo = "Gains crit charges for every 20 damage taken.\nCrits make you deal headshot damage on bodyshot and are not consumed on headshot."
+end
+
 sound.Add( {
 	name = "crit",
 	channel = CHAN_STATIC,

@@ -8,6 +8,10 @@ if SERVER then
 	resource.AddFile("materials/vgui/ttt/icon_tommygun.vmt")
 end
 
+if CLIENT then
+	SWEP.HelpMenuInfo       = "Gradually increases runspeed and decreases accuracy while firing."
+end
+
 SWEP.Category				= "M9K Submachine Guns"
 SWEP.Author				= ""
 SWEP.Contact				= ""

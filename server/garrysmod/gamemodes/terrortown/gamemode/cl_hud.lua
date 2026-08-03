@@ -321,7 +321,8 @@ local function InfoPaint(client)
 end
 
 hook.Add("HUDPaint", "HelpMenuDraw", function()
-   if not(LocalPlayer().GetActiveWeapon) then return end
+   if not(LocalPlayer():GetActiveWeapon():IsValid()) then return end
+   if not(LocalPlayer():Alive()) then return end
    local wep = LocalPlayer():GetActiveWeapon()
    if not(IsValid(wep)) then
       -- attempt to get the weapon info from a spectated player

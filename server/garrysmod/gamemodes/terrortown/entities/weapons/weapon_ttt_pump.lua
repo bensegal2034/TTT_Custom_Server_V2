@@ -128,7 +128,9 @@ Forward = 0,
 }
 }
 
-
+if CLIENT then
+	SWEP.HelpMenuInfo = "Fires 5 pellets in a horizontal line."
+end
 
 sound.Add({
 	name = 			"Icarus37.Insert",

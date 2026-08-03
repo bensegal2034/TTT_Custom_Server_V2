@@ -43,6 +43,7 @@ if CLIENT then
 
    SWEP.PrintName = "TEC-9"
    SWEP.Slot = 1
+   SWEP.HelpMenuInfo       = ""
 
    SWEP.Icon = "vgui/ttt/lykrast/icon_ap_tec9"
 end
@@ -130,10 +131,12 @@ SWEP.DamageList = {10, 12, 13, 15, 17, 22, 25, 34, 75}
 SWEP.DelayList = {0.08, 0.09, 0.1, 0.13, 0.16, 0.2, 0.28, 0.42, 0.6} 
 SWEP.ConeList = {0, 0.03, 0.04, 0.05, 0.07, 0.08, 0.12, 0.16, 0.2}
 
-SWEP.DamageOutput = 0
+SWEP.DamageOutput = 0   
 
 SWEP.Upside = 0
 SWEP.UpsideLimit = 7
+
+SWEP.UpsideList = {"Dragunov","Raygun","Winger","Deagle","P90","Galil","Mac10"}
 
 --Maximum sum of wall thickness and FlatPen that can be penetrated
 SWEP.PenDistance = 100
@@ -238,6 +241,14 @@ function SWEP:Initialize()
    self.Primary.DefaultClip = (self.Primary.ClipSize * 3)
    if self.Upside == 2 then
       self.DamageType = "True"
+   end
+
+   if CLIENT then
+      if self.Upside != 0 then
+         self.HelpMenuInfo       = "Random stats and gimmicks from other guns.\nGimmick: ".. tostring(self.UpsideList[self.Upside]) .. "\nDamage: ".. tostring(self.Primary.Damage)
+      else
+         self.HelpMenuInfo       = "Random stats and gimmicks from other guns.\nGimmick: None\nDamage: ".. tostring(self.Primary.Damage)
+      end
    end
 end
 

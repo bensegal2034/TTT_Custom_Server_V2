@@ -62,7 +62,7 @@ SWEP.Kind = WEAPON_HEAVY
 SWEP.Primary.Damage        = 2
 SWEP.Primary.NumShots      = 12
 SWEP.Primary.Recoil			= 3
-SWEP.Primary.Cone          = 0.14
+SWEP.Primary.Cone          = 0.115
 SWEP.Primary.Delay         = 0.20
 SWEP.Primary.Automatic     = true
 
@@ -83,20 +83,23 @@ SWEP.IronSightsAng = Vector(2.502, 3.431, 0)
 SWEP.reloadtimer = 0
 
 SWEP.CurrentHeat = 0
-SWEP.HeatLimit = 150
+SWEP.HeatLimit = 150 -- amount of heat that kills you immediately
+SWEP.HeatThreshold = 0.67 -- percent of full heat bar that begins to ignite you
+
 SWEP.Ignited = false
-SWEP.CoolingDelay = 0
+SWEP.CoolingDelay = 0 -- IgniteDuration is added to this to get when the gun should begin cooling off
 SWEP.HeatTimer = 0
 SWEP.BarColor = nil
-SWEP.HeatAmount = 15
-SWEP.CoolingSpeed = 4 --higher number, slower rate
+SWEP.HeatAmount = 15 -- amount heat fills every shot
+SWEP.CoolingSpeed = 3 --higher number, slower rate
 
-SWEP.IgniteDuration = 2
+SWEP.IgniteDuration = 1
+SWEP.ShotsToIgnite = 8 -- number of pellets needed to ignite target (igniting targets can be made slightly easier with headshots)
 
 local maxheat = SWEP.HeatLimit
 
 if CLIENT then
-   SWEP.HelpMenuInfo = "Uses heat instead of ammo, which slowly cools down while not firing.\nLights enemies on fire, lights you on fire while firing with above 100 heat.\nFails to shoot and causes a fatal explosion at "..tostring(SWEP.HeatLimit).." heat!!"
+   SWEP.HelpMenuInfo = "Uses heat instead of ammo, which slowly cools down while not firing.\nLights enemies on fire when landing more than "..tostring(SWEP.ShotsToIgnite) .." pellets.\nWill light you on fire while firing with above "..tostring(math.Round((SWEP.HeatLimit*SWEP.HeatThreshold))).." heat.\nFails to shoot and causes a fatal explosion at "..tostring(SWEP.HeatLimit).." heat!!"
 end
 
 function SWEP:SetupDataTables()
@@ -174,8 +177,7 @@ else
 end
 
 
-function IgniteTarget(att, path, dmginfo)
-   local ent = path.Entity
+function SWEP:IgniteTarget(att, ent, dmginfo)
    if not IsValid(ent) then return end
 
    if CLIENT and IsFirstTimePredicted() then
@@ -187,7 +189,8 @@ function IgniteTarget(att, path, dmginfo)
 
    if SERVER then
 
-      local dur = ent:IsPlayer() and dmginfo:GetDamage()* 0.6 or 20
+      local dur = ent:IsPlayer() and dmginfo:GetDamage()* 0.175 or 20
+      print(dur)
       -- disallow if prep or post round
       if ent:IsPlayer() and (not GAMEMODE:AllowPVP()) then return end
       ent:Ignite(dur, 20)
@@ -224,7 +227,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Tracer    = 1
    bullet.Damage    = self.Primary.Damage
    bullet.TracerName = self.Tracer
-   bullet.Callback = IgniteTarget
+   --bullet.Callback = IgniteTarget
 
    self:GetOwner():FireBullets( bullet )
 
@@ -251,7 +254,7 @@ function SWEP:Think()
 			if self.HeatTimer % self.CoolingSpeed == 0 then
 				self.CurrentHeat = self.CurrentHeat - 1
 				self.Ignited = false
-				self.IgniteDuration = 2
+				self.IgniteDuration = 1
 				self:SetHeat(self.CurrentHeat)
 				if self.CurrentHeat < self.HeatLimit then
 					self:SetDisplayHeat(self.CurrentHeat)
@@ -308,15 +311,14 @@ function SWEP:PrimaryAttack(worldsnd)
 
 	local owner = self:GetOwner()
 	if not IsValid(owner) or owner:IsNPC() or (not owner.ViewPunch) then return end
-	self.CurrentHeat = self.CurrentHeat + self.HeatAmount
+	
 	if SERVER then
-		self:SetHeat(self.CurrentHeat)
-      if self:GetHeat() > self.HeatLimit * .67 then
-         self.Owner:Ignite(self.IgniteDuration, 2)
+      if self:GetHeat() > self.HeatLimit * self.HeatThreshold then
+         self.Owner:Ignite(self.IgniteDuration, 1)
          self.Ignited = true
-         self.IgniteDuration = self.IgniteDuration + 2
+         self.IgniteDuration = self.IgniteDuration + 1
       end
-      if self:GetHeat() > self.HeatLimit then
+      if self:GetHeat() >= self.HeatLimit then
          timer.Simple(1, function()
             if IsValid(self.Owner) then
                local effectdata = EffectData()
@@ -326,23 +328,28 @@ function SWEP:PrimaryAttack(worldsnd)
             end
          end)
       end
-		if self.CurrentHeat > self.HeatLimit then
+	end
+   if self:GetHeat() >= self.HeatLimit then
+      local effectdata = EffectData()
+      self:SetNextPrimaryFire(CurTime()+1)
+      effectdata:SetOrigin( self:GetPos() )
+      effectdata:SetNormal( Vector(self:GetOwner():EyeAngles()) )
+      effectdata:SetMagnitude( 64 )
+      effectdata:SetScale( 3 )
+      effectdata:SetRadius( 16 )
+      util.Effect( "CrossbowLoad", effectdata )
+      self.Owner:EmitSound( "Weapon_CombineGuard.Special1" )
+   end
+	self.CoolingDelay = CurTime() + self.IgniteDuration
+   self.CurrentHeat = self.CurrentHeat + self.HeatAmount
+   if SERVER then
+      self:SetHeat(self.CurrentHeat)
+      if self.CurrentHeat > self.HeatLimit then
 			self:SetDisplayHeat(self.HeatLimit)
 		else
 			self:SetDisplayHeat(self.CurrentHeat)
 		end
-	end
-   if self:GetHeat() > self.HeatLimit then
-      local effectdata = EffectData()
-      effectdata:SetOrigin( self:GetPos() )
-      effectdata:SetNormal( Vector(self:GetOwner():EyeAngles()) )
-      effectdata:SetMagnitude( 3 )
-      effectdata:SetScale( 1 )
-      effectdata:SetRadius( 16 )
-      util.Effect( "Sparks", effectdata )
-      self.Owner:EmitSound( "Weapon_Extinguisher.Empty" )
    end
-	self.CoolingDelay = CurTime() + self.IgniteDuration
 	owner:ViewPunch( Angle( util.SharedRandom(self:GetClass(),-0.2,-0.1,0) * self.Primary.Recoil, util.SharedRandom(self:GetClass(),-0.1,0.1,1) * self.Primary.Recoil, 0 ) )
 end
 DEFINE_BASECLASS(SWEP.Base)
@@ -492,3 +499,25 @@ function SWEP:CanPrimaryAttack()
    return true
 end
 
+hook.Add("PostEntityTakeDamage", "StrikerIgnite", function(ent, dmginfo, wasDamageTaken)
+   if
+      not IsValid(dmginfo:GetAttacker())
+      or not IsValid(ent)
+      or not IsPlayer(ent)
+      or not dmginfo:GetAttacker():IsPlayer()
+      or not IsValid(ent:GetActiveWeapon())
+      or not GetRoundState() == ROUND_ACTIVE
+	   or not wasDamageTaken
+   then
+      return
+   end
+
+   local weapon = dmginfo:GetAttacker():GetActiveWeapon()
+   if SERVER then
+      if weapon:GetClass() == "weapon_ttt_striker" then
+         if dmginfo:GetDamage() >= (weapon.ShotsToIgnite * weapon.Primary.Damage) then
+            weapon:IgniteTarget(dmginfo:GetAttacker(),ent,dmginfo)
+         end
+      end
+   end
+end)

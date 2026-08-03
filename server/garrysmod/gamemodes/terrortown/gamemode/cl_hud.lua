@@ -364,6 +364,29 @@ hook.Add("HUDPaint", "HelpMenuDraw", function()
    end
 end)
 
+hook.Add("DrawOverlay", "BindReminder", function()
+   local reminderText = "You do not currently have both your weapon help key and your ability key bound!\nGo to Options > Keyboard > Gamemodes, then bind 'Server customizable spare 1/2' to keys.\nSpare 1 is the weapon help menu bind, Spare 2 is your ability bind."
+   local hasHelpBind = input.LookupBinding("gm_showspare1")
+   local hasAbilityBind = input.LookupBinding("gm_showspare2")
+   
+   if !hasHelpBind or !hasAbilityBind then
+      surface.SetFont("HealthAmmo") -- necessary to make GetTextSize return the correct value
+
+      local width, height = ScrW(), ScrH()
+      local shadowOffset = width * 0.001
+      local textW, textH = surface.GetTextSize(reminderText)
+      local paddingW, paddingH = width * 0.009, height * 0.009
+      local boxW, boxH = textW + paddingW, textH + paddingH
+      local boxX, boxY = width * 0.5 - boxW / 2, height * 0.2 - boxH / 2
+      local textX, textY = boxX + paddingW / 2 + textW / 2, boxY + paddingH / 2
+
+      draw.RoundedBox(10, boxX, boxY, boxW, boxH, Color(20, 20, 20, 200))
+
+      draw.DrawText(reminderText, "HealthAmmo", textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_CENTER)
+      draw.DrawText(reminderText, "HealthAmmo", textX, textY, Color(255, 255, 255), TEXT_ALIGN_CENTER)
+   end
+end)
+
 -- Paints player status HUD element in the bottom left
 function GM:HUDPaint()
    local client = LocalPlayer()

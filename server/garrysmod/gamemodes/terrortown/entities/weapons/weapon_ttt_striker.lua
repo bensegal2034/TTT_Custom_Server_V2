@@ -317,8 +317,7 @@ function SWEP:PrimaryAttack(worldsnd)
          self.IgniteDuration = self.IgniteDuration + 2
       end
       if self:GetHeat() > self.HeatLimit then
-         print("AAAA")
-         timer.Simple(3, function()
+         timer.Simple(1, function()
             if IsValid(self.Owner) then
                local effectdata = EffectData()
                effectdata:SetOrigin(self:GetOwner():GetPos())

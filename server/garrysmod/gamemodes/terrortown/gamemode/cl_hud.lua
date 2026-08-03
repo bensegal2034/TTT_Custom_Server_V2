@@ -345,18 +345,21 @@ hook.Add("HUDPaint", "HelpMenuDraw", function()
       if not(helpInfo) then
          helpInfo = "No help text defined for this weapon!\nYell at us to write one :3"
       end
+
+      surface.SetFont("HealthAmmo") -- necessary to make GetTextSize return the correct value
+
       local width, height = ScrW(), ScrH()
       local shadowOffset = width * 0.001
       local textW, textH = surface.GetTextSize(helpInfo)
       local paddingW, paddingH = width * 0.009, height * 0.009
       local boxW, boxH = textW + paddingW, textH + paddingH
       local boxX, boxY = width * 0.5 - boxW / 2, height * 0.8 - boxH / 2
-      local textX, textY = boxX + paddingW / 2, boxY + paddingH / 2
+      local textX, textY = boxX + paddingW / 2 + textW / 2, boxY + paddingH / 2
 
       draw.RoundedBox(10, boxX, boxY, boxW, boxH, Color(20, 20, 20, 200))
 
-      draw.DrawText(helpInfo, "HealthAmmo", textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_LEFT)
-      draw.DrawText(helpInfo, "HealthAmmo", textX, textY, Color(255, 255, 255), TEXT_ALIGN_LEFT)
+      draw.DrawText(helpInfo, "HealthAmmo", textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_CENTER)
+      draw.DrawText(helpInfo, "HealthAmmo", textX, textY, Color(255, 255, 255), TEXT_ALIGN_CENTER)
    end
 end)
 

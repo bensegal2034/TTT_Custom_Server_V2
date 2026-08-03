@@ -13,9 +13,9 @@ if CLIENT then
    SWEP.Slot = 2
    SWEP.EquipMenuData = {
       type = "Weapon",
-      desc = "Perks:\nRapid Hit: Reload faster and increase stability on precision hits\nKill Clip: Reload after a kill for a damage boost!"
    }
    SWEP.Icon = "vgui/hud/m9k_famas"
+   SWEP.HelpMenuInfo = "Fires a three-round burst.\nHeadseeker: Land bodyshots to increase the damage of your next headshot!"
    require("cl_m9k_famas")
 end
 SWEP.Kind                  = WEAPON_HEAVY

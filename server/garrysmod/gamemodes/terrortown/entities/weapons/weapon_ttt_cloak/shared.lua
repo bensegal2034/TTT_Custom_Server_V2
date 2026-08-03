@@ -15,6 +15,8 @@ if CLIENT then
         desc = "Hold it to become invisible.\nYou will be semi-visible for 0.75 seconds after deploying.\nDrains ammo while moving: stand still to pause ammo drain.\nYou will decloak with no ammo.\nYou will also become semi-visible for a couple seconds if someone bumps into you. This penalty also applies if you take damage from a player or NPC.\nTaking out your weapon after holstering the device will make you unable to fire for 1.5 seconds."
     };
 
+    SWEP.HelpMenuInfo = "You will be semi-visible for 0.75 seconds after deploying.\nDrains ammo while moving: stand still to pause ammo drain.\nYou will decloak with no ammo.\nYou will also become semi-visible for a couple seconds if someone bumps into you.\nThis penalty also applies if you take damage from a player or NPC.\nTaking out your weapon after holstering the device will make you unable to fire for 1.5 seconds."
+
 end
 
 SWEP.Author = "dot_dash"

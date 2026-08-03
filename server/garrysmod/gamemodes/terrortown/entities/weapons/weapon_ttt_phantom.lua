@@ -54,6 +54,7 @@ end
 if CLIENT then
     SWEP.PrintName = "Phantom"
     SWEP.Slot = 2
+    SWEP.HelpMenuInfo = "Shoots full-auto.\nVery inaccurate while moving.\nWhile standing still, the first shot is 100% accurate!\nAfter 4 bullets, rapidly becomes very inaccurate."
 end
 
 function SWEP:SetupDataTables()

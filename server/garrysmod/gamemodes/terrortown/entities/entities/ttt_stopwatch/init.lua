@@ -190,9 +190,9 @@ hook.Add("EntityTakeDamage", "Stopwatch_Damage", function(ent, dmg)
     end
 end)
 
-hook.Add("KeyPress", "Stopwatch_KeyPress", function(ply, key)
-    -- If player has Stopwatch and presses both keys
-    if (ply:HasEquipmentItem(EQUIP_STOPWATCH)) and (ply:KeyDown(IN_USE) and ply:KeyDown(IN_RELOAD)) then
+hook.Add("ShowSpare2", "Stopwatch_KeyPress", function(ply)
+    -- If player has Stopwatch
+    if (ply:HasEquipmentItem(EQUIP_STOPWATCH)) then
 
         -- If player is touching the ground and is not on cooldown
         if (ply.Stopwatch_Enabled and ply:CanCancelStopwatch()) then stopwatch_finish(ply)

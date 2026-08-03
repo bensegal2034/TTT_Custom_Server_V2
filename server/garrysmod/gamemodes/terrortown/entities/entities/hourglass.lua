@@ -6,19 +6,9 @@ ENT.PrintName = "effect"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-if CLIENT then
-	function hourglassStandsSetting1(panel)	
-		check = panel:NumSlider("Cooldown on Hourglass\n0 will remove cooldown", "hourglass_Cooldowng",0,60 )
-		check:SetValue(10)		
-		check = panel:KeyBinder("Bind for Hourglass", "hourglass_bindg" )
-		
-	end
-end
-
---check this line later, could cause issues
-hook.Add( "PlayerButtonDown", "ZhonyaHourglass", function( ply, button )
+hook.Add("ShowSpare2", "ZhonyaHourglass", function( ply)
 	if ply:HasWeapon("weapon_ttt_hourglass") then
-		if button == ply:GetInfoNum("hourglass_bindg",KEY_F) and ply:HasWeapon("weapon_ttt_hourglass") and SERVER and ply:GetNWFloat("hourglassat",CurTime()) <= CurTime() then 
+		if SERVER and ply:GetNWFloat("hourglassat",CurTime()) <= CurTime() then 
 			if IsValid(ply) and SERVER then
 				local angles = ply:EyeAngles()
 				local forward = ply:GetForward()

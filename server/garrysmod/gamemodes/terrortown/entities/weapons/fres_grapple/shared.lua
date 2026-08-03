@@ -62,7 +62,6 @@ end
 function SWEP:Initialize()
 	self:SetHoldType( "normal" )
 	self.gra = nil
-	self:AddHUDHelp("Press F to activate grapple with any weapon equipped!", false)
 end
 
 function SWEP:PrimaryAttack()

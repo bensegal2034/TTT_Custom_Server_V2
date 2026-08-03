@@ -7,7 +7,6 @@ if CLIENT then
    SWEP.PrintName = "FN P90"
    SWEP.Slot = 2
    SWEP.Icon = "vgui/ttt/icon_p90"
-   SWEP.HelpMenuInfo = "makes you fucking explode"
 end
 
 -- Always derive from weapon_tttbase

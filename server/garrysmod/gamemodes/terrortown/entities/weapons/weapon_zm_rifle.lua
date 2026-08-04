@@ -29,7 +29,6 @@ SWEP.Primary.ClipSize      = 3
 SWEP.Primary.ClipMax       = 9 -- keep mirrored to ammo
 SWEP.Primary.DefaultClip   = 6
 SWEP.Primary.Sound         = Sound("Weapon_Scout.Single")
-SWEP.Primary.SoundLevel    = 180
 SWEP.SetClipQueued         = false
 SWEP.Secondary.Sound       = Sound("Default.Zoom")
 SWEP.DamageType            = "Impact"
@@ -57,6 +56,7 @@ SWEP.IsScoped = false
 
 SWEP.GlobalSound = true
 SWEP.SoundDelay = 0.8
+SWEP.SoundVolume   = 180
 
 if CLIENT then
    SWEP.HelpMenuInfo = "Charges up bodyshot damage while scoped, up to "..tostring(SWEP.Primary.Damage * 2)

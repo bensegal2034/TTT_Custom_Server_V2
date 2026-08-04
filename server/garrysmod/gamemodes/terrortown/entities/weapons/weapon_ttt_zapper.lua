@@ -73,7 +73,7 @@ if CLIENT then
    SWEP.Slot               = 1
    SWEP.ViewModelFOV       = 75
    SWEP.Icon               = "vgui/ttt/icon_deagle"
-   SWEP.HelpMenuInfo       = "If you get a headshot with your first bullet in the clip: \nGain more accuracy and additional damage on your next shot fired!\nKeep hitting headshots to stack your combo multiplier!\nOtherwise, this is a fairly slow-firing pistol with good headshot damage and low bodyshot damage."
+   SWEP.HelpMenuInfo       = "If you get a headshot with your first bullet in the clip: \nGain more accuracy and additional damage on your next shot fired!\nKeep hitting headshots to stack your combo multiplier!\n"
 end
 
 SWEP.Base                  = "weapon_tttbase"

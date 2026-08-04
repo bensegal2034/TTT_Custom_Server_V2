@@ -31,6 +31,8 @@ SWEP.AllowDelete            = false
 SWEP.AllowDrop              = false
 SWEP.NoSights               = true
 
+SWEP.HelpMenuInfo           = "Who needs a weapon when you've got fists, bad decisions, and something to prove?"
+
 function SWEP:GetClass()
    return "weapon_ttt_unarmed"
 end

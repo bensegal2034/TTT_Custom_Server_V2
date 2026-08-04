@@ -46,6 +46,8 @@ SWEP.AutoSpawnable           = false
 SWEP.AllowDelete             = false -- never removed for weapon reduction
 SWEP.AllowDrop               = false
 
+SWEP.HelpMenuInfo            = "The universal key for doors that forgot their manners. Simple, sturdy, and surprisingly persuasive—when subtlety fails, this old friend always has a point."
+
 local sound_single = Sound("Weapon_Crowbar.Single")
 local sound_open = Sound("DoorHandles.Unlocked3")
 

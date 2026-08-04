@@ -334,9 +334,15 @@ function NewlineTextBox(text, font, pctX, pctY, color)
    local textX, textY = boxX + paddingW / 2 + textW / 2, boxY + paddingH / 2
 
    draw.RoundedBox(10, boxX, boxY, boxW, boxH, Color(20, 20, 20, 200))
+   ShadowedTextNewline(text, font, textX, textY, color, TEXT_ALIGN_CENTER)
+end
 
-   draw.DrawText(text, font, textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), TEXT_ALIGN_CENTER)
-   draw.DrawText(text, font, textX, textY, color, TEXT_ALIGN_CENTER)
+function ShadowedTextNewline(text, font, textX, textY, color, align)
+   local width = ScrW()
+   local shadowOffset = width * 0.001
+
+   draw.DrawText(text, font, textX + shadowOffset, textY + shadowOffset, Color(0, 0, 0), align)
+   draw.DrawText(text, font, textX, textY, color, align)
 end
 
 local function HelpMenu()

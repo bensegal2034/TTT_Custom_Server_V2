@@ -264,11 +264,11 @@ function SWEP:Think()
 		self.CurrentHeat = self:GetHeat()
 	end
 
-	if self:GetDisplayHeat() > self.HeatLimit then
-		heatBar:SetBarColor(Color(255,255,255,255))
-	else
-		heatBar:SetTitleColor(Color(255,50,50,255))
-	end
+	-- if self:GetDisplayHeat() > self.HeatLimit then
+	-- 	heatBar:SetBarColor(Color(255,255,255,255))
+	-- else
+	-- 	heatBar:SetTitleColor(Color(255,50,50,255))
+	-- end
 end
 
 function SWEP:Deploy()
@@ -354,7 +354,6 @@ function SWEP:PrimaryAttack(worldsnd)
 end
 DEFINE_BASECLASS(SWEP.Base)
 function SWEP:Initialize(...)
-   heatBar = ProgressBar:Create(self.Owner,0.01,0.95,0.12,0.0245, "Heat",Color(255,50,50,255),Color(255,255,255,255),8,1)
    self:SetDeploySpeed(self.DeploySpeed)
    if self.SetHoldType then
       self:SetHoldType(self.HoldType or "pistol")
@@ -365,122 +364,36 @@ end
 
 
 
-function SWEP:DrawHUD(...)
-   --hud code i am scared of it i cannot find documentation :)
+function SWEP:DrawHUD()
 	if IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "weapon_ttt_striker" then
-		heatBar:SetProgress((self:GetDisplayHeat())/(self.HeatLimit))
+      -- values copied directly from cl_hud's InfoPaint()
+      local margin = 10
+      local width = 250
+      local height = 90
+      local x = margin
+      local y = ScrH() - margin - height
+      local bar_height = 25
+      local bar_width = width - (margin*2)
+      local health_y = y + margin
+      local heat_x = x + margin
+      local heat_y = health_y + bar_height + margin
+      local heat_colors = {
+         border = COLOR_WHITE,
+         background = Color(190, 52, 55),
+         fill = Color(255, 46, 46)
+      }
+      local scrW = ScrW()
 
-		heatBar:SetTitle("Heat: "..math.floor(self:GetHeat()).."/"..self.HeatLimit)
-		
-		heatBar:Paint()
+      local heat = self:GetDisplayHeat() / self.HeatLimit
+      local heatStr = "Heat: ".. math.floor(self:GetHeat()) .. "/" .. self.HeatLimit
+      surface.SetFont("HealthAmmo")
+      local strW, strH = surface.GetTextSize(heatStr)
+      local textX, textY = heat_x + strW, heat_y
+
+      PaintBar(heat_x, heat_y, bar_width, bar_height, heat_colors, heat)
+      ShadowedTextNewline(heatStr, "HealthAmmo", textX, textY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER)
 	end
    return self.BaseClass.DrawHUD(self)
-end
-
-ProgressBar = 	{
-   Data = {}
-}
- 
-function ProgressBar:Create(ent,posx,posy,width,height,title,titlecolor,barcolor,cornerradius,initprogress)
-	self:SetPlayer()
-	self:SetPos(posx,posy)
-	self:SetBounds(width,height)
-	self:SetTitle(title)
-	self:SetTitleColor(titlecolor)
-	self:SetBarColor(barcolor)
-	self:SetCornerradius(cornerradius)
-	self:SetProgress(initprogress)
-	return self
-end
-
-function ProgressBar:Paint()
-   draw.RoundedBox(self.Data[8], ScrW()*self.Data[1], ScrH()*self.Data[2],ScrW()*self.Data[3],ScrH()*self.Data[4],Color(self.Data[6].r,self.Data[6].g,self.Data[6].b,self.Data[6].a*0.50))
-   draw.RoundedBox(self.Data[8], ScrW()*self.Data[1], ScrH()*self.Data[2],ScrW()*self.Data[3]*self.Data[9],ScrH()*self.Data[4],self.Data[6])
-   draw.SimpleText(self.Data[5],"HealthAmmo",ScrW()*(self.Data[1]+(self.Data[3]/1.97)),ScrH()*(self.Data[2]+(self.Data[4]/1.97)), Color( 0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-   draw.SimpleText(self.Data[5],"HealthAmmo",ScrW()*(self.Data[1]+(self.Data[3]/2)),ScrH()*(self.Data[2]+(self.Data[4]/2.25)),self.Data[7], TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-end
-
-function ProgressBar:ShowHUD()
-	hook.Add("HUDPaint","Striker_HUD_Paint",ProgressBar:Paint())
-end
-		
-function ProgressBar:Remove()
-	self.Data = {}
-	hook.Remove("HUDPaint","Striker_HUD_Paint")
-end
-
-function ProgressBar:SetPlayer(ent)
-	if IsValid(ent) and ent:IsPlayer() then
-		self.Data[0] = ent
-	end
-end
-
-function ProgressBar:SetPos(x,y)
-	self.Data[1] = x
-	self.Data[2] = y
-end
-							
-function ProgressBar:SetBounds(width,height)
-	self.Data[3] = width
-	self.Data[4] = height
-end
-							
-function ProgressBar:SetTitle(title)
-	self.Data[5] = title							
-end														
-							
-function ProgressBar:SetTitleColor(titleColor)
-	self.Data[6] = titleColor
-end														
-							
-function ProgressBar:SetBarColor(barColor)
-	self.Data[7] = barColor
-end
-							
-function ProgressBar:SetCornerradius(radius)
-	self.Data[8] = radius
-end
-							
-function ProgressBar:SetProgress(progress)
-	self.Data[9] = progress
-end
-
-function ProgressBar:GetPlayer()
-	return self.Data[0]
-end
-
-function ProgressBar:GetPos()
-	local Pos = {self.Data[1],self.Data[2]}
-	return Pos
-end
-							
-function ProgressBar:GetBounds()
-	local Bounds = {self.Data[3],self.Data[4]}
-	return Bounds
-end
-							
-function ProgressBar:GetTitle()
-	return self.Data[5]						
-end														
-							
-function ProgressBar:GetTitleColor()
-	return self.Data[6]
-end														
-							
-function ProgressBar:GetBarColor()
-	return self.Data[7]
-end
-							
-function ProgressBar:GetCornerradius()
-	return self.Data[8]
-end
-							
-function ProgressBar:GetProgress()
-	return self.Data[9]
-end
-
-function ProgressBar:GetDataTable()
-	return self.Data
 end
 
 function SWEP:Reload()
